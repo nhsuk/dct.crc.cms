@@ -1,0 +1,15 @@
+.hidden-mobile {
+    display: block;
+
+    @media (max-width: 40.0525em) {
+        display: none;
+    }
+}
+
+.hidden-desktop {
+    display: none;
+
+    @media (max-width: 40.0525em) {
+        display: block;
+    }
+}

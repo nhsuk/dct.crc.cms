@@ -1,0 +1,120 @@
+/* stylelint-disable */
+
+form {
+    .govuk-form-group {
+        .form-link {
+            display: inline-block;
+            padding-left: 30px;
+            padding-top: 5px;
+        }
+
+        .govuk-button {
+            @media (max-width: 40.0525em) {
+                display: inline-block;
+                width: auto;
+            }
+        }
+
+        .govuk-label {
+            font-weight: bold;
+        }
+
+        .govuk-checkboxes__label {
+            font-weight: normal;
+        }
+
+        .govuk-error-message {
+            margin-bottom: 0;
+        }
+
+        .show-password {
+            display: inline-block;
+            padding-left: 20px;
+
+            @media (max-width: 40.0525em) {
+                padding-left: 0;
+                margin-top: 15px;
+            }
+        }
+
+        .govuk-select {
+            background-color: transparent;
+        }
+        @media (max-width: 40.0525em) {
+            &.margin-top-40 {
+                margin-top: 40px;
+            }
+        }
+    }
+
+    .govuk-form-group--error {
+        .govuk-input, .govuk-textarea, .govuk-select, .govuk-checkboxes__label::before {
+            border: 2px solid $error-red;
+        }
+
+        .show-password {
+            .govuk-checkboxes__label::before {
+                border-color: $black;
+            }
+        }
+
+        .govuk-error-message {
+            margin-bottom: 10px;
+        }
+    }
+
+    .govuk-fieldset__legend, .govuk-label, .govuk-input, .govuk-list, .govuk-error-summary__title, .govuk-error-message, .govuk-hint, .govuk-select {
+        font-family: $main--font;
+    }
+
+    &#preferences {
+        h2 {
+            margin-top: 15px;
+        }
+
+        legend {
+            font-weight: normal;
+        }
+    }
+
+    .govuk-fieldset {
+        &__legend {
+            margin-bottom: 0;
+
+            h2 {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}
+
+.govuk-error-summary {
+    margin-bottom: 20px;
+
+    .govuk-error-summary__title {
+        font-family: $main--font;
+    }
+
+    .govuk-error-summary__list {
+        li {
+            list-style: none;
+            
+            a {
+                font-family: $main--font;
+            }
+        }
+    }
+}
+
+#resource-order-error-summary {
+    &:focus {
+        outline: 0;
+    }
+
+    &.error-focus, &:focus {
+        .govuk-error-summary {
+            outline: 3px solid $focus;
+        }
+    }
+
+}

@@ -1,0 +1,24 @@
+{% load wagtailcore_tags %}
+
+<footer class="govuk-footer" role="contentinfo">
+    <div class="govuk-width-container ">
+        <div class="govuk-footer__meta">
+            <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+                <h2 class="govuk-visually-hidden">Support links</h2>
+                <ul class="govuk-footer__inline-list">
+                    <li class="govuk-footer__inline-list-item">
+                        <a class="govuk-link" href="/cookies">Cookies</a>
+                    </li>
+                    {% for link in footerlinks %}
+                        <li class="govuk-footer__inline-list-item">
+                            {% include_block link with nav_type="govuk-link" %}
+                        </li>
+                    {% endfor %}
+                    <li class="govuk-footer__inline-list-item">
+                        <a class="govuk-link" href="/contact-us">Contact us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

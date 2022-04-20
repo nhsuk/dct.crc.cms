@@ -1,0 +1,150 @@
+steps:
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: ${{parameters.azureSubscription}}
+      KeyVaultName: ${{parameters.keyVaultName}}
+      SecretsFilter: '*'
+      RunAsPreJob: false
+  # Assign values to values.yaml file for helm deployment
+  - bash: |
+      echo "
+        imageName: $(imageName)
+        imageTag: $(tag)
+        namespace: $(namespace)
+        hostUrl: $(hostUrl)
+        hostUrlCertSecretName: $(hostUrlCertSecretName)
+        intHostUrl: $(intHostUrl)
+        averageUtilization: $(averageUtilization)
+        webReplicaCount: $(webReplicaCount)
+        webMinReplicas: $(webMinReplicas)
+        maxReplicas: $(maxReplicas)
+        requestscpu: $(requestscpu)
+        requestsmemory: $(requestsmemory)
+        limitsmemory: $(limitsmemory)
+        limitscpu: $(limitscpu)
+        autoscaleEnv: $(autoscaleEnv)
+        devEnv: $(devEnv)
+        appEnv: $(appEnv)
+        railsEnv: $(railsEnv)
+        appName: $(appName)
+        appPort: $(appPort)
+        instanaApiKey: $(instanaApiKey)
+        envAppVariables:
+          ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost,$(hostUrl),$(intHostUrl)
+          MEDIA_DIR: /app/media/
+          # RECAPTCHA_PRIVATE_KEY: $(recaptchaPrivateKey) # pragma: allowlist secret
+          # RECAPTCHA_PUBLIC_KEY: $(recaptchaPublicKey)
+          REDIS_URL: $(redisUrl)
+          DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
+          PRIMARY_HOST: $(primaryHost)
+          SECRET_KEY: $(secretKey)
+          SECURE_SSL_REDIRECT: 'true'
+          STATIC_DIR: $(staticDir)
+          STATIC_URL: $(staticUrl)
+          DB_HOST: $(dbHost)
+          DB_NAME: $(dbName)
+          DB_PASS: $(dbPass)
+          DB_USER: $(dbUser)
+          AZURE_CONTAINER: $(storageAccountContainer)
+          AZURE_CUSTOM_DOMAIN: $(azureCustomDomain)
+          AZURE_ACCOUNT_NAME: $(storageAccountName)
+          AZURE_ACCOUNT_KEY: $(storageAccountKey)
+          AZURE_ACCOUNT_PUBLIC_ENDPOINT: $(storageAccountPublicEndpoint)
+          AZURE_ACCOUNT_PRIVATE_ENDPOINT: $(storageAccountPrivateEndpoint)
+          PARAGON_API_ENDPOINT: $(paragonApiEndpoint)
+          PARAGON_API_KEY: $(paragonApiKey)
+          PARAGON_MOCK: $(paragonMock)
+          DEBUG: $(debug)
+          WEB_CONCURRENCY: $(workers)
+          GUNICORN_CMD_ARGS: $(gunicornArgs)
+          NOTIFY_DEBUG: $(notifyDebug)
+          NOTIFY_API_KEY: $(notifyApiKey)
+          ADOBE_TRACKING_URL: $(adobeTrackingUrl)
+          AZURE_SEARCH_CONTAINER: $(azureSearchContainer)
+          AZURE_SEARCH_ACCESS_KEY: $(azureSearchAccessKey)
+          AZURE_SEARCH_STORAGE_ACCOUNT_NAME: $(azureSearchStorageAccountName)
+          AZURE_SEARCH_UPDATE: $(azureSearchUpdate)
+          AZURE_SEARCH_PREFIX: $(azureSearchPrefix)
+          AZURE_SEARCH_API_HOST: $(azureSearchApiHost)
+          AZURE_SEARCH_API_VERSION: $(azureSearchApiVersion)
+          AZURE_SEARCH_DELETE_API_HOST: $(azureSearchDeleteApiHost)
+          AZURE_SEARCH_DELETE_API_VERSION: $(azureSearchDeleteApiVersion)
+          AZURE_SEARCH_API_KEY: $(azureSearchApiKey)
+          AZURE_SEARCH_FACETS: $(azureSearchFacets)
+          CAMPAIGNS_EVENT_API_ENDPOINT: $(campaignsEventApiEndpoint)
+          COOKIE_CONSENT_CAMPAIGNS: $(cookieConsentCampaigns)
+          PARAGON_ENCRYPTION_KEY: $(paragonEncryptionKey)
+          PARAGON_SIGN_KEY: $(paragonSignKey)
+          PARAGON_SALT: $(paragonSalt)
+          PHE_PARTNERSHIPS_EMAIL: $(phePartnershipsEmail)
+        envInitializerVariables:
+          PRIMARY_HOST: $(primaryHost)
+          DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
+          SECRET_KEY: $(secretKey)
+          REDIS_URL: $(redisUrl)
+          STATIC_DIR: $(staticDir)
+          STATIC_URL: $(staticUrl)
+          DB_HOST: $(dbHost)
+          DB_NAME: $(dbName)
+          DB_PASS: $(dbPass)
+          DB_USER: $(dbUser)
+          PARAGON_API_ENDPOINT: $(paragonApiEndpoint)
+          PARAGON_API_KEY: $(paragonApiKey)
+          PARAGON_ENCRYPTION_KEY: $(paragonEncryptionKey)
+          PARAGON_SIGN_KEY: $(paragonSignKey)
+          PARAGON_SALT: $(paragonSalt)
+          PARAGON_MOCK: $(paragonMock)
+          DEBUG: $(debug)
+          WEB_CONCURRENCY: $(workers)
+          GUNICORN_CMD_ARGS: $(gunicornArgs)
+          NOTIFY_DEBUG: $(notifyDebug)
+        appArgs:
+          - 'bash'
+          - '-c'
+          - 'bash ./docker-entrypoint.sh'
+        initializerArgs:
+          - 'bash'
+          - '-c'
+          - 'bash ./initializer-entrypoint.sh'
+      " > helm/extra-values.yaml
+  - task: HelmInstaller@1
+    inputs:
+      helmVersionToInstall: '3.2.0'
+  - task: HelmDeploy@0
+    displayName: 'Add helm repository'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
+      command: 'repo'
+      arguments: 'add dct https://digitalcampaignsstorage.blob.core.windows.net/helm/'
+  - task: HelmDeploy@0
+    displayName: 'Update Helm Repository'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
+      command: 'repo'
+      arguments: 'update'
+  - task: HelmDeploy@0
+    displayName: 'Helm Upgrade'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
+      command: 'upgrade'
+      chartType: 'Name'
+        #chartPath: 'helm/dct-sharable-helm-chart-1.0.0.tgz'
+      namespace: $(namespace)
+      releaseName: $(appName)
+      version: $(buildId),
+      chartName: dct-campaigns-helm-app-chart #$(parameters.appName)
+      arguments: '--install --repo https://digitalcampaignsstorage.blob.core.windows.net/helm/ --version 2.1.3 --create-namespace -f helm/values.yaml -f helm/extra-values.yaml --timeout 900s'
+  - task: KubectlInstaller@0
+    inputs:
+      kubectlVersion: 'latest'
+  - task: Kubernetes@1
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceEndpoint: ${{parameters.kubernetesServiceEndPoint}}
+      command: label
+      arguments: 'namespaces $(namespace) --overwrite app=$(appName) costcode=campaigns org=dct type=ns env=$(AppEnv)'
+      secretType: 'dockerRegistry'
+      containerRegistryType: 'Azure Container Registry'

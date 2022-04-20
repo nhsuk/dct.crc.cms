@@ -1,0 +1,14 @@
+.crc-action-link__link {
+    @include font-size(l);
+    font-weight: 600;
+}
+
+.nhsuk-action-link {
+    &__link {
+        font-size: 1.188rem;
+
+        .nhsuk-icon__arrow-right-circle {
+            fill: $black;
+        }
+    }
+}

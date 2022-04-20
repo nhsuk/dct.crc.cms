@@ -1,0 +1,18 @@
+{% load wagtailimages_tags %}
+{% load wagtailcore_tags %}
+
+{% if heading %}
+  <h{{heading_level}}>{{heading}}</h{{heading_level}}>
+{% endif %}
+<div class="crc-container ">
+    <div class="crc-container__grid app-container-block">
+        {{content}}
+    </div>
+    <div class="crc-container__grid ">
+        {% for block in image %}
+        <div class="app-text-stack">
+            {% include_block block %}
+        </div>
+        {% endfor %}
+    </div>
+</div>

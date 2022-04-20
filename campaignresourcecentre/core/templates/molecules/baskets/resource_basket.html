@@ -1,0 +1,24 @@
+<form data-title="{{resource.title}}" id="resource-order-{{ resource.sku }}" action="/baskets/add_item/" onsubmit="return formValidation(this.id)" method="post" aria-label="Add item" class="resource-form">
+    {% csrf_token %}
+    <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h4 class="govuk-!-font-size-19">Order this resource
+            <span>Maximum order quantity: {{ resource.maximum_order_quantity }}</span></h4>
+        </legend>
+
+        <div id="addToBasketGroup-resource-{{ resource.sku }}" class="govuk-form-group">
+            <label class="govuk-label govuk-visually-hidden" for="resource-{{ resource.sku}}">
+                Order quantity
+            </label>
+            <p id="error-resource-{{ resource.sku }}" class="govuk-error-message govuk-!-display-none">
+                <span class="govuk-visually-hidden">Error:</span> Enter a number
+            </p>
+            <input class="govuk-input govuk-input--width-4" placeholder="1" value="1" required="true" type="number" name="order_quantity" min="1" max="{{ resource.maximum_order_quantity }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Quantity" id="resource-{{ resource.sku }}">
+            <input type="hidden" name="sku" value="{{ resource.sku }}">
+            <button name="Add to basket" aria-describedby="{{ resource.title|slugify }}" class="govuk-button primary-button">Add to basket</button>
+            {% if resource.items_in_basket_count > 0 %}
+            <br><p class="basket-info" aria-live="polite">{{resource.items_in_basket_count}} item{% if resource.items_in_basket_count > 1 %}s{% endif %} added to <a href="/baskets/view_basket">your basket</a></p>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>

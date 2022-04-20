@@ -1,0 +1,28 @@
+<script>
+
+    function addItem(resourceForm) {
+        const selectedField = resourceForm['order_quantity'];
+        const csrfToken = resourceForm['csrfmiddlewaretoken'].value;
+        const item_id = resourceForm['item_id'].value;
+        const data = new FormData();
+        data.append('order_quantity', parseInt(selectedField.value));
+        data.append('csrfmiddlewaretoken', csrfToken);
+        data.append('item_id', item_id);
+        const button = resourceForm['add-to-basket'];
+        button.disabled = true;
+
+        const xhttp_ss = new XMLHttpRequest();
+        xhttp_ss.onreadystatechange = function() {
+            if (this.readyState == 4){
+                if(this.status == 200) {
+                    resourceForm.outerHTML = this.responseText;
+                }
+                else {
+                    button.disabled = false;
+                }
+            }
+        }
+        xhttp_ss.open("POST", "/baskets/render_basket/");
+        xhttp_ss.send(data);
+    }
+</script>

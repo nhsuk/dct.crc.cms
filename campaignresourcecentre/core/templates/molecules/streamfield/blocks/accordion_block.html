@@ -1,0 +1,17 @@
+{% load wagtailcore_tags %}
+
+{# title #}
+<p>{{ value.title }}</p>
+
+{# text #}
+<p>{{ value.text }}</p>
+
+{# show numbering #}
+{% if value.show_numbering %}
+    {# add styling for numbers #}
+{% endif %}
+
+{% for item in value.items %}
+    <p>{{ item.title }}</p>
+    <p>{{ item.text|richtext }}</p>
+{% endfor %}

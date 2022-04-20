@@ -1,0 +1,65 @@
+.govuk-footer {
+    background-color: $black;
+
+    .govuk-footer__inline-list {
+        margin-bottom: -10px;
+        margin-left: 0;
+
+        li {
+            display: inline-block;
+            font-size: 1rem;
+            padding-right: 20px;
+            list-style: none;
+
+            @media (max-width: 40.0525em) {
+                display: block;
+                padding-right: 0;
+            }
+
+            &:last-child {
+                padding-right: 0;
+            }
+
+            &.govuk-footer__inline-list-item {
+                margin-right: 0;
+            }
+
+            a {
+                color: $white;
+                text-decoration: underline;
+        
+                &:hover {
+                    color: $grey-tint;
+                    text-decoration: none;
+                }
+
+                &:focus {
+                    background-color: $focus;
+                    color: $black;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+
+    .govuk-link {
+        font-family: $main--font;
+    }
+
+    .govuk-footer__copyright-logo {
+        background-image: url("../images/cssBackgrounds/govuk-crest-white.svg");
+        color: $white;
+
+        &:hover {
+            color: $grey-tint;
+            text-decoration: none;
+        }
+
+        &:focus {
+            background-color: $focus;
+            color: $black;
+            background-image: url("../images/cssBackgrounds/govuk-crest-black.svg");
+
+        }
+    }
+}

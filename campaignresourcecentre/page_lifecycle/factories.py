@@ -1,0 +1,11 @@
+import factory
+import wagtail_factories
+
+#from .models import PageLifecyclePage # does not work in test context
+from campaignresourcecentre.page_lifecycle.models import PageLifecyclePage
+
+class PageLifecyclePageFactory(wagtail_factories.PageFactory):
+    class Meta:
+        model = PageLifecyclePage
+
+    title = factory.Faker("text", max_nb_chars=25)

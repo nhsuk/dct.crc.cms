@@ -1,0 +1,195 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds page-intro">
+                <h1 class="govuk-heading-xl">{{ page.title }}</h1>
+                    {% if page.introduction %}
+                    <p>{{ page.introduction }}</p>
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <section class="app-section {{page.campaign_updates_bg_colour}} govuk-!-padding-top-0">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    {% comment %}
+                        Example outputs for Latest campaign updates
+                    {% endcomment %}
+                    {% if campaign_updates %}
+                        <h2>{{ page.campaign_updates_heading }}</h2>
+                        {% for campaign_update in campaign_updates %}
+                            <div class="intro-panel">
+                                <div class="govuk-grid-row">
+                                    <div class="govuk-grid-column-one-third">
+                                        {% image campaign_update.image width-400 %}
+                                    </div>
+
+                                    <div class="govuk-grid-column-two-thirds">
+                                        <div class="intro-panel__content">
+                                            <h3><a href="{{ campaign_update.url }}">{{ campaign_update.link_text }}</a></h3>
+                                            <p>{{ campaign_update.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="app-section app-section--grey">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full govuk-!-padding-bottom-4">
+                    {% comment %}
+                        Example outputs for campaign topic filters
+                    {% endcomment %}
+                    <h2>Filter by topic</h2>
+                    <div class="campaign-filters">
+                        {% if topics %}
+                            <ul>
+                                {% if selected_topic == 'ALL' %}
+                                    <li><a class="govuk-button crc-filter-button selected" href="{{ page.url }}?sort={{ sort }}" aria-current="true">All</a></li>
+                                {% else %}
+                                    <li><a class="govuk-button crc-filter-button" href="{{ page.url }}?sort={{ sort }}">All</a></li>
+                                {% endif %}
+                                {% for topic in topics %}
+                                    {% if selected_topic == topic.code %}
+                                        <li><a class="govuk-button crc-filter-button selected" href="{{ page.url }}?topic={{ topic.code }}&sort={{ sort }}" aria-current="true">{{ topic.label }}</a></li>
+                                    {% else %}
+                                        <li><a class="govuk-button crc-filter-button" href="{{ page.url }}?topic={{ topic.code }}&sort={{ sort }}">{{ topic.label }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="govuk-form-group campaign-filters__sortby">
+                <label class="govuk-label sort-by-label" for="sort">
+                    Sort by
+                </label>
+                <select class="govuk-select" id="sort" name="sort" onchange="submit(this, '{{ page.url }}', '{{ selected_topic }}')">
+                    <option value="newest" {% if sort == 'newest'%}selected{% endif %}>Newest</option>
+                    <option value="oldest" {% if sort == 'oldest'%}selected{% endif %}>Oldest</option>
+                </select>
+            </div>
+
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    {% comment %}
+                        Example outputs for campaign listings
+                    {% endcomment %}
+                    {% include "molecules/campaigns/campaigns.html" %}
+                </div>
+            </div>
+        </div>
+        {% block body %}
+            {% for block in page.body %}
+                {% if block.block_type != 'section' %}
+                <div class="govuk-width-container">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                        {% include_block block %}
+                        </div>
+                    </div>
+                </div>
+                {%else%}
+                    {% include_block block %}
+                {%endif%}
+            {% endfor %}
+        {% endblock %}
+
+    {% include "molecules/pagination/pagination.html" with paginator_page=campaigns %}
+
+    <script>
+        // Initialise default values
+        let filterTopic = "ALL";
+        let sortBy = "newest";
+
+        /**
+         * Gets the URL from the topic link.
+         * Splits the URL and query if there is a topic.
+         * Gets the topic if there is one.
+         * If there is no topic, topic is "ALL".
+         * Creates a string from the topic and sort by values.
+         * Removes the class of selected.
+         * Applies the class selected to the current link.
+         * Creates a new XMLHttp request.
+         * Outputs the HTML required for the requested campaigns.
+         */
+        function renderTopic(e) {
+            e.preventDefault();
+            // Prevent the events script from running so the page does not reload.
+            e.stopImmediatePropagation();
+            const queryURL = this.href;
+            let topicQueryString = "";
+            if(queryURL.includes("?topic=")) {
+                const querySplit = queryURL.split('?topic=')[1];
+                filterTopic = querySplit.split('&sort=')[0];
+            }
+            else {
+                filterTopic = "ALL";
+            }
+            topicQueryString += "topic=" + filterTopic + "&sort=" + sortBy;
+            
+            const campaigns = document.getElementById("campaigns");
+            for (let i=0; i<filters.length; i++) {
+                filters[i].classList.remove("selected");
+            }
+            this.classList.add("selected");
+            const xhttp_topic = new XMLHttpRequest();
+            xhttp_topic.onreadystatechange = function() {
+                if (this.readyState == 4){
+                    if(this.status == 200) {
+                        campaigns.outerHTML = this.responseText;
+                    }
+                }
+            }
+            xhttp_topic.open("GET", "/render_topic/?" + topicQueryString);
+            xhttp_topic.send();
+            console.log("final topic query " + topicQueryString);
+            return filterTopic;
+        }
+
+        // Add event listener to each topic link.
+        const filters = document.getElementsByClassName("crc-filter-button");
+        for (let i=0; i<filters.length; i++) {
+            filters[i].addEventListener("click", renderTopic, false);
+        }   
+
+        /**
+         * Gets the sort by value from the drop down list.
+         * Creates a query string from the values for the topic and sort by.
+         * Creates a new XMLHttp request.
+         * Outputs the HTML required for the requested campaigns.
+         */
+        function submit(element) {
+            sortBy = element.value;
+            const sortQueryString = "topic=" + filterTopic + "&sort=" + sortBy;
+            const topics = document.getElementById("campaigns");
+            const xhttp_sort = new XMLHttpRequest();
+            xhttp_sort.onreadystatechange = function() {
+                if (this.readyState == 4){
+                    if(this.status == 200) {
+                        topics.outerHTML = this.responseText;
+                    }
+                }
+            }
+            xhttp_sort.open("GET", "/render_topic/?" + sortQueryString);
+            xhttp_sort.send();
+            console.log("final sort query " + sortQueryString);
+            return sortBy;
+        }
+        
+    </script>
+</section>
+
+{% endblock %}

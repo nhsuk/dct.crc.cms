@@ -1,0 +1,27 @@
+.js-enabled .govuk-accordion__show-all, .js-enabled .govuk-accordion__section-toggle-text, .govuk-accordion__section-heading-text {
+    font-family: $main--font;
+}
+
+.js-enabled .govuk-accordion__section-button {
+  padding-top: 20px;
+  padding-bottom: 0;
+
+  &:hover {
+    background: $accordion-hover;
+  }
+}
+
+.js-enabled .govuk-accordion__section--expanded .govuk-accordion__section-button {
+  padding-bottom: 0;
+}
+
+.js-enabled .govuk-accordion__section-content {
+  padding-bottom: 20px;
+}
+
+@media (hover: none) {
+.js-enabled  .govuk-accordion__section-header:hover {
+      border-top-color: $grey-tint;
+      box-shadow: none;
+    }
+  }

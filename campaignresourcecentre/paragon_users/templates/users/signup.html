@@ -1,0 +1,242 @@
+{% extends "base_page.html" %}
+{% block title %}Register for an account{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-7">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+            <form method="POST" action="/signup/" class="form-group" novalidate id="signin" autocomplete="off">
+                {% if form.non_field_errors or form.errors %}
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>
+                                            <a href="#{{field.id_for_label}}">{{error}}</a>
+                                        </li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>
+                                        <a href="#signin">{{error}}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">Register</h1>
+                        </legend>
+
+                        <div class="rich-text">
+                            <p>To download and order resources you will need to create an account. Once registered, you'll be able to:</p>
+                            <ul>
+                                <li>Download or order free resources for all our campaigns</li>
+                                <li>View your order history</li>
+                                <li>Subscribe to our newsletters to get the latest campaign updates by email including our coronavirus content</li>
+                            </ul>
+                            <p>You don't have to sign in or register to access or download <a href="">coronavirus resources</a>.</p>
+                        </div>
+
+                        {% csrf_token %}
+                        <div class="govuk-form-group {% if form.first_name.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.first_name.id_for_label }}">First name</label>
+                            {% if form.first_name.errors %}
+                                <p id="first_name-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.first_name.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.last_name.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.last_name.id_for_label }}">Last name</label>
+                            {% if form.last_name.errors %}
+                                <p id="last_name-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.last_name.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.last_name }}
+                        </div>
+
+                        <div id="job" class="govuk-form-group {% if form.job_title.errors or form.non_field_errors %}govuk-form-group--error{% endif %}" >
+                            <label class="govuk-label" for="{{ form.job_title.id_for_label }}">Job function</label>
+                            {% if form.job_title.errors %}
+                                <p id="job_title-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.job_title.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.job_title }}
+                        </div>
+
+                        <div id="WorkArea" class="govuk-form-group {% if form.area_work.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.area_work.id_for_label }}">Area of work <span class="govuk-hint" id="non-js">If selected job function is "Health", choose an area of work. Otherwise leave blank.</span></label>
+                            {% if form.area_work.errors %}
+                                <p id="area_work-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.area_work.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.area_work }}
+                        </div>
+
+                        <div id="organisation" class="govuk-form-group {% if form.organisation.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.organisation.id_for_label }}">Organisation name <span class="govuk-hint" id="no-js">Leave blank if student, unemployed or retired</span></label>
+                            {% if form.organisation.errors %}
+                                <p id="organisation_name-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.organisation.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.organisation }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.postcode.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.postcode.id_for_label }}">Postcode</label>
+                            {% if form.postcode.errors %}
+                                <p id="postcode-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.postcode.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.postcode }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.email.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.email.id_for_label }}">Email</label>
+                            {% if form.email.errors %}
+                                <p id="email-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.email.errors %}
+                                        {{ error}}
+                                        {% if error == "Account for this email address already exists" %}
+                                            <div class="govuk-hint"><a href="/login">Sign in</a> with this email address or register with a different email address</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.email }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.password.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.password.id_for_label }}">Password</label>
+                            {% if form.password.errors %}
+                                <p id="password-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.password.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            <div class="govuk-hint">Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol</div>
+                            {{ form.password }}
+                            <div class="govuk-checkboxes show-password">
+                                <div class="govuk-checkboxes__item">
+                                    <input type="checkbox" id="show-password" onclick="showPassword()" class="govuk-checkboxes__input">
+                                    <label class="govuk-label govuk-checkboxes__label" for="show-password">Show password</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="govuk-form-group {% if form.terms.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <div class="govuk-checkboxes">
+                                {% if form.terms.errors %}
+                                    <p id="terms-error" class="govuk-error-message">
+                                        <span class="govuk-visually-hidden">Error:</span>
+                                        {% for error in form.terms.errors %}
+                                            {{ error}}
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                                <div class="govuk-checkboxes__item">
+                                    {{ form.terms }}
+                                    <label class="govuk-label govuk-checkboxes__label" for="{{ form.terms.id_for_label }}">I agree to the <a href="/terms-and-conditions/" target="_blank">terms and conditions</a></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <button class="govuk-button primary-button" data-module="govuk-button">Register</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPassword() {
+            const x = document.getElementById("id_password");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const element = document.getElementById("WorkArea");
+            const hint = document.getElementById("non-js");
+            const hintJS = document.getElementById("no-js");
+            element.classList.add("govuk-visually-hidden");
+            hint.classList.add("govuk-visually-hidden");
+            hintJS.classList.add("govuk-visually-hidden");
+        }, false);
+
+        function hideSelect() {
+            const element = document.getElementById("WorkArea");
+            const inputElement = document.getElementById("id_area_work");
+            const orgElement = document.getElementById("organisation");
+            const jobElement = document.getElementById("id_job_title").value;
+            
+            if (jobElement === 'health') {
+                element.classList.remove("govuk-visually-hidden");
+                inputElement.disabled = false;
+            } else {
+                element.classList.add("govuk-visually-hidden");
+                inputElement.disabled = true;
+            }
+            
+            if (jobElement === 'student') {
+                orgElement.classList.add("govuk-visually-hidden");
+            } else {
+                orgElement.classList.remove("govuk-visually-hidden");
+            }
+        }
+    </script>
+{% endblock %}

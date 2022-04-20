@@ -1,0 +1,17 @@
+.govuk-grid-column-two-thirds {
+    &.tablet-view {
+        @media (min-width: 40.0525em) and (max-width: 48.0525em) {
+            float: left;
+            width: 66.6666%;
+        }
+    }
+}
+
+.govuk-grid-column-one-third {
+    &.no-padding {
+        @media (min-width: 40.0525em) and (max-width: 48.0525em) {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+}

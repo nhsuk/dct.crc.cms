@@ -1,0 +1,61 @@
+/* stylelint-disable */
+
+.govuk-button {
+    font-family: $main--font;
+
+    &.primary-button, &.secondary-button {
+        background-color: $button;
+        box-shadow: 0 2px 0 #0b0c0c;
+
+        &:hover {
+            background-color: $button-hover;
+            color: $white;
+        }
+
+        &:focus {
+            background-color: $focus;
+            color: $black;
+        }
+    }
+
+    &.secondary-button {
+        background-color: $secondary-button;
+
+        &:hover {
+            background-color: $secondary-button-hover;
+            color: $white;
+        }
+
+        &:focus {
+            background-color: $focus;
+            color: $black;
+        }
+    }
+}
+
+button {
+    &.link-only {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        color: $blue;
+        text-decoration: underline;
+        font-size: 1.2rem;
+
+        &:hover {
+            color: $link-hover-blue;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-thickness: .1875rem;
+            text-underline-offset: .1em;
+        }
+    
+        &:focus {
+            background-color: $focus;
+            color: $black;
+            text-decoration: none;
+            box-shadow: 0 -2px #ffeb3b,0 4px #212b32;
+            outline: 4px solid transparent;
+        }
+    }
+}

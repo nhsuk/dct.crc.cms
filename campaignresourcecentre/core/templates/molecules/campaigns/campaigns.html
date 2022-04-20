@@ -1,0 +1,25 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<div class="block-Card_group" id="campaigns">
+    {% if campaigns %}
+        <ul class="nhsuk-grid-row nhsuk-card-group">
+            {% for campaign in campaigns %}
+                <li class="nhsuk-grid-column-one-third nhsuk-card-group__item">
+                    <div class="nhsuk-card image-card  nhsuk-card--clickable ">
+                        <a class="image-card" href="{{ campaign.url }}">
+                            {% if campaign.image_url %}
+                            <img src="{{ campaign.image_url }}" alt="{{ campaign.image_alt }}"/>
+                            {% else %}
+                                {% image campaign.image width-400 %}
+                            {% endif %}
+                            <div class="nhsuk-card__content ">
+                                <h3 class="nhsuk-card__heading nhsuk-card__link">{{ campaign.title }}</h3>
+                                {{ campaign.summary|safe }}
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

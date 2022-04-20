@@ -1,0 +1,111 @@
+{% load filters %}
+
+<div class="govuk-grid-column-three-quarters" id="search-result">
+    <div class="govuk-grid-column">
+        <div class="num-results">
+            {% if count == 0 %}
+                <p>{{ count }} results</p>
+            {% elif count < 2 %}
+                <p>{{ count }} result</p>
+            {% else %}
+                <p>{{ count }} results</p>
+            {% endif %}
+        </div>
+    </div>
+    {% if facets_queryset|filters_added %}
+        <div class="taxonomy-tags">
+            <div class="taxonomy-tags__group">
+                    {% for taxonomy in taxonomies %}
+                        {% if facets_queryset|taxonomies_get:taxonomy.code %}
+                            {% if taxonomy.code == 'TOPIC' %}
+                                <div class="taxonomy-tags__parent">Topic</div>
+                                {% for child in taxonomy.children %}
+                                    {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
+                                        <div class="taxonomy-tags__child">
+                                            <strong aria-hidden="true" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="unCheckSubmitForm(this)">✕</strong>
+                                            <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}    
+                        {% endif %}
+                    {% endfor %}
+                    <br />                        
+                    <div class="taxonomy-tags__parent">In</div>
+                    {% for taxonomy in taxonomies %}
+                        {% if facets_queryset|taxonomies_get:taxonomy.code %}
+                            {% if not taxonomy.code == 'TOPIC' %}
+                                {% for child in taxonomy.children %}
+                                    {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
+                                    <!--
+                                    <div value="{{child.code}}-input" parent="{{taxonomy.code}}" class="taxonomy-tags__child" onclick="unCheckSubmitForm(this)">
+                                        <input name="{{taxonomy.code}}" id="{{child.code}}-checkbox" type="checkbox" value="{{child.code}}" checked>
+                                        <label for="{{child.code}}-checkbox" class="taxonomy-tags__child-label">
+                                            <span class="sr-only">Remove </span>{{child.label}}
+                                        </label>
+                                    </div>
+                                    -->
+                                    <div class="taxonomy-tags__child">
+                                        <strong aria-hidden="true" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="unCheckSubmitForm(this)">✕</strong>
+                                        <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    <!--
+                    <button id="taxonomy-tags-reset" type="submit" class="govuk-button no-js">Update</button>
+                </form>
+                -->
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="govuk-form-group">
+        <label class="govuk-label sort-by-label" for="sort">
+            Sort by
+        </label>
+        <select class="govuk-select" id="sort" name="sort" onchange="submitForm()">
+            <option value="relevant" {% if sort == 'relevant'%}selected{% endif %}>Most relevant</option>
+            <option value="newest" {% if sort == 'newest'%}selected{% endif %}>Newest</option>
+            <option value="oldest" {% if sort == 'oldest'%}selected{% endif %}>Oldest</option>
+        </select>
+    </div>
+
+    {% comment %}
+        Example outputs for resource listings
+    {% endcomment %}
+    <div class="block-Card_group search-results">
+        {% if search_results %}
+            <ul class="nhsuk-grid-row nhsuk-card-group">
+                {% for resource in search_results %}
+                    <li class="nhsuk-grid-column-one-third nhsuk-card-group__item">
+                        <div class="nhsuk-card image-card  nhsuk-card--clickable">
+                            <a class="image-card" href="{{ resource.url }}">
+                                {% if resource.image_url %}
+                                    <div class="image">
+                                        <img src="{{ resource.image_url }}" alt="{{ resource.image_alt }}"/>
+                                    </div>
+                                {% endif %}
+                                <div class="nhsuk-card__content">
+                                    <h3 class="nhsuk-card__heading nhsuk-card__link govuk-!-font-size-19">{{ resource.title }}</h3>
+                                    <p class="govuk-!-font-size-16">{{ resource.campaign_title }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h4>There are no matching results.</h4>
+            <p>Improve your search results by:</p>
+            <ul>
+                <li>removing filters</li>
+                <li>double-checking your spelling</li>
+                <li>using fewer keywords</li>
+                <li>searching for something less specific</li>
+            </ul>
+        {% endif %}
+    </div>
+</div>

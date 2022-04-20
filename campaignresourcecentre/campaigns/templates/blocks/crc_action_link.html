@@ -1,0 +1,9 @@
+<div class="crc-action-link">
+  {% if internal_page %}
+    <a class="crc-action-link__link" href="{{ internal_page.url }}">
+  {% else %}
+    <a class="crc-action-link__link" href="{{ external_url }}" {% if new_window %}target="_blank" {% endif %}>
+  {% endif %}
+    <span class="crc-action-link__text">{{ text }}</span>
+  </a>
+</div>

@@ -1,0 +1,103 @@
+{% extends "base_page.html" %}
+{% block title %}Account details{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container govuk-!-padding-bottom-7">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third side-bar">
+                <p><strong>Manage your account</strong></p>
+                <nav class="side-nav">
+                    <ul>
+                        <li><a href=".">Account details</a></li>
+                        <li><a href="newsletters">Newsletter preferences</a></li>
+                        <li><a href="orders">Order history</a></li>
+                        <li><a href="/password-reset">Reset your password</a></li>
+                        <li><a href="/logout">Sign out</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="govuk-grid-column-two-thirds tablet-view">
+                <h1 class="govuk-heading-xl">Account details</h1>
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {{first_name}} {{last_name}}
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Job title
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {{job_title}}
+                        </dd>
+                    </div>
+                    {% if organisation|length >= 2%}
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Organisation
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                {{organisation}}
+                            </dd>
+                        </div>
+                    {% endif %}
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Postcode
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {{postcode}}
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Email address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {{email_address}}
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            User type
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {%if user_type == None %}
+                                Unverified
+                            {%else%}
+                                {{user_type}}
+                            {%endif%}
+                        </dd>
+                    </div>
+                </dl>
+
+                <h2>Changing your password</h2>
+                <p>If you have forgotten or would like to change the password you use to sign into your account, you can <a href="/password-reset">reset your password</a>.</p>
+
+                <h2>Any problems?</h2>
+                <p>If you think your user type is incorrect or you wish to request your account is removed permanently contact us at <a href="mailto:partnerships@phe.gov.uk">partnerships@phe.gov.uk</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

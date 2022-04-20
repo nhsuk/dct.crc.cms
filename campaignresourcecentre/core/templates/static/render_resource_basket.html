@@ -1,0 +1,28 @@
+<script>
+
+    function addItem(resourceForm) {
+        const selectedField = resourceForm['order_quantity'];
+        const csrfToken = resourceForm['csrfmiddlewaretoken'].value;
+        const data = new FormData();
+        data.append('order_quantity', selectedField.value);
+        data.append('csrfmiddlewaretoken', csrfToken);
+        data.append('sku', resourceForm['sku'].value);
+        const button = resourceForm['Add to basket'];
+        button.disabled = true;
+
+        const xhttp_ss = new XMLHttpRequest();
+        xhttp_ss.onreadystatechange = function() {
+            if (this.readyState == 4){
+                if(this.status == 200) {
+                    resourceForm.outerHTML = this.responseText;
+                }
+                else {
+                    button.disabled = false;
+                }
+                refresh_summary();
+            }
+        }
+        xhttp_ss.open("POST", "/baskets/render_resource_basket/");
+        xhttp_ss.send(data);
+    }
+</script>

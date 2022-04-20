@@ -1,0 +1,16 @@
+.govuk-grid-column-full, .govuk-grid-column-two-thirds {
+    @media (min-width: 40.0525em) and (max-width: 48.0525em) {
+        padding: 0;
+    }
+}
+
+.govuk-grid-column-two-thirds {
+    @media (max-width: 48.0525em) {
+        float: none;
+        width: auto;
+    }
+}
+
+.govuk-main-wrapper {
+    padding-bottom: 0;
+}

@@ -1,0 +1,50 @@
+/* stylelint-disable */
+
+.nhsuk-header {
+    background-color: $black;
+
+    .nhsuk-header__logo {
+        width: 340px;
+        height: 41px;
+
+        @media (max-width: 40.0525em) {
+            margin-bottom: 15px;
+        }
+
+        .nhsuk-header__link {
+            height: auto;
+            width: auto;
+            display: inline-block;
+
+            svg {
+                width: 340px;
+                height: 41px;
+            }
+
+            &:hover {
+                border-bottom: 1px solid $white;
+                padding-bottom: 0;
+            }
+
+            &:focus {
+                background-color: $focus;
+                outline: 3px solid #fd0;
+
+                svg {
+                    .st0 {
+                        fill: $black;
+                        g {
+                            fill: $black;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .nhsuk-header__content {
+        @media (max-width: 61.875em) {
+            float: none;
+        }
+    }
+}

@@ -1,0 +1,151 @@
+{% extends "base_page.html" %}
+{% block title %}Order summary{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/baskets/view_basket/" class="nhsuk-breadcrumb__link">Basket</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/baskets/view_basket/" class="nhsuk-breadcrumb__backlink">Back to basket</a>
+        </p>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-3">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Order summary</h1>
+            </div>
+        </div>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h2>Resources</h2>
+            </div>
+        </div>
+
+        <div class="govuk-grid-row resources">
+            {% if items %}
+                <div class="govuk-grid-column-two-thirds-from-desktop">
+                    <div class="resource-panel no-shadow">
+                        {% for index, item in items %}
+                            <div class="govuk-grid-row item">
+                                <div class="govuk-grid-column-one-third mobile-panel">
+                                    <div class="left-panel">
+                                        <img src="{{ item.item_image_url }}"  alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}"/>
+                                    </div>
+                                    <div class="right-panel summary hidden-desktop">
+                                        <dl class="govuk-summary-list">
+                                            <div class="govuk-summary-list__row">
+                                                <dt class="govuk-summary-list__key">
+                                                    Title
+                                                </dt>
+                                                <dd class="govuk-summary-list__value">
+                                                    {{ item.title }}
+                                                </dd>
+                                            </div>
+                                            <div class="govuk-summary-list__row">
+                                                <dt class="govuk-summary-list__key">
+                                                    Code
+                                                </dt>
+                                                <dd class="govuk-summary-list__value">
+                                                    {{ item.item_code }}
+                                                </dd>
+                                            </div>
+                                            <div class="govuk-summary-list__row">
+                                                <dt class="govuk-summary-list__key">
+                                                    Quantity
+                                                </dt>
+                                                <dd class="govuk-summary-list__value">
+                                                    {{ item.quantity }}
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
+                                <div class="govuk-grid-column-two-thirds summary hidden-mobile">
+                                    <dl class="govuk-summary-list">
+                                        <div class="govuk-summary-list__row">
+                                            <dt class="govuk-summary-list__key">
+                                                Title
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                {{ item.title }}
+                                            </dd>
+                                        </div>
+                                        <div class="govuk-summary-list__row">
+                                            <dt class="govuk-summary-list__key">
+                                                Code
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                {{ item.item_code }}
+                                            </dd>
+                                        </div>
+                                        <div class="govuk-summary-list__row">
+                                            <dt class="govuk-summary-list__key">
+                                                Quantity
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                {{ item.quantity }}
+                                            </dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                {% if items %}
+                    <p><a href="/baskets/view_basket/">Edit resources</a></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h2>Delivery address</h2>
+                {% if delivery_address %}
+                    <dl class="govuk-summary-list no-borders">
+                        {% for key, value in delivery_address.items %}
+
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    {{  key }}
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    {{ value }}
+                                </dd>
+                            </div>
+                        {% endfor %}
+                    </dl>
+                {% endif %}
+
+                <p><a href="/orders/address/edit">Edit address</a></p>
+                <form id="place_order" action="/orders/place/" method="POST" aria-label="Place order">
+                    {% csrf_token %}
+                    <fieldset class="govuk-fieldset">
+                        <div class="govuk-form-group">
+                            <button name="place-order" class="govuk-button primary-button">Place order</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

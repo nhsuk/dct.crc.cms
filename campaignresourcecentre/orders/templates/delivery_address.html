@@ -1,0 +1,120 @@
+{% extends "base_page.html" %}
+{% block title %}Delivery Address{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/baskets/view_basket/" class="nhsuk-breadcrumb__link">Basket</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+        </div>
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-3">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+            <form method="POST" action="/orders/address/edit/"class="form-group" novalidate id="delivery_address">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">Add delivery address</h1>
+                        </legend>
+
+                        {% if form.non_field_errors or form.errors %}
+                            <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                                <h2 class="govuk-error-summary__title" id="error-summary-title">There was a problem</h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                <li>
+                                                    <a href="#{{field.id_for_label}}">{{error}}</a>
+                                                </li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            <li>
+                                                <a href="#delivery_address">{{error}}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% csrf_token %}
+                        <div class="govuk-form-group {% if form.Address1.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.Address1.id_for_label }}">Full name</label>
+                            <p id="full_name-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {% for error in form.Address1.errors %}
+                                    {{ error}}
+                                {% endfor %}
+                            </p>
+                            {{ form.Address1 }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.Address2.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.Address2.id_for_label }}">Address line 1</label>
+                            <p id="address_line_1-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {% for error in form.Address2.errors %}
+                                    {{ error}}
+                                {% endfor %}
+                            </p>
+                            {{ form.Address2 }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.Address3.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.Address3.id_for_label }}">Address line 2 (optional)</label>
+                            <p id="address_line_2-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {% for error in form.Address3.errors %}
+                                    {{ error}}
+                                {% endfor %}
+                            </p>
+                            {{ form.Address3 }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.Address4.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.Address4.id_for_label }}">Town or city</label>
+                            <p id="town_or_city-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {% for error in form.Address4.errors %}
+                                    {{ error}}
+                                {% endfor %}
+                            </p>
+                            {{ form.Address4 }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.Address5.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.Address5.id_for_label }}">Postcode</label>
+                            <p id="postcode-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {% for error in form.Address5.errors %}
+                                    {{ error}}
+                                {% endfor %}
+                            </p>
+                            {{ form.Address5 }}
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <button class="govuk-button primary-button" data-module="govuk-button">Review order</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

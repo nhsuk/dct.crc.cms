@@ -1,0 +1,9 @@
+.govuk-phase-banner {
+    &__content {
+        font-family: $main--font;
+
+        .govuk-tag {
+            background-color: $button;
+        }
+    }
+}

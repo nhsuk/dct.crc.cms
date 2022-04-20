@@ -1,0 +1,10 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{# left image#}
+{% image value.image width-300 alt=value.image_alt_text %}
+
+{# title #}
+<p>{{ value.title }}</p>
+
+{# text #}
+{{ value.text|richtext }}

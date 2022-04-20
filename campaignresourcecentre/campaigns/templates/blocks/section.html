@@ -1,0 +1,57 @@
+{% load wagtailcore_tags %}
+<section class="app-section {{background_colour}}">
+  <div class="govuk-width-container">
+    {#title and sectiontext#}
+    {% if section_title or section_text%}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          {% if section_title%}
+            <h{{ heading_level }}>{{ section_title }}</h{{ heading_level }}>
+          {% endif %}
+          {% if section_text %}
+            <p>{{ section_text }}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="govuk-grid-row">
+      {# 2 coloumn layout #}
+      {% if layout == "2col" %}
+        <div class="govuk-grid-column-one-half">
+          {% for block in content_blocks %}
+            {% if forloop.counter0|divisibleby:2 %}
+              {% include_block block %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="govuk-grid-column-one-half"> {% spaceless %}
+          {% for block in content_blocks %}
+            {% if not forloop.counter0|divisibleby:2 %}
+              {% include_block block %}
+            {% endif %}
+          {% endfor %}
+        {% endspaceless %}</div>
+      {# full layout #}
+      {% elif layout == "full"  %}
+       {% for block in content_blocks %}
+        {% if block.block_type == "Accordian" %}
+          <div class="govuk-grid-column-two-thirds">
+            {% include_block block %}
+          </div>
+        {% else %}
+          <div class="govuk-grid-column-full">
+            {% include_block block %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      {# 2 thirds layout #}
+      {% elif layout == "2thirds"  %}
+        <div class="govuk-grid-column-two-thirds">
+          {% for block in content_blocks %}
+            {% include_block block %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,289 @@
+parameters:
+- name: debug
+  displayName: Debug (forced false in production)
+  type: boolean
+  default: false
+- name: paragonMock
+  displayName: Mock Paragon API (forced false in production)
+  type: boolean
+  default: false
+- name: notifyDebug
+  displayName: Mock Gov notification API (forced false in production)
+  type: boolean
+  default: true
+- name: workers
+  displayName: Workers (web concurrency)
+  type: number
+  default: 5
+- name: gunicornArgs
+  displayName: Gunicorn commands
+  type: string
+  default: -c gunicorn-conf.py --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 1
+- name: azureSearchUpdate
+  displayName: Update Azure search (forced true in staging and production)
+  type: boolean
+  default: false
+trigger:
+  batch: true
+  branches:
+    include:
+    - 'review/*'
+    - 'refs/tags/*'
+    - '*'
+
+resources:
+- repo: self
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  sourceBranchName: '$(Build.SourceBranchName)'
+  environmentName: 'production'
+  namespace: 'dct-crc-v3'
+  buildId: '$(Build.BuildId)'
+  repository: 'dct/crc-v3'
+  imageName: 'nhsuk.azurecr.io/dct/crc-v3'
+  webReplicaCount: 2
+  webMinReplicas: 2
+  maxReplicas: 7
+  averageUtilization: 90
+  requestscpu: '600m'
+  requestsmemory: '700Mi'
+  limitsmemory: '1Gi'
+  limitscpu:  '1000m'
+  appPort: '8000'
+  redisUrl: 'redis://crc-v3-redis-svc:6379/0'
+  staticDir: '/app/static/'
+  staticUrl: '/static/'
+
+stages:
+- stage: Test
+  displayName: Test
+  jobs:
+  - job: test
+    displayName: 'Test'
+    steps:
+    - template: azure-pipeline-templates/test.yml
+    - task: Gitleaks@2
+      inputs:
+        scanlocation: '$(Build.SourcesDirectory)'
+        configtype: 'custom'
+        configfile: '$(Build.SourcesDirectory)/.gitleaks.toml'
+        redact: false
+        reportformat: 'json'
+- stage: Build
+  displayName: Build
+  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  jobs:
+  - job: buildReview
+    displayName: 'Build Review'
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/')
+    variables:
+      tag: 'review-$(sourceBranchName)'
+    steps:
+    - template: azure-pipeline-templates/build.yml
+      parameters:
+        tag: $(tag)
+  - job: buildIntegration
+    displayName: 'Build Integration'
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+      tag: 'latest'
+    steps:
+    - template: azure-pipeline-templates/build.yml
+      parameters:
+        tag: $(tag)
+  - job: buildStaging
+    displayName: 'Build Staging'
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    variables:
+      tag: '$(sourceBranchName)'
+    steps:
+    - template: azure-pipeline-templates/build.yml
+      parameters:
+        tag: $(tag)
+- stage: Deploy
+  displayName: 'Deploy'
+  dependsOn: Build
+  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  jobs:
+  - job: deployReview
+    displayName: 'Deploy Review'
+    condition: and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')))
+    variables:
+      environmentName: 'review'
+      namespace: 'dct-crc-v3-review-$(sourceBranchName)-ns'
+      tag: 'review-$(sourceBranchName)'
+      hostUrl: 'crc-v3-review-$(sourceBranchName).nhswebsite-dev.nhs.uk'
+      hostUrlCertSecretName: 'nhsuk-haproxy-ns/campaigns-resources-stag-tls-cert'
+      appName: 'crc-v3'
+      devEnv: 'int'
+      appEnv: 'review'
+      autoscaleEnv: 'int'
+      paragonMock: ${{ parameters.paragonMock }}
+      debug: ${{ parameters.debug }}
+      notifyDebug: ${{ parameters.notifyDebug }}
+      workers: ${{ parameters.workers }}
+      gunicornArgs: ${{ parameters.gunicornArgs }}
+      azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
+    steps:
+    - template: azure-pipeline-templates/deploy.yml
+      parameters:
+        azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
+        keyVaultName: 'dct-crc-v3-vlt-rev-uks'
+        kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+        kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+  - job: deployTest
+    displayName: 'Depoy Perf Testing'
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
+    variables:
+      environmentName: 'staging'
+      namespace: 'dct-crc-v3-test-ns'
+      tag: 'review-$(sourceBranchName)'
+      hostUrl: 'crc-v3.nhswebsite-staging.nhs.uk'
+      appName: 'crc-v3-test'
+      devEnv: 'stag'
+      appEnv: 'staging'
+      autoscaleEnv: 'stag'
+      averageUtilization: 60
+      paragonMock: ${{ parameters.paragonMock }}
+      debug: ${{ parameters.debug }}
+      notifyDebug: ${{ parameters.notifyDebug }}
+      workers: ${{ parameters.workers }}
+      gunicornArgs: ${{ parameters.gunicornArgs }}
+      azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
+      redisUrl: 'redis://crc-v3-test-redis-svc:6379/0'
+    steps:
+    - template: azure-pipeline-templates/deploy.yml
+      parameters:
+        azureSubscription: 'dct-staging-vault-uks-dct.campaign-resource-centre-v3'
+        keyVaultName: 'dct-crc-v3-vlt-test-uks'
+        kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
+        kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
+  - job: deployIntegration
+    displayName: 'Deploy Integration'
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+      environmentName: 'integration'
+      namespace: 'dct-crc-v3-ns'
+      tag: 'latest'
+      hostUrl: 'crc-v3.nhswebsite-dev.nhs.uk'
+      appName: 'crc-v3'
+      devEnv: 'int'
+      appEnv: 'integration'
+      autoscaleEnv: 'int'
+      paragonMock: ${{ parameters.paragonMock }}
+      debug: ${{ parameters.debug }}
+      notifyDebug: ${{ parameters.notifyDebug }}
+      workers: ${{ parameters.workers }}
+      gunicornArgs: ${{ parameters.gunicornArgs }}
+      azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
+    steps:
+    - template: azure-pipeline-templates/deploy.yml
+      parameters:
+        azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
+        keyVaultName: 'dct-crc-v3-vlt-int-uks'
+        kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+        kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+  - job: deployStaging
+    displayName: 'Deploy Staging'
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    variables:
+      environmentName: 'staging'
+      namespace: 'dct-crc-v3-ns'
+      tag: '$(sourceBranchName)'
+      hostUrl: 'staging.campaignresources.phe.gov.uk'
+      hostUrlCertSecretName: 'stag.campaignresources-tls-cert'
+      appName: 'crc-v3'
+      devEnv: 'stag'
+      appEnv: 'staging'
+      autoscaleEnv: 'stag'
+      averageUtilization: 60
+      paragonMock: ${{ parameters.paragonMock }}
+      debug: ${{ parameters.debug }}
+      notifyDebug: ${{ parameters.notifyDebug }}
+      workers: ${{ parameters.workers }}
+      gunicornArgs: ${{ parameters.gunicornArgs }}
+      azureSearchUpdate: true
+    steps:
+    - template: azure-pipeline-templates/deploy.yml
+      parameters:
+        azureSubscription: 'dct-staging-vault-uks-dct.campaign-resource-centre-v3'
+        keyVaultName: 'dct-crc-v3-vlt-stag-uks'
+        kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
+        kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
+- stage: deployProduction
+  displayName: 'Deploy Production'
+  condition: and(succeeded('Deploy'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  dependsOn: Deploy
+  jobs:
+  - deployment: approval
+    environment: production
+  - job: deployProduction
+    variables:
+      environmentName: 'production'
+      namespace: 'dct-crc-v3-ns'
+      tag: '$(sourceBranchName)'
+      hostUrl: 'campaignresources.dhsc.gov.uk'
+      hostUrlCertSecretName: 'campaigns-resources-prod-tls-cert'
+      intHostUrl: 'crc-v3.nhswebsite.nhs.uk'
+      appName: 'crc-v3'
+      appEnv: 'production'
+      devEnv: 'prod'
+      autoscaleEnv: 'prod'
+      webReplicaCount: 2
+      webMinReplicas: 2
+      averageUtilization: 60
+      paragonMock: false
+      debug: false
+      notifyDebug: false
+      workers: ${{ parameters.workers }}
+      gunicornArgs: ${{ parameters.gunicornArgs }}
+      azureSearchUpdate: true
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: azure-pipeline-templates/deploy.yml
+      parameters:
+        azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+        keyVaultName: 'dct-crc-v3-vlt-prod-uks'
+        kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
+        kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
+- stage: deployDr
+  displayName: 'Deploy DR'
+  condition: and(succeeded('Deploy'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  dependsOn: Deploy
+  jobs:
+  - deployment: approval
+    environment: production
+  - job: deployDr
+    variables:
+      environmentName: 'production'
+      namespace: 'dct-crc-v3-ns'
+      tag: '$(sourceBranchName)'
+      hostUrl: 'campaignresources.dhsc.gov.uk'
+      hostUrlCertSecretName: 'campaigns-resources-prod-tls-cert'
+      drHostUrl: 'dr.nhswebsite.nhs.uk'
+      appName: 'crc-v3'
+      appEnv: 'production'
+      devEnv: 'prod'
+      autoscaleEnv: 'prod'
+      webReplicaCount: 2
+      webMinReplicas: 2
+      averageUtilization: 60
+      paragonMock: false
+      debug: false
+      notifyDebug: false
+      workers: ${{ parameters.workers }}
+      gunicornArgs: ${{ parameters.gunicornArgs }}
+      azureSearchUpdate: true
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: azure-pipeline-templates/deploy.yml
+      parameters:
+        azureSubscription: 'dct-dr-vault-ukw-dct.campaign-resource-centre-v3'
+        keyVaultName: 'dct-crc-v3-vlt-dr-ukw'
+        kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
+        kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'

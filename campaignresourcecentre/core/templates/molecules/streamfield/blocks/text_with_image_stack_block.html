@@ -1,0 +1,12 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{# title #}
+<p>{{ value.title }}</p>
+
+{# text #}
+<p>{{ value.text|richtext }}</p>
+
+{# images #}
+{% for stack_image in value.images %}
+    <p>{% image stack_image width-200 %}</p>
+{% endfor %}

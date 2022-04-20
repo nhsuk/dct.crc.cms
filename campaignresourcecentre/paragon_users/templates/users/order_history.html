@@ -1,0 +1,125 @@
+{% extends "base_page.html" %}
+{% block title %}Order history{% endblock %}
+{% load wagtailcore_tags wagtailimages_tags get_db_fields format_date %}
+
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+            <ol class="nhsuk-breadcrumb__list">
+                <li class="nhsuk-breadcrumb__item">
+                    <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+                </li>
+            </ol>
+
+            <p class="nhsuk-breadcrumb__back">
+                <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+            </p>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-7">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third side-bar">
+                <p><strong>Manage your account</strong></p>
+                <nav class="side-nav">
+                    <ul>
+                        <li><a href="/account">Account details</a></li>
+                        <li><a href="/account/newsletters">Newsletter preferences</a></li>
+                        <li><a href=".">Order history</a></li>
+                        <li><a href="/logout">Sign out</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="govuk-grid-column-two-thirds tablet-view">
+                <h1 class="govuk-heading-xl">Order history</h1>
+                    {% if data|length > 0 %}
+                        <div class="govuk-form-group">
+                            <form method="POST">
+                            {% csrf_token %}
+                                <label class="govuk-label" for="sort">
+                                    Sort by                           
+                                </label>
+                                <select onchange="this.form.submit()" class="govuk-select" id="sort" name="sort">
+                                    <option value="recent"{% if sort == "recent" or sort == None %} selected {% endif %}>Most Recent</option>
+                                    <option value="oldest"{% if sort == "oldest" %} selected {% endif %}>Oldest</option>
+                                </select>
+                            </form>
+                        </div>
+                        <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+                            {% for order in data %}
+                                <div class="govuk-accordion__section app-order-history__section">
+                                    <div class="govuk-accordion__section-header">
+                                        <h2 class="govuk-accordion__section-heading govuk-!-font-size-19">
+                                            <span class="govuk-accordion__section-button app-accordion-heading" id="id-span-{{order.CrcOrderNumber|slugify}}">
+                                                {{order.CrcOrderNumber|upper}} {% format_date order.OrderDate %}
+                                            </span>
+                                        </h2>
+                                    </div>
+                                    <div id="id-{{order.CrcOrderNumber|slugify}}" class="govuk-accordion__section-content app-order-history_accordion"
+                                        aria-labelledby="id-{{order.CrcOrderNumber|slugify}}">
+                                        <div class="app-grid-group">
+                                            {% for item in order.Items %}
+                                                {% get_field item.ItemCode as DBItem %}
+                                                <div class="govuk-grid-row">
+                                                    <div class="govuk-grid-column-one-third">
+                                                        <div class="app-order-img">
+                                                            {% image DBItem.image width-200 as dbitem_image %}
+                                                            <img src="{{ dbitem_image.url }}" width="{{ dbitem_image.width }}" height="{{ dbitem_image.height }}"  alt="{% if DBItem.image_alt_text %}{{ DBItem.image_alt_text }}{% endif %}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="govuk-grid-column-two-thirds">
+                                                        <dl class="govuk-summary-list app-order__list">
+                                                            <div class="govuk-summary-list__row">
+                                                                <dt class="govuk-summary-list__key">
+                                                                    Item
+                                                                </dt>
+                                                                <dd class="govuk-summary-list__value">
+                                                                    <a href={{DBItem.resource_page.url}}>{{DBItem.title}}</a>
+                                                                </dd>
+                                                            </div>
+                                                            <div class="govuk-summary-list__row">
+                                                                <dt class="govuk-summary-list__key">
+                                                                    Product code
+                                                                </dt>
+                                                                <dd class="govuk-summary-list__value">
+                                                                    {{item.ItemCode}}
+                                                                </dd>
+                                                            </div>
+                                                            <div class="govuk-summary-list__row">
+                                                                <dt class="govuk-summary-list__key">
+                                                                    Quantity
+                                                                </dt>
+                                                                <dd class="govuk-summary-list__value">
+                                                                    {{item.Quantity}}
+                                                                </dd>
+                                                            </div>
+                                                            <div class="govuk-summary-list__row">
+                                                                <dt class="govuk-summary-list__key">
+                                                                    Status
+                                                                </dt>
+                                                                <dd class="govuk-summary-list__value">
+                                                                    {{item.Status}}
+                                                                </dd>
+                                                            </div>
+                                                        </dl>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                        </div>
+                                        <div class="govuk-inset-text app-delivery-panel"> Delivery: {{order.Address1}}, {{order.Address2}}, 
+                                            {% if order.Address3 %}{{order.Address3}},{% endif %} {{order.Address4}}, {{order.Address5}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                    {% else %}
+                        <p><strong> No orders found </strong></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>    
+{% endblock %}

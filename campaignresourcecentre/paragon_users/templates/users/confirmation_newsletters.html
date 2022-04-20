@@ -1,0 +1,47 @@
+{% extends "base_page.html" %}
+{% block title %}Updated newsletter preferences{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Your newsletter preferences have been updated</h1>
+
+                {% if preferences|length >= 1  %} 
+                    <p><strong>You've said you would like to hear about:</strong></p>
+
+                    <div class="rich-text">
+                        <ul class="govuk-!-padding-bottom-5">
+                            {% for  value in preferences %}
+                                <li>{{ value}}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <p>You have no newsletter preferences selected.</p>
+                {% endif %}
+
+                <p class="form-link govuk-!-margin-bottom-7"><a href=".">Go back to newsletter preferences</a></p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

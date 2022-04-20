@@ -1,0 +1,72 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags wagtailimages_tags static %}
+{% load wagtailimages_tags %}
+
+{% load page_tags %}
+
+{% block parent_page_title %}
+    {% get_parent as parent_title %}
+    <title>{% block title %}{{ self.seo_title|default:self.title }}{% endblock %}</title>
+{% endblock %}
+
+{% block content %}
+    {% image page.hero_image width-1440 as img %}
+    <div class="app-section-intro" style="background-image: url({{img.url}}); background-size: cover; background-position: center {{ page.hero_align}};">
+        <div class="govuk-width-container app-section-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                    <h1 class="govuk-heading-xl govuk-!-padding-top-0">{{ page.title }}</h1>
+                    {{ page.introduction|richtext }}
+                    {% comment %}
+                        Example outputs for Latest updates. This is also used on the
+                        `campaign_hub.html` template so an include could be created for both if
+                        they share the same markup.
+                    {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block body %}
+        {% for block in page.body %}
+            {% if block.block_type == 'section' %}
+                {% include_block block %}
+            {% elif block.block_type == 'content_link' %}
+            <section class="app-section app-section--white">
+                <div class="govuk-width-container">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-two-thirds">
+                        {% include_block block %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% else %}
+                <div class="govuk-width-container">
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                        {% include_block block %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endblock %}
+
+    {% block breadcrumbs %}
+    {% endblock %}
+           
+    {% if campaign_updates %}
+        <h2>{{ page.campaign_updates_heading }}</h2>
+        {% for campaign_update in campaign_updates %}
+            <div>
+                {% image campaign_update.image width-200 %}
+                <p><a href="{{ campaign_update.url }}">{{ campaign_update.link_text }}</a></p>
+                <p>{{ campaign_update.description }}</p>
+            <div>
+        {% endfor %}
+    {% endif %}
+
+    {% include "molecules/cta/call_to_action.html" with call_to_action=page.call_to_action %}
+
+{% endblock %}

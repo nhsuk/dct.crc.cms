@@ -1,0 +1,7 @@
+{% load wagtailcore_tags %}
+
+<div class="govuk-accordion" data-module="govuk-accordion">
+    {% for section in accordian_sections %}
+        {% include_block section %}
+    {% endfor %}
+</div>

@@ -1,0 +1,32 @@
+/* stylelint-disable */
+
+.govuk-details {
+    font-family: $main--font;
+    margin-bottom: 10px;
+
+    .govuk-details__text {
+        margin-top: 10px;
+
+        ul, ol {
+            margin-left: 0;
+        }
+    }
+
+    .govuk-details__summary {
+        &:hover {
+            text-decoration: underline;
+            text-decoration-thickness: .1875rem;
+            text-underline-offset: .1em;
+        }
+
+        .govuk-details__summary-text {
+            margin-bottom: 0;
+            font-size: 1.1875rem;
+            font-weight: normal;
+
+            @media (max-width: 40.0525em) {
+                font-size: 1rem;
+            }
+        }
+    }
+}

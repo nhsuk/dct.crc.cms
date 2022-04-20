@@ -1,0 +1,39 @@
+/* stylelint-disable */
+
+#nhsuk-cookie-banner {
+    font-family: $main--font !important;
+
+    .nhsuk-button {
+        background-color: $button !important;
+        color: $white !important;
+        box-shadow: 0 2px 0 $black !important;
+        padding: 8px 10px 7px !important;
+        border: 2px solid transparent !important;
+        border-radius: 0 !important;
+        font-weight: normal !important;
+
+        &:hover {
+            background-color: $button-hover !important;
+        }
+
+        &:focus {
+            color: $black !important;
+            background-color: $focus !important;
+        }
+    }
+
+    .nhsuk-success-banner {
+        background-color: $nhsblue !important;
+
+        a {
+            &:hover {
+                color: $white !important;
+                text-decoration: none !important;
+            }
+
+            &:focus {
+                color: $black !important;
+            }
+        }
+    }
+}

@@ -1,0 +1,144 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags wagtailimages_tags json_lookup %}
+{% load page_tags %}
+
+{% block parent_page_title %}
+    {% get_parent as parent_title %}
+    <title>
+        {% block title %}
+            {{ self.seo_title|default:self.title }}
+        {% endblock %}
+        {% if campaign|length == 0 %}
+            | {{ parent_title }} {%endif%} | Campaign Resource Centre
+    </title>
+{% endblock %}
+
+{% block content %}
+
+    <div id="resource-order-error-summary" class="govuk-width-container govuk-!-display-none">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                      There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                      <ul class="govuk-list govuk-error-summary__list" id="errorList">
+                        
+                      </ul>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">{{ page.title }}</h1>
+            </div>
+        </div>
+    </div>
+    <section class="app-section app-section--white govuk-!-padding-top-0 govuk-!-padding-bottom-7">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds resource-intro">
+                    <h2 class="govuk-heading-m">About this resource</h2>
+                    {{ page.description|richtext }}
+                </div>
+                <div class="govuk-grid-column-one-third no-padding resource-details">
+                    <h2 class="govuk-heading-m">Resource details</h2>
+                    <ul>
+                        <li class="govuk-!-margin-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</li>
+                        <li class="govuk-!-margin-0"><strong>Target Audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
+                        <li class="govuk-!-margin-0"><strong>Where to Use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
+                        {# pages in draft won't have a first published date #}
+                        {% if page.first_published_at %}
+                            <li class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="app-section app-section--grey govuk-!-padding-top-8">
+        {% if resources %}
+            <div class="govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                        <h2 class="govuk-!-font-size-27">Available resources</h2>
+                    </div>
+                </div>
+
+            {% for resource in resources %}
+                <div class="govuk-grid-row resources">
+                    <div class="govuk-grid-column-two-thirds">
+                        <div class="resource-panel">
+                            <div class="govuk-grid-row">
+                                <div class="govuk-grid-column-one-third mobile-panel">
+                                    <div class="left-panel">
+                                        {% image resource.image width-200 as resource_img %}
+                                        <img src="{{ resource_img.url }}" alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
+                                    </div>
+                                    <div class="right-panel hidden-desktop">
+                                        <h3 class="govuk-heading-s" id="m-{{ resource.title|slugify }}">{{ resource.title }}</h3>
+                                        {% if resource.document_content %}
+                                            <p class="file-info">{{ resource.document_content }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="govuk-grid-column-two-thirds order-info-panel download">
+                                    <div class="hidden-mobile">
+                                        <h3 class="govuk-heading-m" id="{{ resource.title|slugify }}">{{ resource.title }}</h3>
+                                        {% if resource.document_content %}
+                                        <p class="file-info">{{ resource.document_content }}</p>
+                                        {% endif %}
+                                    </div>
+                                    {% if resource.permission_to_download or resource.permission_to_order or logged_in %}
+                                        {% if resource.can_download and resource.document %}
+                                            {% if resource.permission_to_download %}
+                                                <p>
+                                                    <a class="govuk-button secondary-button" href="{{ resource.document.url }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Download {{ resource.title }}">Download this resource </a>
+                                                    <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
+                                                    <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
+                                                </p>
+                                            {% else %}
+                                                <p>You do not have permission to view this resource.</p>
+                                                <p>Do you have a .GOV or .NHS email address? <br/>Contact <a href="mailto:partnerships@phe.gov.uk">partnerships@phe.gov.uk</a> for unrestricted access and we'll review your request.</p>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if allowed and resource.can_order %}
+                                            {% if resource.permission_to_order %}
+                                                <hr>
+                                                {% include "molecules/baskets/resource_basket.html" %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if not logged_in %}
+                                        <p><a href="/login/">Sign in</a> or <a href="/signup/">register</a> to get this resource.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+            <div class="govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
+                        <p>Page last reviewed: {{ page.last_reviewed|date:"j F Y" }}</p>
+                    </div>
+                </div>
+            </div>
+    
+    {% block extra_js %}
+        {% include "static/form_validation.html" %}
+        {% include "static/render_resource_basket.html" %}
+    {% endblock %}
+    </section>
+{% endblock %}

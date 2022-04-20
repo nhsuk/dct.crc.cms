@@ -1,0 +1,51 @@
+/* stylelint-disable */
+
+.nhsuk-breadcrumb {
+    background-color: $grey;
+
+    .nhsuk-breadcrumb__list {
+        .nhsuk-breadcrumb__item {
+            .nhsuk-breadcrumb__link {
+                &:hover {
+                    color: $link-hover-blue;
+                }
+            }
+        }
+    }
+}
+
+.govuk-breadcrumbs {
+    margin-top: 0;
+    padding: 10px 0;
+
+    .govuk-breadcrumbs__list-item {
+        font-size: 1rem;
+        font-family: $main--font;
+
+        &::before {
+            top: 3px;
+
+            @media (max-width: 40.0525em) {
+                top: 9px;
+            }
+        }
+
+        .govuk-breadcrumbs__link {
+            font-size: 1rem;
+            font-family: $main--font;
+            color: $blue;
+    
+            &:hover {
+                color: $hover-blue;
+                cursor: pointer;
+                text-decoration: none;
+            }
+        
+            &:focus {
+                background-color: $focus;
+                color: $black;
+                text-decoration: none;
+            }
+        }
+    }
+}

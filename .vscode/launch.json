@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Debugger",
+        "type": "python",
+        "request": "attach",
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/campaignresourcecentre",
+            "remoteRoot": "/app/campaignresourcecentre"
+          }
+        ],
+        "port": 4000,
+        "host": "127.0.0.1",
+      }
+    ]
+  }
+  

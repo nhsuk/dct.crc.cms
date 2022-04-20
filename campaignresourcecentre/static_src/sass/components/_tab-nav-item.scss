@@ -1,0 +1,22 @@
+.tab-nav-item {
+    margin-right: 25px;
+    position: relative;
+    white-space: nowrap;
+    color: $color--black;
+
+    &:last-child {
+        padding-right: 20px;
+    }
+
+    &:hover,
+    &:focus,
+    &--active {
+        color: $color--primary;
+    }
+}
+
+.wrapper--main {
+    @media (max-width: 48.0525em) {
+        padding: 20px 0;
+    }
+}

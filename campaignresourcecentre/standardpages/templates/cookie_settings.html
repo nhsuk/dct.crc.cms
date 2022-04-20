@@ -1,0 +1,125 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags navigation_tags reading_time_tags static %}
+
+{% block title %}Choose which cookies we use{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/resources" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/resources" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="nhsuk-width-container">
+        <div class="nhsuk-grid-row">
+            <div class="nhsuk-grid-column-two-thirds">
+                <div class="nhsuk-form-group nhsuk-u-margin-bottom-0">
+                    <h1 class="govuk-heading-xl">Choose which cookies we use</h1>
+                    <p>Let us know which cookies we can use. We'll use a cookie to save your settings.</p>
+                    <h2>Cookies that remember pop-ups</h2>
+                    <p>These cookies remember pop-ups you've seen, so you do not see them again.</p>
+                        
+                    <fieldset class="govuk-fieldset" id="cookie-preferences-form" aria-describedby="cookie-preferences">
+                        <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="input-preferences-1" name="input-preferences" type="radio" value="on">
+                                <label class="govuk-label govuk-radios__label" for="input-preferences-1">
+                                    Use cookies to remember pop-ups
+                                </label>
+                            </div>
+                    
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="input-preferences-2" name="input-preferences" type="radio" value="off">
+                                <label class="govuk-label govuk-radios__label" for="input-preferences-2">
+                                    Do not use cookies to remember pop-ups
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+            
+                    <h2>Cookies that measure website use (analytics cookies)</h2>
+                    <p>These cookies store information about how you use our website, such as the links you click on. We use them to help make our website better.</p>
+                        
+                    <fieldset class="govuk-fieldset" id="cookie-statistics-form" aria-describedby="cookie-statistics">
+                        <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="input-statistics-1" name="input-statistics" type="radio" value="on">
+                                <label class="govuk-label govuk-radios__label" for="input-statistics-1">
+                                    Use cookies to measure my website use
+                                </label>
+                            </div>
+                    
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="input-statistics-2" name="input-statistics" type="radio" value="off">
+                                <label class="govuk-label govuk-radios__label" for="input-statistics-2">
+                                    Do not use cookies to measure my website use
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+            
+                    <h2>Cookies that help with health campaigns</h2>
+                    <p>These cookies help us show you relevant adverts for our health campaigns on social media, such as Facebook or Twitter.</p>
+                        
+                    <fieldset class="govuk-fieldset" id="cookie-marketing-form" aria-describedby="cookie-marketing">
+                        <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="input-marketing-1" name="input-marketing" type="radio" value="on">
+                                <label class="govuk-label govuk-radios__label" for="input-marketing-1">
+                                    Use cookies to help with health campaigns
+                                </label>
+                            </div>
+                    
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="input-marketing-2" name="input-marketing" type="radio" value="yes">
+                                <label class="govuk-label govuk-radios__label" for="input-marketing-2">
+                                    Do not use cookies to help with health campaigns
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+            
+                    <a href="../cookie_confirmation" onclick="changeConsent();" type="submit" class="govuk-button primary-button">
+                        Save my cookie settings
+                    </a>
+                    </div>
+                    <script>
+                        // function to check the checkboxes based on status of cookie preferences
+                        window.addEventListener("load", function checkCookie() {
+                            document.getElementById("input-preferences-1").checked = NHSCookieConsent.getPreferences();
+                            document.getElementById("input-preferences-2").checked = !NHSCookieConsent.getPreferences();
+            
+                            document.getElementById("input-statistics-1").checked = NHSCookieConsent.getStatistics();
+                            document.getElementById("input-statistics-2").checked = !NHSCookieConsent.getStatistics();
+            
+                            document.getElementById("input-marketing-1").checked = NHSCookieConsent.getMarketing();
+                            document.getElementById("input-marketing-2").checked = !NHSCookieConsent.getMarketing();
+                        });
+            
+                        // function to edit consent preferences based on check box input
+                        function changeConsent() {
+                            NHSCookieConsent.setPreferences(document.getElementById("input-preferences-1").checked);
+                            NHSCookieConsent.setStatistics(document.getElementById("input-statistics-1").checked);
+                            NHSCookieConsent.setMarketing(document.getElementById("input-marketing-1").checked);
+                            if(typeof NHSCookieConsent.setConsented === "function") {
+                                NHSCookieConsent.setConsented(true);
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}

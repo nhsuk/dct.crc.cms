@@ -1,0 +1,146 @@
+[
+  {
+    "label":"Health topics",
+    "code":"TOPIC",
+    "type":"vocabulary",
+    "description":"Health topics",
+    "children":[
+      {"label":"Antimicrobial resistance","code":"ANTMBREST","type":"term","children":[]},
+      {"label":"Blood pressure","code":"BLOODPRESSURE","type":"term","children":[]},
+      {"label":"Cancer","code":"CANCER","type":"term","children":[]},
+      {"label":"Childhood health","code":"CHILDHOODHEALTH","type":"term","children":[]},
+      {"label":"Coronavirus","code":"COVID","type":"term","children":[]},
+      {"label":"Dental health","code":"DENTAL","type":"term","children":[]},
+      {"label":"Drinking less","code":"DRINKING","type":"term","children":[]},
+      {"label":"Early diagnosis","code":"EARLYDIAG","type":"term","children":[]},
+      {"label":"Early years","code":"EARLYYEARS","type":"term","children":[]},
+      {"label":"Eating well","code":"EATING","type":"term","children":[]},
+      {"label":"Flu","code":"FLU","type":"term","children":[]},
+      {"label":"Maternity","code":"MATERNITY","type":"term","children":[]},
+      {"label":"Mental health","code":"MENTALHEALTH","type":"term","children":[]},
+      {"label":"MMR","code":"MMR","type":"term","children":[]},
+      {"label":"NHS","code":"NHS","type":"term","children":[]},
+      {"label":"NHS 111","code":"NHS111","type":"term","children":[]},
+      {"label":"Physical activity","code":"PHYSICALACTIVITY","type":"term","children":[]},
+      {"label":"Quitting smoking","code":"QUITTINGSMOKING","type":"term","children":[]},
+      {"label":"Schools","code":"SCHOOLS","type":"term","children":[]},
+      {"label":"Screening","code":"SCREENING","type":"term","children":[]},
+      {"label":"Sepsis","code":"SEPSIS","type":"term","children":[]}
+    ]
+  },
+  {
+    "label":"Target audience",
+    "code":"TARGAUD",
+    "type":"vocabulary",
+    "description":"Groups of people who will use and benefit from the campaign or information provided",
+    "children":[
+      {"label":"Adults","code":"ADULTS","type":"term","children":[]},
+      {"label":"Healthcare professionals","code":"HEALTHPROFS","type":"term","children":[]},
+      {"label":"Men","code":"MEN","type":"term","children":[]},
+      {"label":"Minority ethnic group","code":"MINORITYETHENICGROUP","type":"term","children":[]},
+      {"label":"Parents and children","code":"PARENTSANDCHILDREN","type":"term","children":[]},
+      {"label":"Parents-to-be","code":"PARENTSTOBE","type":"term","children":[]},
+      {"label":"People with long term conditions","code":"PPLLONGTERMCOND","type":"term","children":[]},
+      {"label":"Students and teachers","code":"STUDENTSANDTEACHERS","type":"term","children":[]},
+      {"label":"Women","code":"WOMEN","type":"term","children":[]},
+      {"label":"Young adults","code":"YOUNGADULTS","type":"term","children":[]}
+    ]
+  },
+  {
+    "label":"Region",
+    "code":"REGION",
+    "type":"vocabulary",
+    "description":"Region of subject matter",
+    "children":[
+      {"label":"East Midlands","code":"EASTMID","type":"term","children":[]},
+      {"label":"East of England","code":"EAST","type":"term","children":[]},
+      {"label":"London","code":"LONDON","type":"term","children":[]},
+      {"label":"North East","code":"NORTHEAST","type":"term","children":[]},
+      {"label":"North West","code":"NORTHWEST","type":"term","children":[]},
+      {"label":"South East","code":"SOUTHEAST","type":"term","children":[]},
+      {"label":"South West","code":"SOUTHWEST","type":"term","children":[]},
+      {"label":"West Midlands","code":"WESTMID","type":"term","children":[]},
+      {"label":"Yorkshire and Humber","code":"YORKSHIRE","type":"term","children":[]},
+      {"label":"Other","code":"OTHER","type":"term","children":[]}
+    ]
+  },
+  {
+    "label":"Language",
+    "code":"LANGUAGE",
+    "type":"vocabulary",
+    "description":"Available languages",
+    "children":[
+      {"label":"Arabic","code":"ARABIC","type":"term","children":[]},
+      {"label":"Bengali","code":"BENGALI","type":"term","children":[]},
+      {"label":"Cantonese","code":"CANTON","type":"term","children":[]},
+      {"label":"French","code":"FRENCH","type":"term","children":[]},
+      {"label":"German","code":"GERMAN","type":"term","children":[]},
+      {"label":"Gujarati","code":"GUJARATI","type":"term","children":[]},
+      {"label":"Hindi","code":"HINDI","type":"term","children":[]},
+      {"label":"Italian","code":"ITALIAN","type":"term","children":[]},
+      {"label":"Kurdish","code":"KURDISH","type":"term","children":[]},
+      {"label":"Polish","code":"POLISH","type":"term","children":[]},
+      {"label":"Punjabi","code":"PUNJABI","type":"term","children":[]},
+      {"label":"Romani","code":"ROMANI","type":"term","children":[]},
+      {"label":"Slovakian","code":"SLOVAK","type":"term","children":[]},
+      {"label":"Somali","code":"SOMALI","type":"term","children":[]},
+      {"label":"Kurdish","code":"KURDISH","type":"term","children":[]},
+      {"label":"Tagalog","code":"TAGALOG","type":"term","children":[]},
+      {"label":"Tamil","code":"TAMIL","type":"term","children":[]},
+      {"label":"Traditional Chinese","code":"TRADCHIN","type":"term","children":[]},
+      {"label":"Turkish","code":"TURKISH","URDU":"term","children":[]},
+      {"label":"Urdu","code":"TAMIL","URDU":"term","children":[]},
+      {"label":"Yiddish","code":"YIDDISH","type":"term","children":[]}
+    ]
+  },
+  {
+    "label":"Profession",
+    "code":"PROF",
+    "type":"vocabulary",
+    "description":"Who will use or distribute the resource to its target audience",
+    "children":[
+      {"label":"Commercial partner","code":"COMMPARTNER","type":"term","children":[]},
+      {"label":"GP","code":"GP","type":"term","children":[]},
+      {"label":"Healthcare professional","code":"HEALTHPROF","type":"term","children":[]},
+      {"label":"Local authority","code":"LOCALAUTHORITY","type":"term","children":[]},
+      {"label":"Local Health Champion","code":"LOCHEALTHCHAMP","type":"term","children":[]},
+      {"label":"NHS partner","code":"NHSPART","type":"term","children":[]},
+      {"label":"Pharmacist","code":"PHARM","type":"term","children":[]},
+      {"label":"PR and comms teams","code":"PRCOMMSTEAMS","type":"term","children":[]},
+      {"label":"Teacher","code":"TEACHER","type":"term","children":[]}
+    ]
+  },
+  {
+    "label":"Alternative format",
+    "code":"ALTERNATIVEFORMAT",
+    "type":"vocabulary",
+    "description":"",
+    "children":[
+      {"label":"Braille","code":"BRAILLE","type":"term","children":[]},
+      {"label":"British Sign Language","code":"BRITISHSIGNLANGUAGE","type":"term","children":[]},
+      {"label":"Easy read","code":"EASYREAD","type":"term","children":[]},
+      {"label":"Large print","code":"LARGEPRINT","type":"term","children":[]}
+    ]
+  },
+  {
+    "label":"Resource type",
+    "code":"TYPE",
+    "type":"vocabulary",
+    "description":"Resource type",
+    "children":[
+      {"label":"Brand assets and guidelines","code":"BRANDASSETSANDGUIDELINES","type":"term","children":[]},
+      {"label":"Campaign overview","code":"CAMPAIGNOVERVIEW","type":"term","children":[]},
+      {"label":"Campaign toolkit","code":"TOOLKIT","type":"term","children":[]},
+      {"label":"Comms toolkit","code":"COMMSTOOLKIT","type":"term","children":[]},
+      {"label":"Digital assets and ads","code":"DIGITALASSETSANDADD","type":"term","children":[]},
+      {"label":"Email","code":"EMAIL","type":"term","children":[]},
+      {"label":"Events and stores","code":"EVENTS AND STORES","type":"term","children":[]},
+      {"label":"GP and pharmacy toolkit","code":"GPANDPHARMACYTOOLKIT","type":"term","children":[]},
+      {"label":"Out Of Home","code":"OUTOFHOME","type":"term","children":[]},
+      {"label":"Print advertising","code":"PRINTADVERT","type":"term","children":[]},
+      {"label":"Radio advertising","code":"RADIOADVERTISING","type":"term","children":[]},
+      {"label":"Social media","code":"SOCIALMEDIA","type":"term","children":[]},
+      {"label":"Video","code":"VIDEO","type":"term","children":[]}
+    ]
+  }
+]

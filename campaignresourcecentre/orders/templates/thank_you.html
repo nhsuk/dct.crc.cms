@@ -1,0 +1,32 @@
+{% extends "base_page.html" %}
+{% block title %}Order placed{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+        </div>
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-7">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Your order has been placed</h1>
+                <p>Thank you for ordering resources through the Campaign Resource Centre</p>
+                <p>Order number: {{order_number}}</p>
+                <p>You can review and track your orders in your <a href="/account">account</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

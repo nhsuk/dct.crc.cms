@@ -1,0 +1,119 @@
+{% extends "base_page.html" %}
+{% load dict_lookup %}
+{% block title %}Newsletter preferences{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-width-container govuk-!-padding-bottom-2">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third side-bar">
+            <p><strong>Manage your account</strong></p>
+                <nav class="side-nav">
+                    <ul>
+                        <li><a href="/account">Account details</a></li>
+                        <li><a href=".">Newsletter preferences</a></li>
+                        <li><a href="/account/orders">Order history</a></li>
+                        <li><a href="/logout">Sign out</a></li>
+                    </ul>
+                </nav>
+        </div>
+        <div class="govuk-grid-column-two-thirds tablet-view">
+            <form method="POST" class="form-group" novalidate id="preferences">
+                <h1 class="govuk-heading-xl">Newsletter preferences</h1>
+                <p>Choose what topics you would like to receive emails about and be first to find out about new resources.</p>
+
+                {% csrf_token %}
+                
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-!-font-size-24">What age groups do you work with?</h2>
+                        </legend>
+                        <div class="govuk-hint">Select all that apply</div>
+                        <div class="govuk-checkboxes">
+                            {% for field in form%}
+                            {% if field.field.widget.attrs|get:"data-group"  == "ages"%}
+                            <div class="govuk-checkboxes__item">
+                                {{field}}
+
+                                <label class="govuk-label govuk-checkboxes__label"
+                                    for="{{ field.id_for_label }}">{{field.label}}</label>
+                            </div>
+                            {%endif%}
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-!-font-size-24">What themes do you want to hear about?</h2>
+                        </legend>
+                        <div class="govuk-hint">Select all that apply</div>
+                        <div class="govuk-checkboxes">
+                            {% for field in form%}
+                            {% if field.field.widget.attrs|get:"data-group"  == "themes"%}
+
+                            <div class="govuk-checkboxes__item">
+                                {{field}}
+
+                                <label class="govuk-label govuk-checkboxes__label"
+                                    for="{{ field.id_for_label }}">{{field.label}}</label>
+                            </div>
+                            {%endif%}
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-!-font-size-24">What health subjects do you want to know about?</h2>
+                        </legend>
+                        <div class="govuk-checkboxes">
+                        <div class="govuk-hint">Select all that apply</div>
+                            {% for field in form%}
+                            {% if field.field.widget.attrs|get:"data-group"  == "subjects"%}
+                            <div class="govuk-checkboxes__item">
+                                {{field}}
+                                <label class="govuk-label govuk-checkboxes__label"
+                                    for="{{ field.id_for_label }}">{{field.label}}</label>
+                            </div>
+                            {%endif%}
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                </div>
+
+                <p><strong>Want to unsubscribe?</strong> Untick all checkboxes to opt out of newsletter emails.</p>
+
+                <div class="govuk-form-group">
+                    <button class="govuk-button primary-button" data-module="govuk-button">Update newsletter preferences</button>
+                </div>
+            </form>
+        </div>
+    </div>  
+</div>
+
+
+
+{% endblock %}

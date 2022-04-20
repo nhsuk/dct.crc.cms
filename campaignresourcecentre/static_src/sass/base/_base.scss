@@ -1,0 +1,115 @@
+/* stylelint-disable */
+
+// Box Sizing
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+// Prevent text size change on orientation change.
+html {
+    font-family: $main--font;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }
+
+body {
+    overflow-x: hidden;
+    background-color: $white;
+    scroll-behavior: smooth;
+
+    @media (prefers-reduced-motion: reduce) {
+        scroll-behavior: auto;
+    }
+
+    &.no-scroll {
+        overflow-y: hidden;
+    }
+}
+
+// Prevent empty space below images appearing
+img,
+svg {
+    vertical-align: top;
+}
+
+// Responsive images
+img {
+    height: auto;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+h1 {
+    &.govuk-heading-xl, &.govuk-fieldset__heading, &.govuk-heading-l {
+        color: $teal;
+        font-family: $main--font;
+        margin-bottom: 30px;
+        padding-top: 15px;
+    }
+}
+
+.govuk-heading-l, .govuk-heading-m, .govuk-heading-s {
+    font-family: $main--font;
+}
+
+h2, h3 {
+ margin-bottom: 15px;   
+}
+
+h4 {
+    margin-bottom: 20px;
+}
+
+a {
+    color: $blue;
+    text-decoration: underline;
+    transition: color $transition;
+
+    &:hover {
+        color: $link-hover-blue;
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-thickness: .1875rem;
+        text-underline-offset: .1em;
+    }
+
+    &:focus {
+        background-color: $focus;
+        color: $black;
+        text-decoration: none;
+    }
+}
+
+ul, ol {
+    margin-left: 0;
+
+    li {
+        list-style: outside disc;
+    }
+}
+
+ol {
+    li {
+        list-style: outside decimal;
+    }
+}

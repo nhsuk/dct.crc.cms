@@ -1,0 +1,242 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags navigation_tags reading_time_tags static %}
+{% block title %}Contact us{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+        <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-2">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+            <form method="POST" action="/contact-us/" class="form-group" novalidate id="contactus" autocomplete="off">
+                {% if form.non_field_errors or form.errors %}
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        {% if error != "Enter a valid email address." %}
+                                            <li>
+                                                <a href="#{{field.id_for_label}}">{{error}}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>
+                                        <a href="#signin">{{error}}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">Contact us</h1>
+                        </legend>
+
+                        <div class="rich-text">
+                            <p>Please send us a message by completing the form below and we will respond to you within 10 working days.</p>
+                        </div>
+
+                        {% csrf_token %}
+                        <div class="govuk-form-group {% if form.first_name.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.first_name.id_for_label }}">First name</label>
+                            {% if form.first_name.errors %}
+                                <p id="first_name-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.first_name.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.last_name.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.last_name.id_for_label }}">Last name</label>
+                            {% if form.last_name.errors %}
+                                <p id="last_name-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.last_name.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.last_name }}
+                        </div>
+
+                        <div id="job" class="govuk-form-group {% if form.job_title.errors or form.non_field_errors %}govuk-form-group--error{% endif %}" >
+                            <label class="govuk-label" for="{{ form.job_title.id_for_label }}">Job function</label>
+                            {% if form.job_title.errors %}
+                                <p id="job_title-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.job_title.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.job_title }}
+                        </div>
+
+                        <div id="organisation" class="govuk-form-group {% if form.organisation.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.organisation.id_for_label }}">Organisation name <span class="govuk-hint" id="no-js">Leave blank if student, unemployed or retired</span></label>
+                            {% if form.organisation.errors %}
+                                <p id="organisation_name-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.organisation.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.organisation }}
+                        </div>
+
+                        <div id="organisationKind" class="govuk-form-group {% if form.organisation_type.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.organisation_type.id_for_label }}">What kind of organisation are you? <span class="govuk-hint" id="non-js">Leave blank if student, unemployed or retired</span></label>
+                            {% if form.organisation_type.errors %}
+                                <p id="organisation__type-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.organisation_type.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.organisation_type }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.email.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.email.id_for_label }}">Email address</label>
+                            {% if form.email.errors %}
+                                <p id="email-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.email.errors %}
+                                        {% if error != "Enter a valid email address." %}
+                                            {{ error}}
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.email }}
+                        </div>
+
+                        <div id="support_campaign" class="govuk-form-group ">
+                            <label class="govuk-label" for="{{ form.healthy_behaviour.id_for_label }}">Which healthy behaviour or campaign do you want to support? (Optional)</label>
+                            {{ form.healthy_behaviour }}
+                        </div>
+
+                        <div id="other_campaign" class="govuk-form-group {% if form.other_campaign.errors or form.non_field_errors %}govuk-form-group--error{% endif %}" >
+                            <label class="govuk-label" for="{{ form.other_campaign.id_for_label }}">Other</label>
+                            {% if form.other_campaign.errors %}
+                                <p id="other_campaign-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.other_campaign.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.other_campaign }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.audience.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.audience.id_for_label }}">Who is the audience that you’re trying to help lead a healthier life?</label>
+                            {% if form.audience.errors %}
+                                <p id="audience-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.audience.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.audience }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.engage_audience.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.engage_audience.id_for_label }}">How do you plan to engage this audience?</label>
+                            {% if form.engage_audience.errors %}
+                                <p id="engage_audience-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.engage_audience.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.engage_audience }}
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="{{ form.product_service.id_for_label }}">If relevant, what is the product or service that you want to promote? (Optional)</label>
+                            {{ form.product_service }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.message.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.message.id_for_label }}">Message</label>
+                            {% if form.message.errors %}
+                                <p id="message-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.message.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.message }}
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <button class="govuk-button primary-button" data-module="govuk-button">Submit</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hintJS = document.getElementById("no-js");
+            const hint = document.getElementById("non-js");
+            hintJS.classList.add("govuk-visually-hidden");
+            hint.classList.add("govuk-visually-hidden");
+        }, false);
+
+        function hideSelect() {
+            const element = document.getElementById("other_campaign");
+            const inputElement = document.getElementById("id_other_campaign");
+            const orgElement = document.getElementById("organisation");
+            const orgKindElement = document.getElementById("organisationKind");
+
+            if (document.getElementById('id_healthy_behaviour').value === 'other') {
+                element.classList.remove("govuk-visually-hidden");
+                inputElement.disabled = false;
+            } else {
+                element.classList.add("govuk-visually-hidden");
+                inputElement.disabled = true;
+            }
+            
+            if (document.getElementById('id_job_title').value === 'student') {
+                orgElement.classList.add("govuk-visually-hidden");
+                orgKindElement.classList.add("govuk-visually-hidden");
+            } else {
+                orgElement.classList.remove("govuk-visually-hidden");
+                orgKindElement.classList.remove("govuk-visually-hidden");
+            }
+        }
+        hideSelect();
+    </script>
+{% endblock %}

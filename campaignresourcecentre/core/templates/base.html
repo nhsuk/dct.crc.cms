@@ -1,0 +1,124 @@
+{% load static wagtailuserbar wagtailcore_tags wagtailimages_tags navigation_tags util_tags wagtailaccessibility_tags %}
+{% tota11y %}
+{% wagtail_site as current_site %}
+{% load adobe_analytics %}
+{% load get_django_setting %}
+{% load page_tags %}
+{% load crc_breadcrumb %}
+<!doctype html>
+<html lang="en-GB">
+    <head>
+        {# TODO fallbacks if page is not defined e.g. for 404 page #}
+        <meta charset="utf-8" />
+        {% block parent_page_title %}
+            {% get_parent as parent_title %}
+            <title>{% block title %}{{ self.seo_title|default:self.title }}{% endblock %} | {% if parent_title is not None %} {{ parent_title }} {% endif %}</title>
+        {% endblock %}
+        <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}{{ page.listing_summary }}{% endif %}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {% comment %}
+            Set "noindex" if the site is not being requested on a configured
+            domain to prevent search engines crawling admin domains.
+            This ignores ports for simplicity.
+        {% endcomment %}
+        {% if SEO_NOINDEX or request.get_host != current_site.hostname %}
+            <meta name="robots" content="noindex">
+        {%else%}
+            <link rel="canonical" href="{{ CANONICAL_PATH }}" />
+        {% endif %}
+
+        {% block meta_tags %}{% endblock %}
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+        {% block extra_css %}{% endblock %}
+
+        {% include "molecules/hotjar_script/hotjar-script.html" %}
+
+        <script src="{% get_django_setting "COOKIE_CONSENT_CAMPAIGNS" %}" defer></script>
+
+        <script type="application/javascript">{{ request.path|add_adobe_analytics }}</script>
+
+        <script src="{% get_django_setting "ADOBE_TRACKING_URL" %}" type="text/plain"
+            data-cookieconsent="statistics" async></script>
+
+        <noscript>
+            <style>
+                .noscript-suppress {display: none};
+                .script-initial-hide {visibility: hidden};
+            </style>
+        </noscript>
+
+        <script>
+            window.CRC_SETTINGS = {};
+            window.CRC_SETTINGS.CAMPAIGNS_EVENT_API_ENDPOINT = "{% get_django_setting "CAMPAIGNS_EVENT_API_ENDPOINT" %}";
+        </script>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                refresh_summary();
+            });
+            function refresh_summary() {
+                const session_summary = document.querySelector ("#session_summary");
+                if (session_summary) {
+                    const xhttp_ss = new XMLHttpRequest();
+                    xhttp_ss.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            session_summary.outerHTML = this.responseText;
+                            const hiddenElement = session_summary.querySelector (".script-initial-hide")
+                            if (hiddenElement) {
+                                hiddenElement.classList.remove ("script-initial-hide");
+                            } 
+                        }
+                    }
+                    xhttp_ss.open("GET", "/session/summary");
+                    xhttp_ss.send();
+                }
+            }
+        </script>
+    </head>
+
+    <body class="{% block body_class %}template-{{ page.get_verbose_name|slugify }}{% endblock %}">
+        <!--
+            Gov.uk template js intializer
+        -->
+        <script>
+            document.body.classList.add('js-enabled');
+        </script>
+
+        {% block body_top %}{% endblock %}
+
+        {% include "atoms/sprites/sprites.html" %}
+
+        {% wagtailuserbar %}
+
+        {% include "molecules/skip-link/skip-link.html" %}
+
+        {% block header %}{% endblock %}
+
+        {% block breadcrumbs %}
+            {% crc_breadcrumb %}
+        {% endblock %}
+
+        {% include "molecules/beta_banner/beta-banner.html" %}
+
+        <main class="govuk-main-wrapper" id="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        {% block footer %}{% endblock %}
+
+        <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/nhsuk.js' %}"></script>
+        <script src="{% static 'js/event.js' %}" type="text/javascript"></script>
+
+        {# block extra_js %}{% endblock #}
+    </body>
+</html>
+

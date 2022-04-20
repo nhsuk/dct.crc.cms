@@ -1,0 +1,27 @@
+.section {
+    &--main {
+        max-width: $wrapper--small;
+
+        &:only-child {
+            margin: 0 auto;
+        }
+    }
+}
+
+.app-section {
+    padding-top: 32px;
+    padding-bottom: 8px;
+    &--grey {
+    background-color: $grey;
+    }
+    &--white {
+    background-color: $white;
+    }
+    &:last-child {
+        padding-bottom: 20px;
+        @media (min-width: 40.0625em) {
+            padding-bottom: 48px;
+        }
+    }
+}
+

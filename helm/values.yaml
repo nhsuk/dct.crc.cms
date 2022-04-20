@@ -1,0 +1,60 @@
+labelName: crc-v3
+labelOwner: digital-campaigns
+labelCostCode: campaigns
+labelType: ns
+labelOrg: dct
+
+imagePullPolicy: Always
+imageName: nhsuk.azurecr.io/dct/crc-v3
+redisImageName: redis:5.0.3-alpine
+imageTag: review-aks-deploy
+
+namespace: ""
+hostName: ""
+appName: "crc-v3"
+appEnv: ""
+secretKeyBase: ''
+appFramework: 'wagtail'
+appPort: 8000
+hostUrlPaths:
+  - '/crc-django-admin'
+  - '/crc-admin'
+  - '/crc-documents'
+  - '/crc-search'
+  - '/'
+  - '/static'
+intHostUrlPaths:
+  - '/crc-django-admin'
+  - '/crc-admin'
+  - '/crc-documents'
+  - '/crc-search'
+  - '/'
+  - '/static'
+webInitializer: 'true'
+webDeployment: 'true'
+redisDeployment: 'true'
+frontendDeployment: 'true'
+  # deploymentNonRootUser: 'true'
+  # initializerNonRootUser: 'false'
+
+# Autoscale configuration. Set autoscale config only for stag and prod.
+autoscaleEnv: "int"
+replicaCount: 1
+averageUtilization: 90
+minReplicas: 1
+maxReplicas: 7
+
+# Container configuration for staging and production.
+requestscpu: 600m
+requestsmemory: 700Mi
+limitsmemory: 1Gi
+limitscpu:  1000m
+
+database:
+  dbHost: ""
+  dbName: ""
+  dbUsername: ""
+  dbPasswd: ""
+  dbAzure: ""
+
+instanaApiKey:

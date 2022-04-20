@@ -1,0 +1,4 @@
+{% load wagtailcore_tags %}{% pageurl page as item_url %}
+<a class=" {{ nav_type }}" href="{{ item_url }}">
+    {{ title|default:page.title }}
+</a>

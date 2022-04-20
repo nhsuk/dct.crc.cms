@@ -1,0 +1,31 @@
+.side-bar {
+    padding-top: 25px;
+
+    @media (max-width: 48.0525em) {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    @media (max-width: 40.0525em) {
+        padding-top: 0;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+
+    .side-nav {
+        ul {
+            margin-left: 0;
+            padding-left: 0;
+
+            li {
+                font-size: 1rem;
+                list-style: none;
+            }
+        }
+        
+    }
+}

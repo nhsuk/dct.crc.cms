@@ -1,0 +1,167 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags wagtailimages_tags chunks_tags json_lookup %}
+{% load page_tags %}
+{% load wagtailcore_tags wagtailimages_tags%}
+
+{% block parent_page_title %}
+    {% get_parent as parent_title %}
+    <title>
+        {% block title %}
+            {{ self.seo_title|default:self.title }}
+        {% endblock %}
+        {% if page.get_verbose_name == "Campaign page" %}
+            | {{ parent_title }} {%endif%} | Campaign Resource Centre 
+    </title>
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-6">{{ page.title }}</h1>
+            </div>
+        </div>
+    </div>
+    <section class="app-section app-section--white govuk-!-padding-top-0">
+        <div class="govuk-width-container">
+
+            {% comment %}
+            Example outputs for page hero fields
+            {% endcomment %}
+            <div class="govuk-grid-row govuk-!-margin-bottom-6">
+                <div class="intro-card">
+                    <div class="govuk-grid-column-one-half no-padding">
+                        {% image page.image width-800 alt=page.image_alt_text %}
+                    </div>
+
+                    <div class="govuk-grid-column-one-half govuk-!-padding-left-5 govuk-!-padding-right-5 govuk-!-padding-top-4 govuk-!-padding-bottom-4 content">
+                        {{ page.description|richtext }}
+                    </div>
+                </div>
+            </div>
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    {% comment %}
+                        Example outputs for campaign details
+                    {% endcomment %}
+                    <h2>Campaign details</h2>
+                    {% if page.related_website %}
+                        <p><strong>Related website</strong><br/>
+                        <a href="{{ page.related_website }}">{{ page.related_website }}</a></p>
+                    {% endif %}
+
+                    <p class="govuk-!-margin-top-5 govuk-!-margin-bottom-0"><strong>Target audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</p>
+                    <p><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</p>
+
+                    {% comment %}
+                        Example outputs for campaign details
+                    {% endcomment %}
+                    <div class="govuk-!-padding-bottom-5">
+                        {% for detail_block in details %}
+                            {% include_block detail_block %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% block body %}
+        {% for block in page.body %}
+            {% if block.block_type != 'section' %}
+            <div class="govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                    {% include_block block %}
+                    </div>
+                </div>
+            </div>
+            {%else%}
+                {% include_block block %}
+            {%endif%}
+
+        {% endfor %}
+    {% endblock %}
+
+
+    {% if sub_campaigns %}
+    <section class="app-section app-section--grey">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <h2>{{ page.title }} campaigns</h2>
+                    <ul class="nhsuk-grid-row nhsuk-card-group">
+                        {% for sub_campaign in sub_campaigns %}
+                            <li class="nhsuk-grid-column-one-half nhsuk-card-group__item">
+                                <div class="nhsuk-card image-card nhsuk-card--clickable ">
+                                    <a class="image-card" href="{{ sub_campaign.url }}">
+                                        {% image sub_campaign.image width-800 alt=sub_campaign.image_alt_text %}
+                                        <div class="nhsuk-card__content ">
+                                            <h3 class="nhsuk-card__heading nhsuk-card__link">{{ sub_campaign.title }}</h3>
+                                            {{ sub_campaign.summary|safe }}
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+        
+    <section class="app-section app-section{% if sub_campaigns %}--white{% else %}--grey{% endif%}">
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row resources related-resources">
+                {% if resources %}
+                    <div class="govuk-grid-column-full">
+                        <h2>Related resources</h2>
+                    </div>
+                
+                    {% for item in resources|chunks:2 %}
+                        <div class="govuk-grid-column-full">
+                            <div class="govuk-grid-row resource-list">
+                            {% for resource in item %}
+                                <div class="govuk-grid-column-one-half flex-resource">
+                                    <div class="resource-panel related">
+                                        <a href="{{ resource.url }}">
+                                            <div class="govuk-grid-row">
+                                                <div class="govuk-grid-column-one-half mobile-panel">
+                                                    <div class="left-panel">
+                                                        {% if resource.image %}
+                                                            {% image resource.image width-200 as resource_image %}
+                                                            <img src="{{ resource_image.url }}" width="{{ resource_image.width }}" height="{{ resource_image.height }}"  alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="right-panel hidden-desktop">
+                                                        <h3>{{ resource.title }}</h3>
+                                                        <p>{{ resource.summary|safe }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="govuk-grid-column-one-half">
+                                                    <div class="hidden-mobile">
+                                                        <h3>{{ resource.title }}</h3>
+                                                        <p>{{ resource.summary|safe }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>        
+        </div>
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
+                    <p>Page last reviewed: {{ page.last_reviewed|date:"j F Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,43 @@
+.feature-panel {
+    background: $teal-tint;
+    position: relative;
+    width: 100%;
+    padding: 0;
+    display: block;
+    margin-bottom: 48px;
+}
+
+@media (min-width: 40.0625em) {
+    .feature-panel {
+        .feature-panel__image {
+            padding-right: 0;
+        }
+    }
+}
+
+.feature-panel__content {
+    padding: 24px;
+    position: relative;
+
+    ul, ol {
+        margin-left: 0;
+    }
+}
+
+.feature-panel__content>:first-child {
+    margin-top: 0;
+   }
+
+.feature-panel__content>:last-child {
+    margin-bottom: 0;
+}
+
+@media (min-width: 40.0625em) {
+    .feature-panel__content {
+     padding: 32px;
+    }
+}
+
+.feature-panel__heading {
+ margin-bottom: 16px;
+}

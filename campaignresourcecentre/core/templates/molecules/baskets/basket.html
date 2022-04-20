@@ -1,0 +1,22 @@
+<form data-title="{{item.title}}" id="update_quantity-{{ item.id }}" action="/baskets/change_item_quantity/" method="POST" aria-label="Change item quantity" onsubmit="return formValidation(this.id)">
+    {% csrf_token %}
+    <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h3 class="govuk-!-font-size-19">Order quantity: {{ item.quantity }}
+            <span>Maximum order quantity: {{ item.max_quantity }}</span></h3>
+        </legend>
+
+        <div class="govuk-form-group" id="addToBasketGroup-item-{{ item.id}}">
+            <label class="govuk-label govuk-visually-hidden" for="item-{{ item.id}}">
+                Order quantity
+            </label>
+            <p id="error-item-{{ item.id}}" class="govuk-error-message govuk-!-display-none">
+                <span class="govuk-visually-hidden">Error:</span> Enter a quantity
+            </p>
+            <input required="true" class="govuk-input govuk-input--width-4" placeholder="0" type="number" name="order_quantity" value="1" min="1" max="{{ item.max_quantity }}" aria-describedby="id-{{ item.id }}" id="item-{{ item.id}}" aria-label="Quantity">
+            <input type="hidden" name="item_id" value="{{ item.id }}">
+            <button name="add-to-basket" class="govuk-button secondary-button" aria-describedby="id-{{ item.id }}">Update basket</button>
+                <p class="basket-info govuk-visually-hidden" aria-live="polite">{{ item.quantity }} {{item.title}} item{% if item.quantity > 1 %}s{% endif %} in your basket</p>
+        </div>
+    </fieldset>
+</form>

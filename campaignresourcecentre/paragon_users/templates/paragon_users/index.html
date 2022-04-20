@@ -1,0 +1,23 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% block titletag %}CRC Users{% endblock %}
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        window.headerSearch = {
+            url: "{% url 'paragon_users:index' %}",
+            termInput: "#id_q",
+            targetOutput: "#user-results"
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% include "wagtailadmin/shared/header.html" with title="CRC Users" icon="user" search_url="paragon_users:index" %}
+
+    <div class="nice-padding">
+        <div id="user-results" class="users">
+            {% include "paragon_users/results.html" %}
+        </div>
+    </div>
+{% endblock %}
