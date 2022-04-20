@@ -7,6 +7,7 @@ trigger:
     include:
     - 'review/*'
     - 'refs/tags/*'
+    - 'main'
 
 parameters:
 - name: debug
@@ -74,7 +75,7 @@ stages:
         reportformat: 'json'
 - stage: Build
   displayName: Build
-  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   jobs:
   - job: buildReview
     displayName: 'Build Review'
@@ -87,7 +88,7 @@ stages:
         tag: $(tag)
   - job: buildIntegration
     displayName: 'Build Integration'
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     variables:
       tag: 'latest'
     steps:
@@ -106,7 +107,7 @@ stages:
 - stage: Deploy
   displayName: 'Deploy'
   dependsOn: Build
-  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   jobs:
   - job: deployReview
     displayName: 'Deploy Review'
@@ -163,7 +164,7 @@ stages:
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
   - job: deployIntegration
     displayName: 'Deploy Integration'
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     variables:
       environmentName: 'integration'
       namespace: 'dct-crc-v3-ns'

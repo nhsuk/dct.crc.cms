@@ -193,7 +193,7 @@ jobs:
         done
       fi
 
-      # Get Master pod details
+      # Get main pod details
       master_pod=`kubectl get pods -n $(NAMESPACE) | grep jmeter-master | awk '{print $1}'`
 
       # Get the basic file name for JMX and custom JMX properties without file path
