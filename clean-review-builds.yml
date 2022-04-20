@@ -1,0 +1,44 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    exclude:
+    - refs/tags/*
+    - refs/heads/review/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth-dct.campaigns-cms'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az aks get-credentials --admin --name nhsuk-platforms-aks-dev-uksouth --resource-group nhsuk-platforms-rg-dev-uksouth
+      PREFIX="crc-v3-review-"
+
+      ALL_K8S_NAMESPACES=$(kubectl get ns --no-headers | grep "^$PREFIX" | awk '{print $1}')
+
+      # For each namespace, make sure the git branch still exists. If not, delete the namespace
+      for namespace in $ALL_K8S_NAMESPACES; do
+          # Remove the prefix and postfix from namespace to just get the review name
+          REVIEW_NAME=$(echo $namespace | sed 's/dct-campaigns-cms-review-\(.*\)-ns$/\1/')
+          NAME_EDIT=${REVIEW_NAME#"${PREFIX}"}
+          BRANCH_NAME="$(echo $NAME_EDIT | sed 's/-ns$//g')"
+
+          git show-ref --verify --quiet "refs/remotes/origin/review/$BRANCH_NAME"
+          if [[ $? -eq 1 ]]; then
+              echo $(kubectl delete namespace $namespace)
+              echo "Deleted namespase: $namespace"
+          else
+             echo "Branch 'review/$BRANCH_NAME' exists!"
+          fi
+      done

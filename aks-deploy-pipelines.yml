@@ -1,3 +1,13 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - 'review/*'
+    - 'refs/tags/*'
+
 parameters:
 - name: debug
   displayName: Debug (forced false in production)
@@ -23,19 +33,9 @@ parameters:
   displayName: Update Azure search (forced true in staging and production)
   type: boolean
   default: false
-trigger:
-  batch: true
-  branches:
-    include:
-    - 'review/*'
-    - 'refs/tags/*'
-    - '*'
 
 resources:
 - repo: self
-
-pool:
-  vmImage: 'ubuntu-latest'
 
 variables:
   sourceBranchName: '$(Build.SourceBranchName)'

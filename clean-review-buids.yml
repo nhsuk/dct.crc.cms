@@ -4,6 +4,9 @@ pool:
 trigger:
 - master
 
+trigger:
+- master
+
 steps:
 - task: AzureCLI@2
   inputs:
