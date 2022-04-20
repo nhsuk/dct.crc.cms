@@ -2,12 +2,8 @@ pool:
   vmImage: 'ubuntu-latest'
 trigger:
   branches:
-    exclude:
-    - refs/*
-pr:
-  branches:
     include:
-    - main
+    - "refs/pull/*/head"
 
 stages:
 - stage: Test
