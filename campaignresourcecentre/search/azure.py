@@ -399,7 +399,7 @@ class AzureSearchBackend(BaseSearchBackend):
     def _create_azure_search_url_and_query(
         self, search_value, fields_queryset, facets_queryset, sort_by
     ):
-        query_string = "search={}&api-version={}".format(
+        query_string = "search={}&api-version={}&searchMode=all".format(
             search_value, settings.AZURE_SEARCH["API_VERSION"]
         )
         filters = self._get_filters_from_fields(fields_queryset)
