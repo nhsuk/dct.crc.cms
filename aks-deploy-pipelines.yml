@@ -29,7 +29,6 @@ trigger:
     include:
     - 'review/*'
     - 'refs/tags/*'
-    - '*'
 
 resources:
 - repo: self
