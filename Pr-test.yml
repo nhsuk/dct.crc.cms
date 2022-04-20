@@ -1,11 +1,10 @@
 pool:
   vmImage: 'ubuntu-latest'
 
-trigger:
-  batch: true
+pr:
   branches:
     include:
-    - '*'
+    - main
 
 stages:
 - stage: Test
