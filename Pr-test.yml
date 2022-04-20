@@ -29,3 +29,4 @@ stages:
         configfile: '$(Build.SourcesDirectory)/.gitleaks.toml'
         redact: false
         reportformat: 'json'
+        
