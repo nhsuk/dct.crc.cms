@@ -1,3 +1,6 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
 parameters:
 - name: debug
   displayName: Debug (forced false in production)
@@ -32,9 +35,6 @@ trigger:
 
 resources:
 - repo: self
-
-pool:
-  vmImage: 'ubuntu-latest'
 
 variables:
   sourceBranchName: '$(Build.SourceBranchName)'
