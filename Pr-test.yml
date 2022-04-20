@@ -1,6 +1,9 @@
 pool:
   vmImage: 'ubuntu-latest'
-
+trigger:
+  branches:
+    exclude:
+    - "*"
 pr:
   branches:
     include:
@@ -29,4 +32,3 @@ stages:
         configfile: '$(Build.SourcesDirectory)/.gitleaks.toml'
         redact: false
         reportformat: 'json'
-        
