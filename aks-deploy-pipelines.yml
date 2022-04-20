@@ -7,7 +7,7 @@ trigger:
     include:
     - 'review/*'
     - 'refs/tags/*'
-    - 'main'
+    - 'main' 
 
 parameters:
 - name: debug
