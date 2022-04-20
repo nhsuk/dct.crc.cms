@@ -1,7 +1,7 @@
 site_name: Campaign Resource Centre
 repo_url: https://dev.azure.com/nhsuk/_git/dct.campaign-resource-centre-v3
 site_url:
-edit_uri: 'edit/master/docs/'
+edit_uri: 'edit/main/docs/'
 
 repo_name: Gitlab
 dev_addr: 0.0.0.0:8001

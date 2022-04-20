@@ -261,11 +261,11 @@ Git tag format for versions is `<Major>.<Minor>.<Patch>`
 
 Format: eg:`01.00.00`
 
-Main integration branch is `master`
+Main integration branch is `main`
 
 ## Developing features
 
-- Branch of from `master` to start working on a new feature:
+- Branch of from `main` to start working on a new feature:
 
 ```
 git checkout -b feature/<feature-name>
@@ -279,10 +279,10 @@ git push -u origin feature/<feature-name>
 
 - Create a merge request on Azure Dev. You can do so using Web UI by loggin into https://dev.azure.com/nhsuk/_git/dct.oneyou-cms/pullrequests.
 
-- Once approved by your peer merge. Either merge it from web UI or rebase your branch into master from dev environment:
+- Once approved by your peer merge. Either merge it from web UI or rebase your branch into main from dev environment:
 
 ```
-git checkout master
+git checkout main
 ```
 
 ```
@@ -296,7 +296,7 @@ git push
 
 - Close the PR and delete the feature branch.
 
-During a release if any features are merged into master branch, minor number in the version should be incremented.
+During a release if any features are merged into main branch, minor number in the version should be incremented.
 
 ### Endpoints
 
@@ -311,7 +311,7 @@ If you require your deployment to have non-default pipeline parameters as seen a
 
 ### Bug fixes
 
-- Branch of from master using `fix` prefix
+- Branch of from main using `fix` prefix
 
 ```
 git checkout -b fix/<fix-name>
@@ -325,7 +325,7 @@ git push -u origin fix/<fix-name>
 
 - Create a merge request on Azure Dev. You can do so using Web UI by loggin into https://dev.azure.com/nhsuk/_git/dct.oneyou-cms/pullrequests.
 
-- Once approved by your peer merge. Either merge it from web UI or rebase your branch into master from dev environment:
+- Once approved by your peer merge. Either merge it from web UI or rebase your branch into main from dev environment:
 
 ```
 git checkout master
@@ -342,7 +342,7 @@ git push
 
 - Close the PR and delete the fix branch.
 
-During a release if `master` only contains fixes, patch number should be incremented in the version. If there are any features merged in minor should be incremented instead.
+During a release if `main` only contains fixes, patch number should be incremented in the version. If there are any features merged in minor should be incremented instead.
 
 These are used for tracking status of and deploying to the related environments.
 
@@ -350,7 +350,7 @@ These are used for tracking status of and deploying to the related environments.
 
 Review branch is used if developers needs to review the feature/fix change on cloud deployed instance. In this case create review branch using `review/` prefix.
 
-- Branch of from master using `review/` prefix
+- Branch of from main using `review/` prefix
 
 ```
 git checkout -b review/<fix-name>
