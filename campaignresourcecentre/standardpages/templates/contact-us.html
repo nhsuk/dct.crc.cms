@@ -30,7 +30,7 @@
                             <ul class="govuk-list govuk-error-summary__list">
                                 {% for field in form %}
                                     {% for error in field.errors %}
-                                        {% if error != "Enter a valid email address." %}
+                                        {% if error != "Enter a valid email address" %}
                                             <li>
                                                 <a href="#{{field.id_for_label}}">{{error}}</a>
                                             </li>
@@ -127,7 +127,7 @@
                                 <p id="email-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.email.errors %}
-                                        {% if error != "Enter a valid email address." %}
+                                        {% if error != "Enter a valid email address" %}
                                             {{ error}}
                                         {% endif %}
                                     {% endfor %}
