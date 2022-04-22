@@ -4,15 +4,7 @@
 #     #   contents: read
 #     #   id-token: write
 
-  
-  #   # Builds and pushes an image up to your Azure Container Registry
-  #   - name: Build and push image to ACR
-  #     run: |
-  #       echo $GITHUB_HEAD_REF
-    #     az acr build \
-    #     --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:review-${{ github.sha }} \
-    #     --registry ${{ env.AZURE_CONTAINER_REGISTRY }} \
-    #     -g ${{ env.RESOURCE_GROUP }} .
+
 
 # #     # # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
 # #     # - name: Get K8s context
