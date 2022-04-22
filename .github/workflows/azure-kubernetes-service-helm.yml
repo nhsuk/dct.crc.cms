@@ -50,45 +50,24 @@
 # #   CHART_OVERRIDE_PATH: "your-chart-override-path"
 
 jobs:
-  buildDeployment:
-    runs-on: ubuntu-latest
-    env:
-      Greeting: Hello
-    steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
-        id: extract_branch
-      - name: "Say Hello Mona it's Monday"
-        if: ${{ env.DAY_OF_WEEK == 'Monday' }}
-        run: echo "$Greeting $First_Name. Today is $DAY_OF_WEEK!"
-        env:
-          First_Name: Mona
+  build:
+    # permissions:
+    #   actions: read
+    #   contents: read
+    #   id-token: write
 
-# # jobs:
-#   # build:
-#   #   permissions:
-#   #     actions: read
-#   #     contents: read
-#   #     id-token: write
-      
-#   #   runs-on: ubuntu-latest
-#   #   steps:
-#   #   # Checks out the repository this file is in
-#   #   - name: Checkout repository (#1)
-#   #     uses: actions/checkout@v3
     
-#   #   # Logs in with your Azure credentials
-#   #   - name: Log in with Azure
-#   #     uses: azure/login@v1
-#   #     with:
-#   #       creds: '${{ secrets.AZURE_CREDENTIALS }}'
-#   #       enable-AzPSSession: true
+    # Logs in with your Azure credentials
+    - name: Log in with Azure
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        enable-AzPSSession: true
 
-#   #   - name: Extract branch name
-#   #     shell: bash
-#   #     run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
-#   #     id: extract_branch
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
+      id: extract_branch
 
 #   #   # Builds and pushes an image up to your Azure Container Registry
 #   #   - name: Build and push image to ACR
