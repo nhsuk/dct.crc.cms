@@ -30,7 +30,11 @@ jobs:
         echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
         sudo apt-get update
         sudo apt-get install azure-cli
-        az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+        # az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+    - name: 'Az CLI login'
+      uses: azure/login@v1.4.3
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: 'Build and push image to ACR'
       run: |
