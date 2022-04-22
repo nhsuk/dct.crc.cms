@@ -77,7 +77,7 @@ jobs:
       with:
         renderEngine: 'helm'
         helmChart: 'helm'
-        overrideFiles: ${{ env.CHART_OVERRIDE_PATH }}
+        overrideFiles: 'helm/values.yaml'
         overrides: |     
           replicas:2
         helm-version: 'latest' 
