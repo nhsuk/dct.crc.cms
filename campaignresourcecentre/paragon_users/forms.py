@@ -35,6 +35,21 @@ ROLE_CHOICES = (
     ("Uber", "Uber"),
 )
 
+# checks against a list of characters for a given form input, raises a form error
+class RestrictedListValidator:
+    CharRestrictedlist = ['"',';',':','*','?','<','>','{','}','[',']','(',')','^','$','\\','|','/','@','#','~','!','?','%','^','&','_','+','=']
+    FieldName="this field"
+    def __init__(self,fieldName):
+        if fieldName is not None:
+            self.FieldName = fieldName
+    def __call__(self,value):
+        for char in value:
+            if char in self.CharRestrictedlist:
+                raise forms.ValidationError(
+                    "The only special characters you can use in {} are a hyphen (-) and an apostrophe (')".format(self.FieldName),
+                    code='scharacter',
+                    params={'value':value}
+                )
 
 class RegisterForm(forms.Form):
 
@@ -48,6 +63,7 @@ class RegisterForm(forms.Form):
         ),
         required=True,
         error_messages={"required": "Enter your first name"},
+        validators=[RestrictedListValidator(fieldName="the first name field")]
     )
 
     last_name = forms.CharField(
@@ -60,6 +76,7 @@ class RegisterForm(forms.Form):
         ),
         required=True,
         error_messages={"required": "Enter your last name"},
+        validators=[RestrictedListValidator(fieldName="the last name field")]
     )
 
     job_title = forms.CharField(
@@ -99,6 +116,7 @@ class RegisterForm(forms.Form):
         ),
         required=False,
         error_messages={"required": "Enter your organisation name"},
+        validators=[RestrictedListValidator(fieldName="the organisation name field")]
     )
 
     postcode = forms.CharField(
@@ -275,6 +293,7 @@ class PasswordSetForm(forms.Form):
             }
         ),
         error_messages={"required": "Enter your password"},
+        validators=[validate_password_form],
         help_text="Password must contain at least one number, at least one capital letter and at least one symbol and must be more than 8 characters long.",  # noqa
     )
     password_check = forms.CharField(
@@ -536,3 +555,4 @@ class NewsLetterPreferencesForm(forms.Form):
         required=False,
         label="NHS and Social Care Flu Leads",
     )
+
