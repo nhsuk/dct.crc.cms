@@ -55,12 +55,11 @@ jobs:
     env:
       Greeting: Hello
     steps:
-      # Logs in with your Azure credentials
-      - name: Log in with Azure
-        uses: azure/login@v1
-        with:
-          creds: '${{ secrets.AZURE_CREDENTIALS }}'
-          enable-AzPSSession: true
+      # - name: Log in with Azure
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: '${{ secrets.AZURE_CREDENTIALS }}'
+      #     enable-AzPSSession: true
 
       - name: Extract branch name
         shell: bash
