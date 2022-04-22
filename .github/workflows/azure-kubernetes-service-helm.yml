@@ -60,12 +60,10 @@ jobs:
       #   with:
       #     creds: '${{ secrets.AZURE_CREDENTIALS }}'
       #     enable-AzPSSession: true
-
       - name: Extract branch name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
         id: extract_branch
-
       - name: "Say Hello Mona it's Monday"
         if: ${{ env.DAY_OF_WEEK == 'Monday' }}
         run: echo "$Greeting $First_Name. Today is $DAY_OF_WEEK!"
