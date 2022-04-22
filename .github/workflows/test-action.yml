@@ -1,0 +1,17 @@
+name: Node Continuous Integration
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'review/*'
+      - 'refs/tags/*'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: script
+      run: echo "My test!"
+      shell: bash
