@@ -49,21 +49,21 @@
 # #   CHART_PATH: "your-chart-path"
 # #   CHART_OVERRIDE_PATH: "your-chart-override-path"
 
-# jobs:
-#   buildDeployment:
-#     runs-on: ubuntu-latest
-#     env:
-#       Greeting: Hello
-#     steps:
-#       - name: Extract branch name
-#         shell: bash
-#         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
-#         id: extract_branch
-#       - name: "Say Hello Mona it's Monday"
-#         if: ${{ env.DAY_OF_WEEK == 'Monday' }}
-#         run: echo "$Greeting $First_Name. Today is $DAY_OF_WEEK!"
-#         env:
-#           First_Name: Mona
+jobs:
+  buildDeployment:
+    runs-on: ubuntu-latest
+    env:
+      Greeting: Hello
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
+        id: extract_branch
+      - name: "Say Hello Mona it's Monday"
+        if: ${{ env.DAY_OF_WEEK == 'Monday' }}
+        run: echo "$Greeting $First_Name. Today is $DAY_OF_WEEK!"
+        env:
+          First_Name: Mona
 
 # # jobs:
 #   # build:

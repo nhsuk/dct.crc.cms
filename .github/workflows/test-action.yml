@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: script
-      run: echo "My test!"
+    - name: 'Extract branch name'
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
       shell: bash
+      id: extract_branch
