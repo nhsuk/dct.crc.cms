@@ -59,7 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # Checks out the repository this file is in
-    - uses: actions/checkout@v3
+    - name: Checkout repository (#1)
+      uses: actions/checkout@v3
     
     # Logs in with your Azure credentials
     - name: Log in with Azure
