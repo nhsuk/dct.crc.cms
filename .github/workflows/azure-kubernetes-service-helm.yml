@@ -55,11 +55,6 @@ jobs:
     env:
       Greeting: Hello
     steps:
-      # - name: Log in with Azure
-      #   uses: azure/login@v1
-      #   with:
-      #     creds: '${{ secrets.AZURE_CREDENTIALS }}'
-      #     enable-AzPSSession: true
       - name: Extract branch name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/})"
