@@ -22,6 +22,7 @@ jobs:
       shell: bash
       id: extract_branch
 
+    # Install azure cli
     - name: 'Install Azure cli'
       run: |
         sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
@@ -31,23 +32,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install azure-cli
 
+    # Login with azure cli
     - name: 'Az CLI login'
       run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
-    - name: 'Build and push image to ACR'
-      run: |
-        echo $GITHUB_HEAD_REF
-        az acr build \
-        --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ secrets.CONTAINER_NAME }}:review-${{ github.sha }} \
-        --registry ${{ secrets.AZURE_CONTAINER_REGISTRY }} \
-        -g ${{ secrets.RESOURCE_GROUP }} .
+    # # Build and push docker image to Azure ACR
+    # - name: 'Build and push image to ACR'
+    #   run: |
+    #     echo $GITHUB_HEAD_REF
+    #     az acr build \
+    #     --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ secrets.CONTAINER_NAME }}:review-${{ github.sha }} \
+    #     --registry ${{ secrets.AZURE_CONTAINER_REGISTRY }} \
+    #     -g ${{ secrets.RESOURCE_GROUP }} .
 
+    # Get kubernetes context config
     - name: 'Get K8s context'
       uses: azure/aks-set-context@v2.0
       with:
         resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
         cluster-name: ${{ secrets.CLUSTER_NAME }}
 
+    # Get secrets for kubernetes deployment
     - name: 'Get ACR credentials'
       run: |
         az acr update -n ${{ secrets.AZURE_CONTAINER_REGISTRY }} -g ${{ secrets.RESOURCE_GROUP }} --admin-enabled true
