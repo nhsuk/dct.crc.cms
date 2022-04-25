@@ -1,4 +1,11 @@
-{% load wagtailcore_tags %}{% pageurl page as item_url %}
-<a class=" {{ nav_type }}" href="{{ item_url }}">
-    {{ title|default:page.title }}
-</a>
+{% load wagtailcore_tags %}
+{% if not url%}
+    {% pageurl page as item_url %}
+    <a class=" {{ nav_type }}" href="{{ item_url }}">
+        {{ title|default:page.title }}
+    </a>
+{% elif url%}
+    <a class=" {{ nav_type }}" href="{{ url }}">
+        {{ title }}
+    </a>
+{% endif %}
