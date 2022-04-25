@@ -6,10 +6,11 @@ from wagtail.core.fields import StreamField
 
 
 class LinkBlock(blocks.StructBlock):
-    page = blocks.PageChooserBlock()
+    page = blocks.PageChooserBlock(required=False)
     title = blocks.CharBlock(
-        help_text="Leave blank to use the page's own title", required=False
+        help_text="Leave blank to use the page's own title. Add title if using the URL approach", required=False
     )
+    url = blocks.CharBlock(help_text="Only use if page does not exist in CMS", required=False)
 
     class Meta:
         template = ("molecules/navigation/blocks/menu_item.html",)
