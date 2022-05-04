@@ -13,6 +13,8 @@ from .data_classes import (
 )
 from .exceptions import ParagonClientError
 
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ':ECDH+AES256:DH+AES256:!DH'
+
 
 class Client:
     def __init__(self):
@@ -114,7 +116,6 @@ class Client:
                 "code": self.response.status_code,
                 "content": json.loads(self.response.content),
             }
-            print ("Apparently logged in OK")
         else:
             self.raise_exception()
 
