@@ -203,7 +203,7 @@ stages:
       averageUtilization: 60
       paragonMock: ${{ parameters.paragonMock }}
       debug: ${{ parameters.debug }}
-      notifyDebug: ${{ parameters.notifyDebug }}
+      notifyDebug: false
       workers: ${{ parameters.workers }}
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: true
