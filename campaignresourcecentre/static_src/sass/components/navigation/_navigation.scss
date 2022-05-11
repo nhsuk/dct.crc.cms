@@ -6,6 +6,7 @@
     &.js-show {
         @media (max-width: 61.875em) {
             border-top: 0;
+            border-bottom: 0;
         }
     }
 
@@ -31,10 +32,9 @@
             }
 
             @media (max-width: 61.875em) {
-                display: inline-block;
+                display: block;
                 border-top: 0;
-                width: 49%;
-                padding: 6px 16px;
+                padding: 6px 0;
 
                 &:nth-child(3) {
                     padding-left: 0
@@ -57,12 +57,12 @@
                 }
 
                 @media (max-width: 61.875em) {
-                    display: inline-block;
+                    display: block;
                     color: $white;
                     padding: 0;
                     border-top: 0;
                     border-bottom: 0;
-                    font-size: 1rem;
+                    font-size: 1.188rem;
                 }
             }
         }
@@ -93,25 +93,39 @@
 
     @media (max-width: 61.875em) {
         border: 0;
-        background-image: url('../images/cssBackgrounds/menu-arrow.svg');
-        background-repeat: no-repeat;
-        background-position: right 15px;
-        padding: 7px 16px 7px 8px;
+        padding: 7px 3px;
 
-        &.is-active {
-            background-image: url('../images/cssBackgrounds/menu-arrow-up.svg');
+        &::before {
+            transform: translateY(-35%) rotate(45deg) scale(1);
+            border-bottom: 2px solid $white;
+            border-right: 2px solid $white;
+            content: "";
+            display: inline-block;
+            height: 8px;
+            margin: 0 10px 0 2px;
+            vertical-align: middle;
+            width: 8px;
+        }
+
+        &:active {
             background-color: transparent;
         }
 
-        &:focus {
-            background-color: $focus;
-            background-image: url('../images/cssBackgrounds/menu-arrow-down-black.svg');
-
-            &.is-active {
-                background-image: url('../images/cssBackgrounds/menu-arrow-up-black.svg');
+        &.is-active {
+            &:before {
+                transform: translateY(1px) rotate(225deg) scale(1);
             }
         }
+
+        &:focus {
+            background-color: transparent;
+            color: $white;
+            box-shadow: none;
+            border: 0 !important;
+        }
     }
+
+
 
     @media (max-width: 40.0525em) {
         right: 0;
