@@ -92,27 +92,35 @@
 
     @media (max-width: 61.875em) {
         border: 0;
-        background-image: url('../images/cssBackgrounds/menu-chevron-down-white.svg');
-        background-repeat: no-repeat;
-        background-position: left center;
-        padding: 7px 8px 7px 16px;
+        padding: 7px 3px;
+
+        &::before {
+            transform: translateY(-35%) rotate(45deg) scale(1);
+            border-bottom: 2px solid $white;
+            border-right: 2px solid $white;
+            content: "";
+            display: inline-block;
+            height: 8px;
+            margin: 0 10px 0 2px;
+            vertical-align: middle;
+            width: 8px;
+        }
 
         &.is-active {
-            background-image: url('../images/cssBackgrounds/menu-chevron-up-white.svg');
-            background-color: transparent;
-            padding: 7px 8px 11px 16px;
+            &:before {
+                transform: translateY(1px) rotate(225deg) scale(1);
+            }
         }
 
         &:focus {
-            background-color: $focus;
-            background-image: url('../images/cssBackgrounds/menu-chevron-down-black.svg');
-            padding: 7px 8px 7px 16px;
-
-            &.is-active {
-                background-image: url('../images/cssBackgrounds/menu-chevron-up-black.svg');
+            &::before {
+                border-bottom: 2px solid $black;
+                border-right: 2px solid $black;
             }
         }
     }
+
+
 
     @media (max-width: 40.0525em) {
         right: 0;
