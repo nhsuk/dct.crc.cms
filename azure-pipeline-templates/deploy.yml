@@ -107,6 +107,8 @@ steps:
           - '-c'
           - 'bash ./initializer-entrypoint.sh'
       " > helm/extra-values.yaml
+  - bash: |
+      cat helm/extra-values.yaml
   - task: HelmInstaller@1
     inputs:
       helmVersionToInstall: '3.2.0'
