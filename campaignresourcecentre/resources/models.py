@@ -1,6 +1,7 @@
 from datetime import datetime
 from collections import defaultdict
 import json
+from webbrowser import get
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -28,6 +29,7 @@ from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 from campaignresourcecentre.utils.models import BasePage
 from campaignresourcecentre.baskets.basket import Basket
+from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 
 
 class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
@@ -159,6 +161,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             logged_in=request.session.get('ParagonUser'),
             allowed=allowed,
             taxonomy_json=json_data,
+            topicsPresent=get_taxonomies(json_data, "TOPIC")
         )
         return context
 

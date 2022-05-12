@@ -49,7 +49,9 @@
                 <div class="govuk-grid-column-one-third no-padding resource-details">
                     <h2 class="govuk-heading-m">Resource details</h2>
                     <ul>
-                        <li class="govuk-!-margin-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</li>
+                        {% if topicsPresent %}
+                            <li class="govuk-!-margin-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</li>
+                        {% endif %}
                         <li class="govuk-!-margin-0"><strong>Target Audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
                         <li class="govuk-!-margin-0"><strong>Where to Use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
                         {# pages in draft won't have a first published date #}
