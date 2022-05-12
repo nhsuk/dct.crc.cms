@@ -1,5 +1,6 @@
 from django import forms
 from django.core.validators import EmailValidator, RegexValidator
+from django.utils.regex_helper import _lazy_re_compile
 
 from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
@@ -35,21 +36,17 @@ ROLE_CHOICES = (
     ("Uber", "Uber"),
 )
 
-# checks against a list of characters for a given form input, raises a form error
-class RestrictedListValidator:
-    CharRestrictedlist = ['"',';',':','*','?','<','>','{','}','[',']','(',')','^','$','\\','|','/','@','#','~','!','?','%','^','&','_','+','=']
-    FieldName="this field"
-    def __init__(self,fieldName):
+# uses regex to restrict usage of everything but a expression of allowed characters
+class SpecialCharacterRestrictionValidator(RegexValidator):
+    regex = "^[a-zA-Z0-9\\-' ]*$"
+    fieldName = "this field"
+    message = "The only special characters you can use in {} are a hyphen (-) and an apostrophe (')".format(fieldName)
+    def __init__(
+    self, fieldName
+    ):
         if fieldName is not None:
-            self.FieldName = fieldName
-    def __call__(self,value):
-        for char in value:
-            if char in self.CharRestrictedlist:
-                raise forms.ValidationError(
-                    "The only special characters you can use in {} are a hyphen (-) and an apostrophe (')".format(self.FieldName),
-                    code='scharacter',
-                    params={'value':value}
-                )
+            self.fieldName = fieldName
+        self.regex = _lazy_re_compile(self.regex, self.flags)
 
 class RegisterForm(forms.Form):
 
@@ -63,7 +60,7 @@ class RegisterForm(forms.Form):
         ),
         required=True,
         error_messages={"required": "Enter your first name"},
-        validators=[RestrictedListValidator(fieldName="the first name field")]
+        validators=[SpecialCharacterRestrictionValidator(fieldName="the first name field")]
     )
 
     last_name = forms.CharField(
@@ -76,7 +73,7 @@ class RegisterForm(forms.Form):
         ),
         required=True,
         error_messages={"required": "Enter your last name"},
-        validators=[RestrictedListValidator(fieldName="the last name field")]
+        validators=[SpecialCharacterRestrictionValidator(fieldName="the last name field")]
     )
 
     job_title = forms.CharField(
@@ -116,7 +113,7 @@ class RegisterForm(forms.Form):
         ),
         required=False,
         error_messages={"required": "Enter your organisation name"},
-        validators=[RestrictedListValidator(fieldName="the organisation name field")]
+        validators=[SpecialCharacterRestrictionValidator(fieldName="the organisation name field")]
     )
 
     postcode = forms.CharField(
