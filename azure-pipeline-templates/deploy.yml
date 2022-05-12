@@ -109,10 +109,6 @@ steps:
       " > helm/extra-values.yaml
   - bash: |
       cat helm/extra-values.yaml
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: helm/extra-values.yaml
-      artifactName: $(Agent.JobName)-extra-values.yaml
   - task: HelmInstaller@1
     inputs:
       helmVersionToInstall: '3.2.0'
