@@ -2,8 +2,7 @@
     {% csrf_token %}
     <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h4 class="govuk-!-font-size-19">Order this resource
-            <span>Maximum order quantity: {{ resource.maximum_order_quantity }}</span></h4>
+            <h4 class="govuk-!-font-size-19">Order this resource</h4>
         </legend>
 
         <div id="addToBasketGroup-resource-{{ resource.sku }}" class="govuk-form-group">
@@ -16,8 +15,9 @@
             <input class="govuk-input govuk-input--width-4" placeholder="1" value="1" required="true" type="number" name="order_quantity" min="1" max="{{ resource.maximum_order_quantity }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Quantity" id="resource-{{ resource.sku }}">
             <input type="hidden" name="sku" value="{{ resource.sku }}">
             <button name="Add to basket" aria-describedby="{{ resource.title|slugify }}" class="govuk-button primary-button">Add to basket</button>
+            <p class="govuk-!-font-size-16 max-order">Maximum order quantity: {{ resource.maximum_order_quantity }}</p>
             {% if resource.items_in_basket_count > 0 %}
-            <br><p class="basket-info" aria-live="polite">{{resource.items_in_basket_count}} item{% if resource.items_in_basket_count > 1 %}s{% endif %} added to <a href="/baskets/view_basket">your basket</a></p>
+            <p class="basket-info" aria-live="polite">{{resource.items_in_basket_count}} item{% if resource.items_in_basket_count > 1 %}s{% endif %} added to <a href="/baskets/view_basket">your basket</a></p>
             {% endif %}
         </div>
     </fieldset>
