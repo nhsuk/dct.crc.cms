@@ -120,10 +120,10 @@
          * Gets the topic if there is one.
          * If there is no topic, topic is "ALL".
          * Creates a string from the topic and sort by values.
-         * Removes the class of selected.
-         * Applies the class selected to the current link.
          * Creates a new XMLHttp request.
          * Outputs the HTML required for the requested campaigns.
+         * Removes the class of selected.
+         * Applies the class selected to the current link.
          */
         function renderTopic(e) {
             e.preventDefault();
@@ -139,23 +139,22 @@
                 filterTopic = "ALL";
             }
             topicQueryString += "topic=" + filterTopic + "&sort=" + sortBy;
-            
-            const campaigns = document.getElementById("campaigns");
-            for (let i=0; i<filters.length; i++) {
-                filters[i].classList.remove("selected");
-            }
-            this.classList.add("selected");
+
             const xhttp_topic = new XMLHttpRequest();
             xhttp_topic.onreadystatechange = function() {
                 if (this.readyState == 4){
                     if(this.status == 200) {
+                        const campaigns = document.getElementById("campaigns");
                         campaigns.outerHTML = this.responseText;
                     }
                 }
             }
+            for (let i=0; i<filters.length; i++) {
+                filters[i].classList.remove("selected");
+            }
+            this.classList.add("selected");
             xhttp_topic.open("GET", "/render_topic/?" + topicQueryString);
             xhttp_topic.send();
-            console.log("final topic query " + topicQueryString);
             return filterTopic;
         }
 
@@ -174,18 +173,18 @@
         function submit(element) {
             sortBy = element.value;
             const sortQueryString = "topic=" + filterTopic + "&sort=" + sortBy;
-            const topics = document.getElementById("campaigns");
+            
             const xhttp_sort = new XMLHttpRequest();
             xhttp_sort.onreadystatechange = function() {
                 if (this.readyState == 4){
                     if(this.status == 200) {
+                        const topics = document.getElementById("campaigns");
                         topics.outerHTML = this.responseText;
                     }
                 }
             }
             xhttp_sort.open("GET", "/render_topic/?" + sortQueryString);
             xhttp_sort.send();
-            console.log("final sort query " + sortQueryString);
             return sortBy;
         }
         
