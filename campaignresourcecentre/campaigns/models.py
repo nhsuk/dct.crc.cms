@@ -29,6 +29,7 @@ from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 from campaignresourcecentre.resources.models import ResourcePage
 from campaignresourcecentre.utils.models import BasePage, LinkFields
+from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 
 from .blocks import CampaignDetailsBlock, CampaignsPageBlocks, CommonBlocks
 import logging
@@ -407,6 +408,8 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             sub_campaigns=self.get_sub_campaigns(),
             resources=self.get_resources(user_role),
             taxonomy_json=json_data,
+            topics_present=get_taxonomies(json_data, "TOPIC"),
+            targaud_present=get_taxonomies(json_data, "TARGAUD"),
 
         )
         return context
