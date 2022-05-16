@@ -22,10 +22,10 @@
                                 <div class="taxonomy-tags__parent">Topic</div>
                                 {% for child in taxonomy.children %}
                                     {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
-                                        <div class="taxonomy-tags__child">
-                                            <strong aria-hidden="true" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="unCheckSubmitForm(this)">✕</strong>
+                                        <button class="taxonomy-tags__child" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
+                                            <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
                                             <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
-                                        </div>
+                                        </button>
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}    
@@ -46,10 +46,10 @@
                                         </label>
                                     </div>
                                     -->
-                                    <div class="taxonomy-tags__child">
-                                        <strong aria-hidden="true" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="unCheckSubmitForm(this)">✕</strong>
+                                    <button class="taxonomy-tags__child"        class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
+                                        <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
                                         <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
-                                    </div>
+                                    </button>
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}

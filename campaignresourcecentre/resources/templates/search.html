@@ -203,7 +203,9 @@
         function unCheckSubmitForm(elem) {
             const checkbox = document.getElementById(elem.getAttribute("value").toLowerCase());
             if(checkbox) {
+                const next = document.activeElement.nextElementSibling;
                 checkbox.click();
+                next.focus();
             } else {
                 //uncheck the filter item
                 const select = document.getElementById(elem.getAttribute("parent"));
