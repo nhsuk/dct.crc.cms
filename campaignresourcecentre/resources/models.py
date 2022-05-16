@@ -28,6 +28,7 @@ from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 from campaignresourcecentre.utils.models import BasePage
 from campaignresourcecentre.baskets.basket import Basket
+from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 
 
 class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
@@ -159,6 +160,9 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             logged_in=request.session.get('ParagonUser'),
             allowed=allowed,
             taxonomy_json=json_data,
+            topics_present=get_taxonomies(json_data, "TOPIC"),
+            targaud_present=get_taxonomies(json_data, "TARGAUD"),
+            type_present=get_taxonomies(json_data, "TYPE"),
         )
         return context
 
