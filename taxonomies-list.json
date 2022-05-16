@@ -9,7 +9,6 @@
       {"label":"Blood pressure","code":"BLOODPRESSURE","type":"term","children":[]},
       {"label":"Cancer","code":"CANCER","type":"term","children":[]},
       {"label":"Childhood health","code":"CHILDHOODHEALTH","type":"term","children":[]},
-      {"label":"Coronavirus","code":"COVID","type":"term","children":[]},
       {"label":"Dental health","code":"DENTAL","type":"term","children":[]},
       {"label":"Drinking less","code":"DRINKING","type":"term","children":[]},
       {"label":"Early diagnosis","code":"EARLYDIAG","type":"term","children":[]},
@@ -44,24 +43,6 @@
       {"label":"Students and teachers","code":"STUDENTSANDTEACHERS","type":"term","children":[]},
       {"label":"Women","code":"WOMEN","type":"term","children":[]},
       {"label":"Young adults","code":"YOUNGADULTS","type":"term","children":[]}
-    ]
-  },
-  {
-    "label":"Region",
-    "code":"REGION",
-    "type":"vocabulary",
-    "description":"Region of subject matter",
-    "children":[
-      {"label":"East Midlands","code":"EASTMID","type":"term","children":[]},
-      {"label":"East of England","code":"EAST","type":"term","children":[]},
-      {"label":"London","code":"LONDON","type":"term","children":[]},
-      {"label":"North East","code":"NORTHEAST","type":"term","children":[]},
-      {"label":"North West","code":"NORTHWEST","type":"term","children":[]},
-      {"label":"South East","code":"SOUTHEAST","type":"term","children":[]},
-      {"label":"South West","code":"SOUTHWEST","type":"term","children":[]},
-      {"label":"West Midlands","code":"WESTMID","type":"term","children":[]},
-      {"label":"Yorkshire and Humber","code":"YORKSHIRE","type":"term","children":[]},
-      {"label":"Other","code":"OTHER","type":"term","children":[]}
     ]
   },
   {
@@ -100,6 +81,7 @@
     "description":"Who will use or distribute the resource to its target audience",
     "children":[
       {"label":"Commercial partner","code":"COMMPARTNER","type":"term","children":[]},
+      {"label":"Dentist","code":"DENTIST","type":"term","children":[]},
       {"label":"GP","code":"GP","type":"term","children":[]},
       {"label":"Healthcare professional","code":"HEALTHPROF","type":"term","children":[]},
       {"label":"Local authority","code":"LOCALAUTHORITY","type":"term","children":[]},
@@ -116,6 +98,7 @@
     "type":"vocabulary",
     "description":"",
     "children":[
+      {"label":"Audio","code":"AUDIO","type":"term","children":[]},
       {"label":"Braille","code":"BRAILLE","type":"term","children":[]},
       {"label":"British Sign Language","code":"BRITISHSIGNLANGUAGE","type":"term","children":[]},
       {"label":"Easy read","code":"EASYREAD","type":"term","children":[]},
