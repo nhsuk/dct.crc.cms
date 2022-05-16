@@ -161,7 +161,9 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             logged_in=request.session.get('ParagonUser'),
             allowed=allowed,
             taxonomy_json=json_data,
-            topicsPresent=get_taxonomies(json_data, "TOPIC")
+            topicsPresent=get_taxonomies(json_data, "TOPIC"),
+            targaudPresent=get_taxonomies(json_data, "TARGAUD"),
+            typePresent=get_taxonomies(json_data, "TYPE"),
         )
         return context
 

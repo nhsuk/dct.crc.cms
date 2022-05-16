@@ -43,7 +43,6 @@
         <div class="govuk-width-container">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds resource-intro">
-                    <h2 class="govuk-heading-m">About this resource</h2>
                     {{ page.description|richtext }}
                 </div>
                 <div class="govuk-grid-column-one-third no-padding resource-details">
@@ -52,8 +51,12 @@
                         {% if topicsPresent %}
                             <li class="govuk-!-margin-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</li>
                         {% endif %}
-                        <li class="govuk-!-margin-0"><strong>Target Audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
-                        <li class="govuk-!-margin-0"><strong>Where to Use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
+                        {% if targaudPresent %}
+                            <li class="govuk-!-margin-0"><strong>Target Audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
+                        {% endif %}
+                        {% if typePresent %}
+                            <li class="govuk-!-margin-0"><strong>Where to Use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
+                        {% endif %}
                         {# pages in draft won't have a first published date #}
                         {% if page.first_published_at %}
                             <li class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</li>
@@ -62,13 +65,14 @@
                 </div>
             </div>
         </div>
+        
     </section>
     <section class="app-section app-section--grey govuk-!-padding-top-8">
         {% if resources %}
             <div class="govuk-width-container">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds">
-                        <h2 class="govuk-!-font-size-27">Available resources</h2>
+                        <h2 class="govuk-!-font-size-27">Resources</h2>
                     </div>
                 </div>
 
