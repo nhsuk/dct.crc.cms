@@ -1,7 +1,6 @@
 from datetime import datetime
 from collections import defaultdict
 import json
-from webbrowser import get
 from django.core.exceptions import ValidationError
 from django.db import models
 
