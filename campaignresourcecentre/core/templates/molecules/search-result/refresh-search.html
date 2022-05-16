@@ -1,4 +1,5 @@
 {% load filters %}
+{% load wagtailcore_tags %}
 
 <div class="govuk-grid-column-three-quarters" id="search-result">
     <div class="govuk-grid-column">
@@ -62,11 +63,11 @@
         </div>
     {% endif %}
 
-    <div class="govuk-form-group">
+    <div class="govuk-form-group" id="sort">
         <label class="govuk-label sort-by-label" for="sort">
             Sort by
         </label>
-        <select class="govuk-select" id="sort" name="sort" onchange="submitForm()">
+        <select class="govuk-select" id="sort" name="sort" onchange="submitSortby(this)">
             <option value="relevant" {% if sort == 'relevant'%}selected{% endif %}>Most relevant</option>
             <option value="newest" {% if sort == 'newest'%}selected{% endif %}>Newest</option>
             <option value="oldest" {% if sort == 'oldest'%}selected{% endif %}>Oldest</option>

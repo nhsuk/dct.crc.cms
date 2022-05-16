@@ -164,15 +164,28 @@
             document.getElementById("search-field").focus()
         }
 
+        /**
+         * Gets the search value from the form.
+         * Creates a query string from the search value.
+         * Creates a new XMLHttp request.
+         * Outputs the HTML required for the requested campaigns.
+         */
+
+        // Initialise default values
+        let sortBy = "";
+        let queryString = "";
+
         function submitForm() {
-            if("URLSearchParams" in window)
-            {
-                const queryString = new URLSearchParams(new FormData(document.getElementById("resource-filter-form"))).toString();
-                const searchForm = document.getElementById("search-result");
+            if("URLSearchParams" in window){
+                queryString = "";
+                const filterForm = document.getElementById("resource-filter-form");
+                queryString = new URLSearchParams(new FormData(filterForm)).toString();
+                queryString += "&sort=" + sortBy;
                 const xhttp_ss = new XMLHttpRequest();
                 xhttp_ss.onreadystatechange = function() {
                     if (this.readyState == 4){
                         if(this.status == 200) {
+                            const searchForm = document.getElementById("search-result");
                             searchForm.outerHTML = this.responseText;
                         }
                     }
@@ -184,6 +197,7 @@
                 const button = document.getElementById("filter-search");
                 button.click();
             }
+            return queryString;
         }
 
         function unCheckSubmitForm(elem) {
@@ -198,6 +212,40 @@
                 //resubmit the filter
                 submitForm();
             }
+        }
+
+
+        /**
+         * Gets the sort by value from the drop down list.
+         * Creates a query string.
+         * Creates a new XMLHttp request.
+         * Outputs the HTML required for the requested campaigns.
+         */
+         function submitSortby(element) {
+            sortBy = element.value;
+            // Check if query string has a value, set to current URL query if not.
+            if(!queryString) {
+                url = window.location.href;
+                queryString = url.split('?')[1];
+            }
+            // Check if query string already includes sort value, remove sort value if it does.
+            if(queryString.includes("&sort=")) {
+                const querySplit = queryString.split("&sort=")[0];
+                queryString = querySplit;
+            }
+            const sortQueryString = queryString + "&sort=" + sortBy;
+            const xhttp_sort = new XMLHttpRequest();
+            xhttp_sort.onreadystatechange = function() {
+                if (this.readyState == 4){
+                    if(this.status == 200) {
+                        const topics = document.getElementById("search-result");
+                        topics.outerHTML = this.responseText;
+                    }
+                }
+            }
+            xhttp_sort.open("GET", "/render_search/?" + sortQueryString);
+            xhttp_sort.send();
+            return sortBy;
         }
     </script>
 {% endblock %}
