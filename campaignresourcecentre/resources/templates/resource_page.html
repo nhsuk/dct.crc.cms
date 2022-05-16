@@ -48,13 +48,13 @@
                 <div class="govuk-grid-column-one-third no-padding resource-details">
                     <h2 class="govuk-heading-m">Resource details</h2>
                     <ul>
-                        {% if topicsPresent %}
+                        {% if topics_present %}
                             <li class="govuk-!-margin-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</li>
                         {% endif %}
-                        {% if targaudPresent %}
+                        {% if targaud_present %}
                             <li class="govuk-!-margin-0"><strong>Target audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
                         {% endif %}
-                        {% if typePresent %}
+                        {% if type_present %}
                             <li class="govuk-!-margin-0"><strong>Where to use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
                         {% endif %}
                         {# pages in draft won't have a first published date #}
