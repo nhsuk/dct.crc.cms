@@ -61,6 +61,9 @@
                         {% if page.first_published_at %}
                             <li class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</li>
                         {% endif %}
+                        {% if page.last_reviewed %}
+                            <li><strong>Page last reviewed:</strong> {{ page.last_reviewed|date:"j F Y" }}</li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -134,13 +137,6 @@
             {% endfor %}
             </div>
         {% endif %}
-            <div class="govuk-width-container">
-                <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
-                        <p>Page last reviewed: {{ page.last_reviewed|date:"j F Y" }}</p>
-                    </div>
-                </div>
-            </div>
     
     {% block extra_js %}
         {% include "static/form_validation.html" %}

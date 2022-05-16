@@ -50,8 +50,18 @@
                         <a href="{{ page.related_website }}">{{ page.related_website }}</a></p>
                     {% endif %}
 
-                    <p class="govuk-!-margin-top-5 govuk-!-margin-bottom-0"><strong>Target audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</p>
-                    <p><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</p>
+                    {% if targaud_present %}
+                        <p class="govuk-!-margin-top-5 govuk-!-margin-bottom-0"><strong>Target audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</p>
+                    {% endif %}
+                    {% if topics_present %}
+                        <p class="govuk-!-margin-bottom-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</p>
+                    {% endif %}
+                    {% if page.first_published_at %}
+                        <p class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</p>
+                    {% endif %}
+                    {% if page.last_reviewed %}
+                        <p><strong>Page last reviewed:</strong> {{ page.last_reviewed|date:"j F Y" }}</p>
+                    {% endif %}
 
                     {% comment %}
                         Example outputs for campaign details
