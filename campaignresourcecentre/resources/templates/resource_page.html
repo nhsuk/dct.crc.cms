@@ -52,10 +52,10 @@
                             <li class="govuk-!-margin-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</li>
                         {% endif %}
                         {% if targaudPresent %}
-                            <li class="govuk-!-margin-0"><strong>Target Audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
+                            <li class="govuk-!-margin-0"><strong>Target audience: </strong> {% get_taxonomies taxonomy_json "TARGAUD" %}</li>
                         {% endif %}
                         {% if typePresent %}
-                            <li class="govuk-!-margin-0"><strong>Where to Use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
+                            <li class="govuk-!-margin-0"><strong>Where to use:</strong> {% get_taxonomies taxonomy_json "TYPE" %}</li>
                         {% endif %}
                         {# pages in draft won't have a first published date #}
                         {% if page.first_published_at %}
