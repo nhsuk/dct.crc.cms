@@ -100,6 +100,9 @@ INSTALLED_APPS = [
     "pattern_library",
     "wagtailaccessibility",
     "wagtailreacttaxonomy",
+    'wagtail_2fa',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
 
 
@@ -119,6 +122,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'wagtail_2fa.middleware.VerifyUserMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
@@ -718,3 +722,5 @@ CAMPAIGN_HUB_PAGE_FILTERS = [
 
 PHE_PARTNERSHIPS_EMAIL = env.get("PHE_PARTNERSHIPS_EMAIL")
 
+# forces users to use 2fa flow
+WAGTAIL_2FA_REQUIRED = True
