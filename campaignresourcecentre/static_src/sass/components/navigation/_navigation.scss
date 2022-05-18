@@ -49,6 +49,7 @@
                 &:hover {
                     text-decoration: underline;
                     background-color: $hover-blue;
+                    display: inline-block;
                 }
 
                 &:focus {
@@ -57,7 +58,7 @@
                 }
 
                 @media (max-width: 61.875em) {
-                    display: block;
+                    display: inline-block;
                     color: $white;
                     padding: 0;
                     border-top: 0;
