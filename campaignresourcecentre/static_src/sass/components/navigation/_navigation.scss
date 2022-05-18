@@ -115,6 +115,8 @@
             &:before {
                 transform: translateY(1px) rotate(225deg) scale(1);
             }
+
+            background-color: transparent;
         }
 
         &:focus {
@@ -122,6 +124,10 @@
             color: $white;
             box-shadow: none;
             border: 0 !important;
+        }
+
+        &:hover {
+            background-color: transparent;
         }
     }
 
