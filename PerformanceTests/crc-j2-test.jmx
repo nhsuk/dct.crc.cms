@@ -56,7 +56,7 @@
           
           <elementProp name="JMETER_JMX_CSV" elementType="Argument">
             <stringProp name="Argument.name">JMETER_JMX_CSV</stringProp>
-            <stringProp name="Argument.value">crcv3_user_emails.csv</stringProp>
+            <stringProp name="Argument.value">jmeter.csv</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
