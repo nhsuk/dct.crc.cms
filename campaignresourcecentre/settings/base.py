@@ -694,10 +694,16 @@ AZURE_SEARCH = {
     "FACETS": env.get("AZURE_SEARCH_FACETS"),
 }
 
+# session settings
+
 # Enabled so that the user is logged out once the browser is closed.
 # Can be overidden per session. See:
 # https://docs.djangoproject.com/en/3.2/topics/http/sessions/#browser-length-sessions-vs-persistent-sessions
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# renews session after every request
+SESSION_SAVE_EVERY_REQUEST = True
+# expires cookies after 30 mins
+SESSION_COOKIE_AGE = 1800
 
 CAMPAIGNS_FROM_AZ = getenv_bool("CAMPAIGNS_FROM_AZ", True)
 # Events tracking
