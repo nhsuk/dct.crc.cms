@@ -121,10 +121,15 @@
         }
 
         &:focus {
-            background-color: transparent;
-            color: $white;
+            background-color: $focus;
+            color: $black;
             box-shadow: none;
             border: 0 !important;
+
+            &:before {
+                border-bottom: 2px solid $black;
+                border-right: 2px solid $black;
+            }
         }
 
         &:hover {
