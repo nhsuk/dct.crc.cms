@@ -1,4 +1,5 @@
 from datetime import date
+from logging import getLogger
 from urllib.parse import quote
 
 from django.shortcuts import redirect, render
@@ -12,6 +13,7 @@ from campaignresourcecentre.paragon_users.decorators import (
     paragon_user_logged_in,
     paragon_user_logged_out,
 )
+from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_region
 
 from .forms import (
     LoginForm,
@@ -25,6 +27,7 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
+logger = getLogger(__name__)
 
 def ParseError(error):
     error_dict = {
@@ -33,7 +36,7 @@ def ParseError(error):
             "Account for this email address already exists",
         ],
         "Email address not valid": ["email", "Email address is not valid"],
-        "Password must be at least 6 characters an contain a number": [
+        "Password must be at least 6 characters and contain a number": [
             "password",
             "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol",
         ],
@@ -57,12 +60,19 @@ def signup(request):
             organisation.required = True
             job_title.required = True
 
+        postcode = f.data["postcode"]
+        try:
+            postcode_region = get_postcode_region (postcode)
+        except Exception as e:
+            logger.warn ("Failed to verify postcode '%s' (%s)", postcode, e)
+            f.add_error ("postcode", "Postcode '%s' not recognised" % postcode)
+
         if f.is_valid():
             email = f.cleaned_data.get("email")
             password = f.cleaned_data.get("password")
             first_name = f.cleaned_data.get("first_name")
             last_name = f.cleaned_data.get("last_name")
-            postcode = f.cleaned_data.get("postcode")
+
             if f.cleaned_data.get("job_title") == "health":
                 job_title = f.cleaned_data.get("area_work")
             else:
