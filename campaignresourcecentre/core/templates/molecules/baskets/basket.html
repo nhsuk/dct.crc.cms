@@ -2,7 +2,13 @@
     {% csrf_token %}
     <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h3 class="govuk-!-font-size-19">Order quantity</h3>
+            <h3 class="govuk-!-font-size-19 govuk-!-display-inline-block govuk-!-padding-right-4">Order quantity</h3>
+            <input required="true" class="govuk-input govuk-input--width-4" placeholder="0" type="number" name="order_quantity" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" aria-describedby="id-{{ item.id }}" id="item-{{ item.id}}" aria-label="Quantity">
+            <input type="hidden" name="item_id" value="{{ item.id }}">
+            <button name="add-to-basket" class="link-only update-basket govuk-!-padding-left-4 govuk-!-font-size-19" aria-describedby="id-{{ item.id }}">Update</button>
+            {% if item.updated == True %}
+                <p class="govuk-!-font-size-16 govuk-!-font-weight-regular govuk-!-padding-top-2" aria-live="polite">Quantity has been updated</p>
+            {% endif %}
         </legend>
 
         <div class="govuk-form-group" id="addToBasketGroup-item-{{ item.id}}">
@@ -12,11 +18,7 @@
             <p id="error-item-{{ item.id}}" class="govuk-error-message govuk-!-display-none">
                 <span class="govuk-visually-hidden">Error:</span> Enter a quantity
             </p>
-            <input required="true" class="govuk-input govuk-input--width-4" placeholder="0" type="number" name="order_quantity" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" aria-describedby="id-{{ item.id }}" id="item-{{ item.id}}" aria-label="Quantity">
-            <input type="hidden" name="item_id" value="{{ item.id }}">
-            <button name="add-to-basket" class="govuk-button secondary-button" aria-describedby="id-{{ item.id }}">Update</button>
-            <p class="govuk-!-font-size-16 max-order">Maximum order quantity: {{ item.max_quantity }}</p>
-                <p class="basket-info govuk-visually-hidden" aria-live="polite">{{ item.quantity }} {{item.title}} item{% if item.quantity > 1 %}s{% endif %} in your basket</p>
+            <p class="basket-info govuk-visually-hidden" aria-live="polite">{{ item.quantity }} {{item.title}} item{% if item.quantity > 1 %}s{% endif %} in your basket</p>
         </div>
     </fieldset>
 </form>

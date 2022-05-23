@@ -239,6 +239,16 @@
                 color: $dark-grey;
                 margin-bottom: 15px;
             }
+
+            .update-basket {
+                @media (max-width: 61.875em) {
+                    padding-left: 0 !important;
+                }
+
+                @media (max-width: 48.0525em) {
+                    padding-left: 20px !important;
+                }
+            }
         }
     }
 }
