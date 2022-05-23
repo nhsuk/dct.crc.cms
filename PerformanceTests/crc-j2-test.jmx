@@ -64,7 +64,7 @@
       </Arguments><hashTree/><CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"/>
-        <stringProp name="filename">${JMETER_JMX_CSV}</stringProp>
+        <stringProp name="filename">jmeter.csv</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <boolProp name="recycle">true</boolProp>
