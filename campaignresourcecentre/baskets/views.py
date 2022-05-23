@@ -84,6 +84,7 @@ def _change_item_quantity(request):
         "id": item_id,
         "quantity": quantity,
         "max_quantity": max_quantity,
+        "updated": True,
     }
 
 @require_http_methods(["POST"])
