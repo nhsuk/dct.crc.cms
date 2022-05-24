@@ -1,7 +1,7 @@
 <form data-title="{{item.title}}" id="update_quantity-{{ item.id }}" action="/baskets/change_item_quantity/" method="POST" aria-label="Change item quantity" onsubmit="return formValidation(this.id)">
     {% csrf_token %}
     <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l full-width">
             <h3 class="govuk-!-font-size-19 govuk-!-display-inline-block govuk-!-padding-right-4">Order quantity</h3>
             <input required="true" class="govuk-input govuk-input--width-4" placeholder="0" type="number" name="order_quantity" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" aria-describedby="id-{{ item.id }}" id="item-{{ item.id}}" aria-label="Quantity">
             <input type="hidden" name="item_id" value="{{ item.id }}">
