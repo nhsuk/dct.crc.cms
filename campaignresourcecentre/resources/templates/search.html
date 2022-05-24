@@ -192,6 +192,8 @@
                 }
                 xhttp_ss.open("GET", "/render_search/?" + queryString);
                 xhttp_ss.send();
+                // Update the URL in the browser window to match the search.
+                window.history.pushState({}, '', '?' + queryString);
             }
             else {
                 const button = document.getElementById("filter-search");
@@ -222,6 +224,7 @@
          * Creates a query string.
          * Creates a new XMLHttp request.
          * Outputs the HTML required for the requested campaigns.
+         * Update the URL in the browser window.
          */
          function submitSortby(element) {
             sortBy = element.value;
@@ -247,6 +250,8 @@
             }
             xhttp_sort.open("GET", "/render_search/?" + sortQueryString);
             xhttp_sort.send();
+            // Update the URL in the browser window to match the search.
+            window.history.pushState({}, '', '?' +  sortQueryString);
             return sortBy;
         }
     </script>
