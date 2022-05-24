@@ -318,18 +318,19 @@ def password_reset(request):
         {"form": password_reset_form},
     )
 
-
-@paragon_user_logged_out
 def password_set(request):
     if request.GET.get("q"):
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning
         try:
             user_token = unsign(request.GET.get("q"), max_age=86400)
-        except:  # noqa
+        except Exception as e:  # noqa
+            logger.warn ("Failed to unsign user token: %s" % e)
             return redirect("/")
         # Check if the user token returns a profile to authenticate it
-        if paragon_client.get_user_profile(user_token)["code"] == 200:
+        user_profile = paragon_client.get_user_profile(user_token)
+        status = user_profile.get ("code")
+        if status == 200:
             if request.method == "POST":
                 password_set_form = PasswordSetForm(request.POST)
 
@@ -375,6 +376,10 @@ def password_set(request):
             return render(
                 request, "users/password_set.html", {"form": password_set_form}
             )
+        else:
+            logger.error ("Paragon API returned status code %d", status)
+    else:
+        logger.warn ("Password set requested without user token")
     return redirect("/")
 
 
