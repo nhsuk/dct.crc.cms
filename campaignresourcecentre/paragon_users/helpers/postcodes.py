@@ -3,7 +3,7 @@ import requests
 
 def get_postcode_region(postcode):
 
-    API_URL = "http://api.postcodes.io/postcodes?q="
+    API_URL = "https://api.postcodes.io/postcodes?q="
 
     data = requests.get(API_URL + postcode)
     if data.status_code != 200:
