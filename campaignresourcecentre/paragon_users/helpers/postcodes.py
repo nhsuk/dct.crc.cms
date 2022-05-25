@@ -5,7 +5,7 @@ def get_postcode_region(postcode):
 
     API_URL = "https://api.postcodes.io/postcodes?q="
 
-    data = requests.get(API_URL + postcode)
+    data = requests.get(API_URL + requests.utils.quote(postcode, safe=''))
     if data.status_code != 200:
         raise Exception ("Postcode request failed %s (%s)" % (data.status_code, data.text))
 
