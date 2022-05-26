@@ -268,7 +268,7 @@ class AzureSearchBackend(BaseSearchBackend):
     Accepted
     """
 
-    def azure_search(self, search_value, fields_queryset, facets_queryset, sort_by,results_per_page):
+    def azure_search(self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page):
         url = self._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
@@ -397,7 +397,7 @@ class AzureSearchBackend(BaseSearchBackend):
                 logger.info ("Search resource deletion noted for {} using {}".format(resource.id, url))
 
     def _create_azure_search_url_and_query(
-        self, search_value, fields_queryset, facets_queryset, sort_by,results_per_page
+        self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
     ):
         query_string = "search={}&api-version={}&searchMode=all".format(
             search_value, settings.AZURE_SEARCH["API_VERSION"]
