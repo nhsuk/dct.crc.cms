@@ -410,7 +410,7 @@ class AzureSearchBackend(BaseSearchBackend):
             sort_query_string = "&$orderby={}{}".format(
                 settings.AZURE_SEARCH["PREFIX"], sort_by
             )
-        top = "$top=" + results_per_page
+        top = "&$top=" + results_per_page
         query_string = query_string + filters_query_string + sort_query_string + top
         return "{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string)
 
