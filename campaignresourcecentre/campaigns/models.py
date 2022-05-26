@@ -128,6 +128,7 @@ class CampaignHubPage(BasePage):
         search_value = ""
         fields_queryset = {"objecttype": "campaign"}
         facets_queryset = {}
+        results_per_page = "50"
         if topic and topic != "ALL":
             facets_queryset["TOPIC"] = topic
         sort_by = None
@@ -136,7 +137,7 @@ class CampaignHubPage(BasePage):
         elif sort == "newest":
             sort_by = "last_published_at desc"
         response = search.azure_search(
-            search_value, fields_queryset, facets_queryset, sort_by
+            search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         campaigns = []
         try:
