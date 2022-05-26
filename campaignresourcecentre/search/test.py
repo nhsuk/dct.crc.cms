@@ -42,7 +42,7 @@ class TestAzureSearchBackend(TestCase):
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
         results_per_page = "1000"
-        expected = "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&searchMode=all&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&$orderby=content/resource/title asc" # noqa
+        expected = "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&searchMode=all&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&$orderby=content/resource/title asc$top=1000" # noqa
         url = self.azure_search._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
