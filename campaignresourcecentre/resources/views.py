@@ -25,6 +25,7 @@ def _search(request):
     ]
     search_query = query_string.get("q", "")
     sort = query_string.get("sort")
+    results_per_page = "1000"
     search_results = []
     search_value = ""
 
@@ -47,7 +48,7 @@ def _search(request):
         sort_by = "last_published_at desc"
 
     response = search.azure_search(
-        search_value, fields_queryset, facets_queryset, sort_by
+        search_value, fields_queryset, facets_queryset, sort_by, results_per_page
     )
 
     resources = []
