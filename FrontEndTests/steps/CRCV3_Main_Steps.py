@@ -220,7 +220,6 @@ def Register_problem_list_page(context):
         assert_that(any(error in s for s in actual_Register_error_list), equal_to(True),
                     f"error link as not as expected: {error}")
 
-
 @Step("I browsed to Change4life resource campaign")
 def Change4Life_link(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
@@ -236,6 +235,23 @@ def BH_Start4Life(context):
 def Betterhealth_link(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.Latest_Updates_links("Betterhealth")
+
+@Step("I browsed to Cervical Screening resource campaign")
+def Cervical_screening_link(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.Latest_Updates_links("Cervical_Screening")
+
+@Step("I browsed to We Are Undefeatable resource campaign")
+def Cervical_screening_link(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.Latest_Updates_links("We_Are_Undefeatable")
+
+
+@Step("I browsed to Better Health Local Authority Tier 2 Adult Weight Management Programme resource campaign")
+def Cervical_screening_link(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.Latest_Updates_links("Better_Health_Local_Authority_Tier_2")
+
 
 def Close_window(context, option):
     if option == "refresh":

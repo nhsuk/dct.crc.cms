@@ -22,15 +22,15 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-003
+  @CRCV3-003 @wip
   Scenario Outline: open CRCV3 site and login with email and password
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
     Then I enter your details of "<email>" "<password>"
     Then I sign in
      Examples:
-      | email            | password        |
-      | qie@qie.com    | aDmin_c_11!     |
+      | email          | password        |
+      | qie1@qie12.com    | aDmin_c_11!     |
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
 
@@ -63,7 +63,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | qie@qie9.com      |
     Then verify forgot password confirmation message
 
-  @CRCV3-006
+  @CRCV3-006 @wip
   Scenario Outline: open CRCV3 site and register a user with all fields entered correctly
     Given I loaded CRCV3 site to load the home page
     When I click on Register link where register page loaded with all fields displayed
@@ -71,7 +71,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     #Then I Register
      Examples:
       | FirstName   | LastName      | Org_Name      | Postcode      | Email          | Password     |
-      | Jim         | Smith         | NHS Digital   | SL109LS       | qie1@qie12.com | aDmin_c_11!  |
+      | Jim         | Smith         | NHS Digital   | SL109LH       | qie1@qie14.com | aDmin_c_11!  |
     Then verify logout displayed in place of Sign in
     #Then click Sign Out link and verify its logged out successfully
 
@@ -88,7 +88,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | links            |
       | Start4Life       |
       | Change4Life      |
-      | BetterHealth     |
+      #| BetterHealth     |
     Then Verify how to guide page loaded successfully
 
   @CRCV3-009
@@ -105,7 +105,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When I browsed to Start4life resource campaign
     Then Research behind this campaign and how to use this campaign expand and collapse for "S4L_Breastfeeding"
 
- @CRCV3-011
+  @CRCV3-011
   Scenario: open CRCV3 site and Validate all errors are displayed in Register form Empty fields
     Given I loaded CRCV3 site to load the home page
     When I click on Register link where register page loaded with all fields displayed
@@ -124,7 +124,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     #Then click Sign Out link and verify its logged out successfully
 
 
- @CRCV3-012
+  @CRCV3-012
   Scenario Outline: open CRCV3 site and Validate all errors are displayed in Register form for invalid fields
     Given I loaded CRCV3 site to load the home page
     When I click on Register link where register page loaded with all fields displayed
@@ -139,12 +139,12 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | The only special characters you can use in this field are a hyphen (-) and an apostrophe (')                                  |
       | Select your job function                                                                                                      |
       | The only special characters you can use in this field are a hyphen (-) and an apostrophe (')                                  |
-      | Enter a valid postcode                                                                                                        |
+      | Postcode '%$%$^%^%' not recognised                                                                                                         |
       | Enter a valid email address.                                                                                                  |
       | Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol |
       #| Please accept the terms and conditions                                                                                        |
 
- @CRCV3-013
+  @CRCV3-013
   Scenario: open CRCV3 site and verify Change4Life Campaigns pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Change4Life resource campaign
@@ -152,7 +152,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Change4Life"
     Then Verify "Change4Life" Resources
 
-  @CRCV3-014
+  @CRCV3-014 @wip
   Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Betterhealth resource campaign
@@ -181,10 +181,25 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth_Start4Life"
     Then Verify "Betterhealth_Start4Life" Resources
 
-  @CRCV3-017 @Prabhu
+  @CRCV3-017
   Scenario: open CRCV3 site and verify Cervical Screening pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Cervical Screening resource campaign
     Then Verify Campaign details for "Cervical_Screening"
     Then Research behind this campaign and how to use this campaign expand and collapse for "Cervical_Screening"
     Then Verify "Cervical_Screening" Resources
+
+  @CRCV3-018
+  Scenario: open CRCV3 site and verify We Are Undefeatable pages and links
+    Given I loaded CRCV3 site to load the home page
+    When I browsed to We Are Undefeatable resource campaign
+    Then Verify Campaign details for "We_Are_Undefeatable"
+    Then Research behind this campaign and how to use this campaign expand and collapse for "We_Are_Undefeatable"
+    Then Verify "We_Are_Undefeatable" Resources
+
+  @CRCV3-019
+  Scenario: open CRCV3 site and verify Better Health Local Authority Tier 2 Adult Weight Management Programme pages and links
+    Given I loaded CRCV3 site to load the home page
+    When I browsed to Better Health Local Authority Tier 2 Adult Weight Management Programme resource campaign
+    Then Verify Campaign details for "Better_Health_Local_Authority_Tier_2"
+    Then Verify "Better_Health_Local_Authority_Tier_2" Resources

@@ -38,23 +38,34 @@ class CRCV3MainPage(BasePage):
     Change4Life_link = PageElement(By.XPATH, "//h3[text()='Change4Life']")
     Change4Life_landing = PageElement(By.XPATH, "//h1[text()='Change4Life']")
     BetterHealth_link = PageElement(By.XPATH, "//h3[text()='Better Health Every Mind Matters']")
+    Cervical_Screening = PageElement(By.XPATH, "//h3[text()='Cervical Screening']")
+    We_Are_Undefeatable = PageElement(By.XPATH, "//h3[text()='We Are Undefeatable']")
+    Better_Health_Local_Authority_Tier_2 = PageElement(By.XPATH, "//h3[text()='Better Health Local Authority Tier 2 Adult Weight Management Programme']")
     BetterHealth_landing = PageElement(By.XPATH, "//h1[text()='Better Health Every Mind Matters']")
+    Cervical_Screening_landing = PageElement(By.XPATH, "//h1[text()='Cervical Screening']")
+    We_Are_Undefeatable_landing = PageElement(By.XPATH, "//h1[text()='We Are Undefeatable']")
+    Better_Health_Local_Authority_Tier_2_landing = PageElement(By.XPATH, "//h1[text()='Better Health Local Authority Tier 2 Adult Weight Management Programme']")
     how_to_guides_link = PageElement(By.LINK_TEXT, "How to guides")
     how_to_guide_landing = PageElement(By.XPATH, "//h1[text()='How to guides']")
     S4L_related_website_link = PageElement(By.LINK_TEXT, "http://www.nhs.uk/start4life")
     C4L_related_website_link = PageElement(By.LINK_TEXT, "https://www.nhs.uk/change4life/")
     Betterhealth_related_website_link = PageElement(By.XPATH, "//h3[text()='Better Health Every Mind Matters']")
     Betterhealth_Start4Life_link = PageElement(By.LINK_TEXT, "https://www.nhs.uk/start4life/")
+    Cervical_Screening_link = PageElement(By.XPATH, "//a[@href='https://www.nhs.uk/conditions/cervical-screening/']")
+    We_Are_Undefeatable_link = PageElement(By.LINK_TEXT, "https://weareundefeatable.co.uk/")
     related_website_link_Breastfeeding = PageElement(By.LINK_TEXT, "http://www.nhs.uk/start4life")
     C4L_related_website_landing = PageElement(By.XPATH, "//h2[text()='Easy ways to eat well and move more']")
     Betterhealth_related_website_landing = PageElement(By.XPATH, "//h1[text()='Better Health Every Mind Matters']")
     Betterhealth_Start4Life_landing = PageElement(By.ID, "trusted-nhs-help-and-advice-during-span-classgreenpregnancyspan-span-classbluebirthspan-and-span-classorangeparenthoodspan")
+    Cervical_Screening_Campaign_landing = PageElement(By.XPATH, "//span[@role='text']")
+    #We_Are_Undefeatable_campaign_landing = PageElement(By.XPATH, "")
     related_website_landing = PageElement(By.ID, "trusted-nhs-help-and-advice-during-span-classgreenpregnancyspan-span-classbluebirthspan-and-span-classorangeparenthoodspan")
     Research_beyond_this_campaign_S4L_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
     S4L_Breast_Feeding_campaign_S4L_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Start4Life Breastfeeding Campaign']]")
     Research_beyond_this_campaign_C4LRB_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
     Overview_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Overview']]")
     Research_for_this_campaign = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research for this campaign']]")
+    Research_for_this_campaign_1 = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
     Start_for_Life_weaning_hub = PageElement(By.XPATH, "//h3[text()[normalize-space()='Start for Life weaning hub']]")
     Calls_to_action_for_the_campaign_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Calls to action for the campaign']]")
     Campaign_summary = PageElement(By.XPATH, "(//h3[text()='Campaign summary'])[2]")
@@ -100,8 +111,11 @@ class CRCV3MainPage(BasePage):
     Overview_Paragraph_3 = PageElement(By.XPATH, "//p[@data-block-key='n8dyd']")
     Overview_Paragraph_4 = PageElement(By.XPATH, "//p[@data-block-key='w50rn']")
     Overview_Paragraph_5 = PageElement(By.XPATH, "//p[@data-block-key='ul6gw']")
+    Overview_Paragraph_6 = PageElement(By.XPATH, "//p[@data-block-key='wj91v']")
+    Overview_Paragraph_7 = PageElement(By.XPATH, "//p[@data-block-key='pnb67']")
     Key_messages_of_the_campaign_paragraph = PageElement(By.XPATH, "(//p[@data-block-key='n8dyd'])[2]")
     Research_for_this_campaign_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='wzpzp']")
+    Research_for_this_campaign_Paragraph_1 = PageElement(By.XPATH, "//p[@data-block-key='ujajy']")
     Start_for_Life_weaning_hub_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='mw43d']")
     Partners_Paragraph = PageElement(By.XPATH, "(//p[@data-block-key='w8fw8'])[2]")
     The_Mind_Plan_Tool_Paragraph = PageElement(By.XPATH, "(//p[@data-block-key='w8fw8'])[3]")
@@ -110,6 +124,7 @@ class CRCV3MainPage(BasePage):
     Research_beyond_this_campaign_S4LW_Paragraph = PageElement(By.XPATH, "//p[text()='The Start4Life weaning campaign is informed by a ']")
     Current_focus_of_the_campaign_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='q2i4x']")
     How_to_use_this_campaign_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='iiwd1']")
+    How_to_use_this_campaign_Paragraph_1 = PageElement(By.XPATH, "//p[@data-block-key='tcavw']")
     #Research_beyond_this_campaign_S4LBF_Paragraph = PageElement(By.CSS_SELECTOR, ".govuk-details__summary")
 
     Breastfeeding_leaflet = PageElement(By.XPATH, "(//h3[text()='Breastfeeding leaflet'])[2]")
@@ -123,7 +138,9 @@ class CRCV3MainPage(BasePage):
     Email_signature = PageElement(By.XPATH, "(//h3[text()='Email signature'])[2]")
     Email_signature_Landing = PageElement(By.XPATH, "//h1[text()='Email signature']")
     Social_media_toolkit = PageElement(By.XPATH, "(//h3[text()='Social media toolkit'])[2]")
+    Open_artwork = PageElement(By.XPATH, "(//h3[text()='Open artwork'])[2]")
     Social_media_toolkit_Landing = PageElement(By.XPATH, "//h1[text()='Social media toolkit']")
+    Open_artwork_Landing = PageElement(By.XPATH, "//h1[text()='Open artwork']")
     Bottle_feeding_leaflet = PageElement(By.XPATH, "(//h3[text()='Bottle feeding leaflet'])[2]")
     Bottle_feeding_leaflet_Landing = PageElement(By.XPATH, "//h1[text()='Bottle feeding leaflet']")
     Email_signatures_landing = PageElement(By.XPATH, "//h1[text()='Email signatures']")
@@ -354,6 +371,20 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.BetterHealth_link)
             assert_that(self.interrogate.get_attribute(self.BetterHealth_landing, "innerHTML"), equal_to("Better Health Every Mind Matters"), "Better Health page not loaded")
             #self.driver.back()
+        elif option == "Cervical_Screening":
+            self.interact.click_element(self.Cervical_Screening)
+            assert_that(self.interrogate.get_attribute(self.Cervical_Screening_landing, "innerHTML"), equal_to("Cervical Screening"), "Cervical Screening page not loaded")
+            #self.driver.back()
+        elif option == "We_Are_Undefeatable":
+            self.interact.click_element(self.We_Are_Undefeatable)
+            assert_that(self.interrogate.get_attribute(self.We_Are_Undefeatable_landing, "innerHTML"),
+                        equal_to("We Are Undefeatable"), "We Are Undefeatable page not loaded")
+            # self.driver.back()
+        elif option == "Better_Health_Local_Authority_Tier_2":
+            self.interact.click_element(self.Better_Health_Local_Authority_Tier_2)
+            assert_that(self.interrogate.get_attribute(self.Better_Health_Local_Authority_Tier_2_landing, "innerHTML"),
+                        equal_to("Better Health Local Authority Tier 2 Adult Weight Management Programme"), "Better Health Local Authority Tier 2 page not loaded")
+            # self.driver.back()
 
     def How_to_guides(self):
         self.interact.click_element(self.how_to_guides_link)
@@ -378,6 +409,24 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Betterhealth_Start4Life_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Betterhealth_Start4Life_landing), equal_to(True), "Betterhealth Start4Life page not loaded")
             self.driver.back()
+        elif Link == "Cervical_Screening":
+            self.interact.click_element(self.Cervical_Screening_link)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Cervical_Screening_Campaign_landing),
+                        equal_to(True), "Cervical Screening page not loaded")
+            self.driver.back()
+        elif Link == "We_Are_Undefeatable":
+            assert_that(right_click_link(self, "https://weareundefeatable.co.uk/"),
+                        contains_string("https://weareundefeatable.co.uk/"),
+                        "We are undefeatable campaign detail url doesn't match")
+            # self.interact.click_element(self.We_Are_Undefeatable_link)
+            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.We_Are_Undefeatable_campaign_landing),
+            #             equal_to(True), "We Are Undefeatable page not loaded")
+            # self.driver.back()
+        elif Link == "Better_Health_Local_Authority_Tier_2":
+            assert_that(right_click_link(self, "https://www.nhs.uk/better-health/"),
+                        contains_string("https://www.nhs.uk/better-health/"),
+                        "Better Health Local Authority Tier 2 detail url doesn't match")
+
 
 
 
@@ -437,6 +486,22 @@ class CRCV3MainPage(BasePage):
                         "Start for Life weaning hub link not expanded")
             assert_that(right_click_link(self, "Better Health Start for Life website"), equal_to("https://www.nhs.uk/start4life"),
                         "Better Health Start for Life website link is not working")
+        elif source == "Cervical_Screening":
+            self.interact.click_element(self.Overview_link)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_6), equal_to(True),
+                        "Overview link not expanded")
+            self.interact.click_element(self.Research_for_this_campaign_1)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Research_for_this_campaign_Paragraph_1),
+                        equal_to(True), "Research for this campaign link not expanded")
+            self.interact.click_element(self.How_to_use_this_campaign_link)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.How_to_use_this_campaign_Paragraph_1),
+                        equal_to(True), "How to use this campaign link not expanded")
+            assert_that(right_click_link(self, "Help Us Help You campaign series"), equal_to("https://staging.campaignresources.phe.gov.uk/campaigns/help-us-help-you/"),
+                        "Help Us Help You campaign series link is not working")
+        elif source == "We_Are_Undefeatable":
+            self.interact.click_element(self.Overview_link)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_7), equal_to(True),
+                        "Overview link not expanded")
 
     def Campaigns_Resources(self, source):
         if source == "Start4Life":
@@ -535,6 +600,25 @@ class CRCV3MainPage(BasePage):
                         equal_to(True), "Betterhealth Start4Life link not working")
             self.Sign_In_register_link()
             self.driver.back()
+        elif source == "Cervical_Screening":
+            self.interact.click_element(self.Campaign_tookit)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Campaign_tookit_landing), equal_to(True),
+                        "Campaign toolkit link not expanded")
+            self.Sign_In_register_link()
+            self.driver.back()
+        elif source == "We_Are_Undefeatable":
+            self.interact.click_element(self.Social_media_toolkit)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_media_toolkit_Landing),
+                        equal_to(True), "Social media toolkit leaflet link not working")
+            self.Sign_In_register_link()
+            self.driver.back()
+        elif source == "Better_Health_Local_Authority_Tier_2":
+            self.interact.click_element(self.Open_artwork)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Open_artwork_Landing),
+                        equal_to(True), "Open artwork link not working")
+            self.Sign_In_register_link()
+            self.driver.back()
+
 
     def Help_us_help_you_Campaigns(self, Campaigns):
         if Campaigns == "Accessing NHS maternity services":
