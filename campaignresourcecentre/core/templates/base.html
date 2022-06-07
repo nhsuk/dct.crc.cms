@@ -42,15 +42,34 @@
 
         <script src="{% get_django_setting "COOKIE_CONSENT_CAMPAIGNS" %}" defer></script>
 
-        <script type="application/javascript">{{ request.path|add_adobe_analytics }}</script>
+        <script>{{ request.path|add_adobe_analytics }}</script>
 
-        <script src="{% get_django_setting "ADOBE_TRACKING_URL" %}" type="text/plain"
-            data-cookieconsent="statistics" async></script>
+        <script src="{% get_django_setting "ADOBE_TRACKING_URL" %}" data-cookieconsent="statistics" async></script>
 
         <noscript>
             <style>
-                .noscript-suppress {display: none};
-                .script-initial-hide {visibility: hidden};
+                .noscript-suppress {
+                    display: none
+                }
+                .script-initial-hide {
+                    visibility: hidden
+                }
+                .no-js {
+                    position: relative;
+                    visibility: visible;
+                    left: auto;
+                    top: auto;
+                }
+                .taxonomy-tags #taxonomy-tags-reset {
+                    display: none;
+                }
+                .taxonomy-tags .taxonomy-tags__child .taxonomy-tags__remove,
+                .taxonomy-tags .taxonomy-tags__child input[type=checkbox]{
+                    display: none;
+                }
+                .taxonomy-tags .taxonomy-tags__child .taxonomy-tags__child-label {
+                    cursor: default !important;
+                }
             </style>
         </noscript>
 
@@ -116,7 +135,7 @@
 
         <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'js/nhsuk.js' %}"></script>
-        <script src="{% static 'js/event.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/event.js' %}"></script>
 
         {# block extra_js %}{% endblock #}
     </body>
