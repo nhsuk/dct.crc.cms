@@ -6,7 +6,7 @@
 {% load filters %}
 
 {% block header %}
-    <header class="nhsuk-header" role="banner">
+    <header class="nhsuk-header">
   <div class="nhsuk-width-container nhsuk-header__container">
     <div class="nhsuk-header__logo">
       <a class="nhsuk-header__link" href="/" aria-label="Campaign resource centre homepage">
@@ -107,7 +107,7 @@
                                 </div>
                             {% else %}
                                 <div class="govuk-form-group">
-                                    <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                                    <fieldset class="govuk-fieldset">
                                         <legend class="govuk-fieldset__legend govuk-visually-hidden">{{ taxonomy.label }}</legend>
                                         <div class="govuk-checkboxes  govuk-checkboxes--small" data-module="govuk-checkboxes">
                                             {% for child in taxonomy.children %}
@@ -137,27 +137,6 @@
 
         </div>
     </div>
-
-    <noscript>
-        <style type="text/css">
-            .no-js {
-                position: relative;
-                visibility: visible;
-                left: auto;
-                top: auto;
-            }
-            .taxonomy-tags #taxonomy-tags-reset {
-                display: none;
-            }
-            .taxonomy-tags .taxonomy-tags__child .taxonomy-tags__remove,
-            .taxonomy-tags .taxonomy-tags__child input[type=checkbox]{
-                display: none;
-            }
-            .taxonomy-tags .taxonomy-tags__child .taxonomy-tags__child-label {
-                cursor: default !important;
-            }
-        </style>
-    </noscript>
 
     <script>
         if (!("{{facets_queryset|length}}" == "0")) {

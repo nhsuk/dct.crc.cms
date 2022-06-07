@@ -63,7 +63,7 @@
         </div>
     {% endif %}
 
-    <div class="govuk-form-group" id="sort">
+    <div class="govuk-form-group">
         <label class="govuk-label sort-by-label" for="sort">
             Sort by
         </label>
@@ -99,7 +99,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <h4>There are no matching results.</h4>
+            <h4 aria-live="polite">There are no matching results.</h4>
             <p>Improve your search results by:</p>
             <ul>
                 <li>removing filters</li>
