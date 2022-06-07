@@ -114,6 +114,35 @@
     </div>  
 </div>
 
-
+<script>
+    function GetGroup(group) {
+        var checkboxes = document.querySelectorAll('input[data-group="'+group+'"]');
+        return checkboxes;
+    }
+    function SelectAll(source,group){
+        var checkboxes = GetGroup(group);
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] !== source)
+                checkboxes[i].checked = source.checked;
+        }
+    }
+    function DeselectAllOption(source,group){
+        var checkboxes = document.querySelector('input[name="All'+group+'"]');
+        if ( source.checked == false && checkboxes.checked == true){
+            checkboxes.checked = false;
+            return
+        };
+        var allboxes = GetGroup(group.toLowerCase());
+        var allchecked = true;
+        for (var i = 1; i < allboxes.length; i++) { 
+            if ( (allboxes[i].name !== source.name) && allboxes[i].checked == false){
+                allchecked = false;
+            }
+        }
+        if (allchecked == true){
+            checkboxes.checked = true;
+        }
+    }
+</script>
 
 {% endblock %}
