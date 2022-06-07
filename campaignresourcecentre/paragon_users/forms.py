@@ -71,6 +71,7 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
+                "aria-describedby": "first_name-error",
                 "autocomplete": "given-name",
             }
         ),
@@ -83,6 +84,7 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
+                "aria-describedby": "last_name-error",
                 "autocomplete": "family-name",
             }
         ),
@@ -96,6 +98,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
+                "aria-describedby": "job_title-error",
             },
             choices=JOB_CHOICES,
         ),
@@ -108,6 +111,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "disabled": False,
+                "aria-describedby": "area_work-error"
             },
             choices=HEALTH_CHOICES,
         ),
@@ -119,6 +123,7 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input",
+                "aria-describedby": "organisation_name-error",
                 "autocomplete": "organization",
             }
         ),
@@ -131,6 +136,7 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
+                "aria-describedby": "postcode-error",
                 "autocomplete": "postal-code",
             }
         ),
@@ -144,6 +150,7 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
+                "aria-describedby": "email-error",
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
             }
@@ -156,6 +163,7 @@ class RegisterForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
+                "aria-describedby": "password-error",
                 "autocomplete": "current-password",
             }
         ),
@@ -167,6 +175,7 @@ class RegisterForm(forms.Form):
         widget=forms.CheckboxInput(
             attrs={
                 "class": "govuk-checkboxes__input",
+                "aria-describedby": "terms-error",
             }
         ),
         error_messages={"required": "Please accept the terms and conditions"},
@@ -246,6 +255,7 @@ class LoginForm(forms.Form):
             attrs={
                 "autocapitalize": "off",
                 "class": "govuk-input",
+                "aria-describedby": "email-error",
                 "autocomplete": "email",
             }
         ),
@@ -257,6 +267,7 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-!-width-one-half",
+                "aria-describedby": "password-error",
                 "autocomplete": "current-password",
             }
         ),
@@ -271,6 +282,7 @@ class PasswordResetForm(forms.Form):
             attrs={
                 "autocapitalize": "off",
                 "class": "govuk-input",
+                "aria-describedby": "email-error",
                 "autocomplete": "email",
             }
         ),
@@ -285,6 +297,7 @@ class PasswordSetForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
+                "aria-describedby": "password-error",
                 "autocomplete": "new-password",
             }
         ),
@@ -296,6 +309,7 @@ class PasswordSetForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
+                "aria-describedby": "password-check-error",
                 "autocomplete": "new-password",
             }
         ),
@@ -319,7 +333,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     AllAges = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "ages", "onclick" : "SelectAll(this,'ages')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "ages"}
         ),
         required=False,
         label="All ages",
@@ -327,7 +341,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Pregnancyandyearold = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "ages", "onclick" : "DeselectAllOption(this,'Ages')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "ages"}
         ),
         required=False,
         label="Pregnancy and 0 to 3 year old",
@@ -335,7 +349,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Childrenyearsold = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "ages", "onclick" : "DeselectAllOption(this,'Ages')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "ages"}
         ),
         required=False,
         label="Children 3 to 11 years old",
@@ -343,7 +357,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Teensyearsold = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "ages", "onclick" : "DeselectAllOption(this,'Ages')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "ages"}
         ),
         required=False,
         label="Teens 11 to 16 years old",
@@ -351,7 +365,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Adults = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "ages", "onclick" : "DeselectAllOption(this,'Ages')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "ages"}
         ),
         required=False,
         label="Adults",
@@ -359,7 +373,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     OlderPeople = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "ages", "onclick" : "DeselectAllOption(this,'Ages')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "ages"}
         ),
         required=False,
         label="Older people (65 and over)",
@@ -368,7 +382,7 @@ class NewsLetterPreferencesForm(forms.Form):
     # Themes
     AllThemes = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "SelectAll(this,'themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="All themes",
@@ -376,7 +390,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     BecomingSmokefree = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Becoming Smokefree",
@@ -384,7 +398,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     EatingWell = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Eating Well",
@@ -392,7 +406,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     MovingMore = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Moving More",
@@ -400,7 +414,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     CheckingYourselfSymptomAwareness = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Checking Yourself and Symptom Awareness",
@@ -408,7 +422,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     DrinkingLess = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Drinking Less",
@@ -416,7 +430,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     StressingLess = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Stressing Less",
@@ -424,16 +438,16 @@ class NewsLetterPreferencesForm(forms.Form):
 
     SleepingWell = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "themes", "onclick" : "DeselectAllOption(this,'Themes')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "themes"}
         ),
         required=False,
         label="Sleeping Well",
     )
 
     # Subjects
-    AllSubjects = forms.BooleanField(
+    Allsubjects = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "SelectAll(this,'subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="All subjects",
@@ -441,7 +455,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Coronavirus = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Coronavirus (COVID-19)",
@@ -449,7 +463,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Flu = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Flu",
@@ -457,7 +471,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Stroke = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Stroke",
@@ -465,7 +479,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Cancer = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Cancer",
@@ -473,7 +487,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     AntimicrobialResistance = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Antimicrobial Resistance",
@@ -481,7 +495,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     SchoolsActivity = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Schools Activity",
@@ -489,7 +503,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     SexualHealth = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Sexual Health",
@@ -497,7 +511,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     BloodPoisoningSepsis = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Sepsis",
@@ -505,7 +519,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     NHSServices = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="NHS Services",
@@ -513,7 +527,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     MaternityBreastFeeding = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Maternity and Breast Feeding",
@@ -521,7 +535,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     Meningitis = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Meningitis",
@@ -529,7 +543,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     DentalHealth = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Dental Health",
@@ -537,7 +551,7 @@ class NewsLetterPreferencesForm(forms.Form):
 
     MentalHealth = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="Mental Health",
@@ -545,8 +559,9 @@ class NewsLetterPreferencesForm(forms.Form):
 
     NHSandSocialCareFluLeads = forms.BooleanField(
         widget=forms.CheckboxInput(
-            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects", "onclick" : "DeselectAllOption(this,'Subjects')"}
+            attrs={"class": "govuk-checkboxes__input", "data-group": "subjects"}
         ),
         required=False,
         label="NHS and Social Care Flu Leads",
     )
+
