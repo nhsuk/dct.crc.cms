@@ -29,12 +29,12 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then I enter your details of "<email>" "<password>"
     Then I sign in
      Examples:
-      | email          | password        |
-      | qie1@qie12.com    | aDmin_c_11!     |
+      | email                    | password        |
+      | prabhu.swamy1@nhs.net    | Test1234!     |
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-004
+  @CRCV3-004 @Prabhu
   Scenario Outline: open CRCV3 site to verify forgot password and the validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -51,7 +51,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-005 @wip
+  @CRCV3-005 @Prabhu
   Scenario Outline: open CRCV3 site to verify forgot password confirmation message
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -59,8 +59,8 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then I enter Email address field with "<email>"
     Then I submit
       Examples:
-      | email            |
-      | qie@qie9.com      |
+      | email                      |
+      | prabhu.swamy1@nhs.net      |
     Then verify forgot password confirmation message
 
   @CRCV3-006 @wip
