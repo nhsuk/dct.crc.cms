@@ -32,7 +32,6 @@ class AzureMediaStorage (AzureStorage):
         components = list(urlparse(initial_url))
         components[1] = self.external_domain
         new_url = urlunparse(components)
-        logger.info ("Requested URL %s" % initial_url)
         return new_url
 
 class AzureSearchStorage (AzureStorage):
