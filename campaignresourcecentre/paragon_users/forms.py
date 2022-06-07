@@ -71,7 +71,6 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
-                "aria-describedby": "first_name-error",
                 "autocomplete": "given-name",
             }
         ),
@@ -84,7 +83,6 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
-                "aria-describedby": "last_name-error",
                 "autocomplete": "family-name",
             }
         ),
@@ -98,7 +96,6 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
-                "aria-describedby": "job_title-error",
             },
             choices=JOB_CHOICES,
         ),
@@ -111,7 +108,6 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "disabled": False,
-                "aria-describedby": "area_work-error"
             },
             choices=HEALTH_CHOICES,
         ),
@@ -123,7 +119,6 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input",
-                "aria-describedby": "organisation_name-error",
                 "autocomplete": "organization",
             }
         ),
@@ -136,7 +131,6 @@ class RegisterForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
-                "aria-describedby": "postcode-error",
                 "autocomplete": "postal-code",
             }
         ),
@@ -150,7 +144,6 @@ class RegisterForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
-                "aria-describedby": "email-error",
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
             }
@@ -163,7 +156,6 @@ class RegisterForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
-                "aria-describedby": "password-error",
                 "autocomplete": "current-password",
             }
         ),
@@ -175,7 +167,6 @@ class RegisterForm(forms.Form):
         widget=forms.CheckboxInput(
             attrs={
                 "class": "govuk-checkboxes__input",
-                "aria-describedby": "terms-error",
             }
         ),
         error_messages={"required": "Please accept the terms and conditions"},
@@ -255,7 +246,6 @@ class LoginForm(forms.Form):
             attrs={
                 "autocapitalize": "off",
                 "class": "govuk-input",
-                "aria-describedby": "email-error",
                 "autocomplete": "email",
             }
         ),
@@ -267,7 +257,6 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-!-width-one-half",
-                "aria-describedby": "password-error",
                 "autocomplete": "current-password",
             }
         ),
@@ -282,7 +271,6 @@ class PasswordResetForm(forms.Form):
             attrs={
                 "autocapitalize": "off",
                 "class": "govuk-input",
-                "aria-describedby": "email-error",
                 "autocomplete": "email",
             }
         ),
@@ -297,7 +285,6 @@ class PasswordSetForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
-                "aria-describedby": "password-error",
                 "autocomplete": "new-password",
             }
         ),
@@ -309,7 +296,6 @@ class PasswordSetForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
-                "aria-describedby": "password-check-error",
                 "autocomplete": "new-password",
             }
         ),
