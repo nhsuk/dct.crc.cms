@@ -49,10 +49,8 @@ def Login_fields(context):
     with open("./login.csv") as csvfile:
         reader = csv.reader(csvfile)
         email, password = next(reader)
-    print(password)
-    print(email)
     context.support_page.sign_up_for_email_form(email, password)
-    #context.support_page.CRCV3_SignIn()
+
 
 @Step("I sign in")
 def Sign_In(context):
