@@ -96,7 +96,6 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
-                "required": "False",
             },
             choices=JOB_CHOICES,
         ),

@@ -61,7 +61,6 @@ class ContactUsForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
-                "aria-describedby": "first_name-error",
                 "autocomplete": "given-name",
             }
         ),
@@ -73,7 +72,6 @@ class ContactUsForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
-                "aria-describedby": "last_name-error",
                 "autocomplete": "family-name",
             }
         ),
@@ -86,7 +84,6 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
-                "aria-describedby": "job_title-error",
             },
             choices=JOB_CHOICES,
         ),
@@ -98,7 +95,6 @@ class ContactUsForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input",
-                "aria-describedby": "organisation_name-error",
                 "autocomplete": "organization",
             }
         ),
@@ -110,7 +106,6 @@ class ContactUsForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input",
-                "aria-describedby": "organisation_type-error",
             }
         ),
         required=True,
@@ -120,7 +115,6 @@ class ContactUsForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(
             attrs={
-                "aria-describedby": "email-error",
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
             }
@@ -134,7 +128,6 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
-                "aria-describedby": " healthy_behaviour-error",
             },
             choices=CAMPAIGN_CHOICES,
         ),
@@ -146,7 +139,6 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-input",
                 "disabled": True,
-                "aria-describedby": "other_campaign-error",
             }
         ),
         required=False,
@@ -157,7 +149,6 @@ class ContactUsForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 "class": "govuk-textarea",
-                "aria-describedby": "audience-error",
                 "rows": "5",
             }
         ),
@@ -169,7 +160,6 @@ class ContactUsForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 "class": "govuk-textarea",
-                "aria-describedby": "engage_audience-error",
                 "rows": "5",
             }
         ),
@@ -181,7 +171,6 @@ class ContactUsForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 "class": "govuk-textarea",
-                "aria-describedby": "product_service-error",
                 "rows": "5",
             }
         ),
@@ -192,7 +181,6 @@ class ContactUsForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 "class": "govuk-textarea",
-                "aria-describedby": "message-error",
                 "rows": "5",
             }
         ),
