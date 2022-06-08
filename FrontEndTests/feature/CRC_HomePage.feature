@@ -1,12 +1,12 @@
 #noinspection CucumberUndefinedStep
 Feature: CRCV3 Main Page  - NHSUK CRC Website
 
-  @CRCV3-001 @wip
+  @CRCV3-001
   Scenario: open CRCV3 site and verify page loaded successfully
     Given I loaded CRCV3 site to load the home page
     Then  Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
 
-  @CRCV3-002 @wip
+  @CRCV3-002
   Scenario Outline: open CRCV3 site and verify email field validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -31,7 +31,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-004 @wip
+  @CRCV3-004
   Scenario Outline: open CRCV3 site to verify forgot password and the validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -48,7 +48,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-005 @wip
+  @CRCV3-005
   Scenario Outline: open CRCV3 site to verify forgot password confirmation message
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -72,13 +72,13 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify logout displayed in place of Sign in
     #Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-007 @wip
+  @CRCV3-007
   Scenario: open CRCV3 site and verify Home tab and its links
     Given I loaded CRCV3 site to load the home page
     #When I Click click on Home page tab
     Then Verify Covid advices resources links and Coronavirus campaigns and resources button working
 
-  @CRCV3-008 @wip
+  @CRCV3-008
   Scenario: open CRCV3 site and verify Latest Updated links are loaded to respective pages
     Given I loaded CRCV3 site to load the home page
     When I click on Latest updates links
@@ -88,7 +88,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       #| BetterHealth     |
     Then Verify how to guide page loaded successfully
 
-  @CRCV3-009 @wip
+  @CRCV3-009
   Scenario: open CRCV3 site and verify Start4Life Campaigns pages and contents
     Given I loaded CRCV3 site to load the home page
     When I browsed to Start4life resource campaign
@@ -96,13 +96,13 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Start4Life"
     Then Verify "Start4Life" Resources
 
-  @CRCV3-010 @wip
+  @CRCV3-010
   Scenario: open CRCV3 site and verify Start4Life Breastfeeding pages and contents
     Given I loaded CRCV3 site to load the home page
     When I browsed to Start4life resource campaign
     Then Research behind this campaign and how to use this campaign expand and collapse for "S4L_Breastfeeding"
 
-  @CRCV3-011 @wip
+  @CRCV3-011
   Scenario: open CRCV3 site and Validate all errors are displayed in Register form Empty fields
     Given I loaded CRCV3 site to load the home page
     When I click on Register link where register page loaded with all fields displayed
@@ -121,7 +121,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     #Then click Sign Out link and verify its logged out successfully
 
 
-  @CRCV3-012 @wip
+  @CRCV3-012
   Scenario Outline: open CRCV3 site and Validate all errors are displayed in Register form for invalid fields
     Given I loaded CRCV3 site to load the home page
     When I click on Register link where register page loaded with all fields displayed
@@ -141,7 +141,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol |
       #| Please accept the terms and conditions                                                                                        |
 
-  @CRCV3-013 @wip
+  @CRCV3-013
   Scenario: open CRCV3 site and verify Change4Life Campaigns pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Change4Life resource campaign
@@ -149,7 +149,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Change4Life"
     Then Verify "Change4Life" Resources
 
-  @CRCV3-014 @wip
+  @CRCV3-014
   Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Betterhealth resource campaign
@@ -157,7 +157,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth"
     Then Verify "Betterhealth" Resources
 
-  @CRCV3-015 @wip
+  @CRCV3-015
   Scenario Outline: open CRCV3 site and verify help us Help you Campaigns pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Help us help you campaigns link
@@ -170,7 +170,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       |Abdominal and urological symptoms of cancer |
       |Childhood vaccination 2022                  |
 
-  @CRCV3-016 @wip
+  @CRCV3-016
   Scenario: open CRCV3 site and verify Better Health Start for Life Introducing Solid Foods pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Better Health Start for Life Introducing Solid Foods resource campaign
@@ -178,7 +178,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth_Start4Life"
     Then Verify "Betterhealth_Start4Life" Resources
 
-  @CRCV3-017 @wip
+  @CRCV3-017
   Scenario: open CRCV3 site and verify Cervical Screening pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Cervical Screening resource campaign
@@ -186,7 +186,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Cervical_Screening"
     Then Verify "Cervical_Screening" Resources
 
-  @CRCV3-018 @wip
+  @CRCV3-018
   Scenario: open CRCV3 site and verify We Are Undefeatable pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to We Are Undefeatable resource campaign
@@ -194,7 +194,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "We_Are_Undefeatable"
     Then Verify "We_Are_Undefeatable" Resources
 
-  @CRCV3-019 @wip
+  @CRCV3-019
   Scenario: open CRCV3 site and verify Better Health Local Authority Tier 2 Adult Weight Management Programme pages and links
     Given I loaded CRCV3 site to load the home page
     When I browsed to Better Health Local Authority Tier 2 Adult Weight Management Programme resource campaign
