@@ -44,11 +44,16 @@ def Sign_in_link(context):
     context.CRCV3_home.CRCV3_SignIn()
 
 @Step("I enter your login details")
-def Login_fields(context):
+def Login_fields_valid_Inputs(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     with open("./login.csv") as csvfile:
         reader = csv.reader(csvfile)
         email, password = next(reader)
+    context.support_page.sign_up_for_email_form(email, password)
+
+@Step('I enter your details of "{email}" "{password}"')
+def Login_fields(context, email, password):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.sign_up_for_email_form(email, password)
 
 
