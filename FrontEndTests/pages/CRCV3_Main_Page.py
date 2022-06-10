@@ -460,9 +460,9 @@ class CRCV3MainPage(BasePage):
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.The_Mind_Plan_Tool_Paragraph), equal_to(True),
                         "The Mind Plan Tool link not expanded")
         elif source == "Help us help you":
-            self.interact.click_element(self.Overview_link)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_1), equal_to(True),
-                        "Overview link not expanded")
+            #self.interact.click_element(self.Overview_link)
+            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_1), equal_to(True),
+            #            "Overview link not expanded")
             self.interact.click_element(self.Current_focus_of_the_campaign_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Current_focus_of_the_campaign_Paragraph), equal_to(True),
                         "Current focus of the campaign link not expanded")
@@ -557,11 +557,11 @@ class CRCV3MainPage(BasePage):
                         equal_to(True), "Social media toolkit leaflet link not working")
             self.Sign_In_register_link()
             self.driver.back()
-            self.interact.click_element(self.The_Eatwell_Guide)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.The_Eatwell_Guide_Landing),
-                        equal_to(True), "The Eatwell Guide link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
+            #self.interact.click_element(self.The_Eatwell_Guide)
+            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.The_Eatwell_Guide_Landing),
+            #            equal_to(True), "The Eatwell Guide link not working")
+            #self.Sign_In_register_link()
+            #self.driver.back()
             self.interact.click_element(self.Family_Snack_Challenge)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Family_Snack_Challenge_Landing),
                         equal_to(True), "Family Snack Challenge link not working")
