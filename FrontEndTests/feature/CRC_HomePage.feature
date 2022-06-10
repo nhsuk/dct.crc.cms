@@ -92,9 +92,9 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
   Scenario: open CRCV3 site and verify Start4Life Campaigns pages and contents
     Given I loaded CRCV3 site to load the home page
     When I browsed to Start4life resource campaign
-    Then Verify Campaign details for "Start4Life"
-    Then Research behind this campaign and how to use this campaign expand and collapse for "Start4Life"
-    Then Verify "Start4Life" Resources
+    #Then Verify Campaign details for "Start4Life"
+    #Then Research behind this campaign and how to use this campaign expand and collapse for "Start4Life"
+    #Then Verify "Start4Life" Resources
 
   @CRCV3-010
   Scenario: open CRCV3 site and verify Start4Life Breastfeeding pages and contents
