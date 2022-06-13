@@ -84,21 +84,15 @@
                     <div class="govuk-grid-column-two-thirds">
                         <div class="resource-panel">
                             <div class="govuk-grid-row">
-                                <div class="govuk-grid-column-one-third mobile-panel">
+                                <div class="govuk-grid-column-one-third">
                                     <div class="left-panel">
                                         {% image resource.image width-200 as resource_img %}
                                         <img src="{{ resource_img.url }}" alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
                                     </div>
-                                    <div class="right-panel hidden-desktop">
-                                        <h3 class="govuk-heading-s" id="m-{{ resource.title|slugify }}">{{ resource.title }}</h3>
-                                        {% if resource.document_content %}
-                                            <p class="file-info">{{ resource.document_content }}</p>
-                                        {% endif %}
-                                    </div>
                                 </div>
 
                                 <div class="govuk-grid-column-two-thirds order-info-panel download">
-                                    <div class="hidden-mobile">
+                                    <div>
                                         <h3 class="govuk-heading-m" id="{{ resource.title|slugify }}">{{ resource.title }}</h3>
                                         {% if resource.document_content %}
                                         <p class="file-info">{{ resource.document_content }}</p>

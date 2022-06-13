@@ -40,40 +40,10 @@
                     <div class="resource-panel no-shadow">
                         {% for index, item in items %}
                             <div class="govuk-grid-row item">
-                                <div class="govuk-grid-column-one-third mobile-panel">
-                                    <div class="left-panel">
-                                        <img src="{{ item.item_image_url }}"  alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}"/>
-                                    </div>
-                                    <div class="right-panel summary hidden-desktop">
-                                        <dl class="govuk-summary-list">
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Title
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    {{ item.title }}
-                                                </dd>
-                                            </div>
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Code
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    {{ item.item_code }}
-                                                </dd>
-                                            </div>
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Quantity
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    {{ item.quantity }}
-                                                </dd>
-                                            </div>
-                                        </dl>
-                                    </div>
+                                <div class="govuk-grid-column-one-third">
+                                    <img src="{{ item.item_image_url }}"  alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}"/>
                                 </div>
-                                <div class="govuk-grid-column-two-thirds summary hidden-mobile">
+                                <div class="govuk-grid-column-two-thirds summary">
                                     <dl class="govuk-summary-list">
                                         <div class="govuk-summary-list__row">
                                             <dt class="govuk-summary-list__key">
