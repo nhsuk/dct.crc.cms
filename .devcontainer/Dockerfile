@@ -8,16 +8,20 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
-## [Optional] Uncomment this section if you require the CRC python environment outside the CRC containers
-## Install poetry using the installer (keeps Poetry's dependencies isolated from the app's)
-#ARG POETRY_VERSION=1.1.13
-#COPY ./poetry ./poetry
-#ARG POETRY_HOME=/opt/poetry
+# [Optional] Uncomment this section if you require the CRC Python environment outside the CRC containers
+# The main motivations for this are to have Python Fabric installed (fab command support) and the poetry command
+# Install poetry using the installer (keeps Poetry's dependencies isolated from the app's)
+ARG POETRY_VERSION=1.1.13
+COPY ./poetry ./poetry
+ARG POETRY_HOME=/opt/poetry
 
-#RUN wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION}/get-poetry.py && \
-#    rm get-poetry.py && \
-#    python get-poetry.py -y && \
-#    ${POETRY_HOME}/bin/poetry config virtualenvs.create false && \
-#    cd ./poetry && \
-#    ${POETRY_HOME}/bin/poetry install --extras gunicorn && \
-#    cd ..
+RUN wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION}/get-poetry.py && \
+    python get-poetry.py -y && \
+    rm get-poetry.py && \
+    . ${POETRY_HOME}/env && \
+    echo ". ${POETRY_HOME}/env" > /home/vscode/.bashrc && \
+    chmod o+x ${POETRY_HOME}/bin/poetry && \
+    poetry config virtualenvs.create false && \
+    cd ./poetry && \
+    poetry install --extras gunicorn && \
+    cd ..
