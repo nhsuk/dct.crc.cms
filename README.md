@@ -22,7 +22,18 @@ The documentation will be available at: http://localhost:8001/
 This repository includes `docker-compose` configuration for running the project in local Docker containers,
 and a fabfile for provisioning and managing this.
 
-## Dependencies
+## Using VSCode and a devcontainer (recommended)
+
+This requires only an install of VSCode, Docker Desktop and the Remote Container extension in VSCode
+
+Your clone of the CRcv3 repository will contain a .devcontainer folder. VS Code will notice this on opening the folder and offer you the option to
+open the folder in a dev container. Take this option.
+
+Continue your development in a terminal window (or windows) you can open in the running devcontainer using the VSCode Terminal menu.
+
+## Old school
+
+### Dependencies
 
 The following are required to run the local environment. The minimum versions specified are confirmed to be working:
 if you have older versions already installed they _may_ work, but are not guaranteed to do so.
