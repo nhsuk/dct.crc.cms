@@ -60,7 +60,7 @@
                     <div class="nhsuk-header__search filter-search-results govuk-!-margin-bottom-8 govuk-!-margin-top-1">
                         <div class="nhsuk-header__search-wrap" id="wrap-search">
                             <div class="search-form">
-                                <form class="resource-search-form nhsuk-header__search-form" id="search" action="/search/" method="get" role="search">
+                                <form class="resource-search-form nhsuk-header__search-form" id="search" action="/search/" method="get" role="search" onsubmit="return submitSearch(this)">
                                 <label class="nhsuk-u-visually-hidden" for="search-field">Search the CRC website</label>
                                 <input class="nhsuk-search__input" id="search-field" name="q" value="{{search_query}}" type="search" placeholder="Search for resources" autocomplete="off">
                                 <button id="submit-search" class="nhsuk-search__submit" type="submit">
@@ -143,25 +143,46 @@
             document.getElementById("search-field").focus()
         }
 
-        /**
-         * Gets the search value from the form.
-         * Creates a query string from the search value.
-         * Creates a new XMLHttp request.
-         * Outputs the HTML required for the requested campaigns.
-         */
-
         // Initialise default values
         let sortBy = "";
         let queryString = "";
+        let searchString = "";
 
-        function submitForm() {
+        /**
+         * Get the search filters value from the form.
+         * Create a query string from the search filters value.
+         * Create a new XMLHttp request.
+         * Output the HTML required for the requested campaigns.
+         * Update the URL in the browser window.
+         */
+         function submitForm() {
             if("URLSearchParams" in window){
                 queryString = "";
+                let queryFilter = "";
+                // If there is no value for the search query, check if there is one in the URL.
+                if(searchString === "") {
+                    const getURL = window.location.search;
+                    urlParams = new URLSearchParams(getURL);
+                    if(urlParams.has("q")) {
+                        searchString = "q=" + urlParams.get("q").replace(" ", "+");
+                    }                     
+                }
+                // Get the results from the filters.
                 const filterForm = document.getElementById("resource-filter-form");
-                queryString = new URLSearchParams(new FormData(filterForm)).toString();
+                const filterQuery = new FormData(filterForm);
+                // Delete the search query as this may not be correct if the page has been reloaded.
+                filterQuery.delete("q");
+                // Create the search query from the values in the filter results.
+                for(const [key, value] of filterQuery.entries()) {
+                   queryFilter += "&" + key + "=" + value;
+                }
+                // Add the search query.
+                queryString += searchString + queryFilter;
+                // Add the value for sort by.
                 queryString += "&sort=" + sortBy;
-                const xhttp_ss = new XMLHttpRequest();
-                xhttp_ss.onreadystatechange = function() {
+                // Create a new XMLHttp request and refresh the search results.
+                const xhttp_sf = new XMLHttpRequest();
+                xhttp_sf.onreadystatechange = function() {
                     if (this.readyState == 4){
                         if(this.status == 200) {
                             const searchForm = document.getElementById("search-result");
@@ -169,8 +190,8 @@
                         }
                     }
                 }
-                xhttp_ss.open("GET", "/render_search/?" + queryString);
-                xhttp_ss.send();
+                xhttp_sf.open("GET", "/render_search/?" + queryString);
+                xhttp_sf.send();
                 // Update the URL in the browser window to match the search.
                 window.history.pushState({}, '', '?' + queryString);
             }
@@ -181,28 +202,37 @@
             return queryString;
         }
 
+        /**
+         * Remove the filter buttons directly above the search results.
+         * Find the next elemement in the DOM.
+         * Remove the filter button.
+         * Move the focus to the next element.
+         */
         function unCheckSubmitForm(elem) {
             const checkbox = document.getElementById(elem.getAttribute("value").toLowerCase());
             if(checkbox) {
                 const next = document.activeElement.nextElementSibling;
-                checkbox.click();
-                next.focus();
+                if (next !== null) {
+                    next.focus(); 
+                }
+                else {
+                    document.getElementById("sortby").focus();
+                }
+                checkbox.click();              
             } else {
-                //uncheck the filter item
+                //uncheck the filter item.
                 const select = document.getElementById(elem.getAttribute("parent"));
                 select.selectedIndex = 0;
-
-                //resubmit the filter
+                //resubmit the filter.
                 submitForm();
             }
         }
 
-
         /**
-         * Gets the sort by value from the drop down list.
-         * Creates a query string.
-         * Creates a new XMLHttp request.
-         * Outputs the HTML required for the requested campaigns.
+         * Get the sort by value from the drop down list.
+         * Create a query string.
+         * Create a new XMLHttp request.
+         * Output the HTML required for the requested campaigns.
          * Update the URL in the browser window.
          */
          function submitSortby(element) {
@@ -217,7 +247,9 @@
                 const querySplit = queryString.split("&sort=")[0];
                 queryString = querySplit;
             }
+            // Add the selected sort by value.
             const sortQueryString = queryString + "&sort=" + sortBy;
+            // Create a new XMLHttp request and refresh the search results.
             const xhttp_sort = new XMLHttpRequest();
             xhttp_sort.onreadystatechange = function() {
                 if (this.readyState == 4){
@@ -233,5 +265,67 @@
             window.history.pushState({}, '', '?' +  sortQueryString);
             return sortBy;
         }
+
+        /**
+         * Reset all filters and close details.
+         * Get the search query string from the search form.
+         * Create a new XMLHttp request.
+         * Output the HTML required for the requested campaigns.
+         * Update the URL in the browser window.
+         */
+        function searchQuery() {
+            // Reset values from the filters.
+            sortBy = "";
+            queryString = "";
+            // Uncheck all checkboxes.
+            const checkboxes = document.getElementsByClassName('govuk-checkboxes__input');
+            for (let i=0; i<checkboxes.length; i++) {
+                checkboxes[i].checked = false;
+            }
+            // Set all select options to 'All'.
+            const selects = document.getElementsByClassName('govuk-select');
+            ('govuk-checkboxes__input');
+            for (let i=0; i<selects.length; i++) {
+                selects[i].value = '';
+            }
+            // Close all details.
+            const details = document.getElementsByClassName('resource-filters');
+            for (let i=0; i<details.length; i++) {
+                details[i].removeAttribute("open");
+            }
+            // Reset sort by select list.
+            document.getElementById('sortby').selectedIndex = "0";
+            // Get the search query.
+            const searchField = document.getElementById("search");
+            const searchParams = new FormData(searchField);
+            if(searchParams.has("q")) {
+                searchString = "q=" + searchParams.get("q").replace(" ", "+");
+            }
+            // Create a new XMLHttp request and refresh the search results.
+            const xhttp_se = new XMLHttpRequest();
+            xhttp_se.onreadystatechange = function() {
+                if (this.readyState == 4){      
+                    if(this.status == 200) {
+                        const searchForm = document.getElementById("search-result");
+                        searchForm.outerHTML = this.responseText;
+                    }
+                }
+            }
+            xhttp_se.open("GET", "/render_search/?" + searchString);
+            xhttp_se.send();
+            // Update the URL in the browser window to match the search.
+            window.history.pushState({}, '', '?' + searchString);
+            return searchString;
+        }
+            
+        /**
+         * Submit the search query. 
+         * Prevent the form action so that the whole page does not refresh.
+         */
+        function submitSearch() {
+           searchQuery();
+           return false;
+        }
+
     </script>
 {% endblock %}
