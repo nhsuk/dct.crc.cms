@@ -47,7 +47,7 @@
                     <h2>Campaign details</h2>
                     {% if page.related_website %}
                         <p><strong>Related website</strong><br/>
-                        <a href="{{ page.related_website }}">{{ page.related_website }}</a></p>
+                        <a href="{{ page.related_website }}">{{ page.related_website_text }}</a></p>
                     {% endif %}
 
                     {% if targaud_present %}
@@ -137,23 +137,15 @@
                                     <div class="resource-panel related">
                                         <a href="{{ resource.url }}">
                                             <div class="govuk-grid-row">
-                                                <div class="govuk-grid-column-one-half mobile-panel">
-                                                    <div class="left-panel">
-                                                        {% if resource.image %}
-                                                            {% image resource.image width-200 as resource_image %}
-                                                            <img src="{{ resource_image.url }}" width="{{ resource_image.width }}" height="{{ resource_image.height }}"  alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="right-panel hidden-desktop">
-                                                        <h3>{{ resource.title }}</h3>
-                                                        <p>{{ resource.summary|safe }}</p>
-                                                    </div>
+                                                <div class="govuk-grid-column-one-half">
+                                                    {% if resource.image %}
+                                                        {% image resource.image width-200 as resource_image %}
+                                                        <img src="{{ resource_image.url }}" width="{{ resource_image.width }}" height="{{ resource_image.height }}"  alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
+                                                    {% endif %}
                                                 </div>
                                                 <div class="govuk-grid-column-one-half">
-                                                    <div class="hidden-mobile">
-                                                        <h3>{{ resource.title }}</h3>
-                                                        <p>{{ resource.summary|safe }}</p>
-                                                    </div>
+                                                    <h3>{{ resource.title }}</h3>
+                                                    <p>{{ resource.summary|safe }}</p>
                                                 </div>
                                             </div>
                                         </a>
