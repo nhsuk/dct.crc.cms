@@ -268,7 +268,7 @@ class AzureSearchBackend(BaseSearchBackend):
     Accepted
     """
 
-    def azure_search(self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page):
+    def azure_search(self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page=None):
         url = self._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
@@ -410,7 +410,7 @@ class AzureSearchBackend(BaseSearchBackend):
             sort_query_string = "&$orderby={}{}".format(
                 settings.AZURE_SEARCH["PREFIX"], sort_by
             )
-        top = "&$top=" + results_per_page
+        top = "" if results_per_page is None else "&$top=" + results_per_page
         query_string = query_string + filters_query_string + sort_query_string + top
         return "{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string)
 
