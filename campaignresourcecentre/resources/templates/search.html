@@ -143,10 +143,14 @@
             document.getElementById("search-field").focus()
         }
 
-        // Initialise default values
+        // Initialise default values for the search query.
         let sortBy = "";
         let queryString = "";
         let searchString = "";
+        // Saves whether there is a value for the next element set.
+        let nextSet = false;
+        // Initialise next focusable item for the filters.
+        let next;
 
         /**
          * Get the search filters value from the form.
@@ -182,11 +186,14 @@
                 queryString += "&sort=" + sortBy;
                 // Create a new XMLHttp request and refresh the search results.
                 const xhttp_sf = new XMLHttpRequest();
+                // Set up event listener for when this runs to select the next focusable filter or select list.
+                //xhttp_sf.addEventListener('load', set_focus());
                 xhttp_sf.onreadystatechange = function() {
                     if (this.readyState == 4){
                         if(this.status == 200) {
                             const searchForm = document.getElementById("search-result");
                             searchForm.outerHTML = this.responseText;
+                            set_focus();
                         }
                     }
                 }
@@ -204,21 +211,34 @@
 
         /**
          * Remove the filter buttons directly above the search results.
-         * Find the next elemement in the DOM.
-         * Remove the filter button.
-         * Move the focus to the next element.
+         * Check if the selected filter is a topic.
+         * Set the value of the next filter.
+         * If there is no next filter, set the value to be the select list.
          */
         function unCheckSubmitForm(elem) {
             const checkbox = document.getElementById(elem.getAttribute("value").toLowerCase());
-            if(checkbox) {
-                const next = document.activeElement.nextElementSibling;
-                if (next !== null) {
-                    next.focus(); 
+            // Check if the selected filter is a topic.
+            if(document.activeElement.getAttribute("parent") === "TOPIC") {
+                // Check if the next filter has an attribute of value, save the value if so, otherwise save the select list id.
+                if(document.getElementById("taxonomy-tags__in").nextElementSibling && document.getElementById("taxonomy-tags__in").nextElementSibling.hasAttribute("value")) {
+                    next = document.getElementById("taxonomy-tags__in").nextElementSibling.getAttribute("value");
                 }
                 else {
-                    document.getElementById("sortby").focus();
+                    next = "sortby";
                 }
-                checkbox.click();              
+            }
+            // Check if the next filter has an attribute of value, save the value if so, otherwise save the select list id.
+            else {
+                if(document.activeElement.nextElementSibling && document.activeElement.nextElementSibling.hasAttribute("value")) {
+                    next = document.activeElement.nextElementSibling.getAttribute("value");
+                }
+                else {
+                    next = "sortby";
+                }
+            }
+            nextSet = true;
+            if(checkbox) {
+                checkbox.click();
             } else {
                 //uncheck the filter item.
                 const select = document.getElementById(elem.getAttribute("parent"));
@@ -226,6 +246,20 @@
                 //resubmit the filter.
                 submitForm();
             }
+        }
+
+        /**
+         * Set the focus to the next focusable item if the filter is deleted.
+         * Check the flag for a value set for next.
+         * Wait for the refreshed search results to load.
+         */
+        function set_focus() {
+            if(nextSet === true) {
+                setTimeout(() => {
+                    const buttonSelect = document.getElementById(next).focus();
+                }, "1000");
+            nextSet = false;
+            } 
         }
 
         /**
