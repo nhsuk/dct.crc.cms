@@ -77,11 +77,13 @@ def _change_item_quantity(request):
     basket = Basket(request.session)
     payload = request.POST
     item_id = int(payload["item_id"])
+    title = payload["title"]
     quantity = int(payload["order_quantity"])
     max_quantity = basket.get_max_quantity(item_id)
     basket.change_item_quantity(item_id, quantity)
     return {
         "id": item_id,
+        "title": title,
         "quantity": quantity,
         "max_quantity": max_quantity,
         "updated": True,

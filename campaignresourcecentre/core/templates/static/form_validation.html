@@ -1,11 +1,16 @@
 <script>
-    window.addEventListener('DOMContentLoaded', (event) => {
+
+    function addNovalidate() {
         var formsCollection = document.getElementsByTagName("form");
         for(var i=1;i<formsCollection.length;i++)
         {
             formsCollection[i].setAttribute('novalidate', 'true')
         }
-    })
+    }
+    window.addEventListener('DOMContentLoaded', (event) => {
+        addNovalidate();
+    });
+   
 </script>
 
 <script>
