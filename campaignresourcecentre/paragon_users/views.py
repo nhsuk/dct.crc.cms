@@ -26,6 +26,8 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
+logger = getLogger ()
+
 def ParseError(error):
     error_dict = {
         "Account for this email address already exists": [
@@ -38,6 +40,7 @@ def ParseError(error):
             "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol",
         ],
         "UserToken can't be null or empty": [None, "Unexpected Error Occurred"],
+        "No records match the criteria": [None, "No records found"]
     }
     if error_dict.get(error) is not None:
         parsed = [error_dict.get(error)[0], error_dict.get(error)[1]]
@@ -105,8 +108,8 @@ def signup(request):
                     )
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    f.add_error(paresedError[0], paresedError[1])
+                    parsedError = ParseError(error)
+                    f.add_error(parsedError[0], parsedError[1])
                 return render(request, "users/signup.html", {"form": f})
     else:
         f = RegisterForm()
@@ -233,11 +236,11 @@ def login(request):
                     return redirect("/")
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    if paresedError[0] is None:
-                        login_form.add_error(None, paresedError[1])
+                    parsedError = ParseError(error)
+                    if parsedError[0] is None:
+                        login_form.add_error(None, parsedError[1])
                     else:
-                        login_form.add_error(paresedError[0], paresedError[1])
+                        login_form.add_error(parsedError[0], parsedError[1])
                 return render(request, "users/login.html", {"form": login_form})
     return render(request, "users/login.html", {"form": login_form})
 
@@ -291,6 +294,13 @@ def password_reset(request):
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
+                    if error == "No records match the criteria":
+                        # Don't disclose that this is an unknown address
+                        return render(
+                            request,
+                            "users/confirmation_password_reset.html",
+                            {"email": email},
+                        )
                     parsedError = ParseError(error)
                     if parsedError[0] is None:
                         password_reset_form.add_error(None, parsedError[1])
@@ -453,11 +463,11 @@ def newsletter_preferences(request):
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    if paresedError[0] is None:
-                        newsletter_form.add_error(None, paresedError[1])
+                    parsedError = ParseError(error)
+                    if parsedError[0] is None:
+                        newsletter_form.add_error(None, parsedError[1])
                     else:
-                        newsletter_form.add_error(paresedError[0], paresedError[1])
+                        newsletter_form.add_error(parsedError[0], parsedError[1])
             return render(
                 request,
                 "users/newsletter_preferences.html",
