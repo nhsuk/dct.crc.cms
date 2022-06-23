@@ -37,7 +37,7 @@ def ParseError(error):
             "password",
             "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol",
         ],
-        "UserToken can't be null or empty": [None, "Unexpected Error Occured"],
+        "UserToken can't be null or empty": [None, "Unexpected Error Occurred"],
     }
     if error_dict.get(error) is not None:
         parsed = [error_dict.get(error)[0], error_dict.get(error)[1]]
@@ -270,19 +270,20 @@ def password_reset(request):
                     if dict_item.get("EmailAddress") == email:
                         userToken = dict_item.get("UserToken")
                         firstName = dict_item.get("FirstName")
+                else:
+                    userToken = None
 
-                signedToken = sign(userToken)
-                url = (
-                    request.build_absolute_uri(reverse("password-set"))
-                    + "?q="
-                    + quote(signedToken)
-                )
+                if userToken:
+                    signedToken = sign(userToken)
+                    url = (
+                        request.build_absolute_uri(reverse("password-set"))
+                        + "?q="
+                        + quote(signedToken)
+                    )
 
-                # send confirmation email
-                emailClient = (
-                    gov_notify_factory()
-                )  # This needs to be changed before release
-                emailClient.reset_password(email, firstName, url)
+                    # send confirmation email
+                    gov_notify_factory().reset_password(email, firstName, url)
+
                 return render(
                     request,
                     "users/confirmation_password_reset.html",
@@ -290,11 +291,11 @@ def password_reset(request):
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    if paresedError[0] is None:
-                        password_reset_form.add_error(None, paresedError[1])
+                    parsedError = ParseError(error)
+                    if parsedError[0] is None:
+                        password_reset_form.add_error(None, parsedError[1])
                     else:
-                        password_reset_form.add_error(paresedError[0], paresedError[1])
+                        password_reset_form.add_error(parsedError[0], parsedError[1])
                 return render(
                     request,
                     "users/password_reset.html",
@@ -346,12 +347,12 @@ def password_set(request):
 
                         except ParagonClientError as PCE:
                             for error in PCE.args:
-                                paresedError = ParseError(error)
-                                if paresedError[0] is None:
-                                    password_set_form.add_error(None, paresedError[1])
+                                parsedError = ParseError(error)
+                                if parsedError[0] is None:
+                                    password_set_form.add_error(None, parsedError[1])
                                 else:
                                     password_set_form.add_error(
-                                        paresedError[0], paresedError[1]
+                                        parsedError[0], parsedError[1]
                                     )
                             return render(
                                 request,
