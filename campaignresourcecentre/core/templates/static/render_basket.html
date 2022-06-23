@@ -4,10 +4,12 @@
         const selectedField = resourceForm['order_quantity'];
         const csrfToken = resourceForm['csrfmiddlewaretoken'].value;
         const item_id = resourceForm['item_id'].value;
+        const title = resourceForm['title'].value;
         const data = new FormData();
         data.append('order_quantity', parseInt(selectedField.value));
         data.append('csrfmiddlewaretoken', csrfToken);
         data.append('item_id', item_id);
+        data.append('title', title);
         const button = resourceForm['add-to-basket'];
         button.disabled = true;
 
@@ -16,6 +18,7 @@
             if (this.readyState == 4){
                 if(this.status == 200) {
                     resourceForm.outerHTML = this.responseText;
+                    addNovalidate();
                 }
                 else {
                     button.disabled = false;

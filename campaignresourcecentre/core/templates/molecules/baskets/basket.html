@@ -5,6 +5,7 @@
             <h3 class="govuk-!-font-size-19 govuk-!-display-inline-block govuk-!-padding-right-4">Order quantity</h3>
             <input required="true" class="govuk-input govuk-input--width-4" placeholder="0" type="number" name="order_quantity" value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}" aria-describedby="id-{{ item.id }}" id="item-{{ item.id}}" aria-label="Quantity">
             <input type="hidden" name="item_id" value="{{ item.id }}">
+            <input type="hidden" name="title" value="{{ item.title }}">
             <button name="add-to-basket" class="link-only update-basket govuk-!-padding-left-4 govuk-!-font-size-19" aria-describedby="id-{{ item.id }}">Update</button>
             {% if item.updated == True %}
                 <p class="govuk-!-font-size-16 govuk-!-font-weight-regular govuk-!-padding-top-2" aria-live="polite">Quantity has been updated</p>
