@@ -2,13 +2,17 @@ from django.core.signing import TimestampSigner
 from cryptography.fernet import Fernet
 from django.conf import settings
 import os
+import logging
 
 
+logger = logging.getLogger(__name__)
 env = os.environ.copy()
 
 KEY = settings.PARAGON_SIGN_KEY
 SALT = settings.PARAGON_SALT
-ENCRYPTION_KEY = settings.PARAGON_ENCRYPTION_KEY.encode()
+PARAGON_ENCRYPTION_KEY = settings.PARAGON_ENCRYPTION_KEY or "Default Value"
+if PARAGON_ENCRYPTION_KEY == "Default Value": logger.warning("Paragon Encryption Key Not Set")
+ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY.encode()
 
 
 def sign(token: str, sigKey=KEY, cryptKey=ENCRYPTION_KEY):

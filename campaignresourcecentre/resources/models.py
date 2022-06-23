@@ -3,6 +3,7 @@ from collections import defaultdict
 import json
 from django.core.exceptions import ValidationError
 from django.db import models
+from urllib.parse import quote
 
 from modelcluster.fields import ParentalKey
 
@@ -29,6 +30,7 @@ from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 from campaignresourcecentre.utils.models import BasePage
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
+from campaignresourcecentre.paragon_users.helpers.token_signing import sign
 
 
 class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
@@ -71,6 +73,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         basket = Basket(request.session)
         user_role = None
         user_details = request.session.get("UserDetails")
+        key = quote(sign(self.permission_role))
         if user_details:
             user_role = user_details.get("ProductRegistrationVar1")
 
@@ -115,6 +118,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "maximum_order_quantity": resource.maximum_order_quantity,
                 "sku": resource.sku,
                 "image_alt_text": resource.image_alt_text,
+                "key": key
             }
             for resource in self.resource_items.select_related("image", "document")
         ]
