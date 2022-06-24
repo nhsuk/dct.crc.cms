@@ -15,7 +15,7 @@ def authorise_users(doc,request):
     # if Key is present
     if pageAuth != None:
         try:
-            pageAuth=unsign(pageAuth, max_age=86400)
+            pageAuth=unsign(pageAuth, max_age=1860)
         except:
             logger.warning("Malformed key present in download request")
             return render(request, 'errors/500.html' )
