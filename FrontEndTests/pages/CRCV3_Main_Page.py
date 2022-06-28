@@ -33,7 +33,7 @@ class CRCV3MainPage(BasePage):
     submit = PageElement(By.XPATH, "//button[text()='Submit']")
     Home = PageElement(By.LINK_TEXT, "Home")
     campaigns_tab = PageElement(By.XPATH, "//a[@href='/campaigns/']")
-    Start4Life_link = PageElement(By.XPATH, "//h3[text()='Start4Life']")
+    Start4Life_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Start4Life']]")
     Start4Life_landing = PageElement(By.XPATH, "//h1[text()='Start4Life']")
     Change4Life_link = PageElement(By.XPATH, "//h3[text()='Change4Life']")
     Change4Life_landing = PageElement(By.XPATH, "//h1[text()='Change4Life']")
@@ -47,10 +47,10 @@ class CRCV3MainPage(BasePage):
     Better_Health_Local_Authority_Tier_2_landing = PageElement(By.XPATH, "//h1[text()='Better Health Local Authority Tier 2 Adult Weight Management Programme']")
     how_to_guides_link = PageElement(By.LINK_TEXT, "How to guides")
     how_to_guide_landing = PageElement(By.XPATH, "//h1[text()='How to guides']")
-    S4L_related_website_link = PageElement(By.LINK_TEXT, "http://www.nhs.uk/start4life")
-    C4L_related_website_link = PageElement(By.LINK_TEXT, "https://www.nhs.uk/change4life/")
+    S4L_related_website_link = PageElement(By.LINK_TEXT, "www.nhs.uk/start4life")
+    C4L_related_website_link = PageElement(By.LINK_TEXT, "www.nhs.uk/change4life")
     Betterhealth_related_website_link = PageElement(By.XPATH, "//h3[text()='Better Health Every Mind Matters']")
-    Betterhealth_Start4Life_link = PageElement(By.LINK_TEXT, "https://www.nhs.uk/start4life/")
+    Betterhealth_Start4Life_link = PageElement(By.LINK_TEXT, "www.nhs.uk/start4life/")
     Cervical_Screening_link = PageElement(By.XPATH, "//a[@href='https://www.nhs.uk/conditions/cervical-screening/']")
     We_Are_Undefeatable_link = PageElement(By.LINK_TEXT, "https://weareundefeatable.co.uk/")
     related_website_link_Breastfeeding = PageElement(By.LINK_TEXT, "http://www.nhs.uk/start4life")
@@ -60,15 +60,15 @@ class CRCV3MainPage(BasePage):
     Cervical_Screening_Campaign_landing = PageElement(By.XPATH, "//span[@role='text']")
     #We_Are_Undefeatable_campaign_landing = PageElement(By.XPATH, "")
     related_website_landing = PageElement(By.ID, "trusted-nhs-help-and-advice-during-span-classgreenpregnancyspan-span-classbluebirthspan-and-span-classorangeparenthoodspan")
-    Research_beyond_this_campaign_S4L_link = PageElement(By.XPATH, "//h3[@class='govuk-details__summary-text']")
-    S4L_Breast_Feeding_campaign_S4L_link = PageElement(By.XPATH, "(//h3[@class='govuk-details__summary-text'])[2]")
+    Research_beyond_this_campaign_S4L_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
+    S4L_Breast_Feeding_campaign_S4L_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Start4Life Breastfeeding Campaign']]")
     Research_beyond_this_campaign_C4LRB_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
     Overview_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Overview']]")
     Research_for_this_campaign = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research for this campaign']]")
     Research_for_this_campaign_1 = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
     Start_for_Life_weaning_hub = PageElement(By.XPATH, "//h3[text()[normalize-space()='Start for Life weaning hub']]")
     Calls_to_action_for_the_campaign_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Calls to action for the campaign']]")
-    Campaign_summary = PageElement(By.XPATH, "(//h3[text()='Campaign summary'])[2]")
+    Campaign_summary = PageElement(By.XPATH, "//h3[text()='Campaign summary']")
     Campaign_summary_landing = PageElement(By.XPATH, "//h1[text()='Campaign summary']")
     Key_messages_of_the_campaign_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Key messages of the campaign']]")
     Partners_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Partners']]")
@@ -78,18 +78,18 @@ class CRCV3MainPage(BasePage):
     Research_beyond_this_campaign_S4LW_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Research behind this campaign']]")
     Current_focus_of_the_campaign_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Current focus of the campaign']]")
     How_to_use_this_campaign_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='How to use this campaign']]")
-    Campaign_tookit = PageElement(By.XPATH, "(//h3[text()='Campaign toolkit'])[2]")
-    Accessible_social_media_assets = PageElement(By.XPATH, "(//h3[text()='Accessible social media assets'])[2]")
+    Campaign_tookit = PageElement(By.XPATH, "//h3[text()='Campaign toolkit']")
+    Accessible_social_media_assets = PageElement(By.XPATH, "//h3[text()='Accessible social media assets']")
     Accessible_social_media_assets_landing = PageElement(By.XPATH, "//h1[text()='Accessible social media assets']")
-    films = PageElement(By.XPATH, "(//h3[text()='Films'])[2]")
-    Accessible_posters = PageElement(By.XPATH, "(//h3[text()='Accessible posters'])[2]")
+    films = PageElement(By.XPATH, "//h3[text()='Films']")
+    Accessible_posters = PageElement(By.XPATH, "//h3[text()='Accessible posters']")
     films_landing = PageElement(By.XPATH, "//h1[text()='Films']")
     Accessible_posters_landing = PageElement(By.XPATH, "//h1[text()='Accessible posters']")
-    Radio_advert = PageElement(By.XPATH, "(//h3[text()='Radio advert'])[2]")
-    Digital_screens = PageElement(By.XPATH, "(//h3[text()='Digital screens'])[2]")
+    Radio_advert = PageElement(By.XPATH, "//h3[text()='Radio advert']")
+    Digital_screens = PageElement(By.XPATH, "//h3[text()='Digital screens']")
     Abdominal_and_urological_symptoms_of_cancer = PageElement(By.XPATH, "(//h3[@class='nhsuk-card__heading nhsuk-card__link'])[3]")
-    Accessible_campaign_posters = PageElement(By.XPATH, "(//h3[text()='Accessible campaign posters'])[2]")
-    BSL_social_versions_of_TV_ad_with_copy = PageElement(By.XPATH, "(//h3[text()='BSL social versions of TV ad with copy'])[2]")
+    Accessible_campaign_posters = PageElement(By.XPATH, "//h3[text()='Accessible campaign posters']")
+    BSL_social_versions_of_TV_ad_with_copy = PageElement(By.XPATH, "//h3[text()='BSL social versions of TV ad with copy']")
     Childhood_vaccination_2022 = PageElement(By.XPATH, "//h3[text()='Childhood vaccination 2022']")
     BSL_social_versions_of_TV_ad_with_copy_landing = PageElement(By.XPATH, "//h1[text()='BSL social versions of TV ad with copy']")
     Childhood_vaccination_2022_Landing = PageElement(By.XPATH, "//h1[text()='Childhood vaccination 2022']")
@@ -98,10 +98,10 @@ class CRCV3MainPage(BasePage):
     Accessible_campaign_posters_landing = PageElement(By.XPATH, "//h1[text()='Accessible campaign posters']")
     Calls_to_action_for_the_campaign_paragraph = PageElement(By.XPATH, "//p[@data-block-key='0n3te']")
     Radio_advert_landing = PageElement(By.XPATH, "//h1[text()='Radio advert']")
-    A3_A4_Posters = PageElement(By.XPATH, "(//h3[text()='A3 and A4 posters'])[2]")
-    Social_Media_calendar_assets = PageElement(By.XPATH, "(//h3[text()='Social media calendar and assets'])[2]")
-    Social_media_post_copy_and_assets = PageElement(By.XPATH, "(//h3[text()='Social media post copy and assets'])[2]")
-    Email_signatures = PageElement(By.XPATH, "(//h3[text()='Email signatures'])[2]")
+    A3_A4_Posters = PageElement(By.XPATH, "//h3[text()='A3 and A4 posters']")
+    Social_Media_calendar_assets = PageElement(By.XPATH, "//h3[text()='Social media calendar and assets']")
+    Social_media_post_copy_and_assets = PageElement(By.XPATH, "//h3[text()='Social media post copy and assets']")
+    Email_signatures = PageElement(By.XPATH, "//h3[text()='Email signatures']")
     Research_beyond_this_campaign_S4L_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='ahnhq']")
     Research_beyond_this_campaign_C4LRB_Paragraph = PageElement(By.XPATH, "//h3[@data-block-key='g0bpv']")
     S4L_Breast_Feeding_campaign_S4L_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='6fvv2']")
@@ -113,11 +113,11 @@ class CRCV3MainPage(BasePage):
     Overview_Paragraph_5 = PageElement(By.XPATH, "//p[@data-block-key='ul6gw']")
     Overview_Paragraph_6 = PageElement(By.XPATH, "//p[@data-block-key='wj91v']")
     Overview_Paragraph_7 = PageElement(By.XPATH, "//p[@data-block-key='pnb67']")
-    Key_messages_of_the_campaign_paragraph = PageElement(By.XPATH, "(//p[@data-block-key='n8dyd'])[2]")
+    Key_messages_of_the_campaign_paragraph = PageElement(By.XPATH, "//p[@data-block-key='n8dyd']")
     Research_for_this_campaign_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='wzpzp']")
     Research_for_this_campaign_Paragraph_1 = PageElement(By.XPATH, "//p[@data-block-key='ujajy']")
     Start_for_Life_weaning_hub_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='mw43d']")
-    Partners_Paragraph = PageElement(By.XPATH, "(//p[@data-block-key='w8fw8'])[2]")
+    Partners_Paragraph = PageElement(By.XPATH, "//p[@data-block-key='w8fw8']")
     The_Mind_Plan_Tool_Paragraph = PageElement(By.XPATH, "(//p[@data-block-key='w8fw8'])[3]")
     Change4Life_Nutrition_Paragraph = PageElement(By.XPATH, "//p[text()='Change4Life is a trusted and recognised brand, with 97% of mothers with children aged 5 to 11 associating it with healthy eating.']")
     Change4Life_School_resources_Paragraph = PageElement(By.LINK_TEXT, "School Zone website")
@@ -127,46 +127,46 @@ class CRCV3MainPage(BasePage):
     How_to_use_this_campaign_Paragraph_1 = PageElement(By.XPATH, "//p[@data-block-key='tcavw']")
     #Research_beyond_this_campaign_S4LBF_Paragraph = PageElement(By.CSS_SELECTOR, ".govuk-details__summary")
 
-    Breastfeeding_leaflet = PageElement(By.XPATH, "(//h3[text()='Breastfeeding leaflet'])[2]")
+    Breastfeeding_leaflet = PageElement(By.XPATH, "//h3[text()='Breastfeeding leaflet']")
     Breastfeeding_leaflet_Landing = PageElement(By.XPATH, "//h1[text()='Breastfeeding leaflet']")
-    Posters = PageElement(By.XPATH, "(//h3[text()='Posters'])[2]")
+    Posters = PageElement(By.XPATH, "//h3[text()='Posters']")
     Posters_Landing = PageElement(By.XPATH, "//h1[text()='Posters']")
-    Digital_web_banners = PageElement(By.XPATH, "(//h3[text()='Digital web banners'])[2]")
+    Digital_web_banners = PageElement(By.XPATH, "//h3[text()='Digital web banners']")
     Digital_web_banners_Landing = PageElement(By.XPATH, "//h1[text()='Digital web banners']")
-    Digital_screensavers = PageElement(By.XPATH, "(//h3[text()='Digital screensavers'])[2]")
+    Digital_screensavers = PageElement(By.XPATH, "//h3[text()='Digital screensavers']")
     Digital_screensavers_Landing = PageElement(By.XPATH, "//h1[text()='Digital screensavers']")
-    Email_signature = PageElement(By.XPATH, "(//h3[text()='Email signature'])[2]")
+    Email_signature = PageElement(By.XPATH, "//h3[text()='Email signature']")
     Email_signature_Landing = PageElement(By.XPATH, "//h1[text()='Email signature']")
-    Social_media_toolkit = PageElement(By.XPATH, "(//h3[text()='Social media toolkit'])[2]")
-    Open_artwork = PageElement(By.XPATH, "(//h3[text()='Open artwork'])[2]")
+    Social_media_toolkit = PageElement(By.XPATH, "//h3[text()='Social media toolkit']")
+    Open_artwork = PageElement(By.XPATH, "//h3[text()='Open artwork']")
     Social_media_toolkit_Landing = PageElement(By.XPATH, "//h1[text()='Social media toolkit']")
     Open_artwork_Landing = PageElement(By.XPATH, "//h1[text()='Open artwork']")
-    Bottle_feeding_leaflet = PageElement(By.XPATH, "(//h3[text()='Bottle feeding leaflet'])[2]")
+    Bottle_feeding_leaflet = PageElement(By.XPATH, "//h3[text()='Bottle feeding leaflet']")
     Bottle_feeding_leaflet_Landing = PageElement(By.XPATH, "//h1[text()='Bottle feeding leaflet']")
     Email_signatures_landing = PageElement(By.XPATH, "//h1[text()='Email signatures']")
 
     A4_poster= PageElement(By.XPATH, "(//h3[text()='A4 poster'])[2]")
     A4_poster_Landing = PageElement(By.XPATH, "//h1[text()='A4 poster']")
-    Top_tips_flyer = PageElement(By.XPATH, "(//h3[text()='Top tips flyer'])[2]")
+    Top_tips_flyer = PageElement(By.XPATH, "//h3[text()='Top tips flyer']")
     Top_tips_flyer_Landing = PageElement(By.XPATH, "//h1[text()='Top tips flyer']")
-    Smarter_snacking = PageElement(By.XPATH, "(//h3[text()='Smarter snacking'])[2]")
+    Smarter_snacking = PageElement(By.XPATH, "//h3[text()='Smarter snacking']")
     Smarter_snacking_Landing = PageElement(By.XPATH, "//h1[text()='Smarter snacking']")
-    Pre_measurement_leaflet = PageElement(By.XPATH, "(//h3[text()='Pre-measurement leaflet'])[2]")
+    Pre_measurement_leaflet = PageElement(By.XPATH, "//h3[text()='Pre-measurement leaflet']")
     Pre_measurement_leaflet_Landing = PageElement(By.XPATH, "//h1[text()='Pre-measurement leaflet']")
     #Social_media_toolkit = PageElement(By.XPATH, "(//h3[text()='Social media toolkit'])[2]")
     #Social_media_toolkit_Landing = PageElement(By.XPATH, "//h1[text()='Social media toolkit']")
-    The_Eatwell_Guide = PageElement(By.XPATH, "(//h3[text()='The Eatwell Guide'])[2]")
+    The_Eatwell_Guide = PageElement(By.XPATH, "//h3[text()='The Eatwell Guide']")
     The_Eatwell_Guide_Landing = PageElement(By.XPATH, "//h1[text()='The Eatwell Guide']")
-    Family_Snack_Challenge = PageElement(By.XPATH, "(//h3[text()='Family Snack Challenge'])[2]")
+    Family_Snack_Challenge = PageElement(By.XPATH, "//h3[text()='Family Snack Challenge']")
     Family_Snack_Challenge_Landing = PageElement(By.XPATH, "//h1[text()='Family Snack Challenge']")
-    Sugar_swaps_leaflet = PageElement(By.XPATH, "(//h3[text()='Sugar swaps leaflet'])[2]")
+    Sugar_swaps_leaflet = PageElement(By.XPATH, "//h3[text()='Sugar swaps leaflet']")
     Sugar_swaps_leaflet_Landing = PageElement(By.XPATH, "//h1[text()='Sugar swaps leaflet']")
-    Brand_logos = PageElement(By.XPATH, "(//h3[text()='Brand logos'])[2]")
+    Brand_logos = PageElement(By.XPATH, "//h3[text()='Brand logos']")
     Brand_logos_Landing = PageElement(By.XPATH, "//h1[text()='Brand logos']")
-    Briefing_document = PageElement(By.XPATH, "(//h3[text()='Briefing document'])[2]")
+    Briefing_document = PageElement(By.XPATH, "//h3[text()='Briefing document']")
     Briefing_document_Landing = PageElement(By.XPATH, "//h1[text()='Briefing document']")
-    Social_statics = PageElement(By.XPATH, "(//h3[text()='Social statics'])[2]")
-    Communications_toolkit = PageElement(By.XPATH, "(//h3[text()='Communications toolkit'])[2]")
+    Social_statics = PageElement(By.XPATH, "//h3[text()='Social statics']")
+    Communications_toolkit = PageElement(By.XPATH, "//h3[text()='Communications toolkit']")
     Social_statics_Landing = PageElement(By.XPATH, "//h1[text()='Social statics']")
     Communications_toolkit_Landing = PageElement(By.XPATH, "//h1[text()='Communications toolkit']")
     How_to_use_this_campaign_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='How to use this campaign']]")
@@ -315,8 +315,7 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Sign_in_button)
 
     def verify_logout(self):
-        assert_that(self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable), equal_to(True),
-                    "Sign out label is not displayed")
+        assert_that(self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable), equal_to(True), "Sign out label is not displayed")
 
     def Sign_Out(self, context):
         context.landing_page = CRCV3MainPage(context.browser, context.logger)
@@ -324,6 +323,7 @@ class CRCV3MainPage(BasePage):
         Signout_displayed = context.landing_page.is_Signout_displayed()
         if Signout_displayed is True:
             self.interact.click_element(self.Sign_out_link)
+        sleep(5)
         #self.interact.click_element(self.Sign_out_link)
         #self.interact.click_element(self.Sign_out_link)
         assert_that(self.interrogate.is_element_visible(self.Sign_In_link), equal_to(True), "Sign out is not working")
@@ -361,7 +361,7 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.campaigns_tab)
         if option == "Start4Life":
             self.interact.click_element(self.Start4Life_link)
-            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.Start4Life_landing), equal_to(True), "start4Life page not loaded")
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Start4Life_landing), equal_to(True), "start4Life page not loaded")
             #if option_1 != "Start_4Life_page":
             #self.driver.back()
         elif option == "Change4Life":
@@ -394,11 +394,10 @@ class CRCV3MainPage(BasePage):
 
     def Campaign_details(self, Link):
         if Link == "Start4Life":
-            assert_that(self.interrogate.get_attribute(self.S4L_related_website_link, "innerHTML"), contains_string("http://www.nhs.uk/start4life"), "S4L_related_website_link not listed")
-            #self.interact.click_element(self.S4L_related_website_link)
-            #assert_that(self.interrogate.get_attribute(self.related_website_landing, "innerHTML"), contains_string("Trusted NHS help and advice during "),
-            #         "S4L related website page not loaded")
-            #self.driver.back()
+            self.interact.click_element(self.S4L_related_website_link)
+            assert_that(self.interrogate.get_attribute(self.related_website_landing, "innerHTML"), contains_string("Trusted NHS help and advice during "),
+                     "S4L related website page not loaded")
+            self.driver.back()
         elif Link == "Change4Life":
             self.interact.click_element(self.C4L_related_website_link)
             assert_that(self.interrogate.get_attribute(self.C4L_related_website_landing, "innerHTML"), contains_string("Easy ways to eat well and move more"), "C4L_related_website page not loaded")
@@ -417,7 +416,7 @@ class CRCV3MainPage(BasePage):
                         equal_to(True), "Cervical Screening page not loaded")
             self.driver.back()
         elif Link == "We_Are_Undefeatable":
-            assert_that(right_click_link(self, "https://weareundefeatable.co.uk/"),
+            assert_that(right_click_link(self, "weareundefeatable.co.uk/"),
                         contains_string("https://weareundefeatable.co.uk/"),
                         "We are undefeatable campaign detail url doesn't match")
             # self.interact.click_element(self.We_Are_Undefeatable_link)
@@ -425,9 +424,12 @@ class CRCV3MainPage(BasePage):
             #             equal_to(True), "We Are Undefeatable page not loaded")
             # self.driver.back()
         elif Link == "Better_Health_Local_Authority_Tier_2":
-            assert_that(right_click_link(self, "https://www.nhs.uk/better-health/"),
+            assert_that(right_click_link(self, "www.nhs.uk/better-health/"),
                         contains_string("https://www.nhs.uk/better-health/"),
                         "Better Health Local Authority Tier 2 detail url doesn't match")
+
+
+
 
     def Research_behind_this_campaign(self, source):
         if source == "Start4Life":
@@ -460,9 +462,9 @@ class CRCV3MainPage(BasePage):
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.The_Mind_Plan_Tool_Paragraph), equal_to(True),
                         "The Mind Plan Tool link not expanded")
         elif source == "Help us help you":
-            #self.interact.click_element(self.Overview_link)
-            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_1), equal_to(True),
-            #            "Overview link not expanded")
+            self.interact.click_element(self.Overview_link)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_1), equal_to(True),
+                        "Overview link not expanded")
             self.interact.click_element(self.Current_focus_of_the_campaign_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Current_focus_of_the_campaign_Paragraph), equal_to(True),
                         "Current focus of the campaign link not expanded")
@@ -511,29 +513,29 @@ class CRCV3MainPage(BasePage):
             self.driver.back()
             self.interact.click_element(self.Posters)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Posters_Landing), equal_to(True), "Posters link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
-            self.interact.click_element(self.Digital_web_banners)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Digital_web_banners_Landing), equal_to(True),
-                        "Posters link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
-            self.interact.click_element(self.Digital_screensavers)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Digital_screensavers_Landing), equal_to(True), "Digital screensavers link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
-            self.interact.click_element(self.Email_signature)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Email_signature_Landing), equal_to(True), "Email signature link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
-            self.interact.click_element(self.Social_media_toolkit)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_media_toolkit_Landing), equal_to(True), "Social media toolkit link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
-            self.interact.click_element(self.Bottle_feeding_leaflet)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Bottle_feeding_leaflet_Landing), equal_to(True), "Bottle feeding leaflet link not working")
-            self.Sign_In_register_link()
-            self.driver.back()
+            #self.Sign_In_register_link()
+            #self.driver.back()
+            #self.interact.click_element(self.Digital_web_banners)
+            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.Digital_web_banners_Landing), equal_to(True),
+             #           "Posters link not working")
+            #self.Sign_In_register_link()
+            #self.driver.back()
+            #self.interact.click_element(self.Digital_screensavers)
+            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.Digital_screensavers_Landing), equal_to(True), "Digital screensavers link not working")
+            #self.Sign_In_register_link()
+            #self.driver.back()
+            #self.interact.click_element(self.Email_signature)
+            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.Email_signature_Landing), equal_to(True), "Email signature link not working")
+            #self.Sign_In_register_link()
+            #self.driver.back()
+            # self.interact.click_element(self.Social_media_toolkit)
+            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_media_toolkit_Landing), equal_to(True), "Social media toolkit link not working")
+            # self.Sign_In_register_link()
+            # self.driver.back()
+            # self.interact.click_element(self.Bottle_feeding_leaflet)
+            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Bottle_feeding_leaflet_Landing), equal_to(True), "Bottle feeding leaflet link not working")
+            # self.Sign_In_register_link()
+            # self.driver.back()
         elif source == "Change4Life":
             #self.interact.click_element(self.A4_poster)
             #assert_that(self.interrogate.is_image_visible_by_checking_src(self.A4_poster_Landing), equal_to(True), "A4 poster link not working")
@@ -557,11 +559,11 @@ class CRCV3MainPage(BasePage):
                         equal_to(True), "Social media toolkit leaflet link not working")
             self.Sign_In_register_link()
             self.driver.back()
-            #self.interact.click_element(self.The_Eatwell_Guide)
-            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.The_Eatwell_Guide_Landing),
-            #            equal_to(True), "The Eatwell Guide link not working")
-            #self.Sign_In_register_link()
-            #self.driver.back()
+            self.interact.click_element(self.The_Eatwell_Guide)
+            assert_that(self.interrogate.is_image_visible_by_checking_src(self.The_Eatwell_Guide_Landing),
+                        equal_to(True), "The Eatwell Guide link not working")
+            self.Sign_In_register_link()
+            self.driver.back()
             self.interact.click_element(self.Family_Snack_Challenge)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Family_Snack_Challenge_Landing),
                         equal_to(True), "Family Snack Challenge link not working")
@@ -599,12 +601,12 @@ class CRCV3MainPage(BasePage):
                         equal_to(True), "Betterhealth Start4Life link not working")
             self.Sign_In_register_link()
             self.driver.back()
-        elif source == "Cervical_Screening":
-            self.interact.click_element(self.Campaign_tookit)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Campaign_tookit_landing), equal_to(True),
-                        "Campaign toolkit link not expanded")
-            self.Sign_In_register_link()
-            self.driver.back()
+        # elif source == "Cervical_Screening":
+        #     self.interact.click_element(self.Campaign_tookit)
+        #     assert_that(self.interrogate.is_image_visible_by_checking_src(self.Campaign_tookit_landing), equal_to(True),
+        #                 "Campaign toolkit link not expanded")
+        #     self.Sign_In_register_link()
+        #     self.driver.back()
         elif source == "We_Are_Undefeatable":
             self.interact.click_element(self.Social_media_toolkit)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_media_toolkit_Landing),
@@ -671,13 +673,13 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.A3_A4_Posters)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.A3_A4_Posters_landing), equal_to(True),
                         "A3 & A4 Posters link not working")
+            #self.Sign_In_register_link()
+            #self.driver.back()
+            #self.interact.click_element(self.films)
+            #assert_that(self.interrogate.is_image_visible_by_checking_src(self.films_landing), equal_to(True),
+             #           "films landing link not working")
             self.Sign_In_register_link()
             self.driver.back()
-            # self.interact.click_element(self.films)
-            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.films_landing), equal_to(True),
-            #             "films landing link not working")
-            # self.Sign_In_register_link()
-            # self.driver.back()
             self.interact.click_element(self.Accessible_posters)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Accessible_posters_landing), equal_to(True),
                         "Accessible posters link not working")

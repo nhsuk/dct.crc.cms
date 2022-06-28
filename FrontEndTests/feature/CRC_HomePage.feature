@@ -60,17 +60,17 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | prabhu.swamy1@nhs.net      |
     Then verify forgot password confirmation message
 
-  @CRCV3-006 @wip
-  Scenario Outline: open CRCV3 site and register a user with all fields entered correctly
-    Given I loaded CRCV3 site to load the home page
-    When I click on Register link where register page loaded with all fields displayed
-    Then I enter Register details of "<FirstName>" "<LastName>" "<Org_Name>" "<Postcode>" "<Email>" "<Password>"
-    #Then I Register
-     Examples:
-      | FirstName   | LastName      | Org_Name      | Postcode      | Email          | Password     |
-      | Jim         | Smith         | NHS Digital   | SL109LH       | qie1@qie14.com | aDmin_c_11!  |
-    Then verify logout displayed in place of Sign in
-    #Then click Sign Out link and verify its logged out successfully
+#  @CRCV3-006 @wip
+#  Scenario Outline: open CRCV3 site and register a user with all fields entered correctly
+#    Given I loaded CRCV3 site to load the home page
+#    When I click on Register link where register page loaded with all fields displayed
+#    Then I enter Register details of "<FirstName>" "<LastName>" "<Org_Name>" "<Postcode>" "<Email>" "<Password>"
+#    #Then I Register
+#     Examples:
+#      | FirstName   | LastName      | Org_Name      | Postcode      | Email          | Password     |
+#      | Jim         | Smith         | NHS Digital   | SL109LH       | qie1@qie14.com | aDmin_c_11!  |
+#    Then verify logout displayed in place of Sign in
+#    #Then click Sign Out link and verify its logged out successfully
 
   @CRCV3-007
   Scenario: open CRCV3 site and verify Home tab and its links
@@ -78,29 +78,29 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     #When I Click click on Home page tab
     Then Verify Covid advices resources links and Coronavirus campaigns and resources button working
 
-  @CRCV3-008
-  Scenario: open CRCV3 site and verify Latest Updated links are loaded to respective pages
-    Given I loaded CRCV3 site to load the home page
-    When I click on Latest updates links
-      | links            |
-      | Start4Life       |
-      | Change4Life      |
-      #| BetterHealth     |
-    Then Verify how to guide page loaded successfully
+#  @CRCV3-008 @wip
+#  Scenario: open CRCV3 site and verify Latest Updated links are loaded to respective pages
+#    Given I loaded CRCV3 site to load the home page
+#    When I click on Latest updates links
+#      | links            |
+#      | Start4Life       |
+#      | Change4Life      |
+#      #| BetterHealth     |
+#    Then Verify how to guide page loaded successfully
 
-  @CRCV3-009
-  Scenario: open CRCV3 site and verify Start4Life Campaigns pages and contents
-    Given I loaded CRCV3 site to load the home page
-    When I browsed to Start4life resource campaign
-    #Then Verify Campaign details for "Start4Life"
-    #Then Research behind this campaign and how to use this campaign expand and collapse for "Start4Life"
-    #Then Verify "Start4Life" Resources
+#  @CRCV3-009 @wip
+#  Scenario: open CRCV3 site and verify Start4Life Campaigns pages and contents
+#    Given I loaded CRCV3 site to load the home page
+#    When I browsed to Start4life resource campaign
+#    #Then Verify Campaign details for "Start4Life"
+#    #Then Research behind this campaign and how to use this campaign expand and collapse for "Start4Life"
+#    #Then Verify "Start4Life" Resources
 
-  @CRCV3-010
-  Scenario: open CRCV3 site and verify Start4Life Breastfeeding pages and contents
-    Given I loaded CRCV3 site to load the home page
-    When I browsed to Start4life resource campaign
-    Then Research behind this campaign and how to use this campaign expand and collapse for "S4L_Breastfeeding"
+#  @CRCV3-010 @wip
+#  Scenario: open CRCV3 site and verify Start4Life Breastfeeding pages and contents
+#    Given I loaded CRCV3 site to load the home page
+#    When I browsed to Start4life resource campaign
+#    Then Research behind this campaign and how to use this campaign expand and collapse for "S4L_Breastfeeding"
 
   @CRCV3-011
   Scenario: open CRCV3 site and Validate all errors are displayed in Register form Empty fields
@@ -149,13 +149,13 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Change4Life"
     Then Verify "Change4Life" Resources
 
-  @CRCV3-014 @wip
-  Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
-    Given I loaded CRCV3 site to load the home page
-    When I browsed to Betterhealth resource campaign
-    Then Verify Campaign details for "Betterhealth"
-    Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth"
-    Then Verify "Betterhealth" Resources
+#  @CRCV3-014 @wip
+#  Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
+#    Given I loaded CRCV3 site to load the home page
+#    When I browsed to Betterhealth resource campaign
+#    Then Verify Campaign details for "Betterhealth"
+#    Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth"
+#    Then Verify "Betterhealth" Resources
 
   @CRCV3-015
   Scenario Outline: open CRCV3 site and verify help us Help you Campaigns pages and links
