@@ -70,7 +70,7 @@
       {"label":"Tamil","code":"TAMIL","type":"term","children":[]},
       {"label":"Traditional Chinese","code":"TRADCHIN","type":"term","children":[]},
       {"label":"Turkish","code":"TURKISH","URDU":"term","children":[]},
-      {"label":"Urdu","code":"TAMIL","URDU":"term","children":[]},
+      {"label":"Urdu","code":"URDU","type":"term","children":[]},
       {"label":"Yiddish","code":"YIDDISH","type":"term","children":[]}
     ]
   },
