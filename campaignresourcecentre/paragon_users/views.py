@@ -2,6 +2,7 @@ from datetime import date
 from logging import getLogger
 from urllib.parse import quote
 
+from django.http import HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
@@ -25,6 +26,8 @@ from .helpers.newsletter import deserialise, serialise
 from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
+
+logger = getLogger()
 
 def ParseError(error):
     error_dict = {
@@ -103,6 +106,10 @@ def signup(request):
                         request,
                         "users/confirmation_registration.html",
                     )
+                else:
+                    # Report the failure and return a server error
+                    logger.error ("Failed to create account: %s" % (response,))
+                    return HttpResponseServerError ()
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
