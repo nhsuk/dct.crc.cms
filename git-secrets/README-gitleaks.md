@@ -47,6 +47,13 @@ If not installed, run this command to install (again, open command prompt as adm
 
 * pip install pre-commit (uses the python pip command to install pre-commit. You will need to ensure the "pip" executable is in a folder in your PATH)
 
+# TroubleShooting
+
+If you are using WSL
+* use brew on your linux environment and follow the Mac Setup
+* use `chmod -x {file path}` to allow the git-leaks-wrapper-mac.sh file to be executed
+
+
 ---------
 
 # (To be done the first time a repository is cloned to a new laptop)
@@ -125,3 +132,4 @@ Push branch/repository back to server so it is accessible to other users
  * Testing
  In the root folder of the git repository, run the command:
  gitleaks --path=. --repo-config-path="./git-secrets/nhsd-gitleaks-config.toml" --verbose
+
