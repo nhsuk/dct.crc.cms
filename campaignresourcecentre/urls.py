@@ -64,6 +64,7 @@ private_urlpatterns = [
     path("baskets/add_item/", basket_views.add_item, name="add_item"),
     path("baskets/render_resource_basket/", basket_views.render_resource_basket, name="render_resource_basket"),
     path("baskets/render_basket/", basket_views.render_basket, name="render_basket"),
+    path("baskets/render_basket_errors/", basket_views.render_basket_errors, name="render_basket_errors"),
     path("baskets/change_item_quantity/", basket_views.change_item_quantity, name="change_item_quantity"),
     path("baskets/remove_item/", basket_views.remove_item, name="remove_item"),
     path("baskets/view_basket/", basket_views.view_basket, name="view_basket"),
@@ -150,5 +151,6 @@ urlpatterns = (
 )
 
 # Error handlers
+handler400 = "campaignresourcecentre.utils.views.bad_request"
 handler404 = "campaignresourcecentre.utils.views.page_not_found"
 handler500 = "campaignresourcecentre.utils.views.server_error"
