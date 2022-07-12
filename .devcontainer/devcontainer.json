@@ -15,6 +15,9 @@
 		}
 	},
 
+	// Anything that needs to be executed as the container is started for the first time
+	"postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -38,7 +41,8 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
-				"ms-python.vscode-pylance"
+				"ms-python.vscode-pylance",
+				"unsaved-files-vscode"
 			]
 		}
 	},
@@ -48,6 +52,11 @@
 	"features": {
 		"docker-in-docker": "latest",
 		"git": "latest",
-		"azure-cli": "latest"
+		"azure-cli": "latest",
+		"kubectl-helm-minikube": {
+			"version": "latest",
+			"helm": "latest",
+			"minikube": "latest"
+		}
 	}
 }
