@@ -26,7 +26,8 @@
                             <div class="intro-panel">
                                 <div class="govuk-grid-row">
                                     <div class="govuk-grid-column-one-third">
-                                        {% image campaign_update.image width-400 %}
+                                        {% image campaign_update.image width-400 as campaign_image %}
+                                        <img src="{{ campaign_image.url }}" alt="{% if campaign_update.image_alt_text %}{{ campaign_update.image_alt_text }}{% endif %}" />
                                     </div>
 
                                     <div class="govuk-grid-column-two-thirds">
