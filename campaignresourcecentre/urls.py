@@ -120,14 +120,18 @@ if settings.DEBUG:
     debug_urlPatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     debug_urlPatterns += [
-        # Add views for testing 404 and 500 templates
+        # Add views for testing 400, 404 and 500 templates
+        path(
+            "test400/",
+            TemplateView.as_view(template_name="errors/400.html"),
+        ),
         path(
             "test404/",
             TemplateView.as_view(template_name="errors/404.html"),
         ),
         path(
             "test500/",
-            TemplateView.as_view(template_name="errors/5010.html"),
+            TemplateView.as_view(template_name="errors/500.html"),
         ),
     ]
 
