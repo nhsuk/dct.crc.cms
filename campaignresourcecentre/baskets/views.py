@@ -21,15 +21,9 @@ def _add_item(request):
     basket = Basket(request.session)
     payload = request.POST
     try:
-        # Check if either of sku and quantity provided is dodgy
+        # Check if a resource with this SKU exists
         item_obj = ResourceItem.objects.get(sku=payload["sku"])
-        if not "order_quantity" in payload:
-            logger.error ("No order quantity")
-            raise SuspiciousOperation
-        order_quantity_text = payload ["order_quantity"]
-        if not order_quantity_text.isdigit ():
-            logger.error ("Non-numeric order quantity: '%s'", order_quantity_text)
-            raise SuspiciousOperation
+
         # Compose basket item object
         item_image_rendition = item_obj.image.get_rendition("width-200")
         rendition_img_attrs = item_image_rendition.attrs
@@ -44,12 +38,10 @@ def _add_item(request):
             "image_url": item_obj.image.file.url,
             "image_alt_text": item_obj.image_alt_text,
             "max_quantity": item_obj.maximum_order_quantity,
+            "sku": item_obj.sku
         }
-        basket.add_item(item, int(order_quantity_text))
+        basket.add_item(item, payload.get ("order_quantity"))
         item["items_in_basket_count"] =  basket.get_item_count(item_obj.pk)
-        item["sku"] = item_obj.sku
-        # maximum_order_quantity seems to duplicate max_quantity - refactor ?
-        item["maximum_order_quantity"] = item_obj.maximum_order_quantity
         return item
     except Exception as e:
         logger.error ("Failed to find resource item: %s", e)
@@ -94,15 +86,7 @@ def _change_item_quantity(request):
     payload = request.POST
     try:
         item_id = int(payload["item_id"])
-        item = basket.get_item (item_id)
-        if item is not None and "order_quantity" in payload:
-            quantity = int(payload["order_quantity"])
-            basket.change_item_quantity(item_id, quantity)
-            result = item.copy ()
-            result ["updated"] = True
-            return result
-        else:
-            logger.error ("Invalid basket item. Payload: %s", payload)
+        return basket.change_item_quantity(item_id, payload.get ("order_quantity"))
     except Exception as e:
         logger.error ("Change item quantity error. Payload: %s", payload)
     raise SuspiciousOperation

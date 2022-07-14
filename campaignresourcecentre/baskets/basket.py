@@ -1,6 +1,5 @@
 from .exceptions import ItemNotInBasketError
 
-
 class Basket:
     def __init__(self, session):
         self.session = session
@@ -16,33 +15,39 @@ class Basket:
     # Key - no_quantity: True if no quantity provided for this item
     # Key - bad_quantity: undefined if no_quantity, otherwise True if quantity is outside range 1..maximum
 
-    def _update_quantity(self, item, quantity):
-        if quantity is None:
+    def _update_quantity(self, item, quantity_text):
+        if item.get ("updated"): del item ['updated']
+        previousQuantity = item.get ("quantity")
+        if quantity_text:
+            if "no_quantity" in item: del item ["no_quantity"]
+            bad_quantity = not quantity_text.isdigit ()
+            if not bad_quantity:
+                quantity = int (quantity_text)
+        else:
             item ["no_quantity"] = True
             if "bad_quantity" in item: del item ["bad_quantity"]
             if "quantity" in item: del item ["quantity"]
-        else:
-            item ["no_quantity"] = False
+            return item
+        item ["no_quantity"] = False
+        if not bad_quantity:
             max_quantity = item["max_quantity"]
-            item ["bad_quantity"] = quantity > max_quantity
-            item ["quantity"] = quantity
+            new_quantity = quantity + (previousQuantity if previousQuantity is not None else 0)
+            if new_quantity <= max_quantity:
+                item ["quantity"] = new_quantity
+                if previousQuantity is not None and\
+                    previousQuantity != new_quantity:
+                    item ["updated"] = True
+            else:
+                bad_quantity = True
+        item ["bad_quantity"] = bad_quantity
         return item
 
     def get_item(self, item_id):
         return self.basket.get (item_id)
 
-    def add_item(self, item, quantity):
-        existing_item = self.basket.get(item ["id"])
-        if quantity is not None:
-            total_quantity = quantity
-            if existing_item:
-                existing_quantity = existing_item.get ("quantity")
-                total_quantity =\
-                    existing_quantity + quantity if existing_quantity else None
-        else:
-            total_quantity = None
-        item = self._update_quantity(item, total_quantity)
-        self.basket[item ["id"]] = item
+    def add_item(self, new_item, quantity_text):
+        self._update_quantity(new_item, quantity_text)
+        self.basket[new_item ["id"]] = new_item
         self._update_session_basket()
 
     def remove_item(self, item_id):
@@ -52,13 +57,12 @@ class Basket:
         else:
             raise ItemNotInBasketError ("Item is not added to basket!")
 
-    def change_item_quantity(self, item_id, quantity):
+    def change_item_quantity(self, item_id, quantity_text):
         item = self.basket.get(item_id)
         if item:
-            total_quantity = quantity
-            item = self._update_quantity(item, total_quantity)
-            self.basket[item.get("id")] = item
+            self._update_quantity(item, quantity_text)
             self._update_session_basket()
+            return item
         else:
             raise ItemNotInBasketError ("Item is not added to basket!")
 
@@ -68,7 +72,7 @@ class Basket:
     def get_item_count(self, item_id):
         item = self.basket.get(item_id)
         if item:
-            return item["quantity"]
+            return item.get ("quantity", 0)
         return 0
 
     def get_items_count(self):
@@ -79,11 +83,11 @@ class Basket:
         self._update_session_basket()
 
     def get_max_quantity(self, item_id):
-        item = self.basket.get(item_id)
-        max_quantity = item["max_quantity"]
-        return max_quantity
+        if item_id in self.basket:
+            return self.basket [item_id] ["max_quantity"]
+        raise ItemNotInBasketError ("Item is not added to basket!")
 
     def get_title(self, item_id):
-        item = self.basket.get(item_id)
-        title = item["title"]
-        return title
+        if item_id in self.basket:
+            return self.basket [item_id] ["title"]
+        raise ItemNotInBasketError ("Item is not added to basket!")
