@@ -82,6 +82,7 @@ exclude = '''
     | docs
     | venv
     | node_modules
+    | migrations
   )/
 )
 '''
