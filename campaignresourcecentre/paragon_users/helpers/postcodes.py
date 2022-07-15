@@ -5,20 +5,27 @@ def get_postcode_region(postcode):
 
     API_URL = "https://api.postcodes.io/postcodes?q="
 
-    data = requests.get(API_URL + requests.utils.quote(postcode, safe=''))
+    data = requests.get(API_URL + requests.utils.quote(postcode, safe=""))
     if data.status_code != 200:
-        raise Exception ("Postcode request failed %s (%s)" % (data.status_code, data.text))
+        raise Exception(
+            "Postcode request failed %s (%s)" % (data.status_code, data.text)
+        )
 
     try:
-        response = data.json ()
+        response = data.json()
     except Exception as e:
-        raise Exception("Failed to retrieve postcode '%s' - not a valid JSON response '%s' (%s)" %
-            (postcode, data.text, e))
+        raise Exception(
+            "Failed to retrieve postcode '%s' - not a valid JSON response '%s' (%s)"
+            % (postcode, data.text, e)
+        )
 
     try:
         return response.get("result")[0].get("region")
-    except Exception as e: # noqa
-        raise Exception("Failed to retrieve postcode region '%s' (%s)" % (postcode, data.text))
+    except Exception as e:  # noqa
+        raise Exception(
+            "Failed to retrieve postcode region '%s' (%s)" % (postcode, data.text)
+        )
+
 
 def get_region(postcode: str):
     baseRegion = get_postcode_region(postcode=postcode)

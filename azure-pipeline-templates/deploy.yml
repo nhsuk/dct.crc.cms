@@ -10,7 +10,7 @@ steps:
       pip3 install black
     displayName: Installs the latest version of black
   - script: |
-      black --check .
+      black --check ./ --config 'poetry/pyproject.toml'
     displayName: Checks if the python scripts are formatted properly with black
   - bash: |
       echo "

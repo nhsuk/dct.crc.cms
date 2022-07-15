@@ -9,11 +9,11 @@ from .data_classes import (
     UpdatePassword,
     Address,
     CreateOrder,
-    MockParagonResponse,    # For performance testing
+    MockParagonResponse,  # For performance testing
 )
 from .exceptions import ParagonClientError
 
-requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ':ECDH+AES256:DH+AES256:!DH'
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ":ECDH+AES256:DH+AES256:!DH"
 
 
 class Client:
@@ -26,7 +26,7 @@ class Client:
             "ProductToken": settings.PARAGON_API_KEY,
         }
         # For performance testing - determine whether we are operating in a test environment
-        #self.may_mock = settings.PARAGON_MOCK is not None and\
+        # self.may_mock = settings.PARAGON_MOCK is not None and\
         #    settings.PARAGON_MOCK.lower ().startswith ("t")
         self.may_mock = settings.PARAGON_MOCK
 
@@ -40,48 +40,46 @@ class Client:
 
     # Revised call - delegates to either mock or real API
     def call(self):
-        if self.may_mock: # Is this a mocking client?
+        if self.may_mock:  # Is this a mocking client?
             # Decide whether to mock this specific call, or not
             mocking = True
             if mocking:
                 if self.call_method == "/Login":
-                    self.response = MockParagonResponse (
-                        content=json.dumps ({
-                            "ParagonUser": "A token token"
-                        }),
-                        status_code=200
+                    self.response = MockParagonResponse(
+                        content=json.dumps({"ParagonUser": "A token token"}),
+                        status_code=200,
                     )
                 elif self.call_method == "/RetrieveProfile":
-                    self.response = MockParagonResponse (
+                    self.response = MockParagonResponse(
                         status_code=200,
-                        content=json.dumps ({
-                            "UserToken": "token token",
-                            "ProductToken": "the product",
-                            "Title": "mr",
-                            "FirstName": "r",
-                            "LastName": "c",
-                            "EmailAddress": "testemail@email.com",
-                            "ContactVar1": "1",
-                            "ContactVar2": "1",
-                            "ContactVar3": "1",
-                            "ContactVar4": "1",
-                            "ContactVar5": "1",
-                            "ProductRegistrationVar1": "Standard",  # or "Uber"
-                            "ProductRegistrationVar2": "True",
-                            "ProductRegistrationVar3": "A mockery",
-                            "ProductRegistrationVar4": "other",
-                            "ProductRegistrationVar5": "1",
-                            "ProductRegistrationVar6": "true",
-                            "ProductRegistrationVar7": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-                            "ProductRegistrationVar8": "2021-09-30T16:45",
-                            "ProductRegistrationVar9": "WC1 2AA",
-                            "ProductRegistrationVar10": "2021-09-30T16:40",
-                        })
+                        content=json.dumps(
+                            {
+                                "UserToken": "token token",
+                                "ProductToken": "the product",
+                                "Title": "mr",
+                                "FirstName": "r",
+                                "LastName": "c",
+                                "EmailAddress": "testemail@email.com",
+                                "ContactVar1": "1",
+                                "ContactVar2": "1",
+                                "ContactVar3": "1",
+                                "ContactVar4": "1",
+                                "ContactVar5": "1",
+                                "ProductRegistrationVar1": "Standard",  # or "Uber"
+                                "ProductRegistrationVar2": "True",
+                                "ProductRegistrationVar3": "A mockery",
+                                "ProductRegistrationVar4": "other",
+                                "ProductRegistrationVar5": "1",
+                                "ProductRegistrationVar6": "true",
+                                "ProductRegistrationVar7": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                                "ProductRegistrationVar8": "2021-09-30T16:45",
+                                "ProductRegistrationVar9": "WC1 2AA",
+                                "ProductRegistrationVar10": "2021-09-30T16:40",
+                            }
+                        ),
                     )
                 else:
-                    self.response = MockParagonResponse (
-                        status_code=200
-                    )        
+                    self.response = MockParagonResponse(status_code=200)
         else:
             self._call()
 
@@ -89,11 +87,26 @@ class Client:
         raise ParagonClientError(json.loads(self.response.content))
 
     def create_account(
-        self, email, password, first_name, last_name, organisation, job_title, postcode, created_at,
+        self,
+        email,
+        password,
+        first_name,
+        last_name,
+        organisation,
+        job_title,
+        postcode,
+        created_at,
     ):
         self.call_method = "/Signup"
         registration = Registration(
-            email, password, first_name, last_name, organisation, job_title, postcode, created_at,
+            email,
+            password,
+            first_name,
+            last_name,
+            organisation,
+            job_title,
+            postcode,
+            created_at,
         )
         self.data.update(registration.params())
         self.call()
@@ -126,7 +139,7 @@ class Client:
                 "EmailAddress": string,
                 "FirstName": string,
                 "LastName": string,
-                "SortColumn": 0, # Sort by created at
+                "SortColumn": 0,  # Sort by created at
                 "Top": limit,
                 "Offset": offset,
             }
@@ -170,7 +183,7 @@ class Client:
         active=None,
         verified_at=None,
         subscriptions=None,
-        postcode=None
+        postcode=None,
     ):
         self.call_method = "/UpdateProfile"
         user_profile = User(
@@ -182,7 +195,7 @@ class Client:
             job_title,
             role,
             active,
-            '',
+            "",
             verified_at,
             subscriptions,
             postcode,

@@ -7,29 +7,31 @@ from campaignresourcecentre.notifications.adapters import gov_notify_factory
 
 logger = getLogger(__name__)
 
+
 def send_verification(token, url, email, first_name):
     # sign token
     token = sign(token)
-    url = (url + "?q=" + quote(token))
+    url = url + "?q=" + quote(token)
     # send email
     try:
         emailClient = gov_notify_factory()
         emailClient.confirm_registration(email, first_name, url)
     except Exception as e1:
-        logger.error ("Error sending verification email: %s", e1)
+        logger.error("Error sending verification email: %s", e1)
         try:
-            logger.error (
+            logger.error(
                 "Recording email failure (field lengths %d, %d, %d, %d)",
-                len (token), len (email), len (url), len (first_name)
+                len(token),
+                len(email),
+                len(url),
+                len(first_name),
             )
             vEmail = VerificationEmail(
-                user_token=token,
-                email=email,
-                url=url,
-                first_name=first_name)
+                user_token=token, email=email, url=url, first_name=first_name
+            )
             vEmail.save()
         except Exception as e2:
             # Sometimes even recording the send failure fails,
             # log it but the main problem to raise is the the send failure itself
-            logger.error ("Failed to record email send failure: %s", e2)
+            logger.error("Failed to record email send failure: %s", e2)
         raise

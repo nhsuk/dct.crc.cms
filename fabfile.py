@@ -10,7 +10,7 @@ from invoke.tasks import task
 if os.path.exists(".env"):
     with open(".env", "r") as f:
         for line in f.readlines():
-            line = line.strip ()
+            line = line.strip()
             if not line or line.startswith("#"):
                 continue
             var, value = line.split("=", 1)
@@ -47,7 +47,11 @@ def build(c):
     """
     group = subprocess.check_output(["id", "-gn"], encoding="utf-8").strip()
     local("mkdir -p media database_dumps campaignresourcecentre/static_compiled")
-    local("chown -R $USER:{} media database_dumps campaignresourcecentre/static_compiled".format(group))
+    local(
+        "chown -R $USER:{} media database_dumps campaignresourcecentre/static_compiled".format(
+            group
+        )
+    )
     local("chmod -R 775 media database_dumps campaignresourcecentre/static_compiled")
     if FRONTEND == "local":
         local("docker-compose up -d --build web")
@@ -68,9 +72,7 @@ def start(c):
     else:
         local("docker-compose up -d web frontend")
 
-    print(
-        "Use `fab sh` to enter the web container and run `djrun`"
-    )
+    print("Use `fab sh` to enter the web container and run `djrun`")
     if FRONTEND != "local":
         print("Use `fab npm start` to run the front-end tooling")
 
@@ -162,7 +164,7 @@ def qstart(c):
 
     try:
         kill(c)
-    except: # noqa
+    except:  # noqa
         pass
 
     start(c)
@@ -170,7 +172,7 @@ def qstart(c):
 
 
 def delete_docker_database(c, local_database_name=LOCAL_DATABASE_NAME):
-    
+
     print(f"Deleting existing database {LOCAL_DATABASE_NAME}...")
     dexec(
         "dropdb --if-exists --host db --username={project_name} {database_name}".format(
@@ -187,16 +189,23 @@ def delete_docker_database(c, local_database_name=LOCAL_DATABASE_NAME):
         "db",
     )
 
-@task
-def upload_file (c, local_path, remote_path, service):
-    command = "docker-compose cp {} {}:{}".format(quote(local_path), quote(service), quote (remote_path))
-    return local(command)
 
 @task
-def download_file (c, local_path, remote_path, service):
-    command = "docker-compose cp {}:{} {}".format(quote(service), quote (remote_path), quote(local_path))
+def upload_file(c, local_path, remote_path, service):
+    command = "docker-compose cp {} {}:{}".format(
+        quote(local_path), quote(service), quote(remote_path)
+    )
     return local(command)
-    
+
+
+@task
+def download_file(c, local_path, remote_path, service):
+    command = "docker-compose cp {}:{} {}".format(
+        quote(service), quote(remote_path), quote(local_path)
+    )
+    return local(command)
+
+
 @task
 def import_data(c, database_filename):
     """
@@ -226,7 +235,7 @@ def sync_db(c, env):
     options = {
         "staging": "staging_dump",
         "integration": "integration_dump",
-        "review": "review_dump"
+        "review": "review_dump",
     }
 
     if options.get(env) is not None:
@@ -243,14 +252,18 @@ def sync_db(c, env):
                 --version "*" \
                 --path database_dumps"""
             )
-        except: # noqa
-            print("Please ensure that you are logged in az cli and have the az cli extension installed.")
+        except:  # noqa
+            print(
+                "Please ensure that you are logged in az cli and have the az cli extension installed."
+            )
         else:
             print("Attempting to import the database...")
             import_data(c, "/database_dumps/db.dump")
             print("All done. You might need to run migrations.")
     else:
-        print("Please enter a valid environment name such as 'staging', 'integration' or 'review'")
+        print(
+            "Please enter a valid environment name such as 'staging', 'integration' or 'review'"
+        )
 
 
 @task
@@ -263,8 +276,10 @@ def create_dump(c):
             --definition-id 2 \
             --open"""
         )
-    except: # noqa
-        print("Please ensure that you are logged in az cli and have the az cli extension installed.")
+    except:  # noqa
+        print(
+            "Please ensure that you are logged in az cli and have the az cli extension installed."
+        )
 
 
 def delete_local_renditions(c, local_database_name=LOCAL_DATABASE_NAME):
@@ -304,7 +319,7 @@ def dellar_snapshot(c, filename):
 
 @task
 def dellar_restore(c, filename):
-    """ Restore the database from a snapshot in the db container """
+    """Restore the database from a snapshot in the db container"""
     delete_docker_database(c)
 
     dexec(

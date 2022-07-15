@@ -3,6 +3,7 @@ from wagtail.documents.blocks import DocumentChooserBlock
 
 from wagtail.images.blocks import ImageChooserBlock
 
+
 class ImageBlock(blocks.StructBlock):
     image = ImageChooserBlock()
     caption = blocks.CharBlock(required=False)
@@ -38,9 +39,7 @@ class LeftImageWithTextBlock(blocks.StructBlock):
 
     class Meta:
         icon = "doc-full-inverse"
-        template = (
-            "molecules/streamfield/blocks/left_image_with_text_block.html"
-        )
+        template = "molecules/streamfield/blocks/left_image_with_text_block.html"
 
 
 class AccordionBlock(blocks.StructBlock):
@@ -71,15 +70,14 @@ class TextWithImageStackBlock(blocks.StructBlock):
         min_value=2,
         max_value=6,
         default=3,
-        help_text='The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.')
+        help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",
+    )
     text = blocks.RichTextBlock(features=["bold", "italic", "link"])
     images = blocks.ListBlock(ImageChooserBlock())
 
     class Meta:
         icon = "doc-full-inverse"
-        template = (
-            "molecules/streamfield/blocks/text_with_image_stack_block.html"
-        )
+        template = "molecules/streamfield/blocks/text_with_image_stack_block.html"
 
 
 # Main streamfield block to be inherited by Pages

@@ -125,7 +125,7 @@ def index(request):
     # Wrap users list to provide pagination attributes
     users = UsersWrapper(users, num_pages, page_num)
 
-    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
     if is_ajax:
         return TemplateResponse(
             request,
@@ -263,16 +263,16 @@ def set_password(request, user_token):
         if form.is_valid():
             password = form.cleaned_data["password"]
             try:
-                paragon_client.update_password(
-                    user_token=user_token, password=password
-                )
+                paragon_client.update_password(user_token=user_token, password=password)
 
                 messages.success(
                     request,
                     _(f"User '{user.full_name}' password updated"),
                     buttons=[
                         messages.button(
-                            reverse("paragon_users:set_password", args=(user.user_token,)),
+                            reverse(
+                                "paragon_users:set_password", args=(user.user_token,)
+                            ),
                             _("Set password"),
                         )
                     ],
@@ -282,7 +282,9 @@ def set_password(request, user_token):
                 messages.error(request, _("Error updating user password."))
 
         else:
-            messages.error(request, _("The password could not be updated due to errors."))
+            messages.error(
+                request, _("The password could not be updated due to errors.")
+            )
     else:
         form = AdminPasswordSetForm()
 
