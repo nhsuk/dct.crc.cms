@@ -38,6 +38,8 @@ def _add_item(request):
             "image_url": item_obj.image.file.url,
             "image_alt_text": item_obj.image_alt_text,
             "max_quantity": item_obj.maximum_order_quantity,
+            # Look like a resource object if necessary
+            "maximum_order_quantity": item_obj.maximum_order_quantity,
             "sku": item_obj.sku
         }
         basket.add_item(item, payload.get ("order_quantity"))
