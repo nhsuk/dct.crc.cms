@@ -309,7 +309,9 @@ def password_reset(request):
         {"form": password_reset_form},
     )
 
+@paragon_user_logged_out
 def password_set(request):
+
     if request.GET.get("q"):
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning
