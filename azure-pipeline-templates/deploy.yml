@@ -6,6 +6,12 @@ steps:
       SecretsFilter: '*'
       RunAsPreJob: false
   # Assign values to values.yaml file for helm deployment
+  - script: |
+      pip3 install black
+    displayName: Installs the latest version of black
+  - script: |
+      black --check .
+    displayName: Checks if the python scripts are formatted properly with black
   - bash: |
       echo "
         imageName: $(imageName)
