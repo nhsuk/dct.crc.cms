@@ -13,12 +13,17 @@ from wagtailreacttaxonomy.models import (
     get_terms_from_terms_json,
     get_vocabs_from_terms_json,
 )
-from wagtail.search.backends.base import BaseSearchBackend, BaseSearchResults, EmptySearchResults
+from wagtail.search.backends.base import (
+    BaseSearchBackend,
+    BaseSearchResults,
+    EmptySearchResults,
+)
 from wagtail.search.query import PlainText
 
 from campaignresourcecentre.azurestore.utils import AzureStorage, CacheStorage
 
 logger = logging.getLogger(__name__)
+
 
 def slugpages(slug, site=None):
     """
@@ -27,7 +32,7 @@ def slugpages(slug, site=None):
     If that fails or no site is specified, then returns the pages
     matching the slug on any site.
     """
-  
+
     if site is None:
         pages = None
     else:
@@ -39,23 +44,26 @@ def slugpages(slug, site=None):
 
     return pages
 
-class AzureSearchException (Exception):
+
+class AzureSearchException(Exception):
     pass
+
 
 # Custom search results class
 
-class AzureSearchResults (BaseSearchResults):
+
+class AzureSearchResults(BaseSearchResults):
     supports_facets = False
 
-    def __init__ (self, backend, query_compiler, prefetch_related=None, results=None):
-        super ().__init__ (backend, query_compiler)
+    def __init__(self, backend, query_compiler, prefetch_related=None, results=None):
+        super().__init__(backend, query_compiler)
         if results is not None:
             self._results_cache = results
 
-class AzureEmptySearchResults (AzureSearchResults):
- 
-    def __init__ (self):
-        super ().__init__ (None, None, [])
+
+class AzureEmptySearchResults(AzureSearchResults):
+    def __init__(self):
+        super().__init__(None, None, [])
 
 
 class AzureSearchRebuilder:
@@ -67,6 +75,7 @@ class AzureSearchRebuilder:
 
     def finish(self):
         return
+
 
 class AzureIndex:
     """Class for indexing items into Azure Search
@@ -84,11 +93,11 @@ class AzureIndex:
             return item.search_indexable()
         except AttributeError:
             logger.info(f"'search_indexable' is not defined in {item}")
-    
-    def add_model (self, model):
+
+    def add_model(self, model):
         pass
 
-    def refresh (self):
+    def refresh(self):
         pass
 
     def add_item(self, item):
@@ -98,12 +107,12 @@ class AzureIndex:
             else:
                 self._delete_from_azure_search(item)
                 self._storage.delete_resource(item)
-        except AttributeError as e: 
+        except AttributeError as e:
             logger.warning(f"Attribute not defined in {item}: {e}")
 
     def add_items(self, model, items):
         for item in items:
-            self.add_item (item)
+            self.add_item(item)
 
     def delete_item(self, item):
         try:
@@ -112,7 +121,7 @@ class AzureIndex:
                 self._storage.delete_resource(item)
             else:
                 return True
-        except AttributeError: 
+        except AttributeError:
             logger.warning(f"page dict attribute is not defined in {item}")
 
     def _delete_from_azure_search(self, item):
@@ -120,7 +129,7 @@ class AzureIndex:
             if self.is_indexable(item):
                 azure_search = AzureSearchBackend({})
                 azure_search.delete_search(item)
-        except AttributeError: 
+        except AttributeError:
             logger.warning(f"page dict attribute is not defined in {item}")
 
     def add_taxonomy_terms(self, taxonomy_id, data):
@@ -136,9 +145,7 @@ class AzureIndex:
             except TaxonomyTerms.DoesNotExist:
                 logger.error(f"Taxonomy terms for: {taxonomy_id} not found")
                 return None
-            data = self._format_taxonomy_for_storage(
-                json.loads(terms.terms_json)
-            )
+            data = self._format_taxonomy_for_storage(json.loads(terms.terms_json))
             self._storage.add_taxonomy_terms(taxonomy_id, data)
         return data
 
@@ -146,15 +153,11 @@ class AzureIndex:
         if page.live:
             taxonomy_lookup = self.get_taxonomy_terms(page.TAXONOMY_TERMS_ID)
             if not taxonomy_lookup:
-                logger.error(
-                    "Cannot get taxonomy terms, skipping index item creation"
-                )
+                logger.error("Cannot get taxonomy terms, skipping index item creation")
                 return
 
             # Build index json for a Resource item.
-            index = {
-                "resource": page.get_az_item()
-            }
+            index = {"resource": page.get_az_item()}
 
             # Reformat taxonomy terms for azure search.
             page_terms = json.loads(page.taxonomy_json or "{}")
@@ -165,7 +168,7 @@ class AzureIndex:
                 index["resource"][field] = taxonomy_dict[field]
 
             self._storage.add_resource(page.id, index)
-            logging.info ("Resource %s indexed", page.id)
+            logging.info("Resource %s indexed", page.id)
             # No code presently to add via the live API if AZURE_SEARCH_UPDATE,
             # indexing occurs when/if an indexer crawls the container
 
@@ -191,9 +194,7 @@ class AzureIndex:
                 taxonomy_key = "%s" % (taxonomy_term_vocab_code)
 
                 if taxonomy_key in page_term_groups:
-                    page_term_groups[taxonomy_key].append(
-                        taxonomy_term_index_path
-                    )
+                    page_term_groups[taxonomy_key].append(taxonomy_term_index_path)
                 else:
                     page_term_groups[taxonomy_key] = [taxonomy_term_index_path]
 
@@ -229,9 +230,7 @@ class AzureIndex:
         """
         parent_terms = []
         while "|" in taxonomy_term_index_path:
-            taxonomy_term_index_path, _term = taxonomy_term_index_path.rsplit(
-                "|", 1
-            )
+            taxonomy_term_index_path, _term = taxonomy_term_index_path.rsplit("|", 1)
             parent_terms.append(taxonomy_term_index_path)
         return parent_terms
 
@@ -245,7 +244,7 @@ class AzureSearchBackend(BaseSearchBackend):
         # use the cache storage until Azure Blob storage is set up, then use
         # `AzureStorage` when completed.
 
-        if hasattr (settings, "AZURE_SEARCH_CONTAINER"):
+        if hasattr(settings, "AZURE_SEARCH_CONTAINER"):
             storage = AzureStorage()
         else:
             storage = CacheStorage()
@@ -268,7 +267,14 @@ class AzureSearchBackend(BaseSearchBackend):
     Accepted
     """
 
-    def azure_search(self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page=None):
+    def azure_search(
+        self,
+        search_value,
+        fields_queryset,
+        facets_queryset,
+        sort_by,
+        results_per_page=None,
+    ):
         url = self._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
@@ -288,7 +294,7 @@ class AzureSearchBackend(BaseSearchBackend):
                 "code": 500,
             }
         return json_response
-    
+
     # Implement Wagtail base query class method for use in Wagtail CMS searches
     def search(
         self,
@@ -297,82 +303,78 @@ class AzureSearchBackend(BaseSearchBackend):
         fields=None,
         operator=None,
         order_by_relevance=True,
-        partial_match=False, # Partial matching in search is deprecated
+        partial_match=False,  # Partial matching in search is deprecated
     ):
-        if not isinstance (query, PlainText):
-            logger.error ("Only plain text queries are supported")
+        if not isinstance(query, PlainText):
+            logger.error("Only plain text queries are supported")
             # Would be nice if there were a SearchFeatureNotImplementedException,
             # but there doesn't seem to be one, a bit drastic to error the page as a generic 500
             # so return an unexplained empty result instead.
-            return EmptySearchResults ()
-        model = model_or_queryset.model if isinstance (model_or_queryset, QuerySet) else model_or_queryset
-        if not (issubclass (model, PageQuerySet) or issubclass (model, Page)):
-            logger.error ("Only page searches are supported, not model '%s'", model)
-            return EmptySearchResults ()
-        json_result = self.azure_search (
-            query.query_string, {}, {}, None
+            return EmptySearchResults()
+        model = (
+            model_or_queryset.model
+            if isinstance(model_or_queryset, QuerySet)
+            else model_or_queryset
         )
-        ok = json_result.get ("ok")
+        if not (issubclass(model, PageQuerySet) or issubclass(model, Page)):
+            logger.error("Only page searches are supported, not model '%s'", model)
+            return EmptySearchResults()
+        json_result = self.azure_search(query.query_string, {}, {}, None)
+        ok = json_result.get("ok")
         if ok:
             try:
-                results = json_result ["search_content"] ["value"]
-                result_urls = [
-                    r ["content"] ["resource"] ["object_url"]
-                    for r in results
-                ]
+                results = json_result["search_content"]["value"]
+                result_urls = [r["content"]["resource"]["object_url"] for r in results]
             except Exception as e:
-                logger.error ("Couldn't interpret search result: %s", e)
+                logger.error("Couldn't interpret search result: %s", e)
                 raise
 
-            pages = Page.objects.none ()
+            pages = Page.objects.none()
             for r in result_urls:
-                page_slugs = ["home"] + [slug for slug in r.split ("/") if slug]
-                pageOrPages = slugpages (page_slugs [-1])
-                n = pageOrPages.count ()
+                page_slugs = ["home"] + [slug for slug in r.split("/") if slug]
+                pageOrPages = slugpages(page_slugs[-1])
+                n = pageOrPages.count()
                 if n == 0:
-                    logger.error ("Index entry for non-existent page %s", page_slugs [-1])
+                    logger.error("Index entry for non-existent page %s", page_slugs[-1])
                 else:
                     if n > 1:
-                        logger.error ("%d pages share slug '%s'", n, page_slugs [-1])
-                    pages = pages.union (pageOrPages)
-            return AzureSearchResults (self, None, None, pages)
+                        logger.error("%d pages share slug '%s'", n, page_slugs[-1])
+                    pages = pages.union(pageOrPages)
+            return AzureSearchResults(self, None, None, pages)
 
         else:
-            code = json_result.get ("code")
-            raise AzureSearchException (f"Azure search query failed, return code {code}")
+            code = json_result.get("code")
+            raise AzureSearchException(f"Azure search query failed, return code {code}")
 
     def delete_search(self, resource):
         fields_queryset = {"object_url": resource.url}
         response = self.azure_search("", fields_queryset, {}, "title asc")
         search_resource = None
-        if response.get("code") == 200 and response['search_content']:
-            if response['search_content']['value']:
-                resources = response['search_content']['value']
+        if response.get("code") == 200 and response["search_content"]:
+            if response["search_content"]["value"]:
+                resources = response["search_content"]["value"]
                 if len(resources) == 1:
                     search_resource = resources[0]
                 else:
                     logger.info("Resource not found: {}".format(resource.id))
         else:
-            logger.error("Invalid response: {}".format(response.get('search_content')))
+            logger.error("Invalid response: {}".format(response.get("search_content")))
         if search_resource:
             query_string = "api-version={}".format(
                 settings.AZURE_SEARCH["DELETE_API_VERSION"]
             )
-            url = "{}?{}".format(
-                settings.AZURE_SEARCH["DELETE_API_HOST"],
-                query_string
+            url = "{}?{}".format(settings.AZURE_SEARCH["DELETE_API_HOST"], query_string)
+            metadata_storage_path = search_resource.get("metadata_storage_path")
+            delete_json = json.dumps(
+                {
+                    "value": [
+                        {
+                            "@search.action": "delete",
+                            "metadata_storage_path": metadata_storage_path,
+                        }
+                    ]
+                }
             )
-            metadata_storage_path = search_resource.get(
-                'metadata_storage_path'
-            )
-            delete_json = json.dumps({
-                "value": [
-                    {
-                        "@search.action": "delete",
-                        "metadata_storage_path": metadata_storage_path
-                    }
-                ]
-            })
             headers = {
                 "Subscription-Key": settings.AZURE_SEARCH["API_KEY"],
                 "Content-Type": "application/json",
@@ -382,19 +384,24 @@ class AzureSearchBackend(BaseSearchBackend):
                     response = requests.post(url, headers=headers, data=delete_json)
                     if response.ok:
                         logger.info(
-                            "Search resource deleted successfully for: {}".format(resource.id)
+                            "Search resource deleted successfully for: {}".format(
+                                resource.id
+                            )
                         )
                     else:
                         logger.info(
                             "Error deleting the search resource: {} -- {}".format(
-                                resource.id,
-                                response.content
+                                resource.id, response.content
                             )
                         )
                 except Exception as err:
                     logger.error("Exception raised - Azure Search Delete: %s", err)
             else:
-                logger.info ("Search resource deletion noted for {} using {}".format(resource.id, url))
+                logger.info(
+                    "Search resource deletion noted for {} using {}".format(
+                        resource.id, url
+                    )
+                )
 
     def _create_azure_search_url_and_query(
         self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
@@ -418,9 +425,7 @@ class AzureSearchBackend(BaseSearchBackend):
         filters = []
         for key, value in fields_queryset.items():
             filters.append(
-                "({}{} eq '{}')".format(
-                    settings.AZURE_SEARCH["PREFIX"], key, value
-                )
+                "({}{} eq '{}')".format(settings.AZURE_SEARCH["PREFIX"], key, value)
             )
         return filters
 
@@ -464,5 +469,6 @@ class AzureSearchBackend(BaseSearchBackend):
 
 class DatabaseAzureSearchBackend(AzureSearchBackend):
     pass
+
 
 SearchBackend = DatabaseAzureSearchBackend

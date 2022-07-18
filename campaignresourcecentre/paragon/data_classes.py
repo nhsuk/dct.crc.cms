@@ -209,6 +209,7 @@ class CreateOrder:
             "CheckoutItems": self.checkout_items(),
         }
 
+
 # Class used when running performance tests outside of Paragon
 @dataclass
 class MockParagonResponse:

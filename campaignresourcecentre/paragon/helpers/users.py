@@ -21,7 +21,7 @@ def get_current_num_users(previous_num_users=0):
         100 to the previous_num_users and go to step 1
     """
 
-    logger.info(f'Previous number of users: {previous_num_users}')
+    logger.info(f"Previous number of users: {previous_num_users}")
 
     paragon_client = Client()
 
@@ -29,13 +29,13 @@ def get_current_num_users(previous_num_users=0):
         response = paragon_client.search_users(
             offset=previous_num_users,
             limit=100,
-            string='',
+            string="",
         )
-        num_users_returned = len(response['content'])
-        logger.info(f'Number of users returned: {num_users_returned}')
+        num_users_returned = len(response["content"])
+        logger.info(f"Number of users returned: {num_users_returned}")
 
         new_num_users = previous_num_users + num_users_returned - 1
-        logger.info(f'New number of users {new_num_users}')
+        logger.info(f"New number of users {new_num_users}")
 
         if num_users_returned < 100:
             return new_num_users
@@ -45,12 +45,12 @@ def get_current_num_users(previous_num_users=0):
     except ParagonClientError as PCE:
         if PCE.args[0] != "No records match the criteria":
             # Paragon error, return previous number of users
-            logger.info('Error fetching users from Paragon')
+            logger.info("Error fetching users from Paragon")
             return previous_num_users
 
         # previous_num_users is potentially greater than the current
         # number of users causing Paragon to return
         # "No records match the criteria"
         # reduce previous_num_users and retry
-        logger.info('previous number of users greater than Paragon number of users')
+        logger.info("previous number of users greater than Paragon number of users")
         return get_current_num_users(previous_num_users - 50)

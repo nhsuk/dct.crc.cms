@@ -14,9 +14,11 @@ from .data_classes import (
     Address,
     CreateOrder,
 )
+
 # NB plain from .exceptions imports app.campaignresourcecentre...
 # which doesn't match the raised exception in assertRaises tests below
 from campaignresourcecentre.paragon.exceptions import PasswordError
+
 
 class TestClient(TestCase):
     def setUp(self):
@@ -34,10 +36,7 @@ class TestClient(TestCase):
 
         resp = self.client.login("testd@g.com", "Password")
 
-        self.assertEqual(
-            {"code": 200, "content": "Token", "status": "ok"},
-            resp
-        )
+        self.assertEqual({"code": 200, "content": "Token", "status": "ok"}, resp)
 
     @responses.activate
     def test_create_account(self):
@@ -58,14 +57,17 @@ class TestClient(TestCase):
         postcode = "S221LZ"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
         resp = self.client.create_account(
-            email, password, first_name, last_name, organisation,
-            job_title, postcode, created_at,
+            email,
+            password,
+            first_name,
+            last_name,
+            organisation,
+            job_title,
+            postcode,
+            created_at,
         )
 
-        self.assertEqual(
-            {"code": 200, "content": "Token", "status": "ok"},
-            resp
-        )
+        self.assertEqual({"code": 200, "content": "Token", "status": "ok"}, resp)
 
     @responses.activate
     def test_search_users(self):
@@ -81,11 +83,7 @@ class TestClient(TestCase):
         resp = self.client.search_users("test")
 
         self.assertEqual(
-            {
-                "code": 200,
-                "content": [{"email": "test@gmail.com"}],
-                "status": "ok"
-            },
+            {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
 
@@ -110,11 +108,7 @@ class TestClient(TestCase):
         resp = self.client.search_users("test", limit=10)
 
         self.assertEqual(
-            {
-                "code": 200,
-                "content": [{"email": "test@gmail.com"}],
-                "status": "ok"
-            },
+            {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
 
@@ -136,11 +130,7 @@ class TestClient(TestCase):
         resp = self.client.search_users("test", offset=100)
 
         self.assertEqual(
-            {
-                "code": 200,
-                "content": [{"email": "test@gmail.com"}],
-                "status": "ok"
-            },
+            {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
 
@@ -161,11 +151,7 @@ class TestClient(TestCase):
         resp = self.client.get_user_profile("token")
 
         self.assertEqual(
-            {
-                "code": 200,
-                "content": [{"email": "test@gmail.com"}],
-                "status": "ok"
-            },
+            {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
 
@@ -184,11 +170,7 @@ class TestClient(TestCase):
         )
 
         self.assertEqual(
-            {
-                "code": 200,
-                "content": [{"email": "test@gmail.com"}],
-                "status": "ok"
-            },
+            {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
 
@@ -205,11 +187,7 @@ class TestClient(TestCase):
         resp = self.client.update_password("token", "Test@123")
 
         self.assertEqual(
-            {
-                "code": 200,
-                "content": [{"email": "test@gmail.com"}],
-                "status": "ok"
-            },
+            {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
 
@@ -227,8 +205,7 @@ class TestClient(TestCase):
         resp = self.client.order_history("token", start_date, end_date, 1, 10)
 
         self.assertEqual(
-            {"code": 200, "content": [{"order_number": "1"}], "status": "ok"},
-            resp
+            {"code": 200, "content": [{"order_number": "1"}], "status": "ok"}, resp
         )
 
     @responses.activate
@@ -236,10 +213,7 @@ class TestClient(TestCase):
 
         responses.add(
             responses.POST,
-            "{0}{1}".format(
-                settings.PARAGON_API_ENDPOINT,
-                "/SetDeliveryAddress"
-            ),
+            "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/SetDeliveryAddress"),
             json="True",
             status=200,
         )
@@ -253,10 +227,7 @@ class TestClient(TestCase):
         }
         resp = self.client.set_user_address("token", address_lines)
 
-        self.assertEqual(
-            {"code": 200, "content": "True", "status": "ok"},
-            resp
-        )
+        self.assertEqual({"code": 200, "content": "True", "status": "ok"}, resp)
 
     @responses.activate
     def test_create_order(self):
@@ -280,10 +251,7 @@ class TestClient(TestCase):
         ]
         resp = self.client.create_order("token", "1", order_items)
 
-        self.assertEqual(
-            {"code": 200, "content": "True", "status": "ok"},
-            resp
-        )
+        self.assertEqual({"code": 200, "content": "True", "status": "ok"}, resp)
 
 
 class TestRegistrationDataClass(TestCase):
@@ -297,7 +265,7 @@ class TestRegistrationDataClass(TestCase):
             "NHS",
             "Developer",
             "SE1 9LT",
-            created_at
+            created_at,
         )
         expected_params = {
             "EmailAddress": "test@gmail.com",
@@ -327,20 +295,26 @@ class TestRegistrationDataClass(TestCase):
             "NHS",
             "Developer",
             "SE1 9LT",
-            created_at
+            created_at,
         )
         with self.assertRaises(PasswordError) as error:
             registration.params()
         self.assert_exception(
             error,
-            "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol"
+            "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol",
         )
 
     def test_raise_email_exception(self):
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
         registration = Registration(
-            "", "test123", "First Name", "Last Name", "NHS", "Developer",
-            "SE1 9LT", created_at
+            "",
+            "test123",
+            "First Name",
+            "Last Name",
+            "NHS",
+            "Developer",
+            "SE1 9LT",
+            created_at,
         )
         with self.assertRaises(ValueError) as error:
             registration.params()
@@ -356,7 +330,7 @@ class TestRegistrationDataClass(TestCase):
             "NHS",
             "Developer",
             "SE1 9LT",
-            created_at
+            created_at,
         )
         with self.assertRaises(ValueError) as error:
             registration.params()
@@ -365,8 +339,14 @@ class TestRegistrationDataClass(TestCase):
     def test_raise_first_name_exception(self):
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
         registration = Registration(
-            "test@gmail.com", "test123", "", "Last Name", "NHS", "Developer",
-            "SE1 9LT", created_at
+            "test@gmail.com",
+            "test123",
+            "",
+            "Last Name",
+            "NHS",
+            "Developer",
+            "SE1 9LT",
+            created_at,
         )
         with self.assertRaises(ValueError) as error:
             registration.params()
@@ -375,8 +355,14 @@ class TestRegistrationDataClass(TestCase):
     def test_raise_last_name_exception(self):
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
         registration = Registration(
-            "test@gmail.com", "test123", "First Name", "", "NHS", "Developer",
-            "SE1 9LT", created_at
+            "test@gmail.com",
+            "test123",
+            "First Name",
+            "",
+            "NHS",
+            "Developer",
+            "SE1 9LT",
+            created_at,
         )
         with self.assertRaises(ValueError) as error:
             registration.params()
@@ -392,7 +378,7 @@ class TestRegistrationDataClass(TestCase):
             "",
             "Developer",
             "SE1 9LT",
-            created_at
+            created_at,
         )
         with self.assertRaises(ValueError) as error:
             registration.params()
@@ -401,8 +387,14 @@ class TestRegistrationDataClass(TestCase):
     def test_raise_role_exception(self):
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
         registration = Registration(
-            "test@gmail.com", "test123", "First Name", "Last Name", "NHS", "",
-            "SE1 9LT", created_at
+            "test@gmail.com",
+            "test123",
+            "First Name",
+            "Last Name",
+            "NHS",
+            "",
+            "SE1 9LT",
+            created_at,
         )
         with self.assertRaises(ValueError) as error:
             registration.params()
@@ -441,7 +433,7 @@ class TestUserDataClass(TestCase):
             created_at,
             verified_at,
             "news",
-            "AB25 1CD"
+            "AB25 1CD",
         )
         expected_params = {
             "UserToken": "token",
@@ -455,7 +447,7 @@ class TestUserDataClass(TestCase):
             "ProductRegistrationVar7": "news",
             "ProductRegistrationVar8": verified_at,
             "ProductRegistrationVar9": "AB25 1CD",
-            "ProductRegistrationVar10": created_at
+            "ProductRegistrationVar10": created_at,
         }
         self.assertEqual(expected_params, update_user_profile.params())
 
@@ -474,7 +466,7 @@ class TestUserDataClass(TestCase):
             created_at,
             verified_at,
             "news",
-            "AB25 1CD"
+            "AB25 1CD",
         )
 
         with self.assertRaises(ValueError) as error:
@@ -509,8 +501,9 @@ class TestUpdatePasswordDataClass(TestCase):
             update_password.params()
         self.assertEqual(
             str(error.exception),
-            "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol"
+            "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol",
         )
+
 
 class TestAddressDataClass(TestCase):
     def test_valid_params(self):

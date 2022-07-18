@@ -32,7 +32,8 @@ def get_next_review_duration():
 def get_pages_for_review_notifications():
     """Fetch the page lifecycle pages that have a `next_review` date of today."""
     from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
-    #from .models import PageLifecycleMixin  # circular import (does not work in tests)
+
+    # from .models import PageLifecycleMixin  # circular import (does not work in tests)
 
     today = datetime.date.today()
     pages = []

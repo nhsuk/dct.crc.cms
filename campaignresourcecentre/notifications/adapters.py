@@ -19,7 +19,7 @@ def gov_notify_factory(use_fake=False):
     in settings like `dev.py`."""
 
     if use_fake or getattr(settings, "NOTIFY_DEBUG", False):
-         return FakeNotifications()
+        return FakeNotifications()
     return GovNotifyNotifications()
 
 

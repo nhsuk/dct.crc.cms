@@ -40,8 +40,9 @@ class PageLifecyclePage(PageLifecycleMixin, Page):
     content_panels = Page.content_panels + PageLifecycleMixin.panels
 
     @classmethod
-    def search_indexable (cls):
+    def search_indexable(cls):
         return False
+
 
 @register_setting
 class PageLifecycleSettings(BaseSetting):

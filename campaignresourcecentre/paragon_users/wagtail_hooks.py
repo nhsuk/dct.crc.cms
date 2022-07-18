@@ -17,21 +17,16 @@ class ParagonUsersMenuItem(MenuItem):
         return any(request.user.has_perm(perm) for perm in management_perms)
 
 
-@hooks.register('register_admin_menu_item')
+@hooks.register("register_admin_menu_item")
 def register_menu_item():
     return ParagonUsersMenuItem(
-        _('CRC Users'),
-        reverse('paragon_users:index'),
-        icon_name='user',
-        order=400
+        _("CRC Users"), reverse("paragon_users:index"), icon_name="user", order=400
     )
 
 
 @hooks.register("register_permissions")
 def register_permissions():
-    return Permission.objects.filter(
-        content_type__app_label="paragon_users"
-    )
+    return Permission.objects.filter(content_type__app_label="paragon_users")
 
 
 @hooks.register("register_admin_urls")

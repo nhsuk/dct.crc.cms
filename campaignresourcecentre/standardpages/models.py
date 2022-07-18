@@ -2,11 +2,7 @@ from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    StreamFieldPanel,
-    MultiFieldPanel
-)
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, MultiFieldPanel
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.search import index
 from wagtail.images import get_image_model_string
@@ -38,7 +34,6 @@ class InformationPage(BasePage):
         FieldPanel("introduction"),
         StreamFieldPanel("body"),
         StreamFieldPanel("section"),
-
         # Hide in admin as not currently required
         # InlinePanel("related_pages", label="Related pages"),
     ]
@@ -87,9 +82,7 @@ class IndexPage(BasePage):
 
     content_panels = BasePage.content_panels + [FieldPanel("introduction")]
 
-    search_fields = BasePage.search_fields + [
-        index.SearchField("introduction")
-    ]
+    search_fields = BasePage.search_fields + [index.SearchField("introduction")]
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)

@@ -8,7 +8,7 @@ class Basket:
 
     def _update_session_basket(self):
         self.session["BASKET"] = self.basket
-        self.session.save ()
+        self.session.save()
 
     def _update_quantity(self, item, quantity):
         max_quantity = item["max_quantity"]
@@ -30,10 +30,10 @@ class Basket:
 
     def remove_item(self, item_id):
         if item_id in self.basket:
-            del self.basket [item_id]
+            del self.basket[item_id]
             self._update_session_basket()
         else:
-            raise ItemNotInBasketError ("Item is not added to basket!")
+            raise ItemNotInBasketError("Item is not added to basket!")
 
     def change_item_quantity(self, item_id, quantity):
         item = self.basket.get(item_id)
@@ -43,7 +43,7 @@ class Basket:
             self.basket[item.get("id")] = item
             self._update_session_basket()
         else:
-            raise ItemNotInBasketError ("Item is not added to basket!")
+            raise ItemNotInBasketError("Item is not added to basket!")
 
     def get_all_items(self):
         return self.basket

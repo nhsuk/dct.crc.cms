@@ -48,10 +48,11 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
 
     description = RichTextField(
         features=["bold", "italic", "h3", "h4", "ol", "ul", "link"],
-        help_text="Introduction section for the campaign page"
+        help_text="Introduction section for the campaign page",
     )
     summary = models.TextField(
-        help_text="A short line of text for display on campaign hub. Maximum 125 character limit.", max_length=125
+        help_text="A short line of text for display on campaign hub. Maximum 125 character limit.",
+        max_length=125,
     )
     permission_role = models.CharField(
         max_length=10,
@@ -81,7 +82,10 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 return True
             # TODO: user role is being converted to lowercase so that it can be compared to ResourcePage permission role
             # Ideally this would happen when the user is logged in
-            if user_role and (user_role.lower() == self.permission_role or user_role.lower() == ResourcePage.PermissionRole.UBER):
+            if user_role and (
+                user_role.lower() == self.permission_role
+                or user_role.lower() == ResourcePage.PermissionRole.UBER
+            ):
                 return True
             return False
 
@@ -90,7 +94,10 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 return False
             if self.permission_role == ResourcePage.PermissionRole.ALL:
                 return True
-            if user_role.lower() == self.permission_role or user_role.lower() == ResourcePage.PermissionRole.UBER:
+            if (
+                user_role.lower() == self.permission_role
+                or user_role.lower() == ResourcePage.PermissionRole.UBER
+            ):
                 return True
             return False
 
@@ -109,39 +116,37 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "sku": resource.sku,
                 "image_alt_text": resource.image_alt_text,
             }
-            for resource in self.resource_items.select_related(
-                "image",
-                "document"
-            )
+            for resource in self.resource_items.select_related("image", "document")
         ]
 
     def get_az_item(self):
-        resource_items = self.resource_items.select_related(
-                "image",
-                "document"
-            )
-        resource_item = resource_items[0] if (
-            len(resource_items) > 0
-        ) else None
+        resource_items = self.resource_items.select_related("image", "document")
+        resource_item = resource_items[0] if (len(resource_items) > 0) else None
         campaign = self.get_parent()
         az_resource = {
             "objecttype": self.objecttype(),
-            "object_url": f'{self.url}',
+            "object_url": f"{self.url}",
             "title": self.title,
             "campaign_title": campaign.title,
             "campaign_url": campaign.url,
             "description": self.description,
             "summary": self.summary,
             "taxonomy_json": self.taxonomy_json,
-            "last_published_at": datetime.timestamp(self.last_published_at) if self.last_published_at else None,
+            "last_published_at": datetime.timestamp(self.last_published_at)
+            if self.last_published_at
+            else None,
             "code": self.slug,
             "permission_role": self.permission_role,
         }
         if resource_item:
-            az_resource["image_url"] = resource_item.image.get_rendition(
-                "width-400"
-            ).url if resource_item.image else ""
-            az_resource["image_alt"] = resource_item.image_alt_text if resource_item.image_alt_text else ""
+            az_resource["image_url"] = (
+                resource_item.image.get_rendition("width-400").url
+                if resource_item.image
+                else ""
+            )
+            az_resource["image_alt"] = (
+                resource_item.image_alt_text if resource_item.image_alt_text else ""
+            )
         return az_resource
 
     def get_context(self, request, *args, **kwargs):
@@ -152,12 +157,15 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             json_data = json.loads(self.taxonomy_json)
 
         context = super().get_context(request, *args, **kwargs)
-        user_role = request.session.get("UserDetails") and request.session.get("UserDetails")['ProductRegistrationVar1']
+        user_role = (
+            request.session.get("UserDetails")
+            and request.session.get("UserDetails")["ProductRegistrationVar1"]
+        )
         allowed = user_role and user_role != ""
         context.update(
             resources=self.get_resources(request),
             # TODO: this logged_in value could be potentially removed now
-            logged_in=request.session.get('ParagonUser'),
+            logged_in=request.session.get("ParagonUser"),
             allowed=allowed,
             taxonomy_json=json_data,
             topics_present=get_taxonomies(json_data, "TOPIC"),
@@ -230,8 +238,7 @@ class ResourceItem(Orderable):
     )
     document_content = models.CharField(blank=True, null=True, max_length=50)
     image_alt_text = models.CharField(
-        blank=True, null=True, max_length=50,
-        help_text="Alt text for the image."
+        blank=True, null=True, max_length=50, help_text="Alt text for the image."
     )
     can_order = models.BooleanField(
         default=False,

@@ -4,10 +4,15 @@ from django.db.models import CharField, Model
 # to be added
 class ParagonUserAdmin(Model):
     class Meta:
-        default_permissions = []  # don't create the default add / change / delete / view perms
+        default_permissions = (
+            []
+        )  # don't create the default add / change / delete / view perms
         permissions = [
-            ('manage_paragon_users', "Can view CRC users and change access level"),
-            ('manage_paragon_users_all_fields', "Can view CRC users and change all details"),
+            ("manage_paragon_users", "Can view CRC users and change access level"),
+            (
+                "manage_paragon_users_all_fields",
+                "Can view CRC users and change all details",
+            ),
         ]
 
 
