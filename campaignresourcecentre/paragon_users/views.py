@@ -13,7 +13,6 @@ from campaignresourcecentre.paragon_users.decorators import (
     paragon_user_logged_in,
     paragon_user_logged_out,
 )
-from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_region
 
 from .forms import (
     LoginForm,
@@ -26,8 +25,6 @@ from .helpers.newsletter import deserialise, serialise
 from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
-
-logger = getLogger(__name__)
 
 def ParseError(error):
     error_dict = {
@@ -60,13 +57,6 @@ def signup(request):
             organisation.required = True
             job_title.required = True
 
-        postcode = f.data["postcode"]
-        try:
-            postcode_region = get_postcode_region (postcode)
-        except Exception as e:
-            logger.warn ("Failed to verify postcode '%s' (%s)", postcode, e)
-            f.add_error ("postcode", "Postcode '%s' not recognised" % postcode)
-
         if f.is_valid():
             email = f.cleaned_data.get("email")
             password = f.cleaned_data.get("password")
@@ -81,6 +71,7 @@ def signup(request):
                 organisation = f.cleaned_data.get("organisation")
             else:
                 organisation = ' '
+            postcode = f.data["postcode"]
 
             # Need to set created_at (ProductRegistrationVar10) when creating a new user
             # Paragon sets its own created_at field but this is only available from the
@@ -318,7 +309,9 @@ def password_reset(request):
         {"form": password_reset_form},
     )
 
+@paragon_user_logged_out
 def password_set(request):
+
     if request.GET.get("q"):
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning

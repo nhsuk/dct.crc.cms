@@ -22,7 +22,7 @@
                                 <div class="taxonomy-tags__parent">Topic</div>
                                 {% for child in taxonomy.children %}
                                     {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
-                                        <button class="taxonomy-tags__child" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
+                                        <button class="taxonomy-tags__child" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" id="{{child.code}}-input" onclick="return unCheckSubmitForm(this)">
                                             <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
                                             <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
                                         </button>
@@ -32,7 +32,7 @@
                         {% endif %}
                     {% endfor %}
                     <br />                        
-                    <div class="taxonomy-tags__parent">In</div>
+                    <div class="taxonomy-tags__parent" id="taxonomy-tags__in">In</div>
                     {% for taxonomy in taxonomies %}
                         {% if facets_queryset|taxonomies_get:taxonomy.code %}
                             {% if not taxonomy.code == 'TOPIC' %}
@@ -46,7 +46,7 @@
                                         </label>
                                     </div>
                                     -->
-                                    <button class="taxonomy-tags__child"        class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
+                                    <button class="taxonomy-tags__child" class="taxonomy-tags__remove" value="{{child.code}}-input" id="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
                                         <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
                                         <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
                                     </button>
@@ -63,11 +63,11 @@
         </div>
     {% endif %}
 
-    <div class="govuk-form-group" id="sort">
+    <div class="govuk-form-group">
         <label class="govuk-label sort-by-label" for="sort">
             Sort by
         </label>
-        <select class="govuk-select" id="sort" name="sort" onchange="submitSortby(this)">
+        <select class="govuk-select" id="sortby" name="sort" onchange="submitSortby(this)">
             <option value="relevant" {% if sort == 'relevant'%}selected{% endif %}>Most relevant</option>
             <option value="newest" {% if sort == 'newest'%}selected{% endif %}>Newest</option>
             <option value="oldest" {% if sort == 'oldest'%}selected{% endif %}>Oldest</option>
@@ -99,7 +99,7 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <h4>There are no matching results.</h4>
+            <h4 aria-live="polite">There are no matching results.</h4>
             <p>Improve your search results by:</p>
             <ul>
                 <li>removing filters</li>

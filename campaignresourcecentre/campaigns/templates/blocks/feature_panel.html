@@ -44,7 +44,7 @@
                 {{ body }}
                 {% endif %}
                 {% if url or internal_page.url%}
-                <a class="govuk-button primary-button" href="{% if url %}{{ url }}{% else %}{{ internal_page.url }}{% endif %}">
+                <a class="govuk-button primary-button" role="button" href="{% if url %}{{ url }}{% else %}{{ internal_page.url }}{% endif %}">
                     {% if button_text %}
                         {{button_text}}
                     {% else %}

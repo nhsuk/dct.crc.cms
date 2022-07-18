@@ -26,9 +26,11 @@
                 <div class="nhsuk-form-group nhsuk-u-margin-bottom-0">
                     <h1 class="govuk-heading-xl">Choose which cookies we use</h1>
                     <p>Let us know which cookies we can use. We'll use a cookie to save your settings.</p>
-                    <h2>Cookies that remember pop-ups</h2>
-                    <p>These cookies remember pop-ups you've seen, so you do not see them again.</p>
-                        
+
+                    <div id="cookie-preferences"></div>
+                        <h2>Cookies that remember pop-ups</h2>
+                        <p>These cookies remember pop-ups you've seen, so you do not see them again.</p>
+                    </div>
                     <fieldset class="govuk-fieldset" id="cookie-preferences-form" aria-describedby="cookie-preferences">
                         <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
                             <div class="govuk-radios__item">
@@ -46,10 +48,11 @@
                             </div>
                         </div>
                     </fieldset>
-            
-                    <h2>Cookies that measure website use (analytics cookies)</h2>
-                    <p>These cookies store information about how you use our website, such as the links you click on. We use them to help make our website better.</p>
-                        
+                    
+                    <div id="cookie-statistics">
+                        <h2>Cookies that measure website use (analytics cookies)</h2>
+                        <p>These cookies store information about how you use our website, such as the links you click on. We use them to help make our website better.</p>
+                    </div>  
                     <fieldset class="govuk-fieldset" id="cookie-statistics-form" aria-describedby="cookie-statistics">
                         <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
                             <div class="govuk-radios__item">
@@ -67,10 +70,11 @@
                             </div>
                         </div>
                     </fieldset>
-            
-                    <h2>Cookies that help with health campaigns</h2>
-                    <p>These cookies help us show you relevant adverts for our health campaigns on social media, such as Facebook or Twitter.</p>
-                        
+                    
+                    <div id="cookie-marketing">
+                        <h2>Cookies that help with health campaigns</h2>
+                        <p>These cookies help us show you relevant adverts for our health campaigns on social media, such as Facebook or Twitter.</p>
+                    </div>
                     <fieldset class="govuk-fieldset" id="cookie-marketing-form" aria-describedby="cookie-marketing">
                         <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
                             <div class="govuk-radios__item">
@@ -89,7 +93,7 @@
                         </div>
                     </fieldset>
             
-                    <a href="../cookie_confirmation" onclick="changeConsent();" type="submit" class="govuk-button primary-button">
+                    <a href="../cookie_confirmation" onclick="changeConsent();" type="submit" class="govuk-button primary-button" role="button">
                         Save my cookie settings
                     </a>
                     </div>

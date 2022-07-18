@@ -15,7 +15,7 @@ def serialise(newsnumber):
         str(int(newsnumber["EatingWell"])),  # 8
         str(int(newsnumber["MovingMore"])),  # 9
         str(int(newsnumber["CheckingYourselfSymptomAwareness"])),  # 10
-        str(int(newsnumber["Allsubjects"])),  # 11
+        str(int(newsnumber["AllSubjects"])),  # 11
         str(int(newsnumber["DrinkingLess"])),  # 12
         str(int(newsnumber["Flu"])),  # 13
         str(int(newsnumber["Stroke"])),  # 14
@@ -56,7 +56,7 @@ def deserialise(newsRaw):
         "EatingWell",
         "MovingMore",
         "CheckingYourselfSymptomAwareness",
-        "Allsubjects",
+        "AllSubjects",
         "DrinkingLess",
         "Flu",
         "Stroke",

@@ -59,6 +59,34 @@
             margin-bottom: 5px;
         }
 
+        a {
+            text-decoration: none;
+        }
+
+        .govuk-grid-row {
+            display: flex;
+            flex-wrap: wrap;
+            flex-grow: 1;
+
+            .govuk-grid-column-one-half {
+                float: none;
+                @media (max-width: 40.0525em) {
+                    width: 50%;
+                }
+            }
+            .govuk-grid-column-one-third {
+                float: none;
+                @media (max-width: 40.0525em) {
+                    width: 33.3333%
+                }
+            }
+            .govuk-grid-column-two-thirds  {
+                float: none;
+                @media (max-width: 40.0525em) {
+                    width: 66.6666%
+                }
+            }
+        }
         &.no-shadow {
             box-shadow: none;
 

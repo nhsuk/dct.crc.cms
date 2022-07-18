@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="resource-order-error-summary" class="govuk-width-container govuk-!-display-none">
+    <div id="resource-order-error-summary" class="govuk-width-container govuk-!-display-none" tabindex="-1">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
@@ -49,20 +49,13 @@
                 <div class="govuk-grid-column-two-thirds">
                     <div class="resource-panel">
                         <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-one-third mobile-panel">
+                            <div class="govuk-grid-column-one-third">
                                 <div class="left-panel">
                                     <img src="{{ item.item_image_url }}" alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}"/>
                                 </div>
-                                <div class="right-panel hidden-desktop">
-                                    <h2 class="govuk-!-font-size-24" id="m-{{ item.id }}"><a href="{{ item.item_url }}">{{ item.title }}</a></h2>
-                                    <p class="govuk-!-font-size-16 max-order govuk-!-padding-top-2">Maximum order quantity: {{ item.max_quantity }}</p>
-                                </div>
-                                <div class="hidden-desktop">
-                                    <hr class="mobile">
-                                </div>
                             </div>
                             <div class="govuk-grid-column-two-thirds order-info-panel download">
-                                <div class="hidden-mobile">
+                                <div>
                                     <h2 class="govuk-!-font-size-24" id="id-{{ item.id }}"><a href="{{ item.item_url }}">{{ item.title }}</a></h2>
                                     <p class="govuk-!-font-size-16 max-order govuk-!-padding-top-2">Maximum order quantity: {{ item.max_quantity }}</p>
                                     <hr>
@@ -95,7 +88,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 {% if items %}
-                        <p><a href="/orders/address/edit/" class="govuk-button primary-button">Proceed to checkout</a></p>
+                        <p><a href="/orders/address/edit/" class="govuk-button primary-button" role="button" id="proceed-to-checkout">Proceed to checkout</a></p>
                 {% endif %}
             </div>
         </div>
@@ -105,4 +98,31 @@
         {% include "static/form_validation.html" %}
         {% include "static/render_basket.html" %}
     {% endblock %}
+    <script>
+        const checkout = document.getElementById("proceed-to-checkout");
+        checkout.addEventListener("click", proceedCheckout);
+
+
+        /**
+         * Check if there are errors before proceeding to checkout.
+         * Prevent the 'Proceed to checkout' link working if there are.
+         * Move the focus to the errors list.
+         */
+        function proceedCheckout(e) {
+            const errorsClass = document.getElementsByClassName("govuk-error-message");
+            const valid = document.getElementsByClassName("govuk-error-message govuk-!-display-none");
+            const errorSummary = document.getElementById("resource-order-error-summary");
+            // Check if the total items in the basket with a potential error message is different from items which have valid values.
+            if(errorsClass.length !== valid.length) {
+                // Prevent the link from working.
+                e.preventDefault();
+                // Prevent the events script from running so the page does not reload.
+                e.stopImmediatePropagation();
+                // Move the focus to the error list.
+                checkout.blur();
+                errorSummary.focus();
+            }
+         }
+
+    </script>
 {% endblock %}

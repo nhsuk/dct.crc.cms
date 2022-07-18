@@ -62,7 +62,7 @@
                             <li class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</li>
                         {% endif %}
                         {% if page.last_reviewed %}
-                            <li><strong>Page last reviewed:</strong> {{ page.last_reviewed|date:"j F Y" }}</li>
+                            <li><strong>Last updated:</strong> {{ page.last_reviewed|date:"j F Y" }}</li>
                         {% endif %}
                     </ul>
                 </div>
@@ -84,21 +84,15 @@
                     <div class="govuk-grid-column-two-thirds">
                         <div class="resource-panel">
                             <div class="govuk-grid-row">
-                                <div class="govuk-grid-column-one-third mobile-panel">
+                                <div class="govuk-grid-column-one-third">
                                     <div class="left-panel">
                                         {% image resource.image width-200 as resource_img %}
                                         <img src="{{ resource_img.url }}" alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
                                     </div>
-                                    <div class="right-panel hidden-desktop">
-                                        <h3 class="govuk-heading-s" id="m-{{ resource.title|slugify }}">{{ resource.title }}</h3>
-                                        {% if resource.document_content %}
-                                            <p class="file-info">{{ resource.document_content }}</p>
-                                        {% endif %}
-                                    </div>
                                 </div>
 
                                 <div class="govuk-grid-column-two-thirds order-info-panel download">
-                                    <div class="hidden-mobile">
+                                    <div>
                                         <h3 class="govuk-heading-m" id="{{ resource.title|slugify }}">{{ resource.title }}</h3>
                                         {% if resource.document_content %}
                                         <p class="file-info">{{ resource.document_content }}</p>
@@ -108,7 +102,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button" href="{{ resource.document.url }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Download {{ resource.title }}">Download this resource </a>
+                                                    <a class="govuk-button secondary-button" role="button" href="{{ resource.document.url }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>

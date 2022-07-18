@@ -128,6 +128,7 @@ class CampaignHubPage(BasePage):
         search_value = ""
         fields_queryset = {"objecttype": "campaign"}
         facets_queryset = {}
+        results_per_page = "50"
         if topic and topic != "ALL":
             facets_queryset["TOPIC"] = topic
         sort_by = None
@@ -136,7 +137,7 @@ class CampaignHubPage(BasePage):
         elif sort == "newest":
             sort_by = "last_published_at desc"
         response = search.azure_search(
-            search_value, fields_queryset, facets_queryset, sort_by
+            search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         campaigns = []
         try:
@@ -320,7 +321,14 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         on_delete=models.SET_NULL,
     )
     image_alt_text = models.TextField(blank=True)
-    related_website = models.URLField(blank=True)
+    related_website = models.URLField(blank=True, help_text="Enter a URL to link to.")
+    related_website_text = models.CharField(
+        blank=True,
+        max_length=255,
+        help_text="Enter the text for the link. This is required for external "
+        "URLs. If an internal page is chosen and this field is blank the page "
+        "title will be shown",
+    )
     details = StreamField(CampaignDetailsBlock(required=False), blank=True)
     topics = ParentalManyToManyField(Topic, blank=True)
     body = StreamField(CampaignsPageBlocks(required=False), blank=True)
@@ -432,6 +440,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         MultiFieldPanel(
             [
                 FieldPanel("related_website"),
+                FieldPanel("related_website_text"),
                 StreamFieldPanel("details"),
             ],
             heading="Campaign Details",
