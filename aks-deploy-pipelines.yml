@@ -75,6 +75,7 @@ stages:
         reportformat: 'json'
 - stage: Build
   displayName: Build
+  dependsOn: Test
   condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   jobs:
   - job: buildReview
