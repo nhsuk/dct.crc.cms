@@ -36,11 +36,7 @@ HEALTH_CHOICES = (
 )
 
 
-ROLE_CHOICES = (
-    ("", "Select a role"),
-    ("Standard", "Standard"),
-    ("Uber", "Uber"),
-)
+ROLE_CHOICES = (("", "Select a role"), ("Standard", "Standard"), ("Uber", "Uber"))
 
 # uses regex to restrict usage of everything but a expression of allowed characters
 class SpecialCharacterRestrictionValidator(RegexValidator):
@@ -99,10 +95,7 @@ class RegisterForm(forms.Form):
 
     job_title = forms.CharField(
         widget=forms.Select(
-            attrs={
-                "class": "govuk-select",
-                "onchange": "hideSelect();",
-            },
+            attrs={"class": "govuk-select", "onchange": "hideSelect();"},
             choices=JOB_CHOICES,
         ),
         required=False,
@@ -111,11 +104,7 @@ class RegisterForm(forms.Form):
 
     area_work = forms.CharField(
         widget=forms.Select(
-            attrs={
-                "class": "govuk-select",
-                "disabled": False,
-            },
-            choices=HEALTH_CHOICES,
+            attrs={"class": "govuk-select", "disabled": False}, choices=HEALTH_CHOICES
         ),
         required=False,
         error_messages={"required": "Select an area of work"},
@@ -123,10 +112,7 @@ class RegisterForm(forms.Form):
 
     organisation = forms.CharField(
         widget=forms.TextInput(
-            attrs={
-                "class": "govuk-input",
-                "autocomplete": "organization",
-            }
+            attrs={"class": "govuk-input", "autocomplete": "organization"}
         ),
         required=False,
         error_messages={"required": "Enter your organisation name"},
@@ -172,11 +158,7 @@ class RegisterForm(forms.Form):
     )
 
     terms = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={
-                "class": "govuk-checkboxes__input",
-            }
-        ),
+        widget=forms.CheckboxInput(attrs={"class": "govuk-checkboxes__input"}),
         error_messages={"required": "Please accept the terms and conditions"},
         required=True,
     )
@@ -209,16 +191,9 @@ class UserAdminForm(forms.Form):
     first_name = forms.CharField()
     last_name = forms.CharField()
     organisation = forms.CharField()
-    job_title = forms.ChoiceField(
-        choices=JOB_CHOICES,
-    )
-    area_work = forms.ChoiceField(
-        required=False,
-        choices=HEALTH_CHOICES,
-    )
-    role = forms.ChoiceField(
-        choices=ROLE_CHOICES,
-    )
+    job_title = forms.ChoiceField(choices=JOB_CHOICES)
+    area_work = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    role = forms.ChoiceField(choices=ROLE_CHOICES)
     postcode = forms.CharField()
 
     def __init__(self, *args, **kwargs):

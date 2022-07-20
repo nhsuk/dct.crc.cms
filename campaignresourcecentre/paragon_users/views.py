@@ -100,10 +100,7 @@ def signup(request):
                     url = request.build_absolute_uri(reverse("verification"))
                     send_verification(token, url, email, first_name)
 
-                    return render(
-                        request,
-                        "users/confirmation_registration.html",
-                    )
+                    return render(request, "users/confirmation_registration.html")
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
@@ -287,9 +284,7 @@ def password_reset(request):
                 )  # This needs to be changed before release
                 emailClient.reset_password(email, firstName, url)
                 return render(
-                    request,
-                    "users/confirmation_password_reset.html",
-                    {"email": email},
+                    request, "users/confirmation_password_reset.html", {"email": email}
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
@@ -299,18 +294,12 @@ def password_reset(request):
                     else:
                         password_reset_form.add_error(paresedError[0], paresedError[1])
                 return render(
-                    request,
-                    "users/password_reset.html",
-                    {"form": password_reset_form},
+                    request, "users/password_reset.html", {"form": password_reset_form}
                 )
     else:
         password_reset_form = PasswordResetForm()
 
-    return render(
-        request,
-        "users/password_reset.html",
-        {"form": password_reset_form},
-    )
+    return render(request, "users/password_reset.html", {"form": password_reset_form})
 
 
 @paragon_user_logged_out
@@ -464,17 +453,13 @@ def newsletter_preferences(request):
                     else:
                         newsletter_form.add_error(paresedError[0], paresedError[1])
             return render(
-                request,
-                "users/newsletter_preferences.html",
-                {"form": newsletter_form},
+                request, "users/newsletter_preferences.html", {"form": newsletter_form}
             )
     else:
         newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
 
         return render(
-            request,
-            "users/newsletter_preferences.html",
-            {"form": newsletter_form},
+            request, "users/newsletter_preferences.html", {"form": newsletter_form}
         )
 
 

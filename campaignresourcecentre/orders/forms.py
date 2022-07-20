@@ -72,10 +72,4 @@ class DeliveryAddressForm(forms.Form):
     )
 
     class Meta:
-        fields = [
-            "Address1",
-            "Address2",
-            "Address3",
-            "Address4",
-            "Address5",
-        ]
+        fields = ["Address1", "Address2", "Address3", "Address4", "Address5"]

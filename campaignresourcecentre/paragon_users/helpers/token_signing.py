@@ -11,7 +11,8 @@ env = os.environ.copy()
 KEY = settings.PARAGON_SIGN_KEY
 SALT = settings.PARAGON_SALT
 PARAGON_ENCRYPTION_KEY = settings.PARAGON_ENCRYPTION_KEY or "Default Value"
-if PARAGON_ENCRYPTION_KEY == "Default Value": logger.warning("Paragon Encryption Key Not Set")
+if PARAGON_ENCRYPTION_KEY == "Default Value":
+    logger.warning("Paragon Encryption Key Not Set")
 ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY.encode()
 
 

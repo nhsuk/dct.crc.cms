@@ -7,13 +7,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from .client import Client
-from .data_classes import (
-    Registration,
-    User,
-    UpdatePassword,
-    Address,
-    CreateOrder,
-)
+from .data_classes import Registration, User, UpdatePassword, Address, CreateOrder
 
 # NB plain from .exceptions imports app.campaignresourcecentre...
 # which doesn't match the raised exception in assertRaises tests below
@@ -74,10 +68,7 @@ class TestClient(TestCase):
 
         api_url = "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Search")
         responses.add(
-            responses.POST,
-            api_url,
-            json=[{"email": "test@gmail.com"}],
-            status=200,
+            responses.POST, api_url, json=[{"email": "test@gmail.com"}], status=200
         )
 
         resp = self.client.search_users("test")
@@ -99,10 +90,7 @@ class TestClient(TestCase):
 
         api_url = "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Search")
         responses.add(
-            responses.POST,
-            api_url,
-            json=[{"email": "test@gmail.com"}],
-            status=200,
+            responses.POST, api_url, json=[{"email": "test@gmail.com"}], status=200
         )
 
         resp = self.client.search_users("test", limit=10)
@@ -121,10 +109,7 @@ class TestClient(TestCase):
 
         api_url = "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Search")
         responses.add(
-            responses.POST,
-            api_url,
-            json=[{"email": "test@gmail.com"}],
-            status=200,
+            responses.POST, api_url, json=[{"email": "test@gmail.com"}], status=200
         )
 
         resp = self.client.search_users("test", offset=100)
@@ -477,10 +462,7 @@ class TestUserDataClass(TestCase):
 class TestUpdatePasswordDataClass(TestCase):
     def test_valid_params(self):
         update_password = UpdatePassword("token", "Test@123")
-        expected_params = {
-            "UserToken": "token",
-            "Password": "Test@123",
-        }
+        expected_params = {"UserToken": "token", "Password": "Test@123"}
         self.assertEqual(expected_params, update_password.params())
 
     def test_raise_user_token_exception(self):

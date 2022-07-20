@@ -104,11 +104,7 @@ class CrcCardGroupBLock(FlattenValueContext, StructBlock):
         help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=4.",
     )
     column = ChoiceBlock(
-        [
-            ("", "Full-width"),
-            ("one-half", "One-half"),
-            ("one-third", "One-third"),
-        ],
+        [("", "Full-width"), ("one-half", "One-half"), ("one-third", "One-third")],
         default="",
         required=False,
     )
@@ -136,12 +132,7 @@ class FeaturePanelBlock(FlattenValueContext, StructBlock):
         help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",  # noqa: E501
     )
     heading_size = ChoiceBlock(
-        [
-            ("", "Default"),
-            ("small", "Small"),
-            ("medium", "Medium"),
-            ("large", "Large"),
-        ],
+        [("", "Default"), ("small", "Small"), ("medium", "Medium"), ("large", "Large")],
         help_text="The heading size affects the visual size, this follows the front-end library's sizing.",  # noqa: E501
         required=False,
     )
@@ -223,10 +214,7 @@ class Section(FlattenValueContext, StructBlock):
     )
 
     background_colour = ChoiceBlock(
-        choices=[
-            ("app-section--white", "white"),
-            ("app-section--grey", "nhs grey"),
-        ],
+        choices=[("app-section--white", "white"), ("app-section--grey", "nhs grey")],
         default="app-section--white",
         help_text="set background colour for the section",
     )

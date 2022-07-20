@@ -28,7 +28,7 @@ LOCAL_DATABASE_USERNAME = "campaignresourcecentre"
 
 def dexec(cmd, service="web"):
     return local(
-        "docker-compose exec -T {} bash -c {}".format(quote(service), quote(cmd)),
+        "docker-compose exec -T {} bash -c {}".format(quote(service), quote(cmd))
     )
 
 
@@ -36,7 +36,7 @@ def sudexec(cmd, service="web"):
     return local(
         "docker-compose exec --user=root -T {} bash -c {}".format(
             quote(service), quote(cmd)
-        ),
+        )
     )
 
 

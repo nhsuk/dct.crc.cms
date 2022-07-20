@@ -288,11 +288,7 @@ class AzureSearchBackend(BaseSearchBackend):
             }
         except Exception as err:
             logger.error("Exception raised - Azure Search Get: %s", err)
-            json_response = {
-                "search_content": [],
-                "ok": "failed",
-                "code": 500,
-            }
+            json_response = {"search_content": [], "ok": "failed", "code": 500}
         return json_response
 
     # Implement Wagtail base query class method for use in Wagtail CMS searches

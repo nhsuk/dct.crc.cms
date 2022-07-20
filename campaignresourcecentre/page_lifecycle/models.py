@@ -22,11 +22,7 @@ class PageLifecycleMixin(models.Model):
 
     panels = [
         MultiFieldPanel(
-            [
-                NextReviewHelpPanel(),
-                FieldPanel("last_reviewed"),
-                FieldPanel("owner"),
-            ],
+            [NextReviewHelpPanel(), FieldPanel("last_reviewed"), FieldPanel("owner")],
             heading="Page Lifecycle",
         )
     ]

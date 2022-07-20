@@ -104,9 +104,7 @@ private_urlpatterns = decorate_urlpatterns(private_urlpatterns, never_cache)
 private_urlpatterns += (path("crc-search/", search_views.search, name="search"),)
 
 # Public URLs that are meant to be cached.
-urlpatterns = [
-    path("sitemap.xml", sitemap),
-]
+urlpatterns = [path("sitemap.xml", sitemap)]
 
 # Set vary header to instruct cache to serve different version on different
 # encodings, different request method (e.g. AJAX) and different protocol
@@ -133,14 +131,8 @@ if settings.DEBUG:
 
     debug_urlPatterns += [
         # Add views for testing 404 and 500 templates
-        path(
-            "test404/",
-            TemplateView.as_view(template_name="errors/404.html"),
-        ),
-        path(
-            "test500/",
-            TemplateView.as_view(template_name="errors/5010.html"),
-        ),
+        path("test404/", TemplateView.as_view(template_name="errors/404.html")),
+        path("test500/", TemplateView.as_view(template_name="errors/5010.html")),
     ]
 
     # Try to install the django debug toolbar, if exists

@@ -67,10 +67,7 @@ class CampaignHubPage(BasePage):
         help_text="This is only shown if there are campaign updates to display.",
     )
     campaign_updates_bg_colour = models.CharField(
-        choices=[
-            ("app-section--white", "white"),
-            ("app-section--grey", "nhs grey"),
-        ],
+        choices=[("app-section--white", "white"), ("app-section--grey", "nhs grey")],
         max_length=45,
         default="app-section--white",
         help_text="set background colour for the section",
@@ -101,7 +98,7 @@ class CampaignHubPage(BasePage):
                 FieldPanel("search_description"),
             ],
             "For search engines",
-        ),
+        )
     ]
 
     def get_campaign_updates(self):
@@ -264,7 +261,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
                 {
                     "image": ValidationError(
                         "Please select an image to display for the external URL."
-                    ),
+                    )
                 }
             )
         if self.link_url and not self.description:
@@ -272,7 +269,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
                 {
                     "description": ValidationError(
                         "Please enter the description text for the external URL."
-                    ),
+                    )
                 }
             )
 
@@ -315,10 +312,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         help_text="Short line of text for display on the campaign page",
     )
     image = models.ForeignKey(
-        get_image_model_string(),
-        null=True,
-        related_name="+",
-        on_delete=models.SET_NULL,
+        get_image_model_string(), null=True, related_name="+", on_delete=models.SET_NULL
     )
     image_alt_text = models.TextField(blank=True)
     related_website = models.URLField(blank=True, help_text="Enter a URL to link to.")
@@ -421,9 +415,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
 
     content_panels = BasePage.content_panels + [
         FieldPanel(
-            "topics",
-            heading="Campaign Topics",
-            widget=forms.CheckboxSelectMultiple,
+            "topics", heading="Campaign Topics", widget=forms.CheckboxSelectMultiple
         ),
         MultiFieldPanel(
             [
@@ -447,7 +439,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     ]
 
     taxonomy_term_panels = [
-        TaxonomyPanel("taxonomy_json", taxonomy_terms_id=TAXONOMY_TERMS_ID),
+        TaxonomyPanel("taxonomy_json", taxonomy_terms_id=TAXONOMY_TERMS_ID)
     ]
 
     edit_handler = TabbedInterface(

@@ -34,9 +34,7 @@ def summary(request):
     if not delivery_address:
         return redirect("/orders/address/edit")
     return render(
-        request,
-        "summary.html",
-        {"items": items, "delivery_address": delivery_address},
+        request, "summary.html", {"items": items, "delivery_address": delivery_address}
     )
 
 

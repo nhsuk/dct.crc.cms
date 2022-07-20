@@ -57,9 +57,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         max_length=125,
     )
     permission_role = models.CharField(
-        max_length=10,
-        choices=PermissionRole.choices,
-        default=PermissionRole.ALL,
+        max_length=10, choices=PermissionRole.choices, default=PermissionRole.ALL
     )
 
     def search_indexable(self):
@@ -118,7 +116,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "maximum_order_quantity": resource.maximum_order_quantity,
                 "sku": resource.sku,
                 "image_alt_text": resource.image_alt_text,
-                "key": key
+                "key": key,
             }
             for resource in self.resource_items.select_related("image", "document")
         ]
@@ -199,7 +197,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     settings_panels = BasePage.settings_panels + PageLifecycleMixin.panels
 
     taxonomy_panels = [
-        TaxonomyPanel("taxonomy_json", taxonomy_terms_id=TAXONOMY_TERMS_ID),
+        TaxonomyPanel("taxonomy_json", taxonomy_terms_id=TAXONOMY_TERMS_ID)
     ]
 
     edit_handler = TabbedInterface(
