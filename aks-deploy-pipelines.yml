@@ -126,7 +126,7 @@ stages:
       paragonMock: ${{ parameters.paragonMock }}
       debug: ${{ parameters.debug }}
       notifyDebug: ${{ parameters.notifyDebug }}
-      workers: ${{ parameters.workers }}
+      workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
     steps:
@@ -178,7 +178,7 @@ stages:
       paragonMock: ${{ parameters.paragonMock }}
       debug: ${{ parameters.debug }}
       notifyDebug: ${{ parameters.notifyDebug }}
-      workers: ${{ parameters.workers }}
+      workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
     steps:
