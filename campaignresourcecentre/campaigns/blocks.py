@@ -272,5 +272,3 @@ class GuidePageBlocks(StreamBlock):
 class CampaignsPageBlocks(StreamBlock):
     common_blocks = CommonBlocks()
     section = GuidePageSection()
-
-

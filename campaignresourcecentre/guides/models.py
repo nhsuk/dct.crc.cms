@@ -21,8 +21,9 @@ class GuidePage(BasePage):
     introduction = models.TextField(blank=True)
 
     summary = RichTextField(
-        features=["bold", "italic", "link", "h2", "h3", "ol", "ul"], default="",
-        help_text="Summary section for the Guides page"
+        features=["bold", "italic", "link", "h2", "h3", "ol", "ul"],
+        default="",
+        help_text="Summary section for the Guides page",
     )
 
     background_colour = models.CharField(

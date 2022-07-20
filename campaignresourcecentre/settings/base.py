@@ -6,16 +6,18 @@ import sys
 
 env = os.environ.copy()
 
+
 def getenv_bool(name: str, default: bool = False) -> bool:
     # A blank string is defined, but we want it to be defaulted
-    text = env.get (name) or str (default)
-    return text.lower() in\
-        ("yes", "y", "true", "1", "t")
+    text = env.get(name) or str(default)
+    return text.lower() in ("yes", "y", "true", "1", "t")
+
 
 def getenv_int(name: str, default: int = 0) -> int:
     # A blank string is defined, but we want it to be defaulted
-    text = env.get (name) or str (default)
-    return int (text)
+    text = env.get(name) or str(default)
+    return int(text)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
@@ -100,9 +102,9 @@ INSTALLED_APPS = [
     "pattern_library",
     "wagtailaccessibility",
     "wagtailreacttaxonomy",
-    'wagtail_2fa',
-    'django_otp',
-    'django_otp.plugins.otp_totp',
+    "wagtail_2fa",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
 ]
 
 
@@ -122,7 +124,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    'wagtail_2fa.middleware.VerifyUserMiddleware',
+    "wagtail_2fa.middleware.VerifyUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
@@ -194,21 +196,21 @@ if "REDIS_URL" in env:
         "default": {
             "BACKEND": "django.core.cache.backends.redis.RedisCache",
             "LOCATION": REDIS_URL,
-            "KEY_PREFIX": "default"
+            "KEY_PREFIX": "default",
         },
         "renditions": {
             "BACKEND": "django.core.cache.backends.redis.RedisCache",
             "LOCATION": REDIS_URL,
             "KEY_PREFIX": "renditions",
-            "TIMEOUT": 600
-        }
+            "TIMEOUT": 600,
+        },
     }
 else:
     # If using DatabaseCache, cache table must be created
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-            "LOCATION": "database_cache"
+            "LOCATION": "database_cache",
         }
     }
 
@@ -216,7 +218,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 # Values for the Django cache middleware - note we have subclassed it
 CACHE_MIDDLEWARE_ALIAS = "default"
-CCACHE_MIDDLEWARE_SECONDS = 30*60
+CCACHE_MIDDLEWARE_SECONDS = 30 * 60
 CACHE_MIDDLEWARE_PREFIX = "page"
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
@@ -307,26 +309,30 @@ MEDIA_URL = env.get("MEDIA_URL", "/media/")
 
 # Azure storage configuration
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-file-storage
-AZURE_CONTAINER = env.get ("AZURE_CONTAINER", "")
-if AZURE_CONTAINER and AZURE_CONTAINER.lower () != "none":
+AZURE_CONTAINER = env.get("AZURE_CONTAINER", "")
+if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     # Add django-storages to the installed apps
     INSTALLED_APPS = INSTALLED_APPS + ["storages"]
 
-    DEFAULT_FILE_STORAGE = "campaignresourcecentre.custom_storages.custom_azure.AzureMediaStorage"
-    SEARCH_STORAGE_CLASS = "campaignresourcecentre.custom_storages.custom_azure.AzureSearchStorage"
-    AZURE_ACCOUNT_NAME = env ["AZURE_ACCOUNT_NAME"]
-    AZURE_ACCOUNT_KEY = env ["AZURE_ACCOUNT_KEY"]
-    AZURE_SEARCH_CONTAINER = env ["AZURE_SEARCH_CONTAINER"]
-    AZURE_SEARCH_ACCESS_KEY = env ["AZURE_SEARCH_ACCESS_KEY"]
-    AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env ["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
+    DEFAULT_FILE_STORAGE = (
+        "campaignresourcecentre.custom_storages.custom_azure.AzureMediaStorage"
+    )
+    SEARCH_STORAGE_CLASS = (
+        "campaignresourcecentre.custom_storages.custom_azure.AzureSearchStorage"
+    )
+    AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
+    AZURE_ACCOUNT_KEY = env["AZURE_ACCOUNT_KEY"]
+    AZURE_SEARCH_CONTAINER = env["AZURE_SEARCH_CONTAINER"]
+    AZURE_SEARCH_ACCESS_KEY = env["AZURE_SEARCH_ACCESS_KEY"]
+    AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
     # AZURE_SEARCH_UPDATE determines whether search resources are indexed as updates are made
-    AZURE_SEARCH_UPDATE = getenv_bool ("AZURE_SEARCH_UPDATE", True)
-    AZURE_CUSTOM_DOMAIN = env ["AZURE_CUSTOM_DOMAIN"]
+    AZURE_SEARCH_UPDATE = getenv_bool("AZURE_SEARCH_UPDATE", True)
+    AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
     AZURE_SEARCH_UPDATE = False
-    
+
 # Logging
 # This logging is configured to be used with Sentry and console logs. Console
 # logs are widely used by platforms offering Docker deployments, e.g. Heroku.
@@ -723,7 +729,7 @@ CAMPAIGN_HUB_PAGE_FILTERS = [
     "MENTALHEALTH",
     "NHS",
     "PHYSICALACTIVITY",
-    "QUITTINGSMOKING"
+    "QUITTINGSMOKING",
 ]
 
 PHE_PARTNERSHIPS_EMAIL = env.get("PHE_PARTNERSHIPS_EMAIL")

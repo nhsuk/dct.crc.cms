@@ -4,9 +4,7 @@ register = template.Library()
 
 
 # Primary nav snippets
-@register.inclusion_tag(
-    "molecules/navigation/primarynav.html", takes_context=True
-)
+@register.inclusion_tag("molecules/navigation/primarynav.html", takes_context=True)
 def primarynav(context):
     request = context["request"]
     return {
@@ -18,9 +16,7 @@ def primarynav(context):
 
 
 # Secondary nav snippets
-@register.inclusion_tag(
-    "molecules/navigation/secondarynav.html", takes_context=True
-)
+@register.inclusion_tag("molecules/navigation/secondarynav.html", takes_context=True)
 def secondarynav(context):
     request = context["request"]
     return {
@@ -32,9 +28,7 @@ def secondarynav(context):
 
 
 # Footer nav snippets
-@register.inclusion_tag(
-    "molecules/navigation/footernav.html", takes_context=True
-)
+@register.inclusion_tag("molecules/navigation/footernav.html", takes_context=True)
 def footernav(context):
     request = context["request"]
     return {
@@ -46,9 +40,7 @@ def footernav(context):
 
 
 # Footer nav snippets
-@register.inclusion_tag(
-    "molecules/navigation/sidebar.html", takes_context=True
-)
+@register.inclusion_tag("molecules/navigation/sidebar.html", takes_context=True)
 def sidebar(context):
     return {
         "children": context["page"].get_children().live().public().in_menu(),
@@ -57,9 +49,7 @@ def sidebar(context):
 
 
 # Footer nav snippets
-@register.inclusion_tag(
-    "molecules/navigation/footerlinks.html", takes_context=True
-)
+@register.inclusion_tag("molecules/navigation/footerlinks.html", takes_context=True)
 def footerlinks(context):
     request = context["request"]
     return {

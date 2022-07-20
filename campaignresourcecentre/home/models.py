@@ -2,7 +2,12 @@ from django.db import models
 
 from modelcluster.fields import ParentalKey
 
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import (
+    FieldPanel,
+    MultiFieldPanel,
+    InlinePanel,
+    StreamFieldPanel,
+)
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
@@ -31,11 +36,8 @@ class HomePage(BasePage):
     )
     hero_align = models.CharField(
         max_length=15,
-        choices=(
-                ('left', 'Left'),
-                ('center', 'Center'),
-                ('right', 'Right')),
-        default='right',
+        choices=(("left", "Left"), ("center", "Center"), ("right", "Right")),
+        default="right",
     )
     campaign_updates_heading = models.CharField(
         blank=True,
@@ -51,7 +53,7 @@ class HomePage(BasePage):
         on_delete=models.SET_NULL,
         related_name="+",
     )
-    
+
     body = StreamField((HomePageBlocks(required=False)))
 
     content_panels = BasePage.content_panels + [
@@ -59,7 +61,9 @@ class HomePage(BasePage):
             [
                 FieldPanel("introduction"),
                 ImageChooserPanel("hero_image"),
-                FieldPanel('hero_align',)
+                FieldPanel(
+                    "hero_align",
+                ),
             ],
             heading="Introduction",
             classname="collapsible",

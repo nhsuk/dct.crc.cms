@@ -33,7 +33,7 @@ class DeliveryAddressForm(forms.Form):
             attrs={
                 "class": "govuk-input",
                 "aria-describedby": "address_line_2-error",
-                "autocomplete": "address-line2"
+                "autocomplete": "address-line2",
             }
         ),
         required=False,
@@ -45,7 +45,7 @@ class DeliveryAddressForm(forms.Form):
             attrs={
                 "class": "govuk-input",
                 "aria-describedby": "town_or_city-error",
-                "autocomplete": "address-level1"
+                "autocomplete": "address-level1",
             }
         ),
         required=True,
@@ -57,7 +57,7 @@ class DeliveryAddressForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-input--width-10",
                 "aria-describedby": "postcode-error",
-                "autocomplete": "postal-code"
+                "autocomplete": "postal-code",
             }
         ),
         required=True,

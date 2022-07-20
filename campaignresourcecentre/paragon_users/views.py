@@ -26,6 +26,7 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
+
 def ParseError(error):
     error_dict = {
         "Account for this email address already exists": [
@@ -51,9 +52,9 @@ def signup(request):
     if request.method == "POST":
         f = RegisterForm(request.POST)
 
-        organisation = f.fields['organisation']
-        job_title = f.fields['job_title']
-        if not f.data['job_title'] == "student":
+        organisation = f.fields["organisation"]
+        job_title = f.fields["job_title"]
+        if not f.data["job_title"] == "student":
             organisation.required = True
             job_title.required = True
 
@@ -70,7 +71,7 @@ def signup(request):
             if not job_title == "student":
                 organisation = f.cleaned_data.get("organisation")
             else:
-                organisation = ' '
+                organisation = " "
             postcode = f.data["postcode"]
 
             # Need to set created_at (ProductRegistrationVar10) when creating a new user
@@ -223,7 +224,9 @@ def login(request):
                         request.session["Verified"] = verified
 
                         if verified == "True":
-                            return redirect(login_form.cleaned_data.get("previous_page"))
+                            return redirect(
+                                login_form.cleaned_data.get("previous_page")
+                            )
                         else:
                             return render(request, "users/not_verified.html")
                     else:
@@ -309,6 +312,7 @@ def password_reset(request):
         {"form": password_reset_form},
     )
 
+
 @paragon_user_logged_out
 def password_set(request):
 
@@ -318,11 +322,11 @@ def password_set(request):
         try:
             user_token = unsign(request.GET.get("q"), max_age=86400)
         except Exception as e:  # noqa
-            logger.warn ("Failed to unsign user token: %s" % e)
+            logger.warn("Failed to unsign user token: %s" % e)
             return redirect("/")
         # Check if the user token returns a profile to authenticate it
         user_profile = paragon_client.get_user_profile(user_token)
-        status = user_profile.get ("code")
+        status = user_profile.get("code")
         if status == 200:
             if request.method == "POST":
                 password_set_form = PasswordSetForm(request.POST)
@@ -370,9 +374,9 @@ def password_set(request):
                 request, "users/password_set.html", {"form": password_set_form}
             )
         else:
-            logger.error ("Paragon API returned status code %d", status)
+            logger.error("Paragon API returned status code %d", status)
     else:
-        logger.warn ("Password set requested without user token")
+        logger.warn("Password set requested without user token")
     return redirect("/")
 
 
