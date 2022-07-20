@@ -21,6 +21,4 @@ def crc_breadcrumb(context):
     home = site.root_page
     home.title = "Home"
 
-    return {
-        "breadcrumb_pages": [home] + list(breadcrumb_pages),
-    }
+    return {"breadcrumb_pages": [home] + list(breadcrumb_pages)}

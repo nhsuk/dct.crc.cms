@@ -101,10 +101,7 @@ class FakeNotifications:
     def reset_password(
         self, email_address: str, first_name: str, reset_link: str
     ) -> None:
-        self.sent[email_address] = {
-            "first_name": first_name,
-            "reset_link": reset_link,
-        }
+        self.sent[email_address] = {"first_name": first_name, "reset_link": reset_link}
         logger.info(
             f"Emailing {first_name} ({email_address}) to reset password: {reset_link}"
         )
@@ -151,10 +148,7 @@ class GovNotifyNotifications:
         message = NotifyEmailMessage(
             to=recipients,
             template_id=self.REVIEW_PAGE_TEMPLATE_ID,
-            personalisation={
-                "page_title": page_title,
-                "page_edit_url": page_edit_url,
-            },
+            personalisation={"page_title": page_title, "page_edit_url": page_edit_url},
         )
         message.send()
 
@@ -167,10 +161,7 @@ class GovNotifyNotifications:
         message = NotifyEmailMessage(
             to=[email_address],
             template_id=self.CONFIRM_REGISTRATION_TEMPLATE_ID,
-            personalisation={
-                "first_name": first_name,
-                "verify_link": verify_link,
-            },
+            personalisation={"first_name": first_name, "verify_link": verify_link},
         )
         message.send()
 

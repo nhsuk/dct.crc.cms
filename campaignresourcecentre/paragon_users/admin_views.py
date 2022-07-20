@@ -110,9 +110,7 @@ def index(request):
 
     try:
         response = paragon_client.search_users(
-            string=search_string,
-            offset=offset,
-            limit=users_per_page,
+            string=search_string, offset=offset, limit=users_per_page
         )
         users = [user_from_dict(user_dict) for user_dict in response["content"]]
         users.sort(key=lambda user: user.created_at, reverse=True)
@@ -162,9 +160,7 @@ def edit(request, user_token):
     paragon_client = Client()
 
     try:
-        response = paragon_client.get_user_profile(
-            user_token=user_token,
-        )
+        response = paragon_client.get_user_profile(user_token=user_token)
         user = user_from_dict(response["content"])
     except ParagonClientError as PCE:
         user = None
@@ -231,11 +227,7 @@ def edit(request, user_token):
     return TemplateResponse(
         request,
         "paragon_users/edit.html",
-        {
-            "user": user,
-            "paragon_error": paragon_error,
-            "form": form,
-        },
+        {"user": user, "paragon_error": paragon_error, "form": form},
     )
 
 
@@ -249,9 +241,7 @@ def set_password(request, user_token):
     paragon_client = Client()
 
     try:
-        response = paragon_client.get_user_profile(
-            user_token=user_token,
-        )
+        response = paragon_client.get_user_profile(user_token=user_token)
         user = user_from_dict(response["content"])
     except ParagonClientError as PCE:
         user = None
@@ -291,9 +281,5 @@ def set_password(request, user_token):
     return TemplateResponse(
         request,
         "paragon_users/set_password.html",
-        {
-            "user": user,
-            "paragon_error": paragon_error,
-            "form": AdminPasswordSetForm,
-        },
+        {"user": user, "paragon_error": paragon_error, "form": AdminPasswordSetForm},
     )

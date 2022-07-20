@@ -51,10 +51,7 @@ class AccordionBlock(blocks.StructBlock):
     )
     items = blocks.ListBlock(
         blocks.StructBlock(
-            [
-                ("title", blocks.CharBlock()),
-                ("text", blocks.TextBlock()),
-            ],
+            [("title", blocks.CharBlock()), ("text", blocks.TextBlock())],
             icon="pilcrow",
         )
     )

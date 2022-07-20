@@ -61,9 +61,7 @@ class HomePage(BasePage):
             [
                 FieldPanel("introduction"),
                 ImageChooserPanel("hero_image"),
-                FieldPanel(
-                    "hero_align",
-                ),
+                FieldPanel("hero_align"),
             ],
             heading="Introduction",
             classname="collapsible",

@@ -147,10 +147,7 @@ class UpdatePassword:
 
     def params(self):
         self.valid()
-        return {
-            "UserToken": self.user_token,
-            "Password": self.password,
-        }
+        return {"UserToken": self.user_token, "Password": self.password}
 
 
 @dataclass

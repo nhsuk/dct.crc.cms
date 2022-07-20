@@ -31,6 +31,4 @@ def register_permissions():
 
 @hooks.register("register_admin_urls")
 def register_admin_urls():
-    return [
-        path("paragon_users/", include(admin_urls, namespace="paragon_users")),
-    ]
+    return [path("paragon_users/", include(admin_urls, namespace="paragon_users"))]

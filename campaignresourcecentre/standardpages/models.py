@@ -51,10 +51,7 @@ class AboutPage(InformationPage):
         help_text="Short line of text for display on the campaign page",
     )
     image = models.ForeignKey(
-        get_image_model_string(),
-        null=True,
-        related_name="+",
-        on_delete=models.SET_NULL,
+        get_image_model_string(), null=True, related_name="+", on_delete=models.SET_NULL
     )
 
     image_alt_text = models.TextField(blank=True)

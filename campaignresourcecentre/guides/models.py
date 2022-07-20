@@ -27,10 +27,7 @@ class GuidePage(BasePage):
     )
 
     background_colour = models.CharField(
-        choices=[
-            ("app-section--white", "white"),
-            ("app-section--grey", "nhs grey"),
-        ],
+        choices=[("app-section--white", "white"), ("app-section--grey", "nhs grey")],
         max_length=45,
         default="app-section--white",
         help_text="set background colour for the section",

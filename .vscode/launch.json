@@ -5,6 +5,7 @@
         "name": "Run Debugger",
         "type": "python",
         "request": "attach",
+        "django": true,
         "pathMappings": [
           {
             "localRoot": "${workspaceFolder}/campaignresourcecentre",

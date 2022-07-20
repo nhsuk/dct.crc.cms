@@ -16,9 +16,7 @@ from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.notifications.dataclasses import ContactUsData
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 
-from .forms import (
-    ContactUsForm,
-)
+from .forms import ContactUsForm
 
 
 def cookie_declaration(request):

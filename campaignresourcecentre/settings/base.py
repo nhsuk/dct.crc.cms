@@ -328,6 +328,7 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     # AZURE_SEARCH_UPDATE determines whether search resources are indexed as updates are made
     AZURE_SEARCH_UPDATE = getenv_bool("AZURE_SEARCH_UPDATE", True)
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
+    AZURE_URL_EXPIRATION_SECS = 1860
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
@@ -350,7 +351,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
-        },
+        }
     },
     "formatters": {
         "verbose": {
@@ -363,11 +364,7 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "wagtail": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
+        "wagtail": {"handlers": ["console"], "level": "INFO", "propagate": False},
         "django.request": {
             "handlers": ["console"],
             "level": "WARNING",
@@ -401,10 +398,7 @@ if "SENTRY_DSN" in env and not is_in_shell:
     from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.utils import get_default_release
 
-    sentry_kwargs = {
-        "dsn": env["SENTRY_DSN"],
-        "integrations": [DjangoIntegration()],
-    }
+    sentry_kwargs = {"dsn": env["SENTRY_DSN"], "integrations": [DjangoIntegration()]}
 
     # There's a chooser to toggle between environments at the top right corner on sentry.io
     # Values are typically 'staging' or 'production' but can be set to anything else if needed.
@@ -650,9 +644,7 @@ TESTING = "test" in sys.argv
 # By default, Django uses a computationally difficult algorithm for passwords hashing.
 # We don't need such a strong algorithm in tests, so use MD5
 if TESTING:
-    PASSWORD_HASHERS = [
-        "django.contrib.auth.hashers.MD5PasswordHasher",
-    ]
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 # Paragon configuration
 

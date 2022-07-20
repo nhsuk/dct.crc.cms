@@ -22,9 +22,7 @@ class Client:
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
-        self.data = {
-            "ProductToken": settings.PARAGON_API_KEY,
-        }
+        self.data = {"ProductToken": settings.PARAGON_API_KEY}
         # For performance testing - determine whether we are operating in a test environment
         # self.may_mock = settings.PARAGON_MOCK is not None and\
         #    settings.PARAGON_MOCK.lower ().startswith ("t")
@@ -156,11 +154,7 @@ class Client:
 
     def get_user_profile(self, user_token):
         self.call_method = "/RetrieveProfile"
-        self.data.update(
-            {
-                "UserToken": user_token,
-            }
-        )
+        self.data.update({"UserToken": user_token})
         self.call()
         if self.response.status_code == 200:
             return {
@@ -227,11 +221,7 @@ class Client:
 
     def get_user_address(self, user_token):
         self.call_method = "/RetrieveDeliveryAddress"
-        self.data.update(
-            {
-                "UserToken": user_token,
-            }
-        )
+        self.data.update({"UserToken": user_token})
         self.call()
         if self.response.status_code == 200:
             return {

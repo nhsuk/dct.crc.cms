@@ -48,7 +48,4 @@ class NavigationSettings(BaseSetting, ClusterableModel):
         help_text="Single list of elements at the base of the page.",
     )
 
-    panels = [
-        StreamFieldPanel("primary_navigation"),
-        StreamFieldPanel("footer_links"),
-    ]
+    panels = [StreamFieldPanel("primary_navigation"), StreamFieldPanel("footer_links")]

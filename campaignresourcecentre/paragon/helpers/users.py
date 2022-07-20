@@ -27,9 +27,7 @@ def get_current_num_users(previous_num_users=0):
 
     try:
         response = paragon_client.search_users(
-            offset=previous_num_users,
-            limit=100,
-            string="",
+            offset=previous_num_users, limit=100, string=""
         )
         num_users_returned = len(response["content"])
         logger.info(f"Number of users returned: {num_users_returned}")
