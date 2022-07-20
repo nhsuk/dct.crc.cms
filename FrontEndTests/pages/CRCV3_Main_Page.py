@@ -5,11 +5,9 @@ from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
-import re
-from selenium.webdriver.support.color import Color
-from selenium.webdriver.common.keys import Keys
-from AcceptanceTests.common.common_test_methods import *
 
+
+from AcceptanceTests.common.common_test_methods import *
 
 
 class CRCV3MainPage(BasePage):
@@ -18,7 +16,8 @@ class CRCV3MainPage(BasePage):
     cookie_banner = PageElement(By.ID, "cookiebanner-info")
     cookie_banner_do_not_accept = PageElement(By.LINK_TEXT, "I understand")
     Covid_label = PageElement(By.XPATH, "//h2[text()[normalize-space()='Coronavirus (COVID-19) advice and resources']]")
-    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")    
+    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")
+    S4l_Image = PageElement(By.XPATH, "//img[@alt='Baby breastfeeding']")
     Sign_In_link = PageElement(By.LINK_TEXT, "Sign in")
     Sign_In_label = PageElement(By.XPATH, "//h1[text()[normalize-space()='Sign in']]")
     email_id = PageElement(By.ID, "id_email")
@@ -32,6 +31,7 @@ class CRCV3MainPage(BasePage):
     forgot_password_confirmation = PageElement(By.XPATH, "//h1[text()='Password reset request sent']")
     submit = PageElement(By.XPATH, "//button[text()='Submit']")
     Home = PageElement(By.LINK_TEXT, "Home")
+    Campaigns_list = PageElement(By.XPATH, "//ul[@class='nhsuk-grid-row nhsuk-card-group']/li")
     campaigns_tab = PageElement(By.XPATH, "//a[@href='/campaigns/']")
     Start4Life_link = PageElement(By.XPATH, "//h3[text()[normalize-space()='Start4Life']]")
     Start4Life_landing = PageElement(By.XPATH, "//h1[text()='Start4Life']")
@@ -224,6 +224,12 @@ class CRCV3MainPage(BasePage):
     register_empty_error_problem_list = PageElement(By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']/li")
     register_invalid_error_problem_list = PageElement(By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']//li")
 
+    def CRCV3_Campaigns_list_h3(self):
+        list_elements = self.find.elements(self.Campaigns_list)
+        elements = []
+        for element in list_elements:
+            elements.append(element.text)
+        return elements
 
 
     def return_empty_register_errors_link_url(self):
@@ -257,7 +263,7 @@ class CRCV3MainPage(BasePage):
     def CRCV3_Mainpage_labels(self):
         assert_that(self.interrogate.get_attribute(self.Covid_label, "innerHTML"), contains_string("Coronavirus (COVID-19) advice and resources"), "Covid label is not displayed")
         assert_that(self.interrogate.get_attribute(self.Latest_updates_label, "innerHTML"), equal_to("Latest updates"), "Latest updates label is not displayed")
-        
+
     def sign_up_for_email_form(self, email, password):
         self.interact.send_keys(self.email_id, email)
         self.interact.send_keys(self.Password, password)
@@ -295,6 +301,8 @@ class CRCV3MainPage(BasePage):
 
     def forgot_password_confirm(self):
         assert_that(self.interrogate.get_attribute(self.forgot_password_confirmation, "innerHTML"), equal_to("Password reset request sent"), "Password reset request sent confirmation label not displayed")
+
+    #def error_prompts_to_text_field(self):
 
     def HomeTab(self):
         self.interact.click_element(self.Home)
@@ -362,6 +370,10 @@ class CRCV3MainPage(BasePage):
             assert_that(right_click_link(self, "weareundefeatable.co.uk/"),
                         contains_string("https://weareundefeatable.co.uk/"),
                         "We are undefeatable campaign detail url doesn't match")
+            # self.interact.click_element(self.We_Are_Undefeatable_link)
+            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.We_Are_Undefeatable_campaign_landing),
+            #             equal_to(True), "We Are Undefeatable page not loaded")
+            # self.driver.back()
         elif Link == "Better_Health_Local_Authority_Tier_2":
             assert_that(right_click_link(self, "www.nhs.uk/better-health/"),
                         contains_string("https://www.nhs.uk/better-health/"),
@@ -370,6 +382,8 @@ class CRCV3MainPage(BasePage):
 
     def Research_behind_this_campaign(self, source):
         if source == "Start4Life":
+            text = assert_that(self.interrogate.is_image_visible_by_checking_src(self.S4l_Image), equal_to(True), "Alt is not available")
+            print(text)
             self.interact.click_element(self.Research_beyond_this_campaign_S4L_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Research_beyond_this_campaign_S4L_Paragraph),
                     equal_to(True), "Research behind this campaign link not expanded")
@@ -385,9 +399,6 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Change4Life_School_resources_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Change4Life_School_resources_Paragraph),
                         equal_to(True), "Change4Life School resources not expanded")
-            #self.interact.click_element(self.Research_beyond_this_campaign_S4LBF_link)
-            #assert_that(self.interrogate.get_text(self.Research_beyond_this_campaign_S4L_Paragraph), contains_string(""),
-            #            "Research behind this campaign link in Breastfeeding not Collapsed")
         elif source == "Betterhealth":
             self.interact.click_element(self.Overview_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph), equal_to(True),
@@ -430,8 +441,6 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.How_to_use_this_campaign_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.How_to_use_this_campaign_Paragraph_1),
                         equal_to(True), "How to use this campaign link not expanded")
-            assert_that(right_click_link(self, "Help Us Help You campaign series"), equal_to("https://staging.campaignresources.phe.gov.uk/campaigns/help-us-help-you/"),
-                        "Help Us Help You campaign series link is not working")
         elif source == "We_Are_Undefeatable":
             self.interact.click_element(self.Overview_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_7), equal_to(True),
@@ -442,7 +451,7 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Breastfeeding_leaflet)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Breastfeeding_leaflet_Landing),
                         equal_to(True), "Breastfeeding leaflet link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
             self.interact.click_element(self.Posters)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Posters_Landing), equal_to(True), "Posters link not working")
@@ -453,28 +462,28 @@ class CRCV3MainPage(BasePage):
             #self.driver.back()
             self.interact.click_element(self.Top_tips_flyer)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Top_tips_flyer_Landing), equal_to(True), "Top tips flyer link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
             self.interact.click_element(self.Smarter_snacking)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Smarter_snacking_Landing), equal_to(True),
                         "Smarter snacking link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
             self.interact.click_element(self.Pre_measurement_leaflet)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Pre_measurement_leaflet_Landing), equal_to(True), "Pre-measurement leaflet link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
         elif source == "Betterhealth":
             self.interact.click_element(self.Social_statics)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_statics_Landing),
                         equal_to(True), "Social statics link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
         elif source == "Betterhealth_Start4Life":
             self.interact.click_element(self.Communications_toolkit)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Communications_toolkit_Landing),
                         equal_to(True), "Betterhealth Start4Life link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
         elif source == "Cervical_Screening":
             self.interact.click_element(self.Campaign_tookit)
@@ -486,13 +495,13 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Social_media_toolkit)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_media_toolkit_Landing),
                         equal_to(True), "Social media toolkit leaflet link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
         elif source == "Better_Health_Local_Authority_Tier_2":
             self.interact.click_element(self.Open_artwork)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Open_artwork_Landing),
                         equal_to(True), "Open artwork link not working")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
 
 
@@ -507,7 +516,7 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Social_Media_calendar_assets)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Social_Media_calendar_assets_landing), equal_to(True),
                     "Social Media calendar assets link not expanded")
-            self.Sign_In_register_link()
+            #self.Sign_In_register_link()
             self.driver.back()
         elif Campaigns == "Accessing NHS mental health services":
             self.interact.click_element(self.Accessing_NHS_mental_health_services)
@@ -525,6 +534,11 @@ class CRCV3MainPage(BasePage):
                 equal_to(True),  "Accessible campaign posters link not expanded")
             #self.Sign_In_register_link()
             self.driver.back()
+            # self.interact.click_element(self.BSL_social_versions_of_TV_ad_with_copy)
+            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.BSL_social_versions_of_TV_ad_with_copy_landing),
+            #             equal_to(True), "BSL social versions of TV ad with copy link not expanded")
+            # self.Sign_In_register_link()
+            # self.driver.back()
         elif Campaigns == "Childhood vaccination 2022":
             self.interact.click_element(self.Childhood_vaccination_2022)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Childhood_vaccination_2022_Landing),
@@ -532,7 +546,6 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Overview_link)
             assert_that(self.interrogate.is_image_visible_by_checking_src(self.Overview_Paragraph_4), equal_to(True),
                         "Overview link not expanded")
-
 
     def Start4Life_Campaigns(self):
         self.interact.click_element(self.Start4Life_Breastfeeding_Campaign)
@@ -582,8 +595,8 @@ class CRCV3MainPage(BasePage):
             self.sign_in_register()
             self.driver.back()
 
-
     def Sign_In_register_link(self):
+        #context.landing_page = CRCV3MainPage(context.browser, context.logger)
         assert_that(right_click_link(self, "Sign in"), equal_to("https://staging.campaignresources.phe.gov.uk/login/"), "Sign In link is not working" )
         assert_that(right_click_link(self, "register"), equal_to("https://staging.campaignresources.phe.gov.uk/signup/"), "register link is not working")
 
@@ -617,6 +630,8 @@ class CRCV3MainPage(BasePage):
             self.interact.click_element(self.Register_Button)
         elif option == "All_fields":
             self.interact.click_element(self.Register_Button)
+            #assert_that(self.interrogate.get_attribute(self.register_Success, "innerHTML"),
+                    #equal_to("Thank you for registering"), "Register a user is not working")
 
     def is_error_message_displayed(self):
         actual_message = "Please choose a UK country"
