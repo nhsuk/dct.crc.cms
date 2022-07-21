@@ -2,6 +2,8 @@ from datetime import date
 from logging import getLogger
 from urllib.parse import quote
 
+from django.conf import settings
+from django.http import HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
@@ -25,6 +27,7 @@ from .helpers.newsletter import deserialise, serialise
 from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
+
 
 def ParseError(error):
     error_dict = {
@@ -51,9 +54,9 @@ def signup(request):
     if request.method == "POST":
         f = RegisterForm(request.POST)
 
-        organisation = f.fields['organisation']
-        job_title = f.fields['job_title']
-        if not f.data['job_title'] == "student":
+        organisation = f.fields["organisation"]
+        job_title = f.fields["job_title"]
+        if not f.data["job_title"] == "student":
             organisation.required = True
             job_title.required = True
 
@@ -70,7 +73,7 @@ def signup(request):
             if not job_title == "student":
                 organisation = f.cleaned_data.get("organisation")
             else:
-                organisation = ' '
+                organisation = " "
             postcode = f.data["postcode"]
 
             # Need to set created_at (ProductRegistrationVar10) when creating a new user
@@ -102,6 +105,7 @@ def signup(request):
                     return render(
                         request,
                         "users/confirmation_registration.html",
+                        {"email": settings.PHE_PARTNERSHIPS_EMAIL},
                     )
             except ParagonClientError as PCE:
                 for error in PCE.args:
@@ -139,7 +143,8 @@ def verification(request):
         # unsign Token from URL Query
         try:
             unsignedToken = unsign(request.GET.get("q"), max_age=86400)
-        except:  # noqa
+        except Exception as e:  # noqa
+            logger.error("Exception unsigning user token: %s", e)
             return redirect("/")
         todays_date = date.today().strftime("%d/%m/%Y")
         # set user parameters
@@ -183,9 +188,14 @@ def get_role(userEmail: str, userJob: str):
 def login(request):
 
     if request.method == "GET":
+        next_url = request.GET.get("next")
         if request.META.get("HTTP_REFERER") is not None:
             login_form = LoginForm(
-                initial={"previous_page": request.META.get("HTTP_REFERER")}
+                initial={
+                    "previous_page": next_url
+                    if next_url
+                    else request.META.get("HTTP_REFERER")
+                }
             )
         else:
             login_form = LoginForm(initial={"previous_page": "/"})
@@ -223,7 +233,9 @@ def login(request):
                         request.session["Verified"] = verified
 
                         if verified == "True":
-                            return redirect(login_form.cleaned_data.get("previous_page"))
+                            return redirect(
+                                login_form.cleaned_data.get("previous_page")
+                            )
                         else:
                             return render(request, "users/not_verified.html")
                     else:
@@ -246,8 +258,8 @@ def login(request):
 def logout(request):
     try:
         request.session.flush()
-    except:  # noqa
-        pass
+    except Exception as e:
+        logger.error("Exception flushing session: %s", e)
     if request.META.get("HTTP_REFERER") is not None:
         return redirect(request.META.get("HTTP_REFERER"))
     else:
@@ -259,7 +271,7 @@ def password_reset(request):
         password_reset_form = PasswordResetForm(request.POST)
 
         if password_reset_form.is_valid():
-            email = password_reset_form.cleaned_data.get("email")
+            email = password_reset_form.cleaned_data.get("email").lower()
             paragon_client = Client()
             try:
                 response = paragon_client.search_users(email, limit=1)
@@ -267,9 +279,13 @@ def password_reset(request):
                 response_content = response["content"]
 
                 for dict_item in response_content:
-                    if dict_item.get("EmailAddress") == email:
+                    if dict_item.get("EmailAddress").lower() == email:
                         userToken = dict_item.get("UserToken")
                         firstName = dict_item.get("FirstName")
+                    break
+                else:
+                    logger.error("Paragon returned no results for email")
+                    return HttpResponseServerError
 
                 signedToken = sign(userToken)
                 url = (
@@ -296,20 +312,15 @@ def password_reset(request):
                     else:
                         password_reset_form.add_error(paresedError[0], paresedError[1])
                 return render(
-                    request,
-                    "users/password_reset.html",
-                    {"form": password_reset_form},
+                    request, "users/password_reset.html", {"form": password_reset_form}
                 )
     else:
         password_reset_form = PasswordResetForm()
 
-    return render(
-        request,
-        "users/password_reset.html",
-        {"form": password_reset_form},
-    )
+    return render(request, "users/password_reset.html", {"form": password_reset_form})
 
-@paragon_user_logged_out
+
+# Can change password whether logged in or not
 def password_set(request):
 
     if request.GET.get("q"):
@@ -318,11 +329,11 @@ def password_set(request):
         try:
             user_token = unsign(request.GET.get("q"), max_age=86400)
         except Exception as e:  # noqa
-            logger.warn ("Failed to unsign user token: %s" % e)
+            logger.warn("Failed to unsign user token: %s" % e)
             return redirect("/")
         # Check if the user token returns a profile to authenticate it
         user_profile = paragon_client.get_user_profile(user_token)
-        status = user_profile.get ("code")
+        status = user_profile.get("code")
         if status == 200:
             if request.method == "POST":
                 password_set_form = PasswordSetForm(request.POST)
@@ -370,9 +381,9 @@ def password_set(request):
                 request, "users/password_set.html", {"form": password_set_form}
             )
         else:
-            logger.error ("Paragon API returned status code %d", status)
+            logger.error("Paragon API returned status code %d", status)
     else:
-        logger.warn ("Password set requested without user token")
+        logger.warn("Password set requested without user token")
     return redirect("/")
 
 
@@ -460,17 +471,13 @@ def newsletter_preferences(request):
                     else:
                         newsletter_form.add_error(paresedError[0], paresedError[1])
             return render(
-                request,
-                "users/newsletter_preferences.html",
-                {"form": newsletter_form},
+                request, "users/newsletter_preferences.html", {"form": newsletter_form}
             )
     else:
         newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
 
         return render(
-            request,
-            "users/newsletter_preferences.html",
-            {"form": newsletter_form},
+            request, "users/newsletter_preferences.html", {"form": newsletter_form}
         )
 
 
