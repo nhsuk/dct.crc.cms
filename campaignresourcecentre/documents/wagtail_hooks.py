@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.core.signing import SignatureExpired, BadSignature
 from wagtail.core import hooks
 import logging
 from campaignresourcecentre.paragon_users.forms import LoginForm
@@ -16,7 +18,10 @@ def authorise_users(doc, request):
     if pageAuth != None:
         try:
             pageAuth = unsign(pageAuth, max_age=1860)
-        except:
+        except SignatureExpired:
+            logger.warning("Download Key Timeout : %i ", SignatureExpired)
+            return render(request, "errors/500.html")
+        except BadSignature:
             logger.warning("Malformed key present in download request")
             return render(request, "errors/500.html")
         if pageAuth != "ALL":
@@ -46,8 +51,10 @@ def authorise_users(doc, request):
             # not logged in => login page
             else:
                 logger.info("non-user attempted to access document")
-                login_form = LoginForm(initial={"previous_page": "/"})
-                return render(request, "users/login.html", {"form": login_form})
+                resp = HttpResponseRedirect("/login")
+                if "HTTP_REFERER" in request.META.get("HTTP_REFERER", ""):
+                    resp["HTTP_REFERER"] = request.META.get("HTTP_REFERER")
+                return resp
 
         # if key is 'all' => no check
         else:
