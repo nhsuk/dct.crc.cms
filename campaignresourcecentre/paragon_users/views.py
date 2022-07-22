@@ -2,6 +2,8 @@ from datetime import date
 from logging import getLogger
 from urllib.parse import quote
 
+from django.conf import settings
+from django.http import HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
@@ -100,7 +102,11 @@ def signup(request):
                     url = request.build_absolute_uri(reverse("verification"))
                     send_verification(token, url, email, first_name)
 
-                    return render(request, "users/confirmation_registration.html")
+                    return render(
+                        request,
+                        "users/confirmation_registration.html",
+                        {"email": settings.PHE_PARTNERSHIPS_EMAIL},
+                    )
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
@@ -137,7 +143,8 @@ def verification(request):
         # unsign Token from URL Query
         try:
             unsignedToken = unsign(request.GET.get("q"), max_age=86400)
-        except:  # noqa
+        except Exception as e:  # noqa
+            logger.error("Exception unsigning user token: %s", e)
             return redirect("/")
         todays_date = date.today().strftime("%d/%m/%Y")
         # set user parameters
@@ -181,9 +188,14 @@ def get_role(userEmail: str, userJob: str):
 def login(request):
 
     if request.method == "GET":
+        next_url = request.GET.get("next")
         if request.META.get("HTTP_REFERER") is not None:
             login_form = LoginForm(
-                initial={"previous_page": request.META.get("HTTP_REFERER")}
+                initial={
+                    "previous_page": next_url
+                    if next_url
+                    else request.META.get("HTTP_REFERER")
+                }
             )
         else:
             login_form = LoginForm(initial={"previous_page": "/"})
@@ -246,8 +258,8 @@ def login(request):
 def logout(request):
     try:
         request.session.flush()
-    except:  # noqa
-        pass
+    except Exception as e:
+        logger.error("Exception flushing session: %s", e)
     if request.META.get("HTTP_REFERER") is not None:
         return redirect(request.META.get("HTTP_REFERER"))
     else:
@@ -259,7 +271,7 @@ def password_reset(request):
         password_reset_form = PasswordResetForm(request.POST)
 
         if password_reset_form.is_valid():
-            email = password_reset_form.cleaned_data.get("email")
+            email = password_reset_form.cleaned_data.get("email").lower()
             paragon_client = Client()
             try:
                 response = paragon_client.search_users(email, limit=1)
@@ -267,9 +279,13 @@ def password_reset(request):
                 response_content = response["content"]
 
                 for dict_item in response_content:
-                    if dict_item.get("EmailAddress") == email:
+                    if dict_item.get("EmailAddress").lower() == email:
                         userToken = dict_item.get("UserToken")
                         firstName = dict_item.get("FirstName")
+                    break
+                else:
+                    logger.error("Paragon returned no results for email")
+                    return HttpResponseServerError
 
                 signedToken = sign(userToken)
                 url = (
@@ -284,7 +300,9 @@ def password_reset(request):
                 )  # This needs to be changed before release
                 emailClient.reset_password(email, firstName, url)
                 return render(
-                    request, "users/confirmation_password_reset.html", {"email": email}
+                    request,
+                    "users/confirmation_password_reset.html",
+                    {"email": email},
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
@@ -302,7 +320,7 @@ def password_reset(request):
     return render(request, "users/password_reset.html", {"form": password_reset_form})
 
 
-@paragon_user_logged_out
+# Can change password whether logged in or not
 def password_set(request):
 
     if request.GET.get("q"):
