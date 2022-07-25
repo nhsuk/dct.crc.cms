@@ -14,6 +14,9 @@ parameters:
   displayName: Debug (forced false in production)
   type: boolean
   default: false
+- name:tags
+  displayName: Front-end test tags (default smoke)
+  default: ""
 - name: paragonMock
   displayName: Mock Paragon API (forced false in production)
   type: boolean
@@ -136,6 +139,9 @@ stages:
         keyVaultName: 'dct-crc-v3-vlt-rev-uks'
         kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+    - template: azure-pipeline-templates/frontendtest.yml
+      parameters:
+        tags: ${{ parameters.tags }}
   - job: deployTest
     displayName: 'Depoy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
