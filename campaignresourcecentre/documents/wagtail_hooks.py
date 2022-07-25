@@ -1,11 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.core.signing import SignatureExpired, BadSignature
+from django.core.signing import BadSignature
 from wagtail.core import hooks
-import logging
-from campaignresourcecentre.paragon_users.forms import LoginForm
+
+from cryptography.fernet import InvalidToken
+
 from campaignresourcecentre.paragon_users.helpers.token_signing import unsign
 
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +19,11 @@ def authorise_users(doc, request):
     # if Key is present
     if pageAuth != None:
         try:
-            pageAuth = unsign(pageAuth, max_age=1860)
-        except SignatureExpired:
-            logger.warning("Download Key Timeout : %i ", SignatureExpired)
-            return render(request, "errors/500.html")
-        except BadSignature:
+            pageAuth = unsign(pageAuth)
+           
+        except (BadSignature, InvalidToken):
             logger.warning("Malformed key present in download request")
-            return render(request, "errors/500.html")
+            return render(request, "errors/400.html", context={"error":"BadKey"})
         if pageAuth != "ALL":
             # Check if user is logged in
             if "ParagonUser" in request.session:
@@ -62,4 +62,4 @@ def authorise_users(doc, request):
     # No Key => 403
     else:
         logger.info("No key present in download request")
-        return render(request, "errors/403.html")
+        return render(request, "errors/400.html", context={"error":"BadKey"})
