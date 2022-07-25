@@ -133,6 +133,7 @@ stages:
       workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
+      tags: ${{ parameters.tag }}
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
@@ -141,8 +142,6 @@ stages:
         kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
-      parameters:
-        tags: ${{ parameters.tags }}
   - job: deployTest
     displayName: 'Depoy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')

@@ -1,3 +1,8 @@
+variables:
+- name: TAGS
+  value: $(tags)
+- name: BASE_URL
+  value: $(hostUrl)
 steps:
   - task: DownloadSecureFile@1
     displayName: 'Download username/password secret file'
@@ -7,8 +12,6 @@ steps:
   - bash: |
       echo "##vso[task.setvariable variable=WORK;]$(System.DefaultWorkingDirectory)"
       echo "##vso[task.setvariable variable=SECRETS_FILE;]$(CSVFile.secureFilePath)"
-      echo "##vso[task.setvariable variable=TAGS;]$(tags)"
-      echo "##vso[task.setvariable variable=BASE_URL;]$(hostUrl)"
       echo "Test $BASE_URL with tags: $TAGS"
 
       mkdir -p $WORK/tmp
