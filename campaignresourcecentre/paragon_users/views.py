@@ -320,7 +320,8 @@ def password_reset(request):
     return render(request, "users/password_reset.html", {"form": password_reset_form})
 
 
-# Can change password whether logged in or not
+# Can change password when user is not logged in
+@paragon_user_logged_out
 def password_set(request):
 
     if request.GET.get("q"):
