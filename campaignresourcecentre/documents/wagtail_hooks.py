@@ -20,10 +20,10 @@ def authorise_users(doc, request):
     if pageAuth != None:
         try:
             pageAuth = unsign(pageAuth)
-           
+
         except (BadSignature, InvalidToken):
             logger.warning("Malformed key present in download request")
-            return render(request, "errors/400.html", context={"error":"BadKey"})
+            return render(request, "errors/400.html", context={"error": "BadKey"})
         if pageAuth != "ALL":
             # Check if user is logged in
             if "ParagonUser" in request.session:
@@ -62,4 +62,4 @@ def authorise_users(doc, request):
     # No Key => 403
     else:
         logger.info("No key present in download request")
-        return render(request, "errors/400.html", context={"error":"BadKey"})
+        return render(request, "errors/400.html", context={"error": "BadKey"})
