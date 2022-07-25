@@ -267,7 +267,7 @@ class PasswordSetForm(forms.Form):
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "govuk-input govuk-!-width-two-thirds",
+                "class": "govuk-input govuk-!-width-one-half",
                 "autocomplete": "new-password",
             }
         ),
@@ -278,7 +278,7 @@ class PasswordSetForm(forms.Form):
     password_check = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "govuk-input govuk-!-width-two-thirds",
+                "class": "govuk-input govuk-!-width-one-half",
                 "autocomplete": "new-password",
             }
         ),
