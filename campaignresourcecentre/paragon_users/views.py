@@ -2,8 +2,7 @@ from datetime import date
 from logging import getLogger
 from urllib.parse import quote
 
-from django.conf import settings
-from django.http import HttpResponseServerError
+from django.http import HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
@@ -27,6 +26,8 @@ from .helpers.newsletter import deserialise, serialise
 from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
+
+logger = getLogger()
 
 
 def ParseError(error):
@@ -105,8 +106,11 @@ def signup(request):
                     return render(
                         request,
                         "users/confirmation_registration.html",
-                        {"email": settings.PHE_PARTNERSHIPS_EMAIL},
                     )
+                else:
+                    # Report the failure and return a server error
+                    logger.error("Failed to create account: %s" % (response,))
+                    return HttpResponseServerError()
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
@@ -143,8 +147,7 @@ def verification(request):
         # unsign Token from URL Query
         try:
             unsignedToken = unsign(request.GET.get("q"), max_age=86400)
-        except Exception as e:  # noqa
-            logger.error("Exception unsigning user token: %s", e)
+        except:  # noqa
             return redirect("/")
         todays_date = date.today().strftime("%d/%m/%Y")
         # set user parameters
@@ -188,14 +191,9 @@ def get_role(userEmail: str, userJob: str):
 def login(request):
 
     if request.method == "GET":
-        next_url = request.GET.get("next")
         if request.META.get("HTTP_REFERER") is not None:
             login_form = LoginForm(
-                initial={
-                    "previous_page": next_url
-                    if next_url
-                    else request.META.get("HTTP_REFERER")
-                }
+                initial={"previous_page": request.META.get("HTTP_REFERER")}
             )
         else:
             login_form = LoginForm(initial={"previous_page": "/"})
@@ -258,8 +256,8 @@ def login(request):
 def logout(request):
     try:
         request.session.flush()
-    except Exception as e:
-        logger.error("Exception flushing session: %s", e)
+    except:  # noqa
+        pass
     if request.META.get("HTTP_REFERER") is not None:
         return redirect(request.META.get("HTTP_REFERER"))
     else:
@@ -271,7 +269,7 @@ def password_reset(request):
         password_reset_form = PasswordResetForm(request.POST)
 
         if password_reset_form.is_valid():
-            email = password_reset_form.cleaned_data.get("email").lower()
+            email = password_reset_form.cleaned_data.get("email")
             paragon_client = Client()
             try:
                 response = paragon_client.search_users(email, limit=1)
@@ -279,13 +277,9 @@ def password_reset(request):
                 response_content = response["content"]
 
                 for dict_item in response_content:
-                    if dict_item.get("EmailAddress").lower() == email:
+                    if dict_item.get("EmailAddress") == email:
                         userToken = dict_item.get("UserToken")
                         firstName = dict_item.get("FirstName")
-                    break
-                else:
-                    logger.error("Paragon returned no results for email")
-                    return HttpResponseServerError
 
                 signedToken = sign(userToken)
                 url = (
@@ -312,18 +306,21 @@ def password_reset(request):
                     else:
                         password_reset_form.add_error(paresedError[0], paresedError[1])
                 return render(
-                    request, "users/password_reset.html", {"form": password_reset_form}
+                    request,
+                    "users/password_reset.html",
+                    {"form": password_reset_form},
                 )
     else:
         password_reset_form = PasswordResetForm()
 
-    return render(request, "users/password_reset.html", {"form": password_reset_form})
+    return render(
+        request,
+        "users/password_reset.html",
+        {"form": password_reset_form},
+    )
 
 
-# Can change password when user is not logged in
-@paragon_user_logged_out
 def password_set(request):
-
     if request.GET.get("q"):
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning
@@ -472,13 +469,17 @@ def newsletter_preferences(request):
                     else:
                         newsletter_form.add_error(paresedError[0], paresedError[1])
             return render(
-                request, "users/newsletter_preferences.html", {"form": newsletter_form}
+                request,
+                "users/newsletter_preferences.html",
+                {"form": newsletter_form},
             )
     else:
         newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
 
         return render(
-            request, "users/newsletter_preferences.html", {"form": newsletter_form}
+            request,
+            "users/newsletter_preferences.html",
+            {"form": newsletter_form},
         )
 
 

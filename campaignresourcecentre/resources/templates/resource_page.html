@@ -15,24 +15,14 @@
 {% endblock %}
 
 {% block content %}
-
-    <div id="resource-order-error-summary" class="govuk-width-container govuk-!-display-none">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                    <h2 class="govuk-error-summary__title" id="error-summary-title">
-                      There is a problem
-                    </h2>
-                    <div class="govuk-error-summary__body">
-                      <ul class="govuk-list govuk-error-summary__list" id="errorList">
-                        
-                      </ul>
-                    </div>
-                  </div>
-            </div>
+    {% if has_errors %}
+        <div id="resource-order-error-summary" class="govuk-width-container" tabindex="-1">
+            {% include 'molecules/baskets/basket_errors.html' %}
         </div>
-    </div>
-
+    {% else %}
+        <div id="resource-order-error-summary" class="govuk-width-container" tabindex="-1">
+        </div>
+    {% endif %}
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -103,7 +93,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button" href="{{ resource.document.url }}?a={{resource.key}}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
+                                                    <a class="govuk-button secondary-button" role="button" href="{{ resource.document.url }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>

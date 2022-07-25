@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test.client import Client
 
 from .basket import Basket
-from .exceptions import MaxQuantityExceededError, ItemNotInBasketError
+from .exceptions import ItemNotInBasketError
 
 
 class TestClient(TestCase):
@@ -44,16 +44,33 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item, 3)
-        self.assertEqual(len(self.basket.basket), 1)
-        self.assertEqual(self.basket.basket[1]["quantity"], 3)
-        self.basket.add_item(item, 2)
+        self.basket.add_item(item, "3")
+        self.assertEqual(self.basket.get_items_count(), 1)
+        self.assertEqual(self.basket.get_item_count(1), 3)
+        self.basket.add_item(item, "2")
+        self.assertEqual(self.basket.get_item_count(1), 5)
+        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
+        self.assertEqual(self.basket.basket[1]["bad_quantity"], False)
         self.assertEqual(self.basket.basket[1]["quantity"], 5)
-        with self.assertRaises(MaxQuantityExceededError) as error:
-            self.basket.add_item(item, 2)
-        self.assert_exception(
-            error, "Item quantity should be less than maximum quantity!"
-        )
+        self.basket.add_item(item, "1")
+        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
+        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.basket.add_item(item, None)
+        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["bad_quantity"]
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["quantity"]
+        self.basket.add_item(item, "")
+        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["bad_quantity"]
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["quantity"]
+        self.basket.add_item(item, "garbage")
+        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["quantity"]
 
     def test_change_item_quantity(self):
         item = {
@@ -64,14 +81,20 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item, 3)
-        self.basket.change_item_quantity(1, 4)
-        self.assertEqual(self.basket.basket[1]["quantity"], 4)
-        with self.assertRaises(MaxQuantityExceededError) as error:
-            self.basket.change_item_quantity(1, 6)
-        self.assert_exception(
-            error, "Item quantity should be less than maximum quantity!"
-        )
+        self.basket.add_item(item, "3")
+        self.basket.change_item_quantity(1, "4")
+        self.assertEqual(self.basket.basket[1]["quantity"], 3)
+        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
+        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.basket.change_item_quantity(1, "6")
+        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
+        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.basket.change_item_quantity(1, None)
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["bad_quantity"]
+        with self.assertRaises(KeyError) as error:
+            self.basket.basket[1]["quantity"]
+
         with self.assertRaises(ItemNotInBasketError) as error:
             self.basket.change_item_quantity(2, 4)
         self.assert_exception(error, "Item is not added to basket!")
@@ -85,7 +108,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item1, 3)
+        self.basket.add_item(item1, "3")
         item2 = {
             "id": 2,
             "title": "Item2",
@@ -94,7 +117,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item2/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item2, 2)
+        self.basket.add_item(item2, "2")
         self.assertEqual(len(self.basket.get_all_items()), 2)
 
     def test_get_items_count(self):
@@ -106,7 +129,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item1, 3)
+        self.basket.add_item(item1, "3")
         item2 = {
             "id": 2,
             "title": "Item2",
@@ -115,7 +138,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item2/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item2, 2)
+        self.basket.add_item(item2, "2")
         self.assertEqual(self.basket.get_items_count(), 2)
 
     def test_get_item_count(self):
@@ -127,7 +150,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item1, 3)
+        self.basket.add_item(item1, "3")
         self.assertEqual(self.basket.get_item_count(1), 3)
 
     def test_get_items_count_empty(self):
@@ -139,7 +162,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item1, 3)
+        self.basket.add_item(item1, "3")
         item2 = {
             "id": 2,
             "title": "Item2",
@@ -148,7 +171,7 @@ class TestClient(TestCase):
             "image_url": "http://test.com/assets/item2/imgge.png",
             "max_quantity": 5,
         }
-        self.basket.add_item(item2, 2)
+        self.basket.add_item(item2, "2")
         self.basket.empty_basket()
         self.assertEqual(len(self.basket.basket), 0)
         self.assertEqual(self.basket.basket, {})
