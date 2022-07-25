@@ -133,7 +133,7 @@ stages:
       workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
-      tags: ${{ parameters.tag }}
+      tags: ${{ parameters.tags }}
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
