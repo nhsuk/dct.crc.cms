@@ -14,7 +14,7 @@ parameters:
   displayName: Debug (forced false in production)
   type: boolean
   default: false
-- name:tags
+- name: tags
   displayName: Front-end test tags (default smoke)
   default: ""
 - name: paragonMock
