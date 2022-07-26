@@ -58,13 +58,13 @@
                                 {% if selected_topic == 'ALL' %}
                                     <li><a class="govuk-button crc-filter-button selected" role="button" href="{{ page.url }}?sort={{ sort }}" aria-current="true">All</a></li>
                                 {% else %}
-                                    <li><a class="govuk-button crc-filter-button" role="button" href="{{ page.url }}?sort={{ sort }}" aria-current="true">All</a></li>
+                                    <li><a class="govuk-button crc-filter-button" role="button" href="{{ page.url }}?sort={{ sort }}">All</a></li>
                                 {% endif %}
                                 {% for topic in topics %}
                                     {% if selected_topic == topic.code %}
                                         <li><a class="govuk-button crc-filter-button selected" role="button" href="{{ page.url }}?topic={{ topic.code }}&sort={{ sort }}" aria-current="true">{{ topic.label }}</a></li>
                                     {% else %}
-                                        <li><a class="govuk-button crc-filter-button" role="button" href="{{ page.url }}?topic={{ topic.code }}&sort={{ sort }}" aria-current="true">{{ topic.label }}</a></li>
+                                        <li><a class="govuk-button crc-filter-button" role="button" href="{{ page.url }}?topic={{ topic.code }}&sort={{ sort }}">{{ topic.label }}</a></li>
                                     {% endif %}
                                 {% endfor %}
                             </ul>
