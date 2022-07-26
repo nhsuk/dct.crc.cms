@@ -1,5 +1,6 @@
 {% extends "base_page.html" %}
 {% load wagtailcore_tags wagtailsettings_tags %}
+{% load get_django_setting %}
 
 {% block title %}{{ settings.utils.SystemMessagesSettings.title_403 }}{% endblock %}
 
@@ -29,7 +30,7 @@
                   <h1>403 forbidden</h1>
                   <p>You do not have access to this resource.</p>
                   {% if request.session.ParagonUser %}
-                    <p>Do you have a .GOV or .NHS email address? <br/>Contact <a href="mailto:partnerships@phe.gov.uk">partnerships@phe.gov.uk</a> for unrestricted access and we'll review your request.</p>
+                    <p>Do you have a .GOV or .NHS email address? <br/>Contact <a href="mailto:{% get_django_setting "PHE_PARTNERSHIPS_EMAIL" %}">{% get_django_setting "PHE_PARTNERSHIPS_EMAIL" %}</a> for unrestricted access and we'll review your request.</p>
                   {% else %}
                     <p>Please <a href="/login">login</a> to access this resource.</p>
                   {% endif %}

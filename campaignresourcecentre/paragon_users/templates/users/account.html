@@ -1,6 +1,6 @@
 {% extends "base_page.html" %}
 {% block title %}Account details{% endblock %}
-
+{% load get_django_setting %}
 
 {% block breadcrumbs %}
 <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
@@ -96,7 +96,7 @@
                 <p>If you have forgotten or would like to change the password you use to sign into your account, you can <a href="/password-reset">reset your password</a>.</p>
 
                 <h2>Any problems?</h2>
-                <p>If you think your user type is incorrect or you wish to request your account is removed permanently contact us at <a href="mailto:partnerships@phe.gov.uk">partnerships@phe.gov.uk</a></p>
+                <p>If you think your user type is incorrect or you wish to request your account is removed permanently contact us at <a href="mailto:{% get_django_setting "PHE_PARTNERSHIPS_EMAIL" %}">{% get_django_setting "PHE_PARTNERSHIPS_EMAIL" %}</a></p>
             </div>
         </div>
     </div>
