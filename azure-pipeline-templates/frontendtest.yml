@@ -10,8 +10,9 @@ steps:
       echo "##vso[task.setvariable variable=TAGS;]$(tags)"
       echo "##vso[task.setvariable variable=BASE_URL;]$(hostUrl)"
 
-      echo "Test $BASE_URL with tags: $TAGS"
-
+      echo "Test $BASE_URL in $WORK with tags: $TAGS"
+      pwd
+      ls
       mkdir -p $WORK/tmp
       cd $WORK/tmp
       echo "### Running from " $(pwd)
