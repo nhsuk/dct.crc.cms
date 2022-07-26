@@ -15,9 +15,9 @@ parameters:
   type: boolean
   default: false
 - name: tags
-  displayName: Front-end test tags (default smoke)
+  displayName: Frontend test tags (default smoke)
   type: string
-  default: "@"
+  default: "all"
 - name: paragonMock
   displayName: Mock Paragon API (forced false in production)
   type: boolean
