@@ -5,13 +5,12 @@ steps:
     inputs:
       secureFile: oneuser.csv # A secret file in the pipeline library with a Parkhouse test API username/password value
   - bash: |
-      echo "##vso[task.setvariable variable=WORK;]$(System.DefaultWorkingDirectory)"
-      echo "##vso[task.setvariable variable=SECRETS_FILE;]$(CSVFile.secureFilePath)"
-      echo "##vso[task.setvariable variable=TAGS;]$(tags)"
-      echo "##vso[task.setvariable variable=BASE_URL;]$(hostUrl)"
+      #echo "##vso[task.setvariable variable=WORK;]$(System.DefaultWorkingDirectory)"
+      #echo "##vso[task.setvariable variable=SECRETS_FILE;]$(CSVFile.secureFilePath)"
+      #echo "##vso[task.setvariable variable=TAGS;]$(tags)"
+      #echo "##vso[task.setvariable variable=BASE_URL;]$(hostUrl)"
 
       echo "Test $BASE_URL in $WORK with tags: $TAGS"
-      pwd
       ls
       mkdir -p $WORK/tmp
       cd $WORK/tmp
@@ -28,4 +27,9 @@ steps:
         dctimages.azurecr.io/acceptancetests
       echo "##vso[task.setvariable variable=PASSED;]$?"
       exit $PASSED
+    env:
+      WORK: $(System.DefaultWorkingDirectory)
+      TAGS: $(tags)
+      SECRETS_FILE: $(CSVFile.secureFilePath)
+      BASE_URL: $(hostUrl)
     displayName: 'Run Frontend tests in Docker container'
