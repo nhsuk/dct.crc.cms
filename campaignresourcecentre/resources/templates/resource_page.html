@@ -1,6 +1,7 @@
 {% extends "base_page.html" %}
 {% load wagtailcore_tags wagtailimages_tags json_lookup %}
 {% load page_tags %}
+{% load get_django_setting %}
 
 {% block parent_page_title %}
     {% get_parent as parent_title %}
@@ -108,7 +109,7 @@
                                                 </p>
                                             {% else %}
                                                 <p>You do not have permission to view this resource.</p>
-                                                <p>Do you have a .GOV or .NHS email address? <br/>Contact <a href="mailto:partnerships@phe.gov.uk">partnerships@phe.gov.uk</a> for unrestricted access and we'll review your request.</p>
+                                                <p>Do you have a .GOV or .NHS email address? <br/>Contact <a href="mailto:{% get_django_setting "PHE_PARTNERSHIPS_EMAIL" %}">{% get_django_setting "PHE_PARTNERSHIPS_EMAIL" %}</a> for unrestricted access and we'll review your request.</p>
                                             {% endif %}
                                         {% endif %}
 
