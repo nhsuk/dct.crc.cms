@@ -28,7 +28,7 @@ def sign(token: str, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
     return token
 
 
-def unsign(token, max_age: int, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
+def unsign(token, max_age=None, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
     """
     dencrypts strings and then unsigns them
     """
