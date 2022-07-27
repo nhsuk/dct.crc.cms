@@ -4,8 +4,7 @@ steps:
     name: CSVFile # The name with which to reference the secure file’s path on the agent, like $(CSVFile.secureFilePath)
     inputs:
       secureFile: oneuser.csv # A secret file in the pipeline library with a Parkhouse test API username/password value
-  - bash:
-    filePath: execute-frontendtests.sh
+  - bash: execute-frontendtests.sh
     env:
       WORK: $(System.DefaultWorkingDirectory)
       TAGS: $(tags)
