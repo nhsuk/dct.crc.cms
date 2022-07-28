@@ -17,7 +17,7 @@ parameters:
 - name: tags
   displayName: Frontend test tags (default Smoke)
   type: string
-  default: smoke
+  default: Smoke
 - name: paragonMock
   displayName: Mock Paragon API (forced false in production)
   type: boolean
