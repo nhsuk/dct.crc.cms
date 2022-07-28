@@ -1,51 +1,38 @@
 <script>
+
     /**
-     * When an item is added or updated using the basket form
-     * the updated quantity and any error messages are rendered
-     * using partial templates so that the whole page does not refresh.
-     * The form data is used to provide values for the refreshed partial template.
+     * When a value is entered into the form
+     * Add the item
+     * Move the focus to the error list if there are errors
      */
-    function addItem(resourceForm) {
-        const basketErrors = document.getElementById("resource-order-error-summary");
-        const button = resourceForm['add-to-basket'];
-        const selectedField = resourceForm['order_quantity'];
-        const csrfToken = resourceForm['csrfmiddlewaretoken'].value;
-        const item_id = resourceForm['item_id'].value;
-        const title = resourceForm['title'].value;
-        const data = new FormData();
-
-        // Add the form data.
-        data.append('order_quantity', parseInt(selectedField.value));
-        data.append('csrfmiddlewaretoken', csrfToken);
-        data.append('item_id', item_id);
-        data.append('title', title);
-        button.disabled = true;
-
-        // Render the updated basket.
-        const xhttp_ss = new XMLHttpRequest();
-        xhttp_ss.onreadystatechange = function() {
-            if (this.readyState == 4){ 
-                if(this.status == 200) {
-                    resourceForm.outerHTML = this.responseText; 
-                    
-                    // Render the basket errors.
-                    const xhttp_be = new XMLHttpRequest();
-                    xhttp_be.onreadystatechange = function() {
-                        if (this.readyState == 4){
-                            if(this.status == 200) {
-                                basketErrors.innerHTML = this.response;
-                            }
-                        }
-                    }
-                    xhttp_be.open("POST", "/baskets/render_basket_errors/");
-                    xhttp_be.send(data);
-                }
-                else  {
-                    button.disabled = false;
-                }
-            }  
-        }
-        xhttp_ss.open("POST", "/baskets/render_basket/");
-        xhttp_ss.send(data);
+    function formAction(id) {
+        const resourceForm = document.forms[id];
+        // Add an item.
+        addItem(resourceForm);
+        errorFocus();
+        return false;
     }
+
+    /**
+     * Create a delay to allow the error list to load.
+     * Move the focus to the error list if there are errors.
+     * Remove the focus from the form.
+     * Add the focus class to the error list.
+     * Remove the focus class when leaving the error list.
+     */
+    function errorFocus() {
+        const errorSummary = document.getElementById('resource-order-error-summary');
+        setTimeout(() => {
+            if(errorSummary.children.length > 0) {
+                document.activeElement.blur();
+                errorSummary.scrollIntoView();
+                errorSummary.focus();
+                errorSummary.classList.add('error-focus');
+                errorSummary.onblur = function()  {
+                    errorSummary.classList.remove('error-focus');
+                }
+            }
+        }, "1000");
+    }
+
 </script>

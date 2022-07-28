@@ -18,14 +18,12 @@
 {% endblock %}
 
 {% block content %}
-    {% if has_errors %}
-        <div id="resource-order-error-summary" class="govuk-width-container" tabindex="-1">
+    
+    <div id="resource-order-error-summary" class="govuk-width-container" tabindex="-1">
+        {% if has_errors %}
             {% include 'molecules/baskets/basket_errors.html' %}
-        </div>
-    {% else %}
-        <div id="resource-order-error-summary" class="govuk-width-container" tabindex="-1">
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
     <div class="govuk-width-container govuk-!-padding-bottom-4">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -42,7 +40,7 @@
                         <div class="govuk-grid-row">
                             <div class="govuk-grid-column-one-third">
                                 <div class="left-panel">
-                                    <img src="{{ item.item_image_url }}" alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}"/>
+                                    <img src="{{ item.item_image_url }}" alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}">
                                 </div>
                             </div>
                             <div class="govuk-grid-column-two-thirds order-info-panel download">
@@ -86,7 +84,7 @@
     </div>
 
     {% block extra_js %}
-        {% include "static/form_validation.html" %}
+        {% include "static/form_action.html" %}
         {% include "static/render_basket.html" %}
     {% endblock %}
     <script>
