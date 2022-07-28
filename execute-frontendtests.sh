@@ -26,12 +26,14 @@ cd $WORK/work
 echo "### Running docker image"
 docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_PASSWORD)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
 docker pull dctimages.azurecr.io/acceptancetests
+# get Docker to use host network so it can access localhost:8000 with no fuss
 docker run \
+  --network host \
   --env BASE_URL \
   --env TAGS \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \
   dctimages.azurecr.io/acceptancetests
-echo "##vso[task.setvariable variable=PASSED;]$?"
+PASSED=$?
 echo "Status of tests: $PASSED"
 exit $PASSED

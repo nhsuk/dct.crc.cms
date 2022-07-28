@@ -82,8 +82,7 @@ steps:
           PARAGON_ENCRYPTION_KEY: $(paragonEncryptionKey)
           PARAGON_SIGN_KEY: $(paragonSignKey)
           PARAGON_SALT: $(paragonSalt)
-          PHE_PARTNERSHIPS_EMAIL: $(template id
-          )
+          PHE_PARTNERSHIPS_EMAIL: $(phePartnershipsEmail)
         envInitializerVariables:
           PRIMARY_HOST: $(primaryHost)
           DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
