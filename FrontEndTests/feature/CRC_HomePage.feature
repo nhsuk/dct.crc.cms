@@ -6,7 +6,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Given I loaded CRCV3 site to load the home page
     Then  Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
 
-  @CRCV3-002
+  @CRCV3-002 @Smoke
   Scenario Outline: open CRCV3 site and verify email field validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -22,7 +22,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-003
+  @CRCV3-003 @Smoke
   Scenario: open CRCV3 site and login with email and password
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -31,7 +31,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-004
+  @CRCV3-004 @Smoke
   Scenario Outline: open CRCV3 site to verify forgot password and the validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -48,7 +48,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-005
+  @CRCV3-005 @Smoke
   Scenario Outline: open CRCV3 site to verify forgot password confirmation message
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
