@@ -404,6 +404,27 @@ Additionally, just as the front end tests require a SECRETS_FILE from the CRCv3 
 crcv3-1-user.csv with a username and password for the front end tests to use. All three files (.env, test_env.sh and crcv3-1-user.csv) are
 excluded from source code control by the .gitignore file.
 
+An example test_env.sh:
+```
+export BASE_URL=http://localhost:8000
+export REPO_USERNAME=**************
+export REPO_PASSWORD=************************************
+# Note that secrets file requires absolute path because it will be mounted into the container
+export SECRETS_FILE=$PWD/crcv3-1-user.csv
+export IMAGE_TAG=1.0.0
+```
+To run the tests, first get your local CRC instance running in a terminal window:
+```
+fab start
+fab sh
+djrun
+```
+then start a second terminal window to run the tests:
+```
+. ./test_env.sh
+./execute-frontendtests.sh
+```
+
 ## Performance test
 
 - Download jmeter tool from https://jmeter.apache.org/download_jmeter.cgi and install.

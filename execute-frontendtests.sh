@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Execute the front-end tests for this repo
+# Note this file is not specific to CRC. The same script can test any repository having
+# a front-end tests folder.
 
 # Test are executed in a temporary subdirectory
 # Report files from the tests are available there
@@ -26,9 +28,9 @@ cp -r FrontEndTests $WORK
 mkdir $WORK/work
 cd $WORK/work
 
-echo "### Running docker image"
+echo "### Running docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
 docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_USERNAME)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
-docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}
+docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
 # get Docker to use host network so it can access localhost:8000 with no fuss
 docker run \
   --network host \

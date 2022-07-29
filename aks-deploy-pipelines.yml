@@ -134,7 +134,7 @@ stages:
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
       tags: ${{ parameters.tags }}
-      imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE)
+      imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
