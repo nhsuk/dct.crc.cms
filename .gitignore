@@ -43,8 +43,8 @@ htmlcov/
 coverage.xml
 *.cover
 .env
+test_env.sh
+crcv3-1-user.csv
 database_dumps/
-PerformanceTests/jmxedit/test1.yml
-
 
 poetry/requirements.txt

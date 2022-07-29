@@ -14,6 +14,10 @@ parameters:
   displayName: Debug (forced false in production)
   type: boolean
   default: false
+- name: tags
+  displayName: Frontend test tags (default Smoke)
+  type: string
+  default: Smoke
 - name: paragonMock
   displayName: Mock Paragon API (forced false in production)
   type: boolean
@@ -129,6 +133,8 @@ stages:
       workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
+      tags: ${{ parameters.tags }}
+      imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
@@ -136,8 +142,9 @@ stages:
         keyVaultName: 'dct-crc-v3-vlt-rev-uks'
         kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+    - template: azure-pipeline-templates/frontendtest.yml
   - job: deployTest
-    displayName: 'Depoy Perf Testing'
+    displayName: 'Deploy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
     variables:
       environmentName: 'staging'
