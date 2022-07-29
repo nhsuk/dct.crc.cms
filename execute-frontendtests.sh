@@ -11,10 +11,13 @@
 # SECRETS_FILE: Path to CSV file containing username/password pair(s)
 # REPO_USERNAME: Username for the Docker repository with the Front End test image
 # REPO_PASSWORD: Password "
+# IMAGE_TAG: Tag for required version of the Front End test image
 
 # Can't have empty value for TAGS as pipeline parameter so change "all" to "" here
 TAGS=$([ "$TAGS" = "all" ] && echo "" || echo "$TAGS")
 echo "Effective TAGS: '$TAGS'"
+
+# Create a temporary directory for the tests
 
 WORK=$(mktemp -d -t frontendtest-XXXXXXXXXX)
 echo "Test ${BASE_URL:?No deployment URL specified (BASE_URL)} in $WORK with tags: $TAGS"
@@ -24,8 +27,8 @@ mkdir $WORK/work
 cd $WORK/work
 
 echo "### Running docker image"
-docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_PASSWORD)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
-docker pull dctimages.azurecr.io/acceptancetests
+docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_USERNAME)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
+docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}
 # get Docker to use host network so it can access localhost:8000 with no fuss
 docker run \
   --network host \
@@ -33,7 +36,7 @@ docker run \
   --env TAGS \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \
-  dctimages.azurecr.io/acceptancetests
+  dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
 PASSED=$?
 echo "Status of tests: $PASSED"
 exit $PASSED

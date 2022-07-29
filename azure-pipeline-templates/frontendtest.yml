@@ -10,4 +10,5 @@ steps:
       TAGS: $(tags)
       SECRETS_FILE: $(CSVFile.secureFilePath)
       BASE_URL: https://$(hostUrl)
+      IMAGE_TAG: $(image_tag)
     displayName: 'Run Frontend tests in Docker container'

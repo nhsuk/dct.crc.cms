@@ -134,6 +134,7 @@ stages:
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
       tags: ${{ parameters.tags }}
+      imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE)
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
@@ -143,7 +144,7 @@ stages:
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
   - job: deployTest
-    displayName: 'Depoy Perf Testing'
+    displayName: 'Deploy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
     variables:
       environmentName: 'staging'

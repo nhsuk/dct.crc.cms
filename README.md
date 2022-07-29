@@ -19,7 +19,7 @@ The documentation will be available at: http://localhost:8001/
 
 # Setting up a local build
 
-This repository includes `docker-compose` configuration for running the project in local Docker containers,
+This repository includes a `docker-compose` configuration for running the project in local Docker containers,
 and a fabfile for provisioning and managing this.
 
 ## Using VSCode and a devcontainer (recommended)
@@ -216,6 +216,9 @@ fab npm install
 
 ## Environment symbols
 
+When running locally with Docker Compose you need to provide values for the secrets and other settings to be used
+by your local containers. Docker Compose reads these from a hidden file called .env that is excluded from Git.
+
 The .env file that you use will contain secrets, so you should obtain your .env securely from
 a colleague.
 
@@ -235,8 +238,9 @@ This setting defaults to True. Presently it is only used when deleting pages or 
 
 ### Pipeline parameter symbols
 
-These may be used on an ad hoc basis to vary the operation of the CRCV3 web instance.
+These may be used on an ad hoc basis to vary the operation of the CRCV3 web instance that will be built and deployed.
 * DEBUG - Django debug mode (true/y/false/n), default False
+* TAGS - Tag or tags to select front-end tests to be run in the build. Defaults to 'Smoke' for smoke tests only
 * PARAGON_MOCK - Mock the Paragon API (true/y/false/n) default False
 * NOTIFY_DEBUG - Mock the government notification API (true/y/false/n)
 default True except in production
@@ -311,10 +315,7 @@ During a release if any features are merged into main branch, minor number in th
 
 ### Endpoints
 
-Each CRCv3 deployment has its own subdomain with a front-end server providing HTTPS and request throttling. Within that subdomain the front-end routes only to the following endpoints:
-* /resources...
-* /crc-admin...
-Other URLs are redirected to standard NHS error pages.
+Each CRCv3 deployment has its own subdomain with a front-end server providing HTTPS and request throttling. 
 
 ### Rebuilds
 
@@ -374,6 +375,23 @@ git push -u origin review/<fix-name>
 ```
 
 - This will trigger the pipeline and deploy the application to aks cluster. Use `https://crc-v3-review-<fix-name>.nhswebsite-dev.nhs.uk` url to access the cloud deployed instance of the application.
+
+## Front end tests
+
+Front end tests are all defined in a folder 'FrontEndTests'. They rely on a complicated software configuration including headless versions of Firefox and Chrome. To avoid installing all this locally the tests are embodied in a Docker container which is used in the build pipeline and can also be
+used to run the front end tests on a local build. The container is stored in the Campaigns docker repository. The construction of the container is detailed in a separate GitHub repository <https://github.com/nhsuk/dct-frontend-testing-framework>. Successive versions of the container will be semantically tagged, e.g. 1.0.0 and the version used by CRCv3 is specified in the build pipeline variable FRONTEND_TEST_CONTAINER_IMAGE.
+
+### Front end tests in the build pipeline
+
+The tests defined as "Smoke" tests are automatically run whenever a review branch is pushed up. To enable this two pipeline variables are set up with the Docker repository user name and password. These will only need to be changed if the repository changes. To review them, first edit the pipeline:
+
+![edit_pipeline](./assets/pipelineedit.png)
+
+Then access the pipeline variables:
+
+![pipeline_variables](./assets/pipelinevariables.png)
+
+and change if ever required. The FRONTEND_TEST_CONTAINER_IMAGE_TAG is configured similarly.
 
 ## Performance test
 
