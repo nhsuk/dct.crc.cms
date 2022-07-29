@@ -393,6 +393,17 @@ Then access the pipeline variables:
 
 and change if ever required. The FRONTEND_TEST_CONTAINER_IMAGE_TAG is configured similarly.
 
+### Running front end tests locally
+
+These remarks assume that your local development environment is a dev container.
+
+To run the front end tests locally you need to set up the same environment symbols that are used to run the front end tests in the build pipeline.
+
+In the same way that your local .env file provides secrets that come from vaults in the CRC deployments, you should have a test_env.sh file that you execute before running front end tests in a local environment. 
+Additionally, just as the front end tests require a SECRETS_FILE from the CRCv3 Azure devops project library, you should have a local file
+crcv3-1-user.csv with a username and password for the front end tests to use. All three files (.env, test_env.sh and crcv3-1-user.csv) are
+excluded from source code control by the .gitignore file.
+
 ## Performance test
 
 - Download jmeter tool from https://jmeter.apache.org/download_jmeter.cgi and install.
