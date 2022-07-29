@@ -5,10 +5,18 @@ class Basket:
     def __init__(self, session):
         self.session = session
         self.basket = session.get("BASKET", {})
+        self._update_session_basket()
 
     def _update_session_basket(self):
         self.session["BASKET"] = self.basket
         self.session.save()
+        error_count = sum(
+            (
+                1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
+                for item in self.basket.items()
+            )
+        )
+        self._has_errors = error_count > 0
 
     # Basket items carry validation information in addition to the bare quantity information
     # so that templates can report the current status of the user's choices. An ad-hoc
@@ -80,6 +88,11 @@ class Basket:
             return item.get("quantity", 0)
         return 0
 
+    def get_item_has_error(self, item_id):
+        item = self.basket.get(item_id)
+        if item:
+            return item.get("bad_quantity") or item.get("no_quantity")
+
     def get_items_count(self):
         return len(self.basket)
 
@@ -96,3 +109,7 @@ class Basket:
         if item_id in self.basket:
             return self.basket[item_id]["title"]
         raise ItemNotInBasketError("Item is not added to basket!")
+
+    @property
+    def has_errors(self):
+        return self._has_errors

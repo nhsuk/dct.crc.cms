@@ -71,16 +71,11 @@ def view_basket(request):
     if request.session.get("ParagonUser"):
         basket = Basket(request.session)
         items = basket.get_all_items().items()
-        error_count = sum(
-            (
-                1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
-                for item in items
-            )
-        )
         result = render(
-            request, "view_basket.html", {"items": items, "has_errors": error_count > 0}
+            request,
+            "view_basket.html",
+            {"items": items, "has_errors": basket.has_errors},
         )
-        print(items, error_count)
         return result
     else:
         return redirect("/login/")
@@ -112,7 +107,6 @@ def render_basket(request):
 @require_http_methods(["POST"])
 def render_basket_errors(request):
     if request.session.get("ParagonUser"):
-        # item = _change_item_quantity(request)
         basket = Basket(request.session)
         items = basket.get_all_items().items()
         error_count = sum(
@@ -125,7 +119,6 @@ def render_basket_errors(request):
             request,
             "molecules/baskets/basket_errors.html",
             {
-                # "item": item
                 "items": items,
                 "has_errors": error_count > 0,
             },
