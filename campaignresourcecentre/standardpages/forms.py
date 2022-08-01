@@ -100,7 +100,7 @@ class ContactUsForm(forms.Form):
 
     job_title = forms.CharField(
         widget=forms.Select(
-            attrs={"class": "govuk-select", "onchange": "hideSelect();"},
+            attrs={"class": "govuk-select", "onchange": "hideSelect();", "autocomplete": "organization-title"},
             choices=JOB_CHOICES,
         ),
         required=True,
