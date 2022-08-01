@@ -9,10 +9,15 @@ if DEBUG:
             REDIS_URL = REDIS_URL.replace("redis://", "rediss://")
 
         CACHES = {
-            "default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": REDIS_URL}
+            "default": {
+                "BACKEND": "django.core.cache.backends.redis.RedisCache",
+                "LOCATION": REDIS_URL,
+            }
         }
     else:
-        CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+        CACHES = {
+            "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
+        }
 
 # This key to be used locally only.
 SECRET_KEY = "foo"
@@ -41,7 +46,7 @@ AUTH_PASSWORD_VALIDATORS = []
 
 # Enable Wagtail's style guide in Wagtail's settings menu.
 # http://docs.wagtail.io/en/stable/contributing/styleguide.html
-#INSTALLED_APPS += ["wagtail.contrib.styleguide"]  # noqa
+# INSTALLED_APPS += ["wagtail.contrib.styleguide"]  # noqa
 
 
 # Adds django-extensions into installed apps
@@ -61,6 +66,7 @@ if USING_DEBUG_TOOLBAR:
         INSTALLED_APPS.append("debug_toolbar")  # noqa
         MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")  # noqa
         import socket
+
         INTERNAL_IPS += ["127.0.0.1", "10.0.2.2"]
         # Add more IPs for running in Docker container
         hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())

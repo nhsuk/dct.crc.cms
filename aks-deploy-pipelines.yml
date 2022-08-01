@@ -75,6 +75,7 @@ stages:
         reportformat: 'json'
 - stage: Build
   displayName: Build
+  dependsOn: Test
   condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   jobs:
   - job: buildReview
@@ -125,7 +126,7 @@ stages:
       paragonMock: ${{ parameters.paragonMock }}
       debug: ${{ parameters.debug }}
       notifyDebug: ${{ parameters.notifyDebug }}
-      workers: ${{ parameters.workers }}
+      workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
     steps:
@@ -177,7 +178,7 @@ stages:
       paragonMock: ${{ parameters.paragonMock }}
       debug: ${{ parameters.debug }}
       notifyDebug: ${{ parameters.notifyDebug }}
-      workers: ${{ parameters.workers }}
+      workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
     steps:

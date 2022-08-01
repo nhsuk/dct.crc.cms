@@ -18,7 +18,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        logger.info('Fetching current number of users')
+        logger.info("Fetching current number of users")
         paragon_cache_values = ParagonCacheValues.load()
         num_users = get_current_num_users(paragon_cache_values.num_users)
         paragon_cache_values.num_users = num_users

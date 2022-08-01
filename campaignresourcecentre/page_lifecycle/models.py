@@ -22,11 +22,7 @@ class PageLifecycleMixin(models.Model):
 
     panels = [
         MultiFieldPanel(
-            [
-                NextReviewHelpPanel(),
-                FieldPanel("last_reviewed"),
-                FieldPanel("owner"),
-            ],
+            [NextReviewHelpPanel(), FieldPanel("last_reviewed"), FieldPanel("owner")],
             heading="Page Lifecycle",
         )
     ]
@@ -40,8 +36,9 @@ class PageLifecyclePage(PageLifecycleMixin, Page):
     content_panels = Page.content_panels + PageLifecycleMixin.panels
 
     @classmethod
-    def search_indexable (cls):
+    def search_indexable(cls):
         return False
+
 
 @register_setting
 class PageLifecycleSettings(BaseSetting):

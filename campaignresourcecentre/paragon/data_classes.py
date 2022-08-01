@@ -147,10 +147,7 @@ class UpdatePassword:
 
     def params(self):
         self.valid()
-        return {
-            "UserToken": self.user_token,
-            "Password": self.password,
-        }
+        return {"UserToken": self.user_token, "Password": self.password}
 
 
 @dataclass
@@ -208,6 +205,7 @@ class CreateOrder:
             "CrcOrderNumber": self.order_number,
             "CheckoutItems": self.checkout_items(),
         }
+
 
 # Class used when running performance tests outside of Paragon
 @dataclass

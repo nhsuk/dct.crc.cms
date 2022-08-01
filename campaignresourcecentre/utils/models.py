@@ -35,10 +35,7 @@ class LinkFields(models.Model):
         related_name="%(app_label)s_%(class)s_link_page",
         help_text="Choose a page to link to.",
     )
-    link_url = models.URLField(
-        blank=True,
-        help_text="Enter a URL to link to.",
-    )
+    link_url = models.URLField(blank=True, help_text="Enter a URL to link to.")
     link_text = models.CharField(
         blank=True,
         max_length=255,
@@ -114,9 +111,7 @@ class LinkFields(models.Model):
 # Related pages
 class RelatedPage(Orderable, models.Model):
     page = models.ForeignKey(
-        "wagtailcore.Page",
-        on_delete=models.CASCADE,
-        related_name="+",
+        "wagtailcore.Page", on_delete=models.CASCADE, related_name="+"
     )
 
     class Meta:
@@ -321,7 +316,5 @@ BasePage._meta.get_field("search_description").verbose_name = SEARCH_DESCRIPTION
 @register_setting(icon="view")
 class Tracking(BaseSetting):
     google_tag_manager_id = models.CharField(
-        max_length=255,
-        blank="True",
-        help_text="Your Google Tag Manager ID",
+        max_length=255, blank="True", help_text="Your Google Tag Manager ID"
     )

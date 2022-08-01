@@ -1,4 +1,3 @@
-
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
 from django.views.decorators.http import require_http_methods
@@ -21,6 +20,7 @@ from .models import OrderSequenceNumber
 
 logger = logging.getLogger(__name__)
 
+
 @require_http_methods(["GET"])
 @paragon_user_logged_in
 def summary(request):
@@ -30,11 +30,11 @@ def summary(request):
     if not delivery_address:
         return redirect("/orders/address/edit")
     delivery_address = {
-        "Full name": delivery_address.get('Address1'),
-        "Address line 1": delivery_address.get('Address2'),
-        "Address line 2": delivery_address.get('Address3'),
-        "City or town": delivery_address.get('Address4'),
-        "Postcode": delivery_address.get('Address5')
+        "Full name": delivery_address.get("Address1"),
+        "Address line 1": delivery_address.get("Address2"),
+        "Address line 2": delivery_address.get("Address3"),
+        "City or town": delivery_address.get("Address4"),
+        "Postcode": delivery_address.get("Address5"),
     }
 
     # items_in_basket permits disabling place order if that page
@@ -45,7 +45,7 @@ def summary(request):
         {
             "items": items,
             "delivery_address": delivery_address,
-            "items_in_basket": len (items)
+            "items_in_basket": len(items),
         },
     )
 
@@ -53,17 +53,14 @@ def summary(request):
 @require_http_methods(["GET", "POST"])
 @paragon_user_logged_in
 def delivery_address(request):
-    user_token = request.session.get('ParagonUser')
+    user_token = request.session.get("ParagonUser")
     if request.method == "POST":
         f = DeliveryAddressForm(request.POST)
         paragon_client = Client()
         if f.is_valid():
-            request.session['DELIVERY_ADDRESS'] = f.cleaned_data
+            request.session["DELIVERY_ADDRESS"] = f.cleaned_data
             try:
-                response = paragon_client.set_user_address(
-                    user_token,
-                    f.cleaned_data
-                )
+                response = paragon_client.set_user_address(user_token, f.cleaned_data)
                 return redirect("/orders/summary")
             # This doesn't seem to be called whatever is given as address to Parkhouse
             # so it should be treated as an unknown problem, i.e. server error
@@ -71,29 +68,25 @@ def delivery_address(request):
                 for error in PCE.args:
                     logger.error("Paragon ClientError: " + error)
                 raise
-        else: # HTML validation checks fields are non-blank even for non-JS
-            raise SuspiciousOperation ("Incomplete address")
+        else:  # HTML validation checks fields are non-blank even for non-JS
+            raise SuspiciousOperation("Incomplete address")
     else:
-        delivery_address = request.session.get('DELIVERY_ADDRESS')
+        delivery_address = request.session.get("DELIVERY_ADDRESS")
         f = DeliveryAddressForm(delivery_address)
-    return render(
-        request,
-        "delivery_address.html",
-        {"form": f}
-    )
+    return render(request, "delivery_address.html", {"form": f})
 
 
 @require_http_methods(["POST"])
 @paragon_user_logged_in
 def place_order(request):
-    user_token = request.session.get('ParagonUser')    
+    user_token = request.session.get("ParagonUser")
     paragon_client = Client()
     basket = Basket(request.session)
     items = basket.get_all_items().values()
     # Front-end shouldn't ever route to this entry with an empty basket
-    if len (items) == 0:
+    if len(items) == 0:
         raise SuspiciousOperation
-    with transaction.atomic ():
+    with transaction.atomic():
         try:
             osn = OrderSequenceNumber.objects.get(date=datetime.date.today())
             osn.seq_number = osn.seq_number + 1
@@ -104,26 +97,18 @@ def place_order(request):
                 osn.date = datetime.date.today()
                 osn.seq_number = 1
                 osn.save()
-                logger.info ("First order of %s", osn.date)
+                logger.info("First order of %s", osn.date)
             except UniqueViolation:
-                logger.info ("Concurrent initial orders on %s - retrying", osn.date)
+                logger.info("Concurrent initial orders on %s - retrying", osn.date)
                 osn = OrderSequenceNumber.objects.get(date=datetime.date.today())
                 osn.seq_number = osn.seq_number + 1
                 osn.save()
         order_number = osn.order_number
         try:
-            response = paragon_client.create_order(
-                user_token,
-                order_number,
-                items
-            )
-            if(response['status'] == 'ok'):
+            response = paragon_client.create_order(user_token, order_number, items)
+            if response["status"] == "ok":
                 basket.empty_basket()
-                return render(
-                    request,
-                    "thank_you.html",
-                    {"order_number": order_number}
-                )
+                return render(request, "thank_you.html", {"order_number": order_number})
         # Orders never seem to be rejected for their content
         except ParagonClientError as PCE:
             for error in PCE.args:

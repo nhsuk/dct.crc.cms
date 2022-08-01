@@ -62,11 +62,7 @@ class CacheStorage:
 
     def _add_resource_to_cache(self, resource_id, resource_data):
         logger.info(f"Adding resource to cache: {resource_data}")
-        cache.set(
-            self._get_resource_cache_key(resource_id),
-            resource_data,
-            None
-        )
+        cache.set(self._get_resource_cache_key(resource_id), resource_data, None)
 
     def _delete_resource_from_cache(self, resource_id):
         logger.info(f"Deleting resource from cache: {resource_id}")
@@ -95,29 +91,28 @@ class AzureStorage:
         page_type = resource_data["resource"]["objecttype"]
         try:
             index_file_name = self._get_azure_filename(page_type, resource_id)
-            index_file = ContentFile (json.dumps(resource_data).encode ())
+            index_file = ContentFile(json.dumps(resource_data).encode())
             # Remove any existing search resource blob
-            self._storage.delete (index_file_name)
-            self._storage.save (index_file_name, index_file)
-            logger.info ("Blob added to index of type %s: %s" % (page_type, index_file_name))
+            self._storage.delete(index_file_name)
+            self._storage.save(index_file_name, index_file)
+            logger.info(
+                "Blob added to index of type %s: %s" % (page_type, index_file_name)
+            )
         except Exception as err:
             logger.error("Exception raised - Azure Blob Add: %s", err)
             raise
 
     def delete_resource(self, resource):
-        if hasattr (resource, "search_indexable"):
+        if hasattr(resource, "search_indexable"):
             self._delete_from_blob(resource)
         else:
             logger.info(f"'search_indexable' is not defined in {resource}")
 
     def _delete_from_blob(self, resource):
-        index_file_name = self._get_azure_filename(
-            resource.objecttype(),
-            resource.id
-        )
+        index_file_name = self._get_azure_filename(resource.objecttype(), resource.id)
         try:
-            self._storage.delete (index_file_name)
-            logger.info('Resource index deleted: %s', resource.id)
+            self._storage.delete(index_file_name)
+            logger.info("Resource index deleted: %s", resource.id)
         except Exception as err:
             logger.error("Exception raised - index blob Delete: %s", err)
 

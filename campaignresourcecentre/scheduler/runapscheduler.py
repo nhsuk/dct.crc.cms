@@ -18,15 +18,13 @@ def resend_verification_emails():
     count = len(emails)
     if len(emails) > 0:
         for email in emails:
-            send_verification(email.user_token, email.url, email.email, email.first_name)
-        emails.delete()
-        logger.info(
-            "ran 'resend_verification_emails' : " + str(count) + " emails"
-        )
-    else:
-        logger.info(
-                "ran 'resend_verification_emails' : no emails"
+            send_verification(
+                email.user_token, email.url, email.email, email.first_name
             )
+        emails.delete()
+        logger.info("ran 'resend_verification_emails' : " + str(count) + " emails")
+    else:
+        logger.info("ran 'resend_verification_emails' : no emails")
 
 
 # The `close_old_connections` decorator ensures that database connections, that have become
@@ -37,14 +35,12 @@ def delete_old_job_executions(max_age=604_800):
     This job deletes APScheduler job execution entries older than `max_age` from the database.
     It helps to prevent the database from filling up with old historical records that are no
     longer useful.
-    
+
     :param max_age: The maximum length of time to retain historical job execution records.
                     Defaults to 7 days.
     """
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
-    logger.info(
-        "ran 'delete_old_job_executions'"
-    )
+    logger.info("ran 'delete_old_job_executions'")
 
 
 def start():
@@ -69,9 +65,7 @@ def start():
         max_instances=1,
         replace_existing=True,
     )
-    logger.info(
-        "Added weekly job: 'delete_old_job_executions'."
-    )
+    logger.info("Added weekly job: 'delete_old_job_executions'.")
 
     try:
         logger.info("Starting scheduler...")

@@ -1,8 +1,8 @@
 def serialise(newsnumber):
-    '''
+    """
     accepts dictionary based on the newsletter subscription form fields
     returns a string of 0 & 1, representing boolean values
-    '''
+    """
     # this is an ordered list based on api positions given in the api documentation
     newsletterPreferences = [  # api position
         str(int(newsnumber["AllAges"])),  # 1
@@ -36,15 +36,15 @@ def serialise(newsnumber):
         str(int(newsnumber["NHSandSocialCareFluLeads"])),  # 29
         str(int(newsnumber["Coronavirus"])),  # 30
     ]
-    result = "".join(newsletterPreferences) # .ljust(100, '0')
+    result = "".join(newsletterPreferences)  # .ljust(100, '0')
     return result
 
 
 def deserialise(newsRaw):
-    '''
+    """
     takes a string of 0's & 1's representing a boolean for the subscription state for a given newsletter
     returns a dictionary. The key is the newsletter and the value is a boolean
-    '''
+    """
     newsletters = [
         "AllAges",
         "Pregnancyandyearold",
@@ -81,11 +81,13 @@ def deserialise(newsRaw):
     boolList = list(newsRaw)
 
     boolList = boolList[
-        0:len(newsletters)
+        0 : len(newsletters)
     ]  # the string passed from the API initally has many unused values
 
     newsDict = dict()
 
     for (boolValue, newsletter) in zip(boolList, newsletters):
-        newsDict[newsletter] = int(boolValue) == True # noqa This fails if you use the keyword is
+        newsDict[newsletter] = (
+            int(boolValue) == True
+        )  # noqa This fails if you use the keyword is
     return newsDict

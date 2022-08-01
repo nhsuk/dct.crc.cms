@@ -45,10 +45,10 @@ class TestClient(TestCase):
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
-        self.assertEqual(self.basket.get_items_count (), 1)
-        self.assertEqual(self.basket.get_item_count (1), 3)
+        self.assertEqual(self.basket.get_items_count(), 1)
+        self.assertEqual(self.basket.get_item_count(1), 3)
         self.basket.add_item(item, "2")
-        self.assertEqual(self.basket.get_item_count (1), 5)
+        self.assertEqual(self.basket.get_item_count(1), 5)
         self.assertEqual(self.basket.basket[1]["no_quantity"], False)
         self.assertEqual(self.basket.basket[1]["bad_quantity"], False)
         self.assertEqual(self.basket.basket[1]["quantity"], 5)
@@ -85,7 +85,7 @@ class TestClient(TestCase):
         self.basket.change_item_quantity(1, "4")
         self.assertEqual(self.basket.basket[1]["quantity"], 3)
         self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"],True)
+        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
         self.basket.change_item_quantity(1, "6")
         self.assertEqual(self.basket.basket[1]["no_quantity"], False)
         self.assertEqual(self.basket.basket[1]["bad_quantity"], True)

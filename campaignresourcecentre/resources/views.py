@@ -10,19 +10,15 @@ logger = logging.getLogger(__name__)
 
 
 def _search(request):
-    user_role = request.session.get(
-        "UserDetails"
-    ) and request.session.get(
-        "UserDetails"
-    )['ProductRegistrationVar1']
+    user_role = (
+        request.session.get("UserDetails")
+        and request.session.get("UserDetails")["ProductRegistrationVar1"]
+    )
     query_string = request.GET
     taxonomy_json = json.loads(
-        TaxonomyTerms.objects.get(taxonomy_id='crc_taxonomy').terms_json
+        TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
     )
-    parent_taxonomy_codes = [
-        taxonomy.get("code")
-        for taxonomy in taxonomy_json
-    ]
+    parent_taxonomy_codes = [taxonomy.get("code") for taxonomy in taxonomy_json]
     search_query = query_string.get("q", "")
     sort = query_string.get("sort")
     results_per_page = "1000"
@@ -52,9 +48,9 @@ def _search(request):
     )
 
     resources = []
-    if response['search_content'] and response['search_content'].get('value'):
-        resources = response['search_content']['value']
-    elif response['search_content']:
+    if response["search_content"] and response["search_content"].get("value"):
+        resources = response["search_content"]["value"]
+    elif response["search_content"]:
         logger.info(
             f"Azure Search Issue:\
             {response.get('search_content').get('Message')}"
@@ -63,53 +59,37 @@ def _search(request):
     search_results = [
         {
             "title": resource["content"]["resource"].get("title"),
-            "campaign_title": resource["content"]["resource"].get(
-                "campaign_title"
-            ),
-            "campaign_url": resource["content"]["resource"].get(
-                "campaign_url"
-            ),
+            "campaign_title": resource["content"]["resource"].get("campaign_title"),
+            "campaign_url": resource["content"]["resource"].get("campaign_url"),
             "summary": resource["content"]["resource"].get("summary"),
             "image_url": resource["content"]["resource"].get("image_url"),
             "image_alt": resource["content"]["resource"].get("image_alt"),
-            "listing_summary": resource["content"]["resource"].get(
-                "summary"
-            ),
+            "listing_summary": resource["content"]["resource"].get("summary"),
             "url": resource["content"]["resource"].get("object_url"),
-            "permission_role": resource["content"]["resource"].get(
-                "permission_role"
-            ),
+            "permission_role": resource["content"]["resource"].get("permission_role"),
         }
         for resource in resources
     ]
 
     response = {
-            "search_query": search_query,
-            "sort": sort,
-            "search_results": search_results,
-            "count": len(search_results),
-            "taxonomies": taxonomy_json,
-            "user_role": (user_role or "").lower(),
-            "facets_queryset": facets_queryset,
-        }
+        "search_query": search_query,
+        "sort": sort,
+        "search_results": search_results,
+        "count": len(search_results),
+        "taxonomies": taxonomy_json,
+        "user_role": (user_role or "").lower(),
+        "facets_queryset": facets_queryset,
+    }
     return response
 
 
 def search(request):
     search = _search(request)
-    response = TemplateResponse(
-        request,
-        "search.html",
-        search
-    )
+    response = TemplateResponse(request, "search.html", search)
     return response
 
 
 def render_search(request):
     search = _search(request)
-    response = render(
-        request,
-        "molecules/search-result/refresh-search.html",
-        search
-    )
+    response = render(request, "molecules/search-result/refresh-search.html", search)
     return response

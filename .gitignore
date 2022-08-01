@@ -45,3 +45,6 @@ coverage.xml
 .env
 database_dumps/
 PerformanceTests/jmxedit/test1.yml
+
+
+poetry/requirements.txt

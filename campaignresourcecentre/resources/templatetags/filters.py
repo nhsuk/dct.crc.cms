@@ -22,7 +22,10 @@ def length(dict):
 @register.filter
 def filters_added(dict):
     return len(dict) > 3 or (
-        len(dict) > 0 and (dict.get('TOPIC') != [''] or
-                           dict.get('REGION') != [''] or
-                           dict.get('LANGUAGE') != [''])
+        len(dict) > 0
+        and (
+            dict.get("TOPIC") != [""]
+            or dict.get("REGION") != [""]
+            or dict.get("LANGUAGE") != [""]
+        )
     )

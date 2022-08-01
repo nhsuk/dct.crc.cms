@@ -1,4 +1,3 @@
-
 TAXONOMY_TERMS_ID = "crc_taxonomy"
 TAXONOMY_TERMS_JSON = """
 [

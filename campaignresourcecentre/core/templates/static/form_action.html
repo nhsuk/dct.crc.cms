@@ -1,0 +1,38 @@
+<script>
+
+    /**
+     * When a value is entered into the form
+     * Add the item
+     * Move the focus to the error list if there are errors
+     */
+    function formAction(id) {
+        const resourceForm = document.forms[id];
+        // Add an item.
+        addItem(resourceForm);
+        errorFocus();
+        return false;
+    }
+
+    /**
+     * Create a delay to allow the error list to load.
+     * Move the focus to the error list if there are errors.
+     * Remove the focus from the form.
+     * Add the focus class to the error list.
+     * Remove the focus class when leaving the error list.
+     */
+    function errorFocus() {
+        const errorSummary = document.getElementById('resource-order-error-summary');
+        setTimeout(() => {
+            if(errorSummary.children.length > 0) {
+                document.activeElement.blur();
+                errorSummary.scrollIntoView();
+                errorSummary.focus();
+                errorSummary.classList.add('error-focus');
+                errorSummary.onblur = function()  {
+                    errorSummary.classList.remove('error-focus');
+                }
+            }
+        }, "1000");
+    }
+
+</script>

@@ -32,7 +32,8 @@ def get_next_review_duration():
 def get_pages_for_review_notifications():
     """Fetch the page lifecycle pages that have a `next_review` date of today."""
     from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
-    #from .models import PageLifecycleMixin  # circular import (does not work in tests)
+
+    # from .models import PageLifecycleMixin  # circular import (does not work in tests)
 
     today = datetime.date.today()
     pages = []
@@ -51,9 +52,7 @@ def get_review_notification_email():
 
 
 def send_page_review_notifications(
-    pages: Iterable,
-    notifications: AbstractNotifications,
-    notification_email=None,
+    pages: Iterable, notifications: AbstractNotifications, notification_email=None
 ):
     """Send a page review due notification to the page owner of the supplied pages,
     and optionally the supplied `notification_email`.

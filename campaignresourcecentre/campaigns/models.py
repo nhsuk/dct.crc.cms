@@ -4,7 +4,7 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.html import strip_tags
-from html import unescape 
+from html import unescape
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
@@ -37,6 +37,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class Topic(models.Model):
     """Campaign topics. Managed in the Taxonomy section of the Wagtail admin,
     which itself is defined in `utils.wagtail_hooks.py`"""
@@ -66,10 +67,7 @@ class CampaignHubPage(BasePage):
         help_text="This is only shown if there are campaign updates to display.",
     )
     campaign_updates_bg_colour = models.CharField(
-        choices=[
-            ("app-section--white", "white"),
-            ("app-section--grey", "nhs grey"),
-        ],
+        choices=[("app-section--white", "white"), ("app-section--grey", "nhs grey")],
         max_length=45,
         default="app-section--white",
         help_text="set background colour for the section",
@@ -100,7 +98,7 @@ class CampaignHubPage(BasePage):
                 FieldPanel("search_description"),
             ],
             "For search engines",
-        ),
+        )
     ]
 
     def get_campaign_updates(self):
@@ -196,12 +194,11 @@ class CampaignHubPage(BasePage):
 
         """Adds data to the template context for display on the page."""
         taxonomy_json = json.loads(
-            TaxonomyTerms.objects.get(taxonomy_id='crc_taxonomy').terms_json
+            TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
         )
-        health_topics = next(
-            (x for x in taxonomy_json if x["code"] == "TOPIC"),
-            None
-        )["children"]
+        health_topics = next((x for x in taxonomy_json if x["code"] == "TOPIC"), None)[
+            "children"
+        ]
         topics_for_filter = [
             obj for obj in health_topics if obj["code"] in filter_codes
         ]
@@ -227,8 +224,8 @@ class CampaignHubPage(BasePage):
         context = super().get_context(request, *args, **kwargs)
         context.update(
             campaign_updates=self.get_campaign_updates(),
-            selected_topic = selected_topic,
-            sort = sort,
+            selected_topic=selected_topic,
+            sort=sort,
             campaigns=campaigns,
             topics=topics_for_filter,
         )
@@ -264,7 +261,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
                 {
                     "image": ValidationError(
                         "Please select an image to display for the external URL."
-                    ),
+                    )
                 }
             )
         if self.link_url and not self.description:
@@ -272,7 +269,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
                 {
                     "description": ValidationError(
                         "Please enter the description text for the external URL."
-                    ),
+                    )
                 }
             )
 
@@ -308,17 +305,14 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     # Max length is set to 480 using clean() method below.
     description = RichTextField(
         features=["bold", "italic", "link", "h2", "h3", "ol", "ul"],
-        help_text="Introduction section for the campaign page. This is limited to 480 characters to make sure the page loads properly on frontend. Please preview the page before you publish as this depends on length of the below image and may alter the page overall design."
+        help_text="Introduction section for the campaign page. This is limited to 480 characters to make sure the page loads properly on frontend. Please preview the page before you publish as this depends on length of the below image and may alter the page overall design.",
     )
     summary = RichTextField(
         features=["bold", "italic", "link", "h2", "h3", "ol", "ul"],
-        help_text="Short line of text for display on the campaign page"
+        help_text="Short line of text for display on the campaign page",
     )
     image = models.ForeignKey(
-        get_image_model_string(),
-        null=True,
-        related_name="+",
-        on_delete=models.SET_NULL,
+        get_image_model_string(), null=True, related_name="+", on_delete=models.SET_NULL
     )
     image_alt_text = models.TextField(blank=True)
     related_website = models.URLField(blank=True, help_text="Enter a URL to link to.")
@@ -369,19 +363,17 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         )
         resources_list = []
         for resource in resources:
-            resource_items = resource.resource_items.select_related(
-                    "image"
-                )
-            resource_item = resource_items[0] if (
-                len(resource_items) > 0
-            ) else None
+            resource_items = resource.resource_items.select_related("image")
+            resource_item = resource_items[0] if (len(resource_items) > 0) else None
             resources_list.append(
                 {
                     "title": resource.title,
                     "description": resource.description,
                     "summary": resource.summary,
                     "image": resource_item.image if resource_item else None,
-                    "image_alt_text": resource_item.image_alt_text if resource_item else None,
+                    "image_alt_text": resource_item.image_alt_text
+                    if resource_item
+                    else None,
                     "url": resource.url,
                 }
             )
@@ -418,15 +410,12 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             taxonomy_json=json_data,
             topics_present=get_taxonomies(json_data, "TOPIC"),
             targaud_present=get_taxonomies(json_data, "TARGAUD"),
-
         )
         return context
 
     content_panels = BasePage.content_panels + [
         FieldPanel(
-            "topics",
-            heading="Campaign Topics",
-            widget=forms.CheckboxSelectMultiple,
+            "topics", heading="Campaign Topics", widget=forms.CheckboxSelectMultiple
         ),
         MultiFieldPanel(
             [
@@ -450,7 +439,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     ]
 
     taxonomy_term_panels = [
-        TaxonomyPanel("taxonomy_json", taxonomy_terms_id=TAXONOMY_TERMS_ID),
+        TaxonomyPanel("taxonomy_json", taxonomy_terms_id=TAXONOMY_TERMS_ID)
     ]
 
     edit_handler = TabbedInterface(
@@ -470,5 +459,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         description_len = len(unescape(strip_tags(self.description)))
         if description_len > 480:
             raise ValidationError(
-                {"description": f"The description cannot be longer than 480 characters. You have {description_len} characters."}
+                {
+                    "description": f"The description cannot be longer than 480 characters. You have {description_len} characters."
+                }
             )
