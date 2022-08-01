@@ -5,7 +5,7 @@ class Basket:
     def __init__(self, session):
         self.session = session
         self.basket = session.get("BASKET", {})
-        self._update_session_basket()
+        self._has_errors = False
 
     def _update_session_basket(self):
         self.session["BASKET"] = self.basket
