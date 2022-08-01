@@ -4,5 +4,10 @@ repos:
       - id: gitleaks
         name: GitLeaks
         description: git-leaks scans commits etc
-        entry: './git-secrets/git-leaks-wrapper-mac.sh'
+        entry: './pre-commit/git-secrets/git-leaks-wrapper-mac.sh'
         language: script
+  -   repo: https://github.com/psf/black
+      rev: 22.6.0
+      hooks:
+      -   id: black
+          args: [--check, --config=./poetry/pyproject.toml]
