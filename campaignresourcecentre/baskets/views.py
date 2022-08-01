@@ -11,6 +11,7 @@ from campaignresourcecentre.resources.models import ResourceItem
 
 logger = getLogger("__name__")
 
+
 @require_http_methods(["DELETE", "GET"])
 def empty_basket(request):
     basket = Basket(request.session)
@@ -85,6 +86,7 @@ def change_item_quantity(request):
     _change_item_quantity(request)
     return redirect("/baskets/view_basket/")
 
+
 def _change_item_quantity(request):
     basket = Basket(request.session)
     payload = request.POST
@@ -95,10 +97,12 @@ def _change_item_quantity(request):
         logger.error("Change item quantity error. Payload: %s", payload)
     raise SuspiciousOperation
 
+
 @require_http_methods(["POST"])
 def render_basket(request):
     item = _change_item_quantity(request)
     return render(request, "molecules/baskets/basket.html", {"item": item})
+
 
 @require_http_methods(["POST"])
 def render_basket_errors(request):
@@ -126,12 +130,8 @@ def render_basket_errors(request):
 @require_http_methods(["POST"])
 def render_basket_errors(request):
     item = _change_item_quantity(request)
-    return render(
-        request,
-        "molecules/baskets/basket_errors.html", {
-            "item": item
-        }
-    )
+    return render(request, "molecules/baskets/basket_errors.html", {"item": item})
+
 
 @require_http_methods(["POST"])
 def remove_item(request):

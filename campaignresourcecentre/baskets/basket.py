@@ -1,5 +1,6 @@
 from .exceptions import ItemNotInBasketError
 
+
 class Basket:
     def __init__(self, session):
         self.session = session

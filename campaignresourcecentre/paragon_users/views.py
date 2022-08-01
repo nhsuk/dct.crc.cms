@@ -29,6 +29,7 @@ from .helpers.verification import send_verification
 
 logger = getLogger()
 
+
 def ParseError(error):
     error_dict = {
         "Account for this email address already exists": [
