@@ -95,7 +95,11 @@ class RegisterForm(forms.Form):
 
     job_title = forms.CharField(
         widget=forms.Select(
-            attrs={"class": "govuk-select", "onchange": "hideSelect();", "autocomplete": "organization-title"},
+            attrs={
+                "class": "govuk-select",
+                "onchange": "hideSelect();",
+                "autocomplete": "organization-title",
+            },
             choices=JOB_CHOICES,
         ),
         required=False,
