@@ -301,8 +301,10 @@ class AzureSearchBackend(BaseSearchBackend):
         order_by_relevance=True,
         partial_match=False,  # Partial matching in search is deprecated
     ):
-        logger.error ("Wagail %s search called: %s (%s)", type (query), query, repr (query))
-        if isinstance (query, str):
+        logger.error(
+            "Wagail %s search called: %s (%s)", type(query), query, repr(query)
+        )
+        if isinstance(query, str):
             query_string = query
         elif not isinstance(query, PlainText):
             query_string = query.query_string
