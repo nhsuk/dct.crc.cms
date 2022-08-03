@@ -31,6 +31,18 @@ cd $WORK/work
 echo "### Running docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
 docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_USERNAME)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
 docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
+
+# Wait for the BASE_URL to be available or timeout after one minute
+
+for i in {1, 6}
+do
+  curl --output /dev/null --silent --head --fail --max-time 10 ${BASE_URL} && break
+  printf 'Failed to access $BASE_URL, trying again in 10 seconds...'
+  sleep 10
+done
+# Confirm site now running or fail
+curl --output /dev/null --silent --head --fail --max-time 10 ${BASE_URL} || exit 1
+
 # get Docker to use host network so it can access localhost:8000 with no fuss
 docker run \
   --network host \
