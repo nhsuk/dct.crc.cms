@@ -1,0 +1,26 @@
+schedules:
+- cron: "0 12 * * 0"
+  displayName: Weekly SonarQube build
+  branches:
+    include:
+    - releases/*
+  always: true
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: SonarQubePrepare@5
+  inputs:
+    SonarQube: 'SonarQube'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'DCT_Campaigns_Resource_Centre'
+    cliProjectName: 'dct-campaign-resource-centre'
+    cliSources: '.'
+
+- task: SonarQubeAnalyze@5
+
+- task: SonarQubePublish@5
+  inputs:
+    pollingTimeoutSec: '600'
