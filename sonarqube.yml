@@ -3,20 +3,21 @@ schedules:
   displayName: Weekly SonarQube build
   branches:
     include:
-    - releases/*
+    - main
   always: true
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
+  
 - task: SonarQubePrepare@5
   inputs:
     SonarQube: 'SonarQube'
     scannerMode: 'CLI'
     configMode: 'manual'
     cliProjectKey: 'DCT_Campaigns_Resource_Centre'
-    cliProjectName: 'dct-campaign-resource-centre'
+    cliProjectName: 'DCT_Campaigns_Resource_Centre'
     cliSources: '.'
 
 - task: SonarQubeAnalyze@5
