@@ -74,7 +74,7 @@ stages:
       inputs:
         scanlocation: '$(Build.SourcesDirectory)'
         configtype: 'custom'
-        configfile: '$(Build.SourcesDirectory)/.gitleaks.toml'
+        configfile: '$(Build.SourcesDirectory)/pre-commit/git-secrets/nhsd-gitleaks-config.toml'
         redact: false
         reportformat: 'json'
 - stage: Build
