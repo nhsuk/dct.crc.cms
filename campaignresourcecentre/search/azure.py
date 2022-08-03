@@ -301,7 +301,11 @@ class AzureSearchBackend(BaseSearchBackend):
         order_by_relevance=True,
         partial_match=False,  # Partial matching in search is deprecated
     ):
-        if not isinstance(query, PlainText):
+        if isinstance(query, str):
+            query_string = query
+        elif not isinstance(query, PlainText):
+            query_string = query.query_string
+        else:
             logger.error("Only plain text queries are supported")
             # Would be nice if there were a SearchFeatureNotImplementedException,
             # but there doesn't seem to be one, a bit drastic to error the page as a generic 500
@@ -315,7 +319,7 @@ class AzureSearchBackend(BaseSearchBackend):
         if not (issubclass(model, PageQuerySet) or issubclass(model, Page)):
             logger.error("Only page searches are supported, not model '%s'", model)
             return EmptySearchResults()
-        json_result = self.azure_search(query.query_string, {}, {}, None)
+        json_result = self.azure_search(query_string, {}, {}, None)
         ok = json_result.get("ok")
         if ok:
             try:

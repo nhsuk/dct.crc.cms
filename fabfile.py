@@ -8,6 +8,9 @@ from invoke.tasks import task
 
 # Process .env file
 if os.path.exists(".env"):
+    # Note - this uses setdefault which will not replace existing values
+    # Therefore, if there is more than one value for a symbol set in the .env file,
+    # the first one will be used.
     with open(".env", "r") as f:
         for line in f.readlines():
             line = line.strip()
