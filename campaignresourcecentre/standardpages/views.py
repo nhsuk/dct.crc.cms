@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.cache import cache
-#from django.core.exceptions import PermissionDenied
+
+# from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.http import HttpResponse, HttpResponseForbidden
 from django.template import Context, loader
@@ -78,14 +79,14 @@ def thank_you(request):
 
 def clear_cache(request):
     if not request.user.is_superuser:
-        return HttpResponseForbidden ()
+        return HttpResponseForbidden()
     cache.clear()
     return HttpResponse("Cache has been cleared")
 
 
 def update_index(request):
     if not request.user.is_superuser:
-        return HttpResponseForbidden ()
+        return HttpResponseForbidden()
     with StringIO() as responseFile:
         call_command("update_index", stdout=responseFile, stderr=responseFile)
         responseFile.seek(0)
