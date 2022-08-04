@@ -53,4 +53,6 @@ docker run \
   dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
 PASSED=$?
 echo "Status of tests: $PASSED"
+
+
 exit $PASSED

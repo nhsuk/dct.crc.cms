@@ -524,24 +524,32 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Sign_in_button)
 
     def verify_logout(self):
-        assert_that(
-            self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable),
-            equal_to(True),
-            "Sign out label is not displayed",
+        WebDriverWait(self.driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
         )
+        # assert_that(
+        #     self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable),
+        #     equal_to(True),
+        #     "Sign out label is not displayed",
+        # )
 
     def Sign_Out(self, context):
         context.landing_page = CRCV3MainPage(context.browser, context.logger)
         self.interact.click_element(self.Sign_out_link)
-        Signout_displayed = context.landing_page.is_Signout_displayed()
-        if Signout_displayed is True:
-            self.interact.click_element(self.Sign_out_link)
         sleep(5)
-        assert_that(
-            self.interrogate.is_element_visible(self.Sign_In_link),
-            equal_to(True),
-            "Sign out is not working",
+        WebDriverWait(self.driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/login/ ']"))
         )
+        # self.interact.click_element(self.Sign_out_link)
+        # Signout_displayed = context.landing_page.is_Signout_displayed()
+        # if Signout_displayed is True:
+        #     self.interact.click_element(self.Sign_out_link)
+        # sleep(5)
+        # assert_that(
+        #     self.interrogate.is_element_visible(self.Sign_In_link),
+        #     equal_to(True),
+        #     "Sign out is not working",
+        # )
 
     def forgot_password_click(self):
         self.interact.click_element(self.forgot_password_link)
