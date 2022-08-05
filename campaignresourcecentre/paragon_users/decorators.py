@@ -42,7 +42,7 @@ def verified_user(
                             )
                         except ParagonClientError as PCE:
                             logger.error("Paragon error: %s" % PCE)
-                            return HTTPResponseServerError
+                            return HTTPResponseServerError ()
                         request.session["Verified"] = user.get(
                             "ProductRegistrationVar2"
                         )

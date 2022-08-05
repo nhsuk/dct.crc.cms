@@ -175,5 +175,6 @@ urlpatterns = (
 
 # Error handlers
 handler400 = "campaignresourcecentre.utils.views.bad_request"
+handler403 = "campaignresourcecentre.utils.views.forbidden"
 handler404 = "campaignresourcecentre.utils.views.page_not_found"
 handler500 = "campaignresourcecentre.utils.views.server_error"
