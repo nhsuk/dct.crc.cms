@@ -1,9 +1,15 @@
+from logging import getLogger
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import redirect, render
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 
 from campaignresourcecentre.baskets.basket import Basket
+from campaignresourcecentre.baskets.exceptions import ItemNotInBasketError
+
 from campaignresourcecentre.resources.models import ResourceItem
+
+logger = getLogger("__name__")
 
 
 @require_http_methods(["DELETE", "GET"])
@@ -16,8 +22,11 @@ def empty_basket(request):
 def _add_item(request):
     basket = Basket(request.session)
     payload = request.POST
-    item_obj = ResourceItem.objects.get(sku=payload["sku"])
-    if item_obj and payload["order_quantity"]:
+    try:
+        # Check if a resource with this SKU exists
+        item_obj = ResourceItem.objects.get(sku=payload["sku"])
+
+        # Compose basket item object
         item_image_rendition = item_obj.image.get_rendition("width-200")
         rendition_img_attrs = item_image_rendition.attrs
         item_image_url = item_image_rendition.url
@@ -31,20 +40,22 @@ def _add_item(request):
             "image_url": item_obj.image.file.url,
             "image_alt_text": item_obj.image_alt_text,
             "max_quantity": item_obj.maximum_order_quantity,
+            # Look like a resource object if necessary
+            "maximum_order_quantity": item_obj.maximum_order_quantity,
+            "sku": item_obj.sku,
         }
-        basket.add_item(item, int(payload["order_quantity"]))
+        basket.add_item(item, payload.get("order_quantity"))
         item["items_in_basket_count"] = basket.get_item_count(item_obj.pk)
-        item["sku"] = item_obj.sku
-        item["maximum_order_quantity"] = item_obj.maximum_order_quantity
         return item
+    except Exception as e:
+        logger.error("Failed to find resource item: %s", e)
+        raise SuspiciousOperation
 
 
 @require_http_methods(["POST"])
 def add_item(request):
-    payload = request.POST
-    item_obj = ResourceItem.objects.get(sku=payload["sku"])
-    _add_item(request)
-    return redirect(item_obj.resource_page.url)
+    item_obj = _add_item(request)
+    return redirect(item_obj["item_url"])
 
 
 @require_http_methods(["POST"])
@@ -60,7 +71,12 @@ def view_basket(request):
     if request.session.get("ParagonUser"):
         basket = Basket(request.session)
         items = basket.get_all_items().items()
-        return render(request, "view_basket.html", {"items": items})
+        result = render(
+            request,
+            "view_basket.html",
+            {"items": items, "has_errors": basket.has_errors},
+        )
+        return result
     else:
         return redirect("/login/")
 
@@ -71,22 +87,15 @@ def change_item_quantity(request):
     return redirect("/baskets/view_basket/")
 
 
-@require_http_methods(["POST"])
 def _change_item_quantity(request):
     basket = Basket(request.session)
     payload = request.POST
-    item_id = int(payload["item_id"])
-    title = payload["title"]
-    quantity = int(payload["order_quantity"])
-    max_quantity = basket.get_max_quantity(item_id)
-    basket.change_item_quantity(item_id, quantity)
-    return {
-        "id": item_id,
-        "title": title,
-        "quantity": quantity,
-        "max_quantity": max_quantity,
-        "updated": True,
-    }
+    try:
+        item_id = int(payload["item_id"])
+        return basket.change_item_quantity(item_id, payload.get("order_quantity"))
+    except Exception as e:
+        logger.error("Change item quantity error. Payload: %s", payload)
+    raise SuspiciousOperation
 
 
 @require_http_methods(["POST"])
@@ -96,10 +105,43 @@ def render_basket(request):
 
 
 @require_http_methods(["POST"])
+def render_basket_errors(request):
+    if request.session.get("ParagonUser"):
+        basket = Basket(request.session)
+        items = basket.get_all_items().items()
+        error_count = sum(
+            (
+                1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
+                for item in items
+            )
+        )
+        return render(
+            request,
+            "molecules/baskets/basket_errors.html",
+            {
+                "items": items,
+                "has_errors": error_count > 0,
+            },
+        )
+    else:
+        return redirect("/login/")
+
+
+@require_http_methods(["POST"])
+def render_basket_errors(request):
+    item = _change_item_quantity(request)
+    return render(request, "molecules/baskets/basket_errors.html", {"item": item})
+
+
+@require_http_methods(["POST"])
 def remove_item(request):
     basket = Basket(request.session)
     payload = request.POST
-    item_id = int(payload["item_id"])
-    basket.remove_item(item_id)
+    try:
+        item_id = int(payload["item_id"])
+        basket.remove_item(item_id)
+    except Exception as e:
+        logger.error("Remove item error. Payload: %s", payload)
+        raise SuspiciousOperation
 
     return redirect("/baskets/view_basket/")

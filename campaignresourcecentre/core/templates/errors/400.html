@@ -1,40 +1,55 @@
-{% extends "base_page.html" %}
-{% load wagtailcore_tags wagtailsettings_tags %}
+{% load static wagtailuserbar wagtailcore_tags wagtailimages_tags navigation_tags util_tags wagtailaccessibility_tags %}
+{% load nhsukfrontend_tags %}
 
-{% block title %}{{ settings.utils.SystemMessagesSettings.title_403 }}{% endblock %}
-
-{% block body_class %}template-403{% endblock %}
-
-{% block breadcrumbs %}
-    <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
-    <div class="nhsuk-width-container">
-      <ol class="nhsuk-breadcrumb__list">
-        <li class="nhsuk-breadcrumb__item">
-            <a href="/" class="nhsuk-breadcrumb__link">Home</a>
-        </li>
-      </ol>
-
-      <p class="nhsuk-breadcrumb__back">
-        <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
-      </p>
-    </div>
-  </nav>
-{% endblock %}
-
-{% block content %}
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <div class="error-content">
-                  <h1>400 Bad Request</h1>
-                  <p>Sorry, there is a problem with your request.</p>
-                  {%if error == "BadKey"%}
-                  <p>Please go back to the resource page and retry your download.</p>
-                  {% endif %}
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Incorrect input</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <style>
+      html {
+        background-color: #fff;
+        font-family: 'Source Sans Pro', sans-serif;
+        color: #0b0c0c;
+      }
+      body {
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 48px;
+        color: #04776d;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nhsuk-header">
+      <div class="nhsuk-width-container nhsuk-header__container">
+        <div class="nhsuk-header__logo">
+          <a class="nhsuk-header__link" href="/" aria-label="Campaigns Resources homepage - Department of Health and Social Care">
+            {% include "molecules/header/dhsc-logo.html" %}
+          </a>
         </div>
-    </div>
-{% endblock %}
-
-
+      </div>
+    </header>
+    <div class="nhsuk-width-container">
+      <div class="nhsuk-grid-row">
+          <div class="nhsuk-grid-column-full nhsuk-section__content">
+            <div class="nhsuk-u-reading-width">
+              <h1>Incorrect input</h1>
+              <p>Something has gone wrong on your side. It can happen sometimes.</p>
+              <p>It could be because you're using characters not recognised by our servers,
+                or accessing an old version of our site stored locally on your computer.</p>
+              <p>You may be able to solve this by checking you're using valid characters,
+                or clearing your cache to get the latest version of our site.</p>
+              <p>Only use this site in compliance with our <a href="/terms-and-conditions" class="govuk-link">Terms and Conditions</a></p>
+            </div>
+          </div>
+      </div>
+    </div> 
+  </body>
+</html>
