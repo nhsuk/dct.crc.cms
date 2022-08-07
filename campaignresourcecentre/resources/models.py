@@ -117,6 +117,8 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "sku": resource.sku,
                 "image_alt_text": resource.image_alt_text,
                 "key": key,
+                "has_error": basket.get_item_has_error(resource.id),
+                "item": basket.get_item(resource.id),
             }
             for resource in self.resource_items.select_related("image", "document")
         ]
@@ -164,8 +166,15 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             and request.session.get("UserDetails")["ProductRegistrationVar1"]
         )
         allowed = user_role and user_role != ""
+        resources = self.get_resources(request)
+        items = []
+        for resource in resources:
+            if resource.get("has_error"):
+                item = resource.get("item")
+                id = item.get("id")
+                items.append((id, item))
         context.update(
-            resources=self.get_resources(request),
+            resources=resources,
             # TODO: this logged_in value could be potentially removed now
             logged_in=request.session.get("ParagonUser"),
             allowed=allowed,
@@ -173,6 +182,8 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             topics_present=get_taxonomies(json_data, "TOPIC"),
             targaud_present=get_taxonomies(json_data, "TARGAUD"),
             type_present=get_taxonomies(json_data, "TYPE"),
+            items=items,
+            has_errors=len(items) > 0,
         )
         return context
 

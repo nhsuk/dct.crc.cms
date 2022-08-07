@@ -18,23 +18,12 @@
 {% endblock %}
 
 {% block content %}
-    <div id="resource-order-error-summary" class="govuk-width-container govuk-!-display-none" tabindex="-1">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                    <h2 class="govuk-error-summary__title" id="error-summary-title">
-                    There is a problem
-                    </h2>
-                    <div class="govuk-error-summary__body">
-                    <ul class="govuk-list govuk-error-summary__list" id="errorList">
-                        
-                    </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
+    <div id="resource-order-error-summary" class="govuk-width-container" tabindex="-1">
+        {% if has_errors %}
+            {% include 'molecules/baskets/basket_errors.html' %}
+        {% endif %}
     </div>
-
     <div class="govuk-width-container govuk-!-padding-bottom-4">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -51,7 +40,7 @@
                         <div class="govuk-grid-row">
                             <div class="govuk-grid-column-one-third">
                                 <div class="left-panel">
-                                    <img src="{{ item.item_image_url }}" alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}"/>
+                                    <img src="{{ item.item_image_url }}" alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}">
                                 </div>
                             </div>
                             <div class="govuk-grid-column-two-thirds order-info-panel download">
@@ -95,7 +84,7 @@
     </div>
 
     {% block extra_js %}
-        {% include "static/form_validation.html" %}
+        {% include "static/form_action.html" %}
         {% include "static/render_basket.html" %}
     {% endblock %}
     <script>
