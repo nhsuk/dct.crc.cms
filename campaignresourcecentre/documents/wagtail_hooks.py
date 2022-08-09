@@ -17,7 +17,7 @@ def authorise_users(doc, request):
     # get key from query string
     pageAuth = request.GET.get("a")
     # if Key is present
-    if pageAuth != None:
+    if pageAuth is not None:
         try:
             pageAuth = unsign(pageAuth)
 

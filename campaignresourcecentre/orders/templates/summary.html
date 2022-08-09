@@ -110,7 +110,7 @@
                     {% csrf_token %}
                     <fieldset class="govuk-fieldset">
                         <div class="govuk-form-group">
-                            <button name="place-order" class="govuk-button primary-button">Place order</button>
+                            <button name="place-order" class="govuk-button primary-button" {% if items_in_basket == 0 %}disabled="yes"{% endif %}>Place order</button>
                         </div>
                     </fieldset>
                 </form>

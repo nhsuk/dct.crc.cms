@@ -73,6 +73,11 @@ private_urlpatterns = [
     ),
     path("baskets/render_basket/", basket_views.render_basket, name="render_basket"),
     path(
+        "baskets/render_basket_errors/",
+        basket_views.render_basket_errors,
+        name="render_basket_errors",
+    ),
+    path(
         "baskets/change_item_quantity/",
         basket_views.change_item_quantity,
         name="change_item_quantity",
@@ -104,7 +109,9 @@ private_urlpatterns = decorate_urlpatterns(private_urlpatterns, never_cache)
 private_urlpatterns += (path("crc-search/", search_views.search, name="search"),)
 
 # Public URLs that are meant to be cached.
-urlpatterns = [path("sitemap.xml", sitemap)]
+urlpatterns = [
+    path("sitemap.xml", sitemap),
+]
 
 # Set vary header to instruct cache to serve different version on different
 # encodings, different request method (e.g. AJAX) and different protocol
@@ -130,9 +137,19 @@ if settings.DEBUG:
     debug_urlPatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     debug_urlPatterns += [
-        # Add views for testing 404 and 500 templates
-        path("test404/", TemplateView.as_view(template_name="errors/404.html")),
-        path("test500/", TemplateView.as_view(template_name="errors/5010.html")),
+        # Add views for testing 400, 404 and 500 templates
+        path(
+            "test400/",
+            TemplateView.as_view(template_name="errors/400.html"),
+        ),
+        path(
+            "test404/",
+            TemplateView.as_view(template_name="errors/404.html"),
+        ),
+        path(
+            "test500/",
+            TemplateView.as_view(template_name="errors/500.html"),
+        ),
     ]
 
     # Try to install the django debug toolbar, if exists
@@ -157,6 +174,7 @@ urlpatterns = (
 )
 
 # Error handlers
+handler400 = "campaignresourcecentre.utils.views.bad_request"
 handler403 = "campaignresourcecentre.utils.views.forbidden"
 handler404 = "campaignresourcecentre.utils.views.page_not_found"
 handler500 = "campaignresourcecentre.utils.views.server_error"

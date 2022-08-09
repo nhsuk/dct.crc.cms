@@ -1,29 +1,49 @@
 <script>
-
+    /**
+     * When an item is added or updated using the basket form
+     * the updated quantity and any error messages are rendered
+     * using partial templates so that the whole page does not refresh.
+     * The form data is used to provide values for the refreshed partial template.
+     */
     function addItem(resourceForm) {
+        const basketErrors = document.getElementById("resource-order-error-summary");
+        const button = resourceForm['add-to-basket'];
         const selectedField = resourceForm['order_quantity'];
         const csrfToken = resourceForm['csrfmiddlewaretoken'].value;
         const item_id = resourceForm['item_id'].value;
         const title = resourceForm['title'].value;
         const data = new FormData();
+
+        // Add the form data.
         data.append('order_quantity', parseInt(selectedField.value));
         data.append('csrfmiddlewaretoken', csrfToken);
         data.append('item_id', item_id);
         data.append('title', title);
-        const button = resourceForm['add-to-basket'];
         button.disabled = true;
 
+        // Render the updated basket.
         const xhttp_ss = new XMLHttpRequest();
         xhttp_ss.onreadystatechange = function() {
-            if (this.readyState == 4){
+            if (this.readyState == 4){ 
                 if(this.status == 200) {
-                    resourceForm.outerHTML = this.responseText;
-                    addNovalidate();
+                    resourceForm.outerHTML = this.responseText; 
+                    
+                    // Render the basket errors.
+                    const xhttp_be = new XMLHttpRequest();
+                    xhttp_be.onreadystatechange = function() {
+                        if (this.readyState == 4){
+                            if(this.status == 200) {
+                                basketErrors.innerHTML = this.response;
+                            }
+                        }
+                    }
+                    xhttp_be.open("GET", "/baskets/render_basket_errors/");
+                    xhttp_be.send(data);
                 }
-                else {
+                else  {
                     button.disabled = false;
                 }
-            }
+            }  
         }
         xhttp_ss.open("POST", "/baskets/render_basket/");
         xhttp_ss.send(data);

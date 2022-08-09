@@ -1,4 +1,4 @@
-<form data-title="{{resource.title}}" id="resource-order-{{ resource.sku }}" action="/baskets/add_item/" onsubmit="return formValidation(this.id)" method="post" aria-label="Add item" class="resource-form">
+<form data-title="{{resource.title}}" id="resource-order-{{ resource.sku }}" action="/baskets/add_item/" onsubmit="return formAction(this.id)" method="post" aria-label="Add item" class="resource-form" novalidate>
     {% csrf_token %}
     <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -9,11 +9,26 @@
             <label class="govuk-label govuk-visually-hidden" for="resource-{{ resource.sku}}">
                 Order quantity
             </label>
-            <p id="error-resource-{{ resource.sku }}" class="govuk-error-message govuk-!-display-none">
-                <span class="govuk-visually-hidden">Error:</span> Enter a number
-            </p>
-            <input class="govuk-input govuk-input--width-4" placeholder="1" value="1" required="true" type="number" name="order_quantity" min="1" max="{{ resource.maximum_order_quantity }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Quantity" id="resource-{{ resource.sku }}">
+            {% if resource.bad_quantity %}
+                <p id="error-resource-{{ resource.sku }}" class="govuk-error-message">
+                    {% if resource.maximum_order_quantity == 1 %}
+                        {{ resource.title }}: Enter a quantity of 1
+                    {% else %}
+                        Enter a quantity of {{ resource.maximum_order_quantity }} or fewer
+                    {% endif %}
+                </p>
+            {% elif resource.no_quantity %}
+                <p id="error-resource-{{ resource.sku }}" class="govuk-error-message">
+                    {% if resource.maximum_order_quantity == 1 %}
+                        {{ resource.title }}: Enter a quantity of 1 using whole numbers with no letters
+                    {% else %}
+                        {{ resource.title }}: Enter a quantity between 1 and {{ resource.maximum_order_quantity }} using whole numbers with no letters
+                    {% endif %}
+                </p>    
+            {% endif %}
+            <input class="govuk-input govuk-input--width-4" value="1" required type="number" name="order_quantity" min="1" max="{{ resource.maximum_order_quantity }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Quantity" id="resource-{{ resource.sku }}">
             <input type="hidden" name="sku" value="{{ resource.sku }}">
+            <input type="hidden" name="resource_page_id" value="{{ resource.resource_page_id }}">
             <button name="Add to basket" aria-describedby="{{ resource.title|slugify }}" class="govuk-button primary-button">Add to basket</button>
             <p class="govuk-!-font-size-16 max-order">Maximum order quantity: {{ resource.maximum_order_quantity }}</p>
             {% if resource.items_in_basket_count > 0 %}
