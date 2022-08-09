@@ -119,6 +119,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "key": key,
                 "has_error": basket.get_item_has_error(resource.id),
                 "item": basket.get_item(resource.id),
+                "resource_page_id": self.id,
             }
             for resource in self.resource_items.select_related("image", "document")
         ]

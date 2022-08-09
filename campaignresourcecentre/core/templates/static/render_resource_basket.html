@@ -18,6 +18,7 @@
         data.append('csrfmiddlewaretoken', csrfToken);
         data.append('sku', resourceForm['sku'].value);
         data.append('title', title);
+        data.append('resource_page_id', resourceForm['resource_page_id'].value);
         button.disabled = true;
 
         // Render the updated basket.
@@ -36,6 +37,7 @@
 
                     // Render the basket errors.
                     const xhttp_be = new XMLHttpRequest();
+                    const resource_page_id = data.get('resource_page_id');
                     xhttp_be.onreadystatechange = function() {
                         if (this.readyState == 4){
                             if(this.status == 200) {
@@ -43,7 +45,7 @@
                             }
                         }
                     }
-                    xhttp_be.open("POST", "/baskets/render_basket_errors/");
+                    xhttp_be.open("GET", "/baskets/render_basket_errors/?r=" + resource_page_id);
                     xhttp_be.send(data);
                 }
                 else {

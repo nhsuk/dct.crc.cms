@@ -88,9 +88,13 @@
         {% include "static/render_basket.html" %}
     {% endblock %}
     <script>
+        /**
+         * Add the event listener to the checkout buton if it exists
+         */
         const checkout = document.getElementById("proceed-to-checkout");
-        checkout.addEventListener("click", proceedCheckout);
-
+        if(checkout) {
+            checkout.addEventListener("click", proceedCheckout);
+        }
 
         /**
          * Check if there are errors before proceeding to checkout.

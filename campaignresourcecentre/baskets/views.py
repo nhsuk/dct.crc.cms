@@ -43,6 +43,7 @@ def _add_item(request):
             # Look like a resource object if necessary
             "maximum_order_quantity": item_obj.maximum_order_quantity,
             "sku": item_obj.sku,
+            "resource_page_id": item_obj.resource_page.id,
         }
         basket.add_item(item, payload.get("order_quantity"))
         item["items_in_basket_count"] = basket.get_item_count(item_obj.pk)
@@ -104,11 +105,17 @@ def render_basket(request):
     return render(request, "molecules/baskets/basket.html", {"item": item})
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def render_basket_errors(request):
     if request.session.get("ParagonUser"):
         basket = Basket(request.session)
-        items = basket.get_all_items().items()
+        r = request.GET.get("r")
+        if r:
+            id = int(r)
+            items = basket.get_resource_page_items(id).items()
+        else:
+            items = basket.get_all_items().items()
+
         error_count = sum(
             (
                 1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
@@ -125,12 +132,6 @@ def render_basket_errors(request):
         )
     else:
         return redirect("/login/")
-
-
-@require_http_methods(["POST"])
-def render_basket_errors(request):
-    item = _change_item_quantity(request)
-    return render(request, "molecules/baskets/basket_errors.html", {"item": item})
 
 
 @require_http_methods(["POST"])

@@ -82,6 +82,13 @@ class Basket:
     def get_all_items(self):
         return self.basket
 
+    def get_resource_page_items(self, resource_page_id):
+        return {
+            id: item
+            for id, item in self.basket.items()
+            if item["resource_page_id"] == resource_page_id
+        }
+
     def get_item_count(self, item_id):
         item = self.basket.get(item_id)
         if item:
