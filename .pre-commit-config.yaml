@@ -1,13 +1,10 @@
 repos:
-  - repo: local
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.9.0
     hooks:
       - id: gitleaks
-        name: GitLeaks
-        description: git-leaks scans commits etc
-        entry: './pre-commit/git-secrets/git-leaks-wrapper-mac.sh'
-        language: script
-  -   repo: https://github.com/psf/black
-      rev: 22.6.0
-      hooks:
-      -   id: black
-          args: [--check, --config=./poetry/pyproject.toml]
+  - repo: https://github.com/psf/black
+    rev: 22.6.0
+    hooks:
+    -   id: black
+        args: [--check, --config=./poetry/pyproject.toml]
