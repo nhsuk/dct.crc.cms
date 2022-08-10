@@ -47,6 +47,8 @@
                     }
                     xhttp_be.open("GET", "/baskets/render_basket_errors/?r=" + resource_page_id);
                     xhttp_be.send(data);
+                    // Update the number of items in the basket in the header.
+                    refresh_summary();
                 }
                 else {
                     button.disabled = false;
@@ -55,8 +57,5 @@
         }
         xhttp_ss.open("POST", "/baskets/render_resource_basket/");
         xhttp_ss.send(data);
-
-        // Update the number of items in the basket in the header.
-        refresh_summary();
     }
 </script>

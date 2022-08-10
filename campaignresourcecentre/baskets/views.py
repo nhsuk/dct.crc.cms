@@ -111,8 +111,11 @@ def render_basket_errors(request):
         basket = Basket(request.session)
         r = request.GET.get("r")
         if r:
-            id = int(r)
-            items = basket.get_resource_page_items(id).items()
+            try:
+                id = int(r)
+                items = basket.get_resource_page_items(id).items()
+            except ValueError:
+                raise SuspiciousOperation
         else:
             items = basket.get_all_items().items()
 
@@ -132,12 +135,6 @@ def render_basket_errors(request):
         )
     else:
         return redirect("/login/")
-
-
-@require_http_methods(["POST"])
-def render_basket_errors(request):
-    item = _change_item_quantity(request)
-    return render(request, "molecules/baskets/basket_errors.html", {"item": item})
 
 
 @require_http_methods(["POST"])
