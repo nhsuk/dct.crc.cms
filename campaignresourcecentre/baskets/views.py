@@ -6,12 +6,13 @@ from django.core.exceptions import SuspiciousOperation
 
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.baskets.exceptions import ItemNotInBasketError
-
+from campaignresourcecentre.paragon_users.decorators import paragon_user_logged_in
 from campaignresourcecentre.resources.models import ResourceItem
 
 logger = getLogger("__name__")
 
 
+@paragon_user_logged_in
 @require_http_methods(["DELETE", "GET"])
 def empty_basket(request):
     basket = Basket(request.session)
@@ -53,12 +54,14 @@ def _add_item(request):
         raise SuspiciousOperation
 
 
+@paragon_user_logged_in
 @require_http_methods(["POST"])
 def add_item(request):
     item_obj = _add_item(request)
     return redirect(item_obj["item_url"])
 
 
+@paragon_user_logged_in
 @require_http_methods(["POST"])
 def render_resource_basket(request):
     item_obj = _add_item(request)
@@ -67,21 +70,20 @@ def render_resource_basket(request):
     )
 
 
+@paragon_user_logged_in
 @require_http_methods(["GET"])
 def view_basket(request):
-    if request.session.get("ParagonUser"):
-        basket = Basket(request.session)
-        items = basket.get_all_items().items()
-        result = render(
-            request,
-            "view_basket.html",
-            {"items": items, "has_errors": basket.has_errors},
-        )
-        return result
-    else:
-        return redirect("/login/")
+    basket = Basket(request.session)
+    items = basket.get_all_items().items()
+    result = render(
+        request,
+        "view_basket.html",
+        {"items": items, "has_errors": basket.has_errors},
+    )
+    return result
 
 
+@paragon_user_logged_in
 @require_http_methods(["POST"])
 def change_item_quantity(request):
     _change_item_quantity(request)
@@ -99,44 +101,44 @@ def _change_item_quantity(request):
     raise SuspiciousOperation
 
 
+@paragon_user_logged_in
 @require_http_methods(["POST"])
 def render_basket(request):
     item = _change_item_quantity(request)
     return render(request, "molecules/baskets/basket.html", {"item": item})
 
 
+@paragon_user_logged_in
 @require_http_methods(["GET"])
 def render_basket_errors(request):
-    if request.session.get("ParagonUser"):
-        basket = Basket(request.session)
-        r = request.GET.get("r")
-        if r:
-            try:
-                id = int(r)
-                items = basket.get_resource_page_items(id).items()
-            except ValueError:
-                raise SuspiciousOperation
-        else:
-            items = basket.get_all_items().items()
-
-        error_count = sum(
-            (
-                1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
-                for item in items
-            )
-        )
-        return render(
-            request,
-            "molecules/baskets/basket_errors.html",
-            {
-                "items": items,
-                "has_errors": error_count > 0,
-            },
-        )
+    basket = Basket(request.session)
+    r = request.GET.get("r")
+    if r:
+        try:
+            id = int(r)
+            items = basket.get_resource_page_items(id).items()
+        except ValueError:
+            raise SuspiciousOperation
     else:
-        return redirect("/login/")
+        items = basket.get_all_items().items()
+
+    error_count = sum(
+        (
+            1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
+            for item in items
+        )
+    )
+    return render(
+        request,
+        "molecules/baskets/basket_errors.html",
+        {
+            "items": items,
+            "has_errors": error_count > 0,
+        },
+    )
 
 
+@paragon_user_logged_in
 @require_http_methods(["POST"])
 def remove_item(request):
     basket = Basket(request.session)
