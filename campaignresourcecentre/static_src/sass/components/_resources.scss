@@ -308,6 +308,10 @@
                     &.last-updated {
                         font-size: 1rem;
                         color: $dark-grey;
+
+                        @media (max-width: 40.0525em) {
+                            font-size: 0.875rem;
+                        }
                     }
                 }
 
