@@ -19,6 +19,9 @@ steps:
     cliProjectKey: 'DCT_Campaigns_Resource_Centre'
     cliProjectName: 'DCT_Campaigns_Resource_Centre'
     cliSources: '.'
+    extraProperties: |
+      sonar.exclusions = campaignresourcecentre/**/migrations/*
+
 
 - task: SonarQubeAnalyze@5
 
