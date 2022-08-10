@@ -375,6 +375,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     if resource_item
                     else None,
                     "url": resource.url,
+                    "last_published_at": resource.last_published_at,
                 }
             )
         return resources_list

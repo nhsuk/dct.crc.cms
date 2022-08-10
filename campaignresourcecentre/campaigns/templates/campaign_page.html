@@ -146,6 +146,7 @@
                                                 <div class="govuk-grid-column-one-half">
                                                     <h3>{{ resource.title }}</h3>
                                                     <p>{{ resource.summary|safe }}</p>
+                                                    <p class="govuk-!-margin-top-2 last-updated">Last updated: {{ resource.last_published_at|date:"j F Y" }}</p>
                                                 </div>
                                             </div>
                                         </a>

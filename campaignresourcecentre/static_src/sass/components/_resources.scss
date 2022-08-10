@@ -304,6 +304,11 @@
                 position: relative;
                 p {
                     margin-bottom: 0;
+
+                    &.last-updated {
+                        font-size: 1rem;
+                        color: $dark-grey;
+                    }
                 }
 
                 a {
