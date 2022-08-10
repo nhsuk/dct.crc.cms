@@ -1,28 +1,58 @@
 <script>
-
+    /**
+     * When an item is added or updated using the basket form
+     * the updated quantity and any error messages are rendered
+     * using partial templates so that the whole page does not refresh.
+     * The form data is used to provide values for the refreshed partial template.
+     */
     function addItem(resourceForm) {
+        const basketErrors = document.getElementById("resource-order-error-summary");
+        const button = resourceForm['Add to basket'];
         const selectedField = resourceForm['order_quantity'];
         const csrfToken = resourceForm['csrfmiddlewaretoken'].value;
         const title = resourceForm['title'].value;
         const data = new FormData();
+
+        // Add the form data.
         data.append('order_quantity', selectedField.value);
         data.append('csrfmiddlewaretoken', csrfToken);
         data.append('sku', resourceForm['sku'].value);
         data.append('title', title);
-        const button = resourceForm['Add to basket'];
+        data.append('resource_page_id', resourceForm['resource_page_id'].value);
         button.disabled = true;
 
+        // Render the updated basket.
         const xhttp_ss = new XMLHttpRequest();
         xhttp_ss.onreadystatechange = function() {
             if (this.readyState == 4){
                 if(this.status == 200) {
                     resourceForm.outerHTML = this.responseText;
-                    addNovalidate();
+
+                    // Get the current basket and update the value to "".
+                    const resourceSku = 'resource-' + data.get('sku');
+                    if(document.getElementById(resourceSku) !==null) {
+                        const inputValue = document.getElementById(resourceSku);
+                        inputValue.setAttribute("value", "");
+                    }
+
+                    // Render the basket errors.
+                    const xhttp_be = new XMLHttpRequest();
+                    const resource_page_id = data.get('resource_page_id');
+                    xhttp_be.onreadystatechange = function() {
+                        if (this.readyState == 4){
+                            if(this.status == 200) {
+                                basketErrors.innerHTML = this.response;
+                            }
+                        }
+                    }
+                    xhttp_be.open("GET", "/baskets/render_basket_errors/?r=" + resource_page_id);
+                    xhttp_be.send(data);
+                    // Update the number of items in the basket in the header.
+                    refresh_summary();
                 }
                 else {
                     button.disabled = false;
                 }
-                refresh_summary();
             }
         }
         xhttp_ss.open("POST", "/baskets/render_resource_basket/");
