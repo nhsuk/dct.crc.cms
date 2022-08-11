@@ -1,4 +1,6 @@
+from datetime import datetime
 import json
+import logging
 import requests
 
 from django.conf import settings
@@ -12,6 +14,9 @@ from .data_classes import (
     MockParagonResponse,  # For performance testing
 )
 from .exceptions import ParagonClientError
+
+logger = logging.getLogger(__name__)
+
 
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ":ECDH+AES256:DH+AES256:!DH"
 
@@ -30,11 +35,23 @@ class Client:
 
     # Original/production call to Paragon
     def _call(self):
-        self.response = requests.post(
-            "{0}{1}".format(settings.PARAGON_API_ENDPOINT, self.call_method),
-            headers=self.headers,
-            json=self.data,
-        )
+        start_time = datetime.now()
+        try:
+            self.response = requests.post(
+                "{0}{1}".format(settings.PARAGON_API_ENDPOINT, self.call_method),
+                headers=self.headers,
+                json=self.data,
+                timeout=settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
+            )
+            failed = False
+        except requests.Timeout:
+            logger.error("Paragon client timed out on %s call", self.call_method)
+            failed = True
+        finish_time = datetime.now()
+        elapsed = (finish_time - start_time).total_seconds()
+        logger.info("Paragon client %s call took %0.3fs", self.call_method, elapsed)
+        if failed:
+            raise ParagonClientTimeout
 
     # Revised call - delegates to either mock or real API
     def call(self):
