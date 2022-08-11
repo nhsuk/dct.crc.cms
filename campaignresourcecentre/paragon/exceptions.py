@@ -6,5 +6,5 @@ class PasswordError(ParagonClientError):
     pass
 
 
-class ParagonClientTimeout (ParagonClientError):
+class ParagonClientTimeout(ParagonClientError):
     pass

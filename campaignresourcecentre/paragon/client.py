@@ -35,21 +35,21 @@ class Client:
 
     # Original/production call to Paragon
     def _call(self):
-        start_time = datetime.now ()
+        start_time = datetime.now()
         try:
             self.response = requests.post(
                 "{0}{1}".format(settings.PARAGON_API_ENDPOINT, self.call_method),
                 headers=self.headers,
                 json=self.data,
-                timeout=settings.PARAGON_LOGIN_TIMEOUT_SECONDS
+                timeout=settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
             )
             failed = False
         except requests.Timeout:
-            logger.error ("Paragon client timed out on %s call", self.call_method)
+            logger.error("Paragon client timed out on %s call", self.call_method)
             failed = True
-        finish_time = datetime.now ()
-        elapsed = (finish_time - start_time).total_seconds ()
-        logger.info ("Paragon client %s call took %0.3fs", self.call_method, elapsed)
+        finish_time = datetime.now()
+        elapsed = (finish_time - start_time).total_seconds()
+        logger.info("Paragon client %s call took %0.3fs", self.call_method, elapsed)
         if failed:
             raise ParagonClientTimeout
 
