@@ -4,3 +4,7 @@ class ParagonClientError(Exception):
 
 class PasswordError(ParagonClientError):
     pass
+
+
+class ParagonClientTimeout (ParagonClientError):
+    pass

@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 from campaignresourcecentre.paragon.client import Client
-from campaignresourcecentre.paragon.exceptions import ParagonClientError
+from campaignresourcecentre.paragon.exceptions import ParagonClientError, ParagonClientTimeout
 from campaignresourcecentre.paragon_users.decorators import (
     paragon_user_logged_in,
     paragon_user_logged_out,
@@ -251,6 +251,8 @@ def login(request):
                     else:
                         login_form.add_error(paresedError[0], paresedError[1])
                 return render(request, "users/login.html", {"form": login_form})
+            except ParagonClientTimeout:
+                return HttpResponseServerError ()
     return render(request, "users/login.html", {"form": login_form})
 
 
