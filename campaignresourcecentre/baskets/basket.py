@@ -32,8 +32,6 @@ class Basket:
         if item_id in self.basket:
             del self.basket[item_id]
             self._update_session_basket()
-        else:
-            raise ItemNotInBasketError("Item is not added to basket!")
 
     def change_item_quantity(self, item_id, quantity):
         item = self.basket.get(item_id)
