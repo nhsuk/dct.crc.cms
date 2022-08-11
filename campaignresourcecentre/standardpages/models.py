@@ -54,7 +54,7 @@ class AboutPage(InformationPage):
         get_image_model_string(), null=True, related_name="+", on_delete=models.SET_NULL
     )
 
-    image_alt_text = models.TextField(blank=True)
+    image_alt_text = models.TextField(blank=True, help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.")
 
     content_panels = BasePage.content_panels + [
         FieldPanel("introduction"),
