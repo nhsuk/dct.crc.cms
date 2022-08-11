@@ -89,7 +89,7 @@ class ContentLinkBLock(FlattenValueContext, StructBlock):
 
 
 class CrcCardImageBLock(CardImageBlock):
-    alt_text = CharBlock(required=False)
+    alt_text = CharBlock(required=False, help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.")
 
     class Meta:
         template = "../templates/blocks/card_image.html"
@@ -137,7 +137,7 @@ class FeaturePanelBlock(FlattenValueContext, StructBlock):
         required=False,
     )
     content_image = ImageChooserBlock(label="Image", required=True)
-    alt_text = CharBlock(required=False)
+    alt_text = CharBlock(required=False, help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.")
     body = RichTextBlock(Label="Content", required=False)
     url = URLBlock(
         label="URL",

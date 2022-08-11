@@ -246,7 +246,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
         help_text="Choose an image to display.",
     )
     description = models.TextField(help_text="Enter the text to display.")
-    image_alt_text = models.TextField(blank=True)
+    image_alt_text = models.TextField(blank=True, help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.")
 
     class Meta:
         abstract = True
@@ -314,7 +314,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     image = models.ForeignKey(
         get_image_model_string(), null=True, related_name="+", on_delete=models.SET_NULL
     )
-    image_alt_text = models.TextField(blank=True)
+    image_alt_text = models.TextField(blank=True, help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.")
     related_website = models.URLField(blank=True, help_text="Enter a URL to link to.")
     related_website_text = models.CharField(
         blank=True,
