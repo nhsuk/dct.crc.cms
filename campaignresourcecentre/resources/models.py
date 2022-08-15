@@ -240,7 +240,10 @@ class ResourceItem(Orderable):
     )
     document_content = models.CharField(blank=True, null=True, max_length=50)
     image_alt_text = models.CharField(
-        blank=True, null=True, max_length=50, help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text."
+        blank=True,
+        null=True,
+        max_length=50,
+        help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.",
     )
     can_order = models.BooleanField(
         default=False,
