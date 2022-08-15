@@ -290,6 +290,7 @@
                     if(this.status == 200) {
                         const topics = document.getElementById("search-result");
                         topics.outerHTML = this.responseText;
+                        document.getElementById('sortby').focus();
                     }
                 }
             }
