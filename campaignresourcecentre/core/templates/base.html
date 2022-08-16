@@ -136,6 +136,15 @@
         <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'js/nhsuk.js' %}"></script>
         <script src="{% static 'js/event.js' %}"></script>
+        <script>
+            /**
+             * Close the main nav menu.
+             */
+            const toggleMenu = document.getElementById("toggle-menu");
+            const mainNav = document.getElementById("header-navigation");
+            toggleMenu.classList.remove("is-active");
+            mainNav.classList.remove("js-show");
+        </script>
 
         {# block extra_js %}{% endblock #}
     </body>
