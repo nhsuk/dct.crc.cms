@@ -3,7 +3,7 @@ from logging import getLogger
 from urllib.parse import quote
 
 from django.conf import settings
-from django.http import HttpResponseServerError
+from django.http import HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
@@ -30,6 +30,8 @@ from .helpers.newsletter import deserialise, serialise
 from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
+
+logger = getLogger()
 
 
 def ParseError(error):
@@ -110,6 +112,10 @@ def signup(request):
                         "users/confirmation_registration.html",
                         {"email": settings.PHE_PARTNERSHIPS_EMAIL},
                     )
+                else:
+                    # Report the failure and return a server error
+                    logger.error("Failed to create account: %s" % (response,))
+                    return HttpResponseServerError()
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
@@ -146,9 +152,9 @@ def verification(request):
         # unsign Token from URL Query
         try:
             unsignedToken = unsign(request.GET.get("q"), max_age=86400)
-        except Exception as e:  # noqa
-            logger.error("Exception unsigning user token: %s", e)
-            return redirect("/")
+        except Exception as e:
+            logging.error("Failed to unsign token: %s" % (e,))
+            return HTTPResponseBadRequest()
         todays_date = date.today().strftime("%d/%m/%Y")
         # set user parameters
         client = Client()
@@ -171,13 +177,12 @@ def verification(request):
                     request.session["Verified"] = "True"
                 return render(request, "users/confirmation_user_verification.html")
             else:
-                return redirect(
-                    "/signup"
-                )  # This needs chaning to indicate to the user that verification failed.
+                return HttpResponseServerError()
     return redirect("/")
 
 
 def get_role(userEmail: str, userJob: str):
+    userEmail = userEmail.lower()
     if (userEmail.endswith("@nhs.net") or userEmail.endswith("@gov.uk")) and (
         userJob == "comms" or userJob == "health:improvement" or userJob == "marketing"
     ):
@@ -242,9 +247,8 @@ def login(request):
                         else:
                             return render(request, "users/not_verified.html")
                     else:
-                        print(
-                            "uh oh"
-                        )  # TODO return proper error about cookies not working
+                        logger.error("Couldn't set test cookie")
+                        return HttpResponseServerError()
                     return redirect("/")
             except ParagonClientError as PCE:
                 for error in PCE.args:
@@ -317,26 +321,29 @@ def password_reset(request):
                     else:
                         password_reset_form.add_error(paresedError[0], paresedError[1])
                 return render(
-                    request, "users/password_reset.html", {"form": password_reset_form}
+                    request,
+                    "users/password_reset.html",
+                    {"form": password_reset_form},
                 )
     else:
         password_reset_form = PasswordResetForm()
 
-    return render(request, "users/password_reset.html", {"form": password_reset_form})
+    return render(
+        request,
+        "users/password_reset.html",
+        {"form": password_reset_form},
+    )
 
 
-# Can change password when user is not logged in
-@paragon_user_logged_out
 def password_set(request):
-
     if request.GET.get("q"):
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning
         try:
             user_token = unsign(request.GET.get("q"), max_age=86400)
         except Exception as e:  # noqa
-            logger.warn("Failed to unsign user token: %s" % e)
-            return redirect("/")
+            logger.error("Failed to unsign user token: %s" % e)
+            return HttpResponseBadRequest()
         # Check if the user token returns a profile to authenticate it
         user_profile = paragon_client.get_user_profile(user_token)
         status = user_profile.get("code")
@@ -388,8 +395,10 @@ def password_set(request):
             )
         else:
             logger.error("Paragon API returned status code %d", status)
+            return HttpResponseBadRequest()
     else:
-        logger.warn("Password set requested without user token")
+        logger.error("Password set requested without user token")
+        return HttpResponseBadRequest()
     return redirect("/")
 
 
@@ -477,13 +486,17 @@ def newsletter_preferences(request):
                     else:
                         newsletter_form.add_error(paresedError[0], paresedError[1])
             return render(
-                request, "users/newsletter_preferences.html", {"form": newsletter_form}
+                request,
+                "users/newsletter_preferences.html",
+                {"form": newsletter_form},
             )
     else:
         newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
 
         return render(
-            request, "users/newsletter_preferences.html", {"form": newsletter_form}
+            request,
+            "users/newsletter_preferences.html",
+            {"form": newsletter_form},
         )
 
 

@@ -1,0 +1,36 @@
+{% if has_errors %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+            There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list" id="errorList">
+                    {% for index, item in items %}
+                        {% if item.no_quantity %}
+                            <li><a href="#resource-{{ item.sku }}">
+                                {% if item.maximum_order_quantity == 1 %}
+                                    {{ item.title }}: Enter a quantity of 1 using whole numbers with no letters
+                                {% else %}
+                                    {{ item.title }}: Enter a quantity between 1 and {{ item.maximum_order_quantity }} using whole numbers with no letters
+                                {% endif %}
+                            </a></li>
+                        {% endif %}
+                        {% if item.bad_quantity %}
+                            <li><a href="#resource-{{ item.sku }}">
+                                {% if item.maximum_order_quantity == 1 %}
+                                    {{ item.title }}: Enter a quantity of 1
+                                {% else %}
+                                    {{ item.title }}: Enter a quantity of {{ item.maximum_order_quantity }} or fewer
+                                {% endif %}
+                            </a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
