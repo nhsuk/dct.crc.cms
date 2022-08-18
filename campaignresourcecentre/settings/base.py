@@ -328,7 +328,6 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     # AZURE_SEARCH_UPDATE determines whether search resources are indexed as updates are made
     AZURE_SEARCH_UPDATE = getenv_bool("AZURE_SEARCH_UPDATE", True)
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
-    AZURE_URL_EXPIRATION_SECS = 1860
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
