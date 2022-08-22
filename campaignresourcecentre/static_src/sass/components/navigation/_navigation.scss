@@ -120,6 +120,18 @@
             background-color: transparent;
         }
 
+        &:hover {
+            background-color: $white;
+            color: $black;
+            text-decoration: underline;
+            text-underline-offset: 0.1em;
+
+            &:before {
+                border-bottom: 2px solid $black;
+                border-right: 2px solid $black;
+            }
+        }
+
         &:focus {
             background-color: $focus;
             color: $black;
@@ -130,10 +142,6 @@
                 border-bottom: 2px solid $black;
                 border-right: 2px solid $black;
             }
-        }
-
-        &:hover {
-            background-color: transparent;
         }
     }
 
@@ -207,6 +215,7 @@
                     background-color: $focus;
                     color: $black;
                     border-color: $focus;
+                    box-shadow: none;
                 }
             }
         }
