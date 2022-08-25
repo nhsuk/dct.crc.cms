@@ -34,6 +34,8 @@
                         if (this.readyState == 4){
                             if(this.status == 200) {
                                 basketErrors.innerHTML = this.response;
+                                // Move the focus to errors if there are any.
+                                errorFocus();
                             }
                         }
                     }
