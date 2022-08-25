@@ -80,7 +80,7 @@ class Client:
                                 "ContactVar3": "1",
                                 "ContactVar4": "1",
                                 "ContactVar5": "1",
-                                "ProductRegistrationVar1": "Standard",  # or "Uber"
+                                "ProductRegistrationVar1": "standard",  # or "uber"
                                 "ProductRegistrationVar2": "True",
                                 "ProductRegistrationVar3": "A mockery",
                                 "ProductRegistrationVar4": "other",

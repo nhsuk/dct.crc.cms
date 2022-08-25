@@ -187,9 +187,9 @@ def get_role(userEmail: str, userJob: str):
         userJob == "comms" or userJob == "health:improvement" or userJob == "marketing"
     ):
 
-        return "Uber"
+        return "uber"
     else:
-        return "Standard"
+        return "standard"
 
 
 @paragon_user_logged_out
