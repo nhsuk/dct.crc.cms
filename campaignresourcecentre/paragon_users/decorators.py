@@ -31,6 +31,7 @@ def verified_user(
                 redirect_url = "/" if logged_in else "/login/"
             if logged_in:
                 good_to_go = require_logged_in
+
                 if good_to_go and require_logged_in_and_verified:
                     # If don't have the Verified cookie, get one.
                     # This should not happen anywhere this decorator is used
@@ -51,8 +52,8 @@ def verified_user(
                     if not good_to_go:
                         return render(request, "users/not_verified.html")
             else:
-
                 good_to_go = not require_logged_in
+
             if good_to_go:
                 return func(*args, **kwargs)
             else:

@@ -263,7 +263,6 @@ def login(request):
     return render(request, "users/login.html", {"form": login_form})
 
 
-@paragon_user_logged_in
 def logout(request):
     try:
         request.session.flush()
