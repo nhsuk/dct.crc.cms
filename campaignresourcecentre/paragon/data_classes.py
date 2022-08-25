@@ -80,7 +80,7 @@ class User:
         if self.job_title:
             result["ProductRegistrationVar4"] = self.job_title
         if self.role:
-            result["ProductRegistrationVar1"] = self.role
+            result["ProductRegistrationVar1"] = self.role.lower()
         if self.active:
             result["ProductRegistrationVar2"] = self.active
         if self.verified_at:
@@ -124,7 +124,7 @@ def user_from_dict(user_dict):
         last_name=user_dict["LastName"],
         organisation=user_dict["ProductRegistrationVar3"],
         job_title=user_dict["ProductRegistrationVar4"],
-        role=user_dict["ProductRegistrationVar1"],
+        role=(user_dict["ProductRegistrationVar1"] or "").lower(),
         active=user_dict["ProductRegistrationVar2"],
         created_at=created_at,
         verified_at=user_dict["ProductRegistrationVar8"],

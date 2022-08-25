@@ -36,7 +36,7 @@ HEALTH_CHOICES = (
 )
 
 
-ROLE_CHOICES = (("", "Select a role"), ("Standard", "Standard"), ("Uber", "Uber"))
+ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
 # uses regex to restrict usage of everything but a expression of allowed characters
 class SpecialCharacterRestrictionValidator(RegexValidator):

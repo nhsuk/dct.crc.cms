@@ -407,9 +407,12 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             json_data = json.loads(self.taxonomy_json)
         context = super().get_context(request, *args, **kwargs)
         user_role = (
-            request.session.get("UserDetails")
-            and request.session.get("UserDetails")["ProductRegistrationVar1"]
-        )
+            (
+                request.session.get("UserDetails")
+                and request.session.get("UserDetails")["ProductRegistrationVar1"]
+            )
+            or ""
+        ).lower()
         context.update(
             details=self.details,
             sub_campaigns=self.get_sub_campaigns(),
