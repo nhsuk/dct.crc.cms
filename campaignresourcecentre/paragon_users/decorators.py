@@ -1,7 +1,6 @@
 from functools import wraps
 from logging import getLogger
 
-from django.http import HttpResponseServerError
 from django.shortcuts import redirect, render
 from campaignresourcecentre.paragon.client import Client
 from campaignresourcecentre.paragon.exceptions import ParagonClientError
@@ -43,7 +42,7 @@ def verified_user(
                             )
                         except ParagonClientError as PCE:
                             logger.error("Paragon error: %s" % PCE)
-                            return HTTPResponseServerError()
+                            raise Exception("User lookup failed")
                         request.session["Verified"] = user.get(
                             "ProductRegistrationVar2"
                         )
