@@ -321,6 +321,15 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         blank=True,
         help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.",
     )
+    campaign_start_date = models.TextField(
+        blank=True,
+        max_length=25,
+    )
+    campaign_end_date = models.TextField(
+        blank=True,
+        max_length=25,
+        help_text="Use the date format: 3 September 2022. If the campaign has always on assets, put: Always on",
+    )
     related_website = models.URLField(blank=True, help_text="Enter a URL to link to.")
     related_website_text = models.CharField(
         blank=True,
@@ -438,6 +447,8 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         ),
         MultiFieldPanel(
             [
+                FieldPanel("campaign_start_date"),
+                FieldPanel("campaign_end_date"),
                 FieldPanel("related_website"),
                 FieldPanel("related_website_text"),
                 StreamFieldPanel("details"),

@@ -56,11 +56,11 @@
                     {% if topics_present %}
                         <p class="govuk-!-margin-bottom-0"><strong>Topics: </strong>{% get_taxonomies taxonomy_json "TOPIC" %}</p>
                     {% endif %}
-                    {% if page.first_published_at %}
-                        <p class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</p>
+                    {% if page.campaign_start_date %}
+                        <p class="govuk-!-margin-0"><strong>Campaign start date:</strong> {{ page.campaign_start_date }}</p>
                     {% endif %}
-                    {% if page.last_reviewed %}
-                        <p><strong>Last updated:</strong> {{ page.last_reviewed|date:"j F Y" }}</p>
+                    {% if page.campaign_end_date %}
+                        <p><strong>Campaign end date:</strong> {{ page.campaign_end_date }}</p>
                     {% endif %}
 
                     {% comment %}
@@ -157,7 +157,10 @@
                         </div>
                     {% endfor %}
                 {% endif %}
-            </div>        
+            </div>      
+            {% if page.first_published_at %}
+                <p class="govuk-!-margin-0"><strong>Published:</strong> {{ page.first_published_at|date:"j F Y" }}</p>
+            {% endif %}  
         </div>
     </section>
 {% endblock %}
