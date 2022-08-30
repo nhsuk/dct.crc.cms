@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied, BadRequest, SuspiciousOperation
+from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.signing import BadSignature
 from wagtail.core import hooks
 
@@ -8,7 +8,6 @@ from cryptography.fernet import InvalidToken
 
 from campaignresourcecentre.paragon_users.helpers.token_signing import unsign
 from campaignresourcecentre.paragon_users.forms import ROLE_CHOICES
-from campaignresourcecentre.utils.views import bad_request
 
 import logging
 
@@ -22,13 +21,13 @@ def authorise_users(doc, request):
     # if Key is present
     if pageAuth is None:
         logger.warning("No key present in download request")
-        return bad_request(request, "No key")
+        raise SuspiciousOperation(request, "No key")
     else:
         try:
             pageAuth = unsign(pageAuth).lower()
         except (BadSignature, InvalidToken):
             logger.warning("Malformed key present in download request")
-            return bad_request(request, "Malformed key")
+            raise SuspiciousOperation(request, "Malformed key")
         # if document not universally available, need to check authorisation
         if pageAuth != "all":
             # Check if user is logged in
@@ -45,7 +44,6 @@ def authorise_users(doc, request):
                             and (userAuth == "standard" or userAuth == "uber")
                         ) or (pageAuth == "uber" and userAuth == "uber"):
                             return  # A null response is OK
-                        # if no userauth then something is wrong => go to 403
                         else:
                             raise PermissionDenied
                     else:  # unknown userAuth

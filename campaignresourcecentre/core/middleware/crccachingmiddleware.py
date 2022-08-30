@@ -10,7 +10,6 @@
 
 import logging
 
-from django.http import HttpResponseServerError
 from django.middleware.cache import UpdateCacheMiddleware, FetchFromCacheMiddleware
 from django.utils.cache import (
     patch_vary_headers,
@@ -66,7 +65,7 @@ class CRCUpdateCacheMiddleware(UpdateCacheMiddleware):
                 logger.info(
                     "Potentially cachable page %s set cookies %s",
                     path,
-                    sorted(response.cookies.items()),
+                    sorted(response.cookies.keys()),
                 )
                 add_never_cache_headers(response)
             else:
@@ -94,7 +93,7 @@ class CRCFetchFromCacheMiddleware(FetchFromCacheMiddleware):
                     path,
                     sorted(response.cookies.items()),
                 )
-                return HttpResponseServerError()
+                raise Exception("Cached page set cookies")
             # Don't serve any cached page to a Django/Wagtail user
             if hasattr(request, "user") and request.user.is_authenticated:
                 logger.debug(
