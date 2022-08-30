@@ -344,7 +344,7 @@ def password_set(request):
             user_token = unsign(q, max_age=86400)
         except Exception as e:  # noqa
             logger.error("Failed to unsign user token: %s" % e)
-            raise SuspiciousOperation ("Malformed user token")
+            raise SuspiciousOperation("Malformed user token")
         # Check if the user token returns a profile to authenticate it
         user_profile = paragon_client.get_user_profile(user_token)
         status = user_profile.get("code")
