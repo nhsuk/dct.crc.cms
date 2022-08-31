@@ -1,0 +1,57 @@
+<script>
+     /**
+     * When an item is removed using the basket form
+     * any error messages are rendered
+     * and the 'Proceed to checkout' button or empty basket message is rendered
+     * using partial templates so that the whole page does not refresh.
+     * The form data is used to provide values for the refreshed partial template.
+     */
+    function basketRemove(id) {
+        const itemRemove = document.forms[id];
+        const data = new FormData();
+        const item_id = itemRemove['item_id'].value;
+        const csrfToken = itemRemove['csrfmiddlewaretoken'].value;
+        // Id for the 'Proceed to checkout' button or empty basket message.
+        const basketCheckout = document.getElementById("basket-checkout");
+        // Id for the error messages.
+        const basketErrors = document.getElementById("resource-order-error-summary");
+        data.append('item_id', item_id);
+        data.append('csrfmiddlewaretoken', csrfToken);
+        const xhttp_rb = new XMLHttpRequest();
+        xhttp_rb.onreadystatechange = function() {
+            if (this.readyState == 4){
+                if(this.status == 200) {
+                    // Get the ID of the item being removed.
+                    const resource_id = itemRemove.id.replace('remove_item', 'resource');
+                    const resourcePanel = document.getElementById(resource_id);
+                    // Remove the item.
+                    resourcePanel.outerHTML = "";
+                    // Render the 'Proceed to checkout' button if there are items or empty basket message.
+                    basketCheckout.innerHTML = this.response;
+                    //Render the basket errors.
+                    const xhttp_be = new XMLHttpRequest();
+                    xhttp_be.onreadystatechange = function() {
+                        if (this.readyState == 4){
+                            if(this.status == 200) {
+                                basketErrors.innerHTML = this.response;
+                                // Move the focus to errors if there are any.
+                                errorFocus();
+                            }
+                        }
+                    }
+                    xhttp_be.open("GET", "/baskets/render_basket_errors/");
+                    xhttp_be.send(data);
+                    // Update the number of items in the basket in the header.
+                    refresh_summary();
+                }
+                else  {
+                    button.disabled = false;
+                }
+            }
+        }
+        xhttp_rb.open("POST", "/baskets/render_remove_item/");
+        xhttp_rb.send(data);
+        return false;
+    }
+
+</script>
