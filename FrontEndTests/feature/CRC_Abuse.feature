@@ -15,3 +15,5 @@ Feature: Abusive use of CRCV3 endpoints
     Then I sign in
     Then I navigate to Guide to Bottle Feeding page
     Then I attempt to submit an invalid SKU
+    Then I attempt to submit an invalid resource id
+    Then I attempt to submit an valid resource id not matching its SKU
