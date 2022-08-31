@@ -3,7 +3,8 @@ from logging import getLogger
 from urllib.parse import quote
 
 from django.conf import settings
-from django.http import HttpResponseBadRequest, HttpResponseServerError
+from django.core.exceptions import SuspiciousOperation
+from django.http import HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
@@ -31,7 +32,7 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
-logger = getLogger()
+logger = getLogger("__name__")
 
 
 def ParseError(error):
@@ -115,7 +116,7 @@ def signup(request):
                 else:
                     # Report the failure and return a server error
                     logger.error("Failed to create account: %s" % (response,))
-                    return HttpResponseServerError()
+                    raise SuspiciousOperation("API call failed")
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
@@ -154,7 +155,7 @@ def verification(request):
             unsignedToken = unsign(request.GET.get("q"), max_age=86400)
         except Exception as e:
             logging.error("Failed to unsign token: %s" % (e,))
-            return HTTPResponseBadRequest()
+            raise SuspiciousOperation("Malformed token")
         todays_date = date.today().strftime("%d/%m/%Y")
         # set user parameters
         client = Client()
@@ -177,7 +178,7 @@ def verification(request):
                     request.session["Verified"] = "True"
                 return render(request, "users/confirmation_user_verification.html")
             else:
-                return HttpResponseServerError()
+                raise Exception("User update failed")
     return redirect("/")
 
 
@@ -335,14 +336,15 @@ def password_reset(request):
 
 
 def password_set(request):
-    if request.GET.get("q"):
+    q = request.GET.get("q")
+    if q:
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning
         try:
-            user_token = unsign(request.GET.get("q"), max_age=86400)
+            user_token = unsign(q, max_age=86400)
         except Exception as e:  # noqa
             logger.error("Failed to unsign user token: %s" % e)
-            return HttpResponseBadRequest()
+            raise SuspiciousOperation("Malformed user token")
         # Check if the user token returns a profile to authenticate it
         user_profile = paragon_client.get_user_profile(user_token)
         status = user_profile.get("code")
@@ -394,10 +396,10 @@ def password_set(request):
             )
         else:
             logger.error("Paragon API returned status code %d", status)
-            return HttpResponseBadRequest()
+            raise SuspiciousOperation("API call failed")
     else:
         logger.error("Password set requested without user token")
-        return HttpResponseBadRequest()
+        raise SuspiciousOperation("Missing user token")
     return redirect("/")
 
 

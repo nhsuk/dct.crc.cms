@@ -393,6 +393,10 @@ Then access the pipeline variables:
 
 and change if ever required. The FRONTEND_TEST_CONTAINER_IMAGE_TAG is configured similarly.
 
+One very useful pipeline parameter is TAGS as mentioned above. This supplies the name of a Behave <https://behave.readthedocs.io/en/stable/index.html> tag to select tests to be run. By default the tag is Smoke, selecting basic tests of CRCv3 functions. Two other useful values are:
+- All - run all tests
+- Abuse - run abuse tests (tests actions that a malicious actor might take outside the UI)
+
 ### Running front end tests locally
 
 These remarks assume that your local development environment is a dev container.

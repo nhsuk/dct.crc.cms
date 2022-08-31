@@ -51,7 +51,7 @@ def _add_item(request):
         return item
     except Exception as e:
         logger.error("Failed to find resource item: %s", e)
-        raise SuspiciousOperation
+        raise SuspiciousOperation("No such item in basket")
 
 
 @paragon_user_logged_in
@@ -98,7 +98,7 @@ def _change_item_quantity(request):
         return basket.change_item_quantity(item_id, payload.get("order_quantity"))
     except Exception as e:
         logger.error("Change item quantity error. Payload: %s", payload)
-    raise SuspiciousOperation
+    raise SuspiciousOperation("Failed to change quantity")
 
 
 @paragon_user_logged_in
@@ -118,7 +118,7 @@ def render_basket_errors(request):
             id = int(r)
             items = basket.get_resource_page_items(id).items()
         except ValueError:
-            raise SuspiciousOperation
+            raise SuspiciousOperation("Invalid quantity")
     else:
         items = basket.get_all_items().items()
 
@@ -148,6 +148,6 @@ def remove_item(request):
         basket.remove_item(item_id)
     except Exception as e:
         logger.error("Remove item error. Payload: %s", payload)
-        raise SuspiciousOperation
+        raise SuspiciousOperation("Can't remove item")
 
     return redirect("/baskets/view_basket/")

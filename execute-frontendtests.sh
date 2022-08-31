@@ -26,6 +26,7 @@ echo "Test ${BASE_URL:?No deployment URL specified (BASE_URL)} in $WORK with tag
 
 cp -r FrontEndTests $WORK
 mkdir $WORK/work
+OLD_PWD=$PWD
 cd $WORK/work
 
 echo "### Running docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
@@ -54,5 +55,6 @@ docker run \
 PASSED=$?
 echo "Status of tests: $PASSED"
 
+cd $OLD_PWD
 
 exit $PASSED
