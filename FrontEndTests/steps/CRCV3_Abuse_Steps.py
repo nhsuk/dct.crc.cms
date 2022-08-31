@@ -14,21 +14,24 @@ from pages.CRCV3_Abuse_Page import CRCV3AbusePage
 def bad_reset_1(context):
     context.page = CRCV3AbusePage(context.browser, context.logger)
     context.page.open_page(context.url + "/password-set?q=xxx")
-    context.page.showing_400 ()
+    context.page.showing_400()
 
 
 @Step("I attempted password reset with a missing user token")
 def bad_reset_2(context):
     context.page = CRCV3AbusePage(context.browser, context.logger)
     context.page.open_page(context.url + "/password-set")
-    context.page.showing_400 ()
+    context.page.showing_400()
 
 
 @Step("I navigate to Guide to Bottle Feeding page")
 # This and dependent steps rely on the existence of a Bottle Feeding Leaflet resource page
-def add_to_basket (context):
+def add_to_basket(context):
     context.page = CRCV3AbusePage(context.browser, context.logger)
-    context.page.open_page(context.url + "/campaigns/start4life/bottle-feeding-leaflet/")
+    context.page.open_page(
+        context.url + "/campaigns/start4life/bottle-feeding-leaflet/"
+    )
+
 
 SUBMIT_AUTOMATICALLY_SCRIPT = """
 const form = document.querySelector (arguments[0]);
@@ -58,15 +61,16 @@ function sendData() {
 sendData ();
 """
 
+
 @Step("I attempt to submit an invalid SKU")
-def bad_sku (context):
+def bad_sku(context):
     sku_input = context.page.driver.find_element(By.XPATH, "//input[@name='sku']")
     # Set input to a value we can't enter with the UI
     context.page.driver.execute_script("arguments[0].value='xxx';", sku_input)
-    context.page.driver.find_element(By.XPATH, "//input[@name='order_quantity']").send_keys("1")
+    context.page.driver.find_element(
+        By.XPATH, "//input[@name='order_quantity']"
+    ).send_keys("1")
     result = context.page.driver.execute_async_script(
-        SUBMIT_AUTOMATICALLY_SCRIPT,
-        "form[data-title='Guide to bottle feeding']"
+        SUBMIT_AUTOMATICALLY_SCRIPT, "form[data-title='Guide to bottle feeding']"
     )
     assert result == 400, "Page returned %s not 400" % (result,)
-
