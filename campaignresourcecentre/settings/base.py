@@ -623,6 +623,7 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
 # https://docs.wagtail.io/en/stable/advanced_topics/documents/custom_document_model.html
 WAGTAILDOCS_DOCUMENT_MODEL = "documents.CustomDocument"
 
+WAGTAILDOCS_SERVE_METHOD = "serve_view"
 
 PASSWORD_REQUIRED_TEMPLATE = "wagtail/password_required.html"
 
