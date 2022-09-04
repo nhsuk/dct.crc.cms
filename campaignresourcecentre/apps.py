@@ -29,6 +29,7 @@ class CRCV3Config(AppConfig):
                 )
             logger.info("Cache: %s" % settings.CACHES)
             logger.info("File storage: %s", settings.DEFAULT_FILE_STORAGE)
+            logger.info("Doc File storage: %s", settings.DOC_STORAGE_CLASS)
             logger.info("Search storage: %s", settings.SEARCH_STORAGE_CLASS)
             logger.info("Updating Azure search: %s", settings.AZURE_SEARCH_UPDATE)
             # If using runserver we must force CONN_MAX_AGE to zero or
