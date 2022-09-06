@@ -29,7 +29,17 @@ This requires only an install of VSCode, Docker Desktop and the Remote Container
 Your clone of the CRcv3 repository will contain a .devcontainer folder. VS Code will notice this on opening the folder and offer you the option to
 open the folder in a dev container. Take this option.
 
+Building the dev container for the first time will take several minutes. Once it has been created it will automatically be restarted without rebuilding when you open the folder with VS Code. The container will have its own database which persists until you rebuild the devcontainer.
+
 Continue your development in a terminal window (or windows) you can open in the running devcontainer using the VSCode Terminal menu.
+
+You will likely want to start by cloning the database of an existing CRC deployment, e.g. with `fab sync-db staging`. This requires the Azure CLI (which is
+pre-installed in the container) to be upgraded with extra functionality. You will be advised how to do this by the Azure messages. You may need to use the device code mode of login as the temporary server run up by Azure CLI for the login does not have its port exported from the container to localhost where the browser dialogue occurs.
+
+The dev container has the same pre-commit git hooks as used in the build pipeline, you should see them invoked if you use the git functionality built into the VS Code UI or if you use git commands in the terminal window. The Python tools poetry and black are also available to use through the CLI, as are the Docker and Kubectl CLIs.
+
+NB: gitleaks is installed using a binary build which assumes an x64 architecture for the host machine. The devcontainer will require some adaptation to be usable
+in both x64 and e.g. ARM hosts, for this and likely other reasons.
 
 ## Old school
 
