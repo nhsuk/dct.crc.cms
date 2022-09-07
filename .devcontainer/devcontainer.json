@@ -49,5 +49,6 @@
 		"docker-in-docker": "latest",
 		"git": "latest",
 		"azure-cli": "latest"
-	}
+	},
+	"postCreateCommand": "bash .devcontainer/postCreateCommand.sh"
 }
