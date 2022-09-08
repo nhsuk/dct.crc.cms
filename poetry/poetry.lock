@@ -1611,7 +1611,7 @@ testing = ["Jinja2 (>=3.0,<3.1)", "Unidecode (>=0.04.14,<2.0)", "azure-mgmt-cdn 
 [[package]]
 name = "wagtail-2fa"
 version = "1.5.0"
-description = ""
+description = "Two factor authentication for Wagtail"
 category = "main"
 optional = false
 python-versions = ">=3.7"
