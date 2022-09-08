@@ -86,7 +86,7 @@ private_urlpatterns = [
     path(
         "baskets/render_remove_item/",
         basket_views.render_remove_item,
-        name="render_remove_item"
+        name="render_remove_item",
     ),
     path("baskets/view_basket/", basket_views.view_basket, name="view_basket"),
     path("orders/place_order/", orders_views.place_order, name="place_order"),
