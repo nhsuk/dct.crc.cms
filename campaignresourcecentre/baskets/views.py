@@ -141,6 +141,13 @@ def render_basket_errors(request):
 @paragon_user_logged_in
 @require_http_methods(["POST"])
 def remove_item(request):
+    _remove_item(request)
+    return redirect("/baskets/view_basket/")
+
+
+@paragon_user_logged_in
+@require_http_methods(["POST"])
+def _remove_item(request):
     basket = Basket(request.session)
     payload = request.POST
     try:
@@ -150,4 +157,17 @@ def remove_item(request):
         logger.error("Remove item error. Payload: %s", payload)
         raise SuspiciousOperation
 
-    return redirect("/baskets/view_basket/")
+
+@paragon_user_logged_in
+@require_http_methods(["POST"])
+def render_remove_item(request):
+    _remove_item(request)
+    basket = Basket(request.session)
+    items = basket.get_all_items().items()
+    return render(
+        request,
+        "molecules/baskets/basket_checkout.html",
+        {
+            "items": items,
+        },
+    )

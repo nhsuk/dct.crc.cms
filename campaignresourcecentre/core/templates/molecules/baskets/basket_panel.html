@@ -1,0 +1,28 @@
+<div class="govuk-grid-column-two-thirds" id="resource-{{ item.id }}">
+    <div class="resource-panel">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+                <div class="left-panel">
+                    <img src="{{ item.item_image_url }}" alt="{% if item.image_alt_text %}{{ item.image_alt_text }}{% endif %}">
+                </div>
+            </div>
+            <div class="govuk-grid-column-two-thirds order-info-panel download">
+                <div>
+                    <h2 class="govuk-!-font-size-24" id="id-{{ item.id }}"><a href="{{ item.item_url }}">{{ item.title }}</a></h2>
+                    <p class="govuk-!-font-size-16 max-order govuk-!-padding-top-2">Maximum order quantity: {{ item.max_quantity }}</p>
+                    <hr>
+                </div>
+                {% include 'molecules/baskets/basket.html' %}
+                <form id="remove_item-{{ item.id }}" action="/baskets/remove_item/" method="POST" aria-label="Remove from basket" onsubmit="return basketRemove(this.id)">
+                    {% csrf_token %}
+                    <fieldset class="govuk-fieldset">
+                        <div class="govuk-form-group govuk-!-padding-top-6">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button name="add-to-basket" class="link-only" aria-describedby="id-{{ item.id }}">Remove from basket</button>
+                        </div>
+                    </fieldset>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+<div id="basket-checkout">
+    {% if items %}
+        <div class="govuk-grid-column-two-thirds govuk-!-padding-bottom-6">
+            <p><a href="/orders/address/edit/" class="govuk-button primary-button" role="button" id="proceed-to-checkout">Proceed to checkout</a></p>
+        </div>
+    {% else %}
+        <div class="govuk-grid-column-full govuk-!-padding-bottom-6">
+            <p>Your basket is currently empty!</p>
+        </div>
+    {% endif %}
+</div>
