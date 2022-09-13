@@ -2,11 +2,12 @@
 Feature: CRCV3 Main Page  - NHSUK CRC Website
 
   @CRCV3-001
-  Scenario: open CRCV3 site and verify page loaded successfully
+  Scenario: open CRCV3 site and verify resources in campaigns tab
     Given I loaded CRCV3 site to load the home page
-    Then  Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
+    When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
+    Then Verify list of campaigns listed in campaigns tab and have H3
 
-  @CRCV3-002 @Smoke
+  @CRCV3-002
   Scenario Outline: open CRCV3 site and verify email field validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -22,7 +23,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-003 @Smoke
+  @CRCV3-003
   Scenario: open CRCV3 site and login with email and password
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -200,3 +201,26 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When I browsed to Better Health Local Authority Tier 2 Adult Weight Management Programme resource campaign
     Then Verify Campaign details for "Better_Health_Local_Authority_Tier_2"
     Then Verify "Better_Health_Local_Authority_Tier_2" Resources
+
+  @CRCV3-020
+  Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
+    Given I loaded CRCV3 site to load the home page
+    When verify "<sort_by>" Newest and oldest
+      Examples:
+      |sort_by      |
+      |Newest       |
+      |Oldest       |
+    Then I Click on Filter by topic
+
+  @CRCV3-021
+  Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
+    Given I loaded CRCV3 site to load the home page
+    When  I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
+    Then click on resources tab and verify the searches
+    Then select any resource and add to basket
+    Then click on basket to proceed to checkout
+    Then enter delivery address and click review order
+    Then Place order and verify confirmation

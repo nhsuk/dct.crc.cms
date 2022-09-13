@@ -45,6 +45,21 @@ def CRCV3_Mainpage_labels(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.CRCV3_Mainpage_labels()
 
+
+@Step("Verify list of campaigns listed in campaigns tab and have H3")
+def CRCV3_Campaigns_list_h3(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    Campaigns_list = context.support_page.CRCV3_Campaigns_list_h3()
+    # i = int
+    # i = 0
+    for list in Campaigns_list:
+        h3 = list.split("\n")[0]
+        print(h3)
+        # url = context.get_url(h3)
+        context.support_page.click_h3(h3)
+        # i= i+1
+        # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
+
     # Verify message prompts for get support when no country selected
 
 
@@ -342,6 +357,54 @@ def Cervical_screening_link(context):
 def Cervical_screening_link(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.Latest_Updates_links("Better_Health_Local_Authority_Tier_2")
+
+
+@Step('verify "{sort_by}" Newest and oldest')
+def sort_by(context, sort_by):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.campaigns_tab_click()
+    context.support_page.Sortby(sort_by)
+
+
+@Step("I Click on Filter by topic")
+def Filter_by_topic(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    # context.support_page.campaigns_tab_click()
+    filter_by_topics_list = context.support_page.return_filter_by_topics_list()
+    for list in filter_by_topics_list:
+        context.support_page.verify_campaigns_page(list)
+
+
+@Step("click on resources tab and verify the searches")
+def resource_tab(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.click_resource()
+
+
+@Step("select any resource and add to basket")
+def select_resource(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.select_resource()
+
+
+@Step("click on basket to proceed to checkout")
+def proceed_to_checkout(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.Proceed_checout()
+
+
+@Step("enter delivery address and click review order")
+def add_delivery_address(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.delivery_addess()
+    context.support_page.click_review_order()
+
+
+@Step("Place order and verify confirmation")
+def place_order(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.click_place_order()
+    context.support_page.order_confirmation()
 
 
 def Close_window(context, option):
