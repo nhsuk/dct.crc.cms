@@ -7,7 +7,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
 
-  @CRCV3-002 @Smoke
+  @CRCV3-002
   Scenario Outline: open CRCV3 site and verify email field validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -23,7 +23,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-003 @Prabhu
+  @CRCV3-003
   Scenario: open CRCV3 site and login with email and password
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -202,7 +202,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Verify Campaign details for "Better_Health_Local_Authority_Tier_2"
     Then Verify "Better_Health_Local_Authority_Tier_2" Resources
 
-  @CRCV3-020 @Prabhu
+  @CRCV3-020
   Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
@@ -212,7 +212,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       |Oldest       |
     Then I Click on Filter by topic
 
-  @CRCV3-021 @Prabhu
+  @CRCV3-021
   Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
