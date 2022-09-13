@@ -461,6 +461,34 @@ class CRCV3MainPage(BasePage):
     register_invalid_error_problem_list = PageElement(
         By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']//li"
     )
+    filter_by_topics_list = PageElement(
+        By.XPATH, "//div[@class='campaign-filters']/ul/li"
+    )
+    sort = PageElement(By.ID, "sort")
+    order_confirmation_message = PageElement(
+        By.XPATH, "//h1[text()='Your order has been placed']"
+    )
+    review_order = PageElement(By.XPATH, "//button[text()='Review order']")
+    place_order = PageElement(By.NAME, "place-order")
+    click_resource_tab = PageElement(By.LINK_TEXT, "Resources")
+    Resource_Search_label = PageElement(By.XPATH, "//h1[text()='Search']")
+    select_resource_add = PageElement(
+        By.XPATH, "//h3[text()='Food Scanner app posters']"
+    )
+    A4_Poster = PageElement(By.XPATH, "//button[text()='Add to basket']")
+    Add_to_Basket = PageElement(By.XPATH, "//button[text()='Add to basket']")
+    A4_poster_resource = PageElement(
+        By.XPATH, "//h3[text()='A4 poster – ready to use']"
+    )
+    basket = PageElement(By.XPATH, "(//a[@href='/baskets/view_basket ']//span)[2]")
+    order_quantity = PageElement(By.ID, "resource-BHCHO-NUT2")
+    Proceed_to_checout = PageElement(By.ID, "proceed-to-checkout")
+    full_name = PageElement(By.ID, "id_Address1")
+    address = PageElement(By.ID, "id_Address2")
+    town = PageElement(By.ID, "id_Address4")
+    postcode = PageElement(By.ID, "id_Address5")
+    review_order = PageElement(By.XPATH, "//button[text()='Review order']")
+    place_order = PageElement(By.NAME, "place-order")
 
     def CRCV3_Campaigns_list_h3(self):
         list_elements = self.find.elements(self.Campaigns_list)
@@ -469,8 +497,26 @@ class CRCV3MainPage(BasePage):
             elements.append(element.text)
         return elements
 
+    def click_h3(self, text):
+        # right_click_Text_link(self, link)
+        Campaigns_link = f"//h3[text()='{text}']"
+        # Element = "//h3[text()=text]"
+        x_path = PageElement(By.XPATH, Campaigns_link)
+        self.interrogate.is_element_visible_and_contains_text(x_path, text)
+        # x_path = f'.//a[@href='/campaigns/?topic=list&sort=newest']
+        # self.interact.click_element(x_path)
+        # sleep(5)
+        # self.driver.back()
+
     def return_empty_register_errors_link_url(self):
         list_elements = self.find.elements(self.register_empty_error_problem_list)
+        elements = []
+        for element in list_elements:
+            elements.append(element.text)
+        return elements
+
+    def return_filter_by_topics_list(self):
+        list_elements = self.find.elements(self.filter_by_topics_list)
         elements = []
         for element in list_elements:
             elements.append(element.text)
@@ -483,12 +529,119 @@ class CRCV3MainPage(BasePage):
             elements.append(element.text)
         return elements
 
+    def return_filter_by_topics_list(self):
+        list_elements = self.find.elements(self.filter_by_topics_list)
+        elements = []
+        for element in list_elements:
+            elements.append(element.text)
+        return elements
+
+    def return_invalid_register_errors_link_url(self):
+        list_elements = self.find.elements(self.register_invalid_error_problem_list)
+        elements = []
+        for element in list_elements:
+            elements.append(element.text)
+        return elements
+
+    def verify_campaigns_page(self, list):
+        x_path = PageElement(By.LINK_TEXT, list)
+        # x_path = f'.//a[@href='/campaigns/?topic=list&sort=newest']
+        self.find.element(x_path).click()
+        sleep(5)
+        Campaigns_list = self.CRCV3_Campaigns_list_h3()
+        # i = int
+        # i = 0
+        for list in Campaigns_list:
+            h3 = list.split("\n")[0]
+            print(h3)
+            # url = context.get_url(h3)
+            self.click_h3(h3)
+            # context.support_page.click_h3(h3)
+        return
+
+        # def click_h3(self, text):
+        #     # right_click_Text_link(self, link)
+        #     link = f'"{text}"'
+        #     # // h3[text() = 'Better Health Food Scanner App']
+        #     Element = PageElement(By.XPATH, "//h3[text() ='"' + link + '"']")
+        #     self.interact.click_element(Element)
+        #     self.driver.back()
+
+    def click_resource(self):
+        self.interact.click_element(self.click_resource_tab)
+        assert_that(
+            self.interrogate.is_image_visible_by_checking_src(
+                self.Resource_Search_label
+            ),
+            equal_to(True),
+            "Search",
+        )
+
+    def select_resource(self):
+        self.interact.click_element(self.select_resource_add)
+        assert_that(
+            self.interrogate.get_attribute(self.A4_poster_resource, "innerHTML"),
+            equal_to("A4 poster – ready to use"),
+            "A4 Poster title is not displayed",
+        )
+        self.interact.click_element(self.Add_to_Basket)
+        sleep(5)
+
+    def Proceed_checout(self):
+        self.interact.click_element(self.basket)
+        order = self.interrogate.get_attribute(self.order_quantity, "value")
+        assert_that(order, not_none(), "order quantity is empty")
+        self.interact.click_element(self.Proceed_to_checout)
+        sleep(5)
+
+    def delivery_addess(self):
+        self.interact.send_keys(self.full_name, "Campaign Tester")
+        self.interact.send_keys(self.address, "7 Wellington Pl")
+        self.interact.send_keys(self.town, "Leeds")
+        self.interact.send_keys(self.postcode, "SL109LH")
+
+    def click_review_order(self):
+        self.interact.click_element(self.review_order)
+        sleep(5)
+
+    def click_place_order(self):
+        self.interact.click_element(self.place_order)
+        sleep(5)
+
+    def order_confirmation(self):
+        assert_that(
+            self.interrogate.get_attribute(
+                self.order_confirmation_message, "innerHTML"
+            ),
+            equal_to("Your order has been placed"),
+            "placing order message is not displayed",
+        )
+
+    def Sortby(self, sort):
+        # sort = PageElement(By.LINK_TEXT, list)
+        self.interact.click_element(self.sort)
+        if sort == "Newest":
+            self.interact.select_by_visible_text(self.sort, "Newest")
+            # self.find.element("//select[@id='sort']/option[text()='newest']").click()
+        elif sort == "Oldest":
+            self.interact.select_by_visible_text(self.sort, "Oldest")
+            # self.find.element("//select[@id='sort']/option[text()='Oldest']").click()
+        # select = self.driver.Select(find_element_by_id('fruits01'))
+
+        # select by visible text
+        # select.select_by_visible_text('Banana')
+        # self.interact.click_element(self.sort)
+
     def return_login_errors_link_url(self):
         list_elements = self.find.elements(self.Login_error_list)
         elements = []
         for element in list_elements:
             elements.append(element.text)
         return elements
+
+    def click_campaigns(self, campaigns_link):
+        self.interact.click_element(campaigns_link)
+        return
 
     def Click_PHE_Link(self):
         self.interact.click_element(self.PHE_link)
@@ -1124,6 +1277,10 @@ class CRCV3MainPage(BasePage):
             equal_to("Start4Life Breastfeeding"),
             "Start4Life Breastfeeding link not working",
         )
+
+    def campaigns_tab_click(self):
+        self.interact.click_element(self.campaigns_tab)
+        return
 
     def Help_us_help_you(self):
         self.interact.click_element(self.campaigns_tab)
