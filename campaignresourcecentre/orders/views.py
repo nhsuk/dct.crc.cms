@@ -1,7 +1,6 @@
-from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
-from django.views.decorators.http import require_http_methods
 from django.shortcuts import redirect, render
+from django.views.decorators.http import require_http_methods
 
 # Beware this exception is specific to Postgres. It presents as a Postgres error, not an integrity error
 from psycopg2.errors import UniqueViolation
@@ -13,6 +12,7 @@ from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.paragon.client import Client
 from campaignresourcecentre.paragon.exceptions import ParagonClientError
 from campaignresourcecentre.paragon_users.decorators import paragon_user_logged_in
+from campaignresourcecentre.utils.views import bad_request
 
 from .forms import DeliveryAddressForm
 
@@ -68,8 +68,7 @@ def delivery_address(request):
                 for error in PCE.args:
                     logger.error("Paragon ClientError: " + error)
                 raise
-        else:  # HTML validation checks fields are non-blank even for non-JS
-            raise SuspiciousOperation("Incomplete address")
+        # if not valid, fall through and represent the form
     else:
         delivery_address = request.session.get("DELIVERY_ADDRESS")
         f = DeliveryAddressForm(delivery_address)
@@ -85,7 +84,7 @@ def place_order(request):
     items = basket.get_all_items().values()
     # Front-end shouldn't ever route to this entry with an empty basket
     if len(items) == 0:
-        raise SuspiciousOperation
+        return bad_request(request, "Incomplete address")
     with transaction.atomic():
         try:
             osn = OrderSequenceNumber.objects.get(date=datetime.date.today())
