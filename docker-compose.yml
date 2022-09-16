@@ -105,8 +105,9 @@ services:
 
   db:
     image: postgres:12.3
-    expose:
-      - 5432
+    # Use ports rather than expose so that e.g. psql can reach the database from a dev container session
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_DB: campaignresourcecentre
       POSTGRES_USER: campaignresourcecentre
