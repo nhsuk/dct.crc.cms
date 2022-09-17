@@ -234,7 +234,6 @@ def import_data(c, database_filename):
 
 @task
 def sync_db(c, env):
-    # TODO: Add production option
     options = {
         "staging": "staging_dump",
         "integration": "integration_dump",

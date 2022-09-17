@@ -34,8 +34,6 @@ webInitializer: 'true'
 webDeployment: 'true'
 redisDeployment: 'true'
 frontendDeployment: 'true'
-  # deploymentNonRootUser: 'true'
-  # initializerNonRootUser: 'false'
 
 # Autoscale configuration. Set autoscale config only for stag and prod.
 autoscaleEnv: "int"

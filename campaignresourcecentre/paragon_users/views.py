@@ -141,7 +141,7 @@ def resend_verification(request):
         url = request.build_absolute_uri(reverse("verification"))
         send_verification(user_token, url, email, name)
     except ParagonClientError as PCE:  # noqa
-        return redirect("/")  # put an error page here? 5xx?
+        return redirect("/")
 
     return redirect("/")
 

@@ -23,7 +23,7 @@ class CampaignPageAdmin(admin.ModelAdmin):
         "has_unpublished_changes",
         "title",
         "url",
-    )  # , "azure_search_json")
+    )
 
     def azure_search_json(self, obj):
         return pretty_json(obj.get_az_item()) if obj.search_indexable else "-"
