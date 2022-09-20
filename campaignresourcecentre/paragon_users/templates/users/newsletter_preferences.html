@@ -47,7 +47,7 @@
                             <h2 class="govuk-!-font-size-24">What age groups do you work with?</h2>
                         </legend>
                         <div class="govuk-hint">Select all that apply</div>
-                        <div class="govuk-checkboxes">
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
                             {% for field in form%}
                             {% if field.field.widget.attrs|get:"data-group"  == "ages"%}
                             <div class="govuk-checkboxes__item">
@@ -68,7 +68,7 @@
                             <h2 class="govuk-!-font-size-24">What themes do you want to hear about?</h2>
                         </legend>
                         <div class="govuk-hint">Select all that apply</div>
-                        <div class="govuk-checkboxes">
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
                             {% for field in form%}
                             {% if field.field.widget.attrs|get:"data-group"  == "themes"%}
 
@@ -89,7 +89,7 @@
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                             <h2 class="govuk-!-font-size-24">What health subjects do you want to know about?</h2>
                         </legend>
-                        <div class="govuk-checkboxes">
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
                         <div class="govuk-hint">Select all that apply</div>
                             {% for field in form%}
                             {% if field.field.widget.attrs|get:"data-group"  == "subjects"%}
