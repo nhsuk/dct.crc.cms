@@ -31,4 +31,11 @@
         }
     }
 
+    /**
+     * Ensure the error list is in view if the page is refreshed
+     */
+    window.addEventListener('beforeunload', (event) => {
+        event.preventDefault();
+        errorFocus();
+    });
 </script>
