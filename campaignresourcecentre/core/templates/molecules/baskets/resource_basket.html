@@ -9,7 +9,7 @@
             <label class="govuk-label govuk-visually-hidden" for="resource-{{ resource.sku}}">
                 Order quantity
             </label>
-            {% if resource.bad_quantity %}
+            {% if resource.bad_quantity or resource.item.bad_quantity  %}
                 <p id="error-resource-{{ resource.sku }}" class="govuk-error-message">
                     {% if resource.maximum_order_quantity == 1 %}
                         {{ resource.title }}: Enter a quantity of 1
@@ -17,14 +17,14 @@
                         Enter a quantity of {{ resource.maximum_order_quantity }} or fewer
                     {% endif %}
                 </p>
-            {% elif resource.no_quantity %}
+            {% elif resource.no_quantity or resource.item.no_quantity %}
                 <p id="error-resource-{{ resource.sku }}" class="govuk-error-message">
                     {% if resource.maximum_order_quantity == 1 %}
                         {{ resource.title }}: Enter a quantity of 1 using whole numbers with no letters
                     {% else %}
                         {{ resource.title }}: Enter a quantity between 1 and {{ resource.maximum_order_quantity }} using whole numbers with no letters
                     {% endif %}
-                </p>    
+                </p> 
             {% endif %}
             <input class="govuk-input govuk-input--width-4" value="1" required type="number" name="order_quantity" min="1" max="{{ resource.maximum_order_quantity }}" aria-describedby="{{ resource.title|slugify }}" aria-label="Quantity" id="resource-{{ resource.sku }}">
             <input type="hidden" name="sku" value="{{ resource.sku }}">
