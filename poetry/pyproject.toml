@@ -38,6 +38,7 @@ django-debug-toolbar = "~3.2"
 redis = "~4.1"
 wagtail-2fa = {git = "https://github.com/Ross-Clark/wagtail-2fa.git", rev = "fa90d9d851ea6a8214e2dd04fdfba073b4dd0305"}
 urllib3 = "1.26.12"
+setuptools = "^65.3.0"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
