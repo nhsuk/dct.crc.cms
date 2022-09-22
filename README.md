@@ -199,6 +199,69 @@ T.b.a.
 
 Whichever method you use the site should now be available on the host machine at: http://127.0.0.1:8000/
 
+### Using Fabric
+
+The Fabric ("fab") program facilitates controlling your local deployment that runs under Docker Compose
+
+The synonyms for docker compose build, up and shell access have been mentioned. Here is a full list of commands:
+
+* `build`
+* `destroy`
+* `start`
+* `stop`
+* `restart` shortcut for `stop/start`
+* `sh`
+* `sh-root`
+* `npm`
+* `psql` Start an interactive psql session with local db server
+* `psql` *`command`* Execute a single psql command against the local db
+* `kill`
+* `qstart` shortcut for `kill/start/sh`
+* `delete-docker-database`
+* `upload-file` *`local_path`* *`remote_path`* `db|web|redis`
+* `download-file` *`local_path`* *`remote_path`* `db|web|redis`
+* `import-data` *`remote-path`* Import database from file on db server
+* `sync-db` `review|staging|integration` Install latest dump
+* `dellar-snapshot` *`remote-path`* Export database into file on db server
+* `delete-local-renditions`
+* `run-tests` Run unit tests
+
+#### Additional notes on application of psql
+
+##### Running with fab against local build
+
+Here fab executes psql on the database server itself, accessing its local file store.
+
+Copy a table to a local file on the database server
+(not available for cloud databases used in deployments)
+```
+fab psql "copy users_user TO '/tmp/users.csv' DELIMITER ',';"
+```
+
+The below command demonstrates how multiple SQL commands may be
+combined in one to make a transaction. This example only works (in general) because both commands are
+in one transaction and integrity checks are made at commit time. The
+users table typically has active foreign key relationships which would prevent the delete if the commands were run separately.
+
+```
+fab psql "delete from users_user; copy users_user FROM '/tmp/users.csv' DELIMITER ',';"
+```
+
+Files may be transferred between the local development environment and any of the running containers with upload-file/download-file
+
+`fab download-file /tmp/users.csv users.csv db`   
+
+##### Running psql in the web container
+
+This may be useful in two situations:
+1. interactively in a shell to use Django dbshell
+1. in a pipeline to access the Azure cloud database used by a deployment
+
+The `\copy` as opposed to `copy` is useful here because it copies to/from
+**the file system where psql is running**, i.e. the web container file system. The cloud database server's file system is not accessible so the regular copy command cannot be used:
+
+`fab psql "\copy (select * from users_user) TO /tmp/users.csv DELIMITER ',';"`
+
 ### Frontend tooling
 
 There are 2 ways to run the frontend tooling:

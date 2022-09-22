@@ -46,12 +46,16 @@ ENV PATH=$PATH:${POETRY_HOME}/bin \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     DJANGO_SETTINGS_MODULE=campaignresourcecentre.settings.production \
-    PORT=8000 
+    PORT=8000
 
 ARG BUILD_ENV
 
 # Make $BUILD_ENV available at runtime
 ENV BUILD_ENV=${BUILD_ENV}
+
+
+# Install psql
+RUN apt-get update && apt-get install -y postgresql-client
 
 # Port exposed by this container. Should default to the port used by your WSGI
 # server (Gunicorn). This is read by Dokku only. Heroku will ignore this.

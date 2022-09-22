@@ -135,20 +135,23 @@ def npm(c, command, daemonise=False):
 
 
 @task
-def psql(c):
+def psql(c, query):
     """
     Connect to the local postgres DB using psql
     """
-    subprocess.run(
-        [
-            "docker-compose",
-            "exec",
-            "db",
-            "psql",
-            f"-d{LOCAL_DATABASE_NAME}",
-            f"-U{LOCAL_DATABASE_USERNAME}",
-        ]
-    )
+
+    parameters = [
+        "docker-compose",
+        "exec",
+        "db",
+        "psql",
+        f"-d{LOCAL_DATABASE_NAME}",
+        f"-U{LOCAL_DATABASE_USERNAME}",
+    ]
+    if query:
+        parameters.append(f'-c "{query}"')
+    # Run as shell because otherwise \xxx psql commands rejected as syntax error
+    subprocess.run(" ".join(parameters), shell=True)
 
 
 @task
@@ -195,7 +198,7 @@ def delete_docker_database(c, local_database_name=LOCAL_DATABASE_NAME):
 
 @task
 def upload_file(c, local_path, remote_path, service):
-    command = "docker-compose cp {} {}:{}".format(
+    command = "docker compose cp {} {}:{}".format(
         quote(local_path), quote(service), quote(remote_path)
     )
     return local(command)
@@ -203,7 +206,7 @@ def upload_file(c, local_path, remote_path, service):
 
 @task
 def download_file(c, local_path, remote_path, service):
-    command = "docker-compose cp {}:{} {}".format(
+    command = "docker compose cp {}:{} {}".format(
         quote(service), quote(remote_path), quote(local_path)
     )
     return local(command)
