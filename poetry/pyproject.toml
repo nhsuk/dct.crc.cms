@@ -31,12 +31,13 @@ azure-storage-common = "^2.1"
 azure-core = "^1.23"
 wagtail-nhsuk-frontend = "^0.8.0"
 requests = "^2.25.1"
-instana = "1.31.1"
+instana = "1.38.0"
 django-cprofile-middleware = "1.0.5"
 django-treebeard = "4.5.1"
 django-debug-toolbar = "~3.2"
 redis = "~4.1"
 wagtail-2fa = {git = "https://github.com/Ross-Clark/wagtail-2fa.git", rev = "fa90d9d851ea6a8214e2dd04fdfba073b4dd0305"}
+urllib3 = "1.26.12"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
