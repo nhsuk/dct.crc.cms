@@ -104,7 +104,6 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
             ),
             can_download=False,
             document=make_wagtail_document("url!", self.superuser, "Title"),
-            # document_content = models.CharField(blank=True, null=True, max_length=50)
             can_order=True,
             sku="C4L301B",
             maximum_order_quantity=1000,
@@ -231,12 +230,8 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
         # This command should be idempotent, i.e. it will leave pages intact if they exist already
         self._verbosity = kwargs["verbosity"]
 
-        # try:
         self._create_pages()
-        # except:
-        #    pages = Page.objects.all ()
-        #    for p in pages:
-        #        print (p.specific_class, p)
+
         if self._verbosity > 0:
             msg = "Test pages successfully created."
             self.stdout.write(msg)

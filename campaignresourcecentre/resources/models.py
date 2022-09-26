@@ -81,8 +81,6 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             # If role is ALL, any user (including unauthenticated should be able to download)
             if self.permission_role == ResourcePage.PermissionRole.ALL:
                 return True
-            # TODO: user role is being converted to lowercase so that it can be compared to ResourcePage permission role
-            # Ideally this would happen when the user is logged in
             if user_role and (
                 user_role.lower() == self.permission_role
                 or user_role.lower() == ResourcePage.PermissionRole.UBER
@@ -176,7 +174,6 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 items.append((id, item))
         context.update(
             resources=resources,
-            # TODO: this logged_in value could be potentially removed now
             logged_in=request.session.get("ParagonUser"),
             allowed=allowed,
             taxonomy_json=json_data,

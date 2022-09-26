@@ -84,21 +84,5 @@ class StoryBlock(blocks.StreamBlock):
     accordion = AccordionBlock()
     text_with_image_stack = TextWithImageStackBlock()
 
-    # These blocks have been hidden for now as they're not present on the
-    # designs.
-    # heading = blocks.CharBlock(
-    #     form_classname="full title",
-    #     icon="title",
-    #     template="molecules/streamfield/blocks/heading_block.html",
-    # )
-    # image = ImageBlock()
-    # quote = QuoteBlock()
-    # embed = EmbedBlock()
-    # call_to_action = SnippetChooserBlock(
-    #     "utils.CallToActionSnippet",
-    #     template="molecules/streamfield/blocks/call_to_action_block.html",
-    # )
-    # document = DocumentBlock()
-
     class Meta:
         template = "molecules/streamfield/stream_block.html"

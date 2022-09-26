@@ -1,4 +1,3 @@
-import responses
 import json
 from django.test import TestCase
 
@@ -41,28 +40,3 @@ class TestAzureSearchBackend(TestCase):
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         self.assertEqual(expected, url)
-
-    # TODO Fix this test minnor issue.
-    # @responses.activate
-    # def test_search(self):
-    #    content = open(
-    #        "./campaignresourcecentre/search/test_sample_azure_response.json",
-    #        "r"
-    #    ).read()
-    #    search_value = "Resource"
-    #    fields_queryset = {"objecttype": "resource"}
-    #    facets_queryset = {"TOPIC": "SMOKING"}
-    #    sort_by = "title asc"
-    #    expected_resp = {
-    #        "search_content": json.loads(content),
-    #        "ok": True,
-    #        "code": 200
-    #    }
-    #    url = "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&orderby=content/resource/title asc" # noqa
-
-    #    responses.add(responses.GET, url, json=json.loads(content), status=200)
-    #    response = self.azure_search.azure_search(
-    #        search_value, fields_queryset, facets_queryset, sort_by
-    #    )
-
-    #    self.assertEqual(expected_resp, response)

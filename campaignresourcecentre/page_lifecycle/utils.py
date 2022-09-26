@@ -33,8 +33,6 @@ def get_pages_for_review_notifications():
     """Fetch the page lifecycle pages that have a `next_review` date of today."""
     from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 
-    # from .models import PageLifecycleMixin  # circular import (does not work in tests)
-
     today = datetime.date.today()
     pages = []
     for m in PageLifecycleMixin.__subclasses__():
@@ -77,5 +75,5 @@ def send_page_review_notifications(
                     page.title,
                     reverse("wagtailadmin_pages:edit", args=(page.id,)),
                 )
-            except Exception as e:  # be more specific when email implemented
+            except Exception as e:
                 logger.exception(str(e))

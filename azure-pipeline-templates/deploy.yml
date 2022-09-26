@@ -139,7 +139,6 @@ steps:
       kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
       command: 'upgrade'
       chartType: 'Name'
-        #chartPath: 'helm/dct-sharable-helm-chart-1.0.0.tgz'
       namespace: $(namespace)
       releaseName: $(appName)
       version: $(buildId),

@@ -8,11 +8,3 @@ steps:
     docker-compose -f ./docker-compose-test.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test
   displayName: 'Run Coverage Test'
   enabled: true
-# Publish the test coverage report
-#- task: PublishCodeCoverageResults@1
-#  inputs:
-#    codeCoverageTool: Cobertura
-#    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/**/coverage.xml'
-#    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
-#  displayName: 'Publish Test Report'
-#  enabled: true

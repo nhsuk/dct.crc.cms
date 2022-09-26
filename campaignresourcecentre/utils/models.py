@@ -222,8 +222,6 @@ class CallToActionSnippet(models.Model):
     panels = [
         FieldPanel("title"),
         FieldPanel("summary"),
-        # Image hidden for now as not used.
-        # ImageChooserPanel("image"),
         StreamFieldPanel("link"),
     ]
 

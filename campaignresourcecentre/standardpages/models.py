@@ -34,8 +34,6 @@ class InformationPage(BasePage):
         FieldPanel("introduction"),
         StreamFieldPanel("body"),
         StreamFieldPanel("section"),
-        # Hide in admin as not currently required
-        # InlinePanel("related_pages", label="Related pages"),
     ]
 
 

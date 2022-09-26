@@ -255,9 +255,6 @@ class CampaignUpdateBase(LinkFields, Orderable):
         abstract = True
 
     def clean(self):
-        # TODO: Change validation so errors aren't raised one at a time. This
-        # can be done using a `defaultdict` and passing that to `ValidationError`.
-        # apply parent validation first
         super().clean()
         if self.link_url and not self.image:
             raise ValidationError(
