@@ -52,6 +52,7 @@ steps:
           DB_PASS: $(dbPass)
           DB_USER: $(dbUser)
           AZURE_CONTAINER: $(storageAccountContainer)
+          AZURE_DOC_CONTAINER: $(docStorageAccountContainer)
           AZURE_CUSTOM_DOMAIN: $(azureCustomDomain)
           AZURE_ACCOUNT_NAME: $(storageAccountName)
           AZURE_ACCOUNT_KEY: $(storageAccountKey)
