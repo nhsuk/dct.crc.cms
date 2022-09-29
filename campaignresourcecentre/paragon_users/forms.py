@@ -70,6 +70,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "given-name",
+                "aria-describedby": "first_name-error",
             }
         ),
         required=True,
@@ -84,6 +85,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "family-name",
+                "aria-describedby": "last_name-error",
             }
         ),
         required=True,
@@ -99,6 +101,7 @@ class RegisterForm(forms.Form):
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
                 "autocomplete": "organization-title",
+                "aria-describedby": "job_title-error",
             },
             choices=JOB_CHOICES,
         ),
@@ -108,7 +111,12 @@ class RegisterForm(forms.Form):
 
     area_work = forms.CharField(
         widget=forms.Select(
-            attrs={"class": "govuk-select", "disabled": False}, choices=HEALTH_CHOICES
+            attrs={
+                "class": "govuk-select",
+                "disabled": False,
+                "aria-describedby": "area_work-error",
+            },
+            choices=HEALTH_CHOICES,
         ),
         required=False,
         error_messages={"required": "Select an area of work"},
@@ -116,7 +124,11 @@ class RegisterForm(forms.Form):
 
     organisation = forms.CharField(
         widget=forms.TextInput(
-            attrs={"class": "govuk-input", "autocomplete": "organization"}
+            attrs={
+                "class": "govuk-input",
+                "autocomplete": "organization",
+                "aria-describedby": "organisation_name-error",
+            }
         ),
         required=False,
         error_messages={"required": "Enter your organisation name"},
@@ -132,6 +144,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-input--width-10",
                 "autocomplete": "postal-code",
+                "aria-describedby": "postcode-error",
             }
         ),
         required=True,
@@ -144,6 +157,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
+                "aria-describedby": "email-error",
             }
         ),
         validators=[EmailValidator],
@@ -155,6 +169,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-input--width-10",
                 "autocomplete": "current-password",
+                "aria-describedby": "password-error",
             }
         ),
         validators=[validate_password_form],
@@ -162,7 +177,12 @@ class RegisterForm(forms.Form):
     )
 
     terms = forms.BooleanField(
-        widget=forms.CheckboxInput(attrs={"class": "govuk-checkboxes__input"}),
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "aria-describedby": "terms-error",
+            }
+        ),
         error_messages={"required": "Please accept the terms and conditions"},
         required=True,
     )
