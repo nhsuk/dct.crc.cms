@@ -320,13 +320,9 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     SEARCH_STORAGE_CLASS = (
         "campaignresourcecentre.custom_storages.custom_azure.AzureSearchStorage"
     )
-    DOC_STORAGE_CLASS = (
-        "campaignresourcecentre.custom_storages.custom_azure.AzureDocStorage"
-    )
     AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
     AZURE_ACCOUNT_KEY = env["AZURE_ACCOUNT_KEY"]
     AZURE_SEARCH_CONTAINER = env["AZURE_SEARCH_CONTAINER"]
-    AZURE_DOC_CONTAINER = env["AZURE_DOC_CONTAINER"]
     AZURE_SEARCH_ACCESS_KEY = env["AZURE_SEARCH_ACCESS_KEY"]
     AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
     # AZURE_SEARCH_UPDATE determines whether search resources are indexed as updates are made
@@ -334,7 +330,6 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    DOC_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
     AZURE_SEARCH_UPDATE = False
 
@@ -628,7 +623,6 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
 # https://docs.wagtail.io/en/stable/advanced_topics/documents/custom_document_model.html
 WAGTAILDOCS_DOCUMENT_MODEL = "documents.CustomDocument"
 
-WAGTAILDOCS_SERVE_METHOD = "redirect"
 
 PASSWORD_REQUIRED_TEMPLATE = "wagtail/password_required.html"
 
