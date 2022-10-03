@@ -222,11 +222,17 @@
             const hintJS = document.getElementById("no-js");
             const elementLabel = document.getElementById("WorkAreaLabel");
             const orgElementLabel = document.getElementById("organisationLabel");
+            const inputElement = document.getElementById("id_area_work");
+            const orgElement = document.getElementById("organisation");
+            const orgInput = document.getElementById("id_organisation");
             element.classList.add("govuk-visually-hidden");
             hint.classList.add("govuk-visually-hidden");
             hintJS.classList.add("govuk-visually-hidden");
             elementLabel.setAttribute("aria-hidden","true");
+            inputElement.setAttribute("aria-hidden","true");
             orgElementLabel.setAttribute("aria-hidden","false");
+            orgInput.setAttribute("aria-hidden","false");
+            inputElement.setAttribute("disabled","true");
         }, false);
 
         function hideSelect() {
@@ -236,23 +242,30 @@
             const jobElement = document.getElementById("id_job_title").value;
             const elementLabel = document.getElementById("WorkAreaLabel");
             const orgElementLabel = document.getElementById("organisationLabel");
+            const orgInput = document.getElementById("id_organisation");
             
             if (jobElement === 'health') {
                 element.classList.remove("govuk-visually-hidden");
-                elementLabel.setAttribute("aria-hidden","true");
+                elementLabel.setAttribute("aria-hidden","false");
+                inputElement.setAttribute("aria-hidden","false");
                 inputElement.disabled = false;
             } else {
                 element.classList.add("govuk-visually-hidden");
+                elementLabel.setAttribute("aria-hidden","true");
+                inputElement.setAttribute("aria-hidden","true");
                 inputElement.disabled = true;
-                elementLabel.setAttribute("aria-hidden","false");
             }
             
             if (jobElement === 'student') {
                 orgElement.classList.add("govuk-visually-hidden");
-                orgElementLabel.setAttribute("aria-hidden","false");
+                orgElementLabel.setAttribute("aria-hidden","true");
+                orgInput.setAttribute("aria-hidden","true");
+                orgInput.disabled = true;
             } else {
                 orgElement.classList.remove("govuk-visually-hidden");
-                orgElementLabel.setAttribute("aria-hidden","true");
+                orgElementLabel.setAttribute("aria-hidden","false");
+                orgInput.setAttribute("aria-hidden","false");
+                orgInput.disabled = false;
             }
         }
     </script>
