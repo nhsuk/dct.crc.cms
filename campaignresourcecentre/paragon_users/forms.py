@@ -113,7 +113,6 @@ class RegisterForm(forms.Form):
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
-                "disabled": False,
                 "aria-describedby": "area_work-error",
             },
             choices=HEALTH_CHOICES,
