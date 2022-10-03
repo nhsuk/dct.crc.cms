@@ -99,7 +99,7 @@
                         </div>
 
                         <div id="WorkArea" class="govuk-form-group {% if form.area_work.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
-                            <label class="govuk-label" for="{{ form.area_work.id_for_label }}">Area of work <span class="govuk-hint" id="non-js">If selected job function is "Health", choose an area of work. Otherwise leave blank.</span></label>
+                            <label id="WorkAreaLabel" class="govuk-label" for="{{ form.area_work.id_for_label }}">Area of work <span class="govuk-hint" id="non-js">If selected job function is "Health", choose an area of work. Otherwise leave blank.</span></label>
                             {% if form.area_work.errors %}
                                 <p id="area_work-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
@@ -112,7 +112,7 @@
                         </div>
 
                         <div id="organisation" class="govuk-form-group {% if form.organisation.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
-                            <label class="govuk-label" for="{{ form.organisation.id_for_label }}">Organisation name <span class="govuk-hint" id="no-js">Leave blank if student, unemployed or retired</span></label>
+                            <label id="organisationLabel" class="govuk-label" for="{{ form.organisation.id_for_label }}">Organisation name <span class="govuk-hint" id="no-js">Leave blank if student, unemployed or retired</span></label>
                             {% if form.organisation.errors %}
                                 <p id="organisation_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
@@ -220,9 +220,13 @@
             const element = document.getElementById("WorkArea");
             const hint = document.getElementById("non-js");
             const hintJS = document.getElementById("no-js");
+            const elementLabel = document.getElementById("WorkAreaLabel");
+            const orgElementLabel = document.getElementById("organisationLabel");
             element.classList.add("govuk-visually-hidden");
             hint.classList.add("govuk-visually-hidden");
             hintJS.classList.add("govuk-visually-hidden");
+            elementLabel.setAttribute("aria-hidden","true");
+            orgElementLabel.setAttribute("aria-hidden","false");
         }, false);
 
         function hideSelect() {
@@ -230,19 +234,25 @@
             const inputElement = document.getElementById("id_area_work");
             const orgElement = document.getElementById("organisation");
             const jobElement = document.getElementById("id_job_title").value;
+            const elementLabel = document.getElementById("WorkAreaLabel");
+            const orgElementLabel = document.getElementById("organisationLabel");
             
             if (jobElement === 'health') {
                 element.classList.remove("govuk-visually-hidden");
+                elementLabel.setAttribute("aria-hidden","true");
                 inputElement.disabled = false;
             } else {
                 element.classList.add("govuk-visually-hidden");
                 inputElement.disabled = true;
+                elementLabel.setAttribute("aria-hidden","false");
             }
             
             if (jobElement === 'student') {
                 orgElement.classList.add("govuk-visually-hidden");
+                orgElementLabel.setAttribute("aria-hidden","false");
             } else {
                 orgElement.classList.remove("govuk-visually-hidden");
+                orgElementLabel.setAttribute("aria-hidden","true");
             }
         }
     </script>
