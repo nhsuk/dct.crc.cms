@@ -28,7 +28,7 @@ steps:
         requestsmemory: $(requestsmemory)
         limitsmemory: $(limitsmemory)
         limitscpu: $(limitscpu)
-        autoscaleEnv: 'int'
+        autoscaleEnv: $(autoscaleEnv)
         devEnv: $(devEnv)
         appEnv: $(appEnv)
         railsEnv: $(railsEnv)
