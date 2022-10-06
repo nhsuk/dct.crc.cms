@@ -5,11 +5,11 @@
     <div class="govuk-grid-column">
         <div class="num-results">
             {% if count == 0 %}
-                <p>{{ count }} results</p>
+                <p aria-live="polite"><span class="govuk-visually-hidden">Search results have been filtered - </span>{{ count }} results <span class="govuk-visually-hidden">available</span></p>
             {% elif count < 2 %}
-                <p>{{ count }} result</p>
+                <p aria-live="polite"><span class="govuk-visually-hidden">Search results have been filtered - </span>{{ count }} result <span class="govuk-visually-hidden">available</span></p>
             {% else %}
-                <p>{{ count }} results</p>
+                <p aria-live="polite"><span class="govuk-visually-hidden">Search results have been filtered - </span>{{ count }} results <span class="govuk-visually-hidden">available</span></p>
             {% endif %}
         </div>
     </div>
