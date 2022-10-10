@@ -7,31 +7,30 @@
         border: 0;
         box-shadow: 0 4px 0 0 $border-bottom;
 
-        a {
+        .nhsuk-card__content {
+            padding: 10px 0 0 0;
+
+            h3 {
+                font-weight: 500;
+                margin-bottom: 10px;
+            }
+        }
+
+        &:focus {
+            background-color: transparent;
+        }
+
+
+        @media (max-width: 40.0525em) {
+            .image {
+                float: left;
+                width: 50%;
+            }
+
             .nhsuk-card__content {
-                padding: 10px 0 0 0;
-    
-                h3 {
-                    font-weight: 500;
-                    margin-bottom: 10px;
-                }
-            }
-
-            &:focus {
-                background-color: transparent;
-            }
-
-            @media (max-width: 40.0525em) {
-                .image {
-                    float: left;
-                    width: 50%;
-                }
-
-                .nhsuk-card__content {
-                    float: left;
-                    width: 50%;
-                    padding: 0 0 0 12px;
-                }
+                float: left;
+                width: 50%;
+                padding: 0 0 0 12px;
             }
         }
     }

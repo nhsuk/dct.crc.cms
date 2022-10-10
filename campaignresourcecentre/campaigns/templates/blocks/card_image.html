@@ -10,9 +10,7 @@
 {% image content_image width-1534 as seven_image %}
 
 <div class="nhsuk-card image-card {% if url or internal_page %} nhsuk-card--clickable{% endif %} {% if feature_heading %}nhsuk-card--feature {% endif %}">
-  {% if url or internal_page %}
-    <a class="image-card" href="{% if url %}{{ url }}{% else %}{{ internal_page.url }}{% endif %}">
-  {% endif %}
+  
     {% if content_image %}
       <img
         class="nhsuk-card__img"
@@ -42,10 +40,11 @@
               {% if heading_size == 'small' %} nhsuk-heading-s{% endif %}
               {% if heading_size == 'medium' %} nhsuk-heading-m{% endif %}
               {% if heading_size == 'large' %} nhsuk-heading-l{% endif %}
-              nhsuk-card__link
             "
           >
+            <a href="{% if url %}{{ url }}{% else %}{{ internal_page.url }}{% endif %}" class="nhsuk-card__link">
               {{ heading }}
+            </a>
           </h{{ heading_level }}>
         {% elif feature_heading %}
           <h{{ heading_level }}
@@ -74,7 +73,4 @@
           {{ body }}
         {% endif %}
       </div>
-  {% if url or internal_page %}
-    </a>
-  {% endif %}
 </div>
