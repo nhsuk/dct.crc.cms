@@ -9,6 +9,7 @@ import DesktopSubMenu from './components/desktop-sub-menu';
 import DesktopCloseMenus from './components/desktop-close-menus';
 import SkipLink from './components/skip-link';
 import Tabs from './components/tabs';
+import Card from './components/card';
 // IE11 polyfills
 import foreachPolyfill from './polyfills/foreach-polyfill';
 import closestPolyfill from './polyfills/closest-polyfill';
@@ -70,4 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const element of document.querySelectorAll('[data-test-react]')) {
         ReactDOM.render(<TestReact greeting="boo!" />, element);
     }
+
+    Card();
 });
