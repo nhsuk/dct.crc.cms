@@ -48,6 +48,7 @@ class Client:
                 timeout=settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
             )
             failed = False
+            logger.error("---------- %s --------", self.response)
         except requests.Timeout:
             logger.error("Paragon client timed out on %s call", self.call_method)
             failed = True
@@ -148,12 +149,6 @@ class Client:
             #     "profileId": "",
             # })
 
-            logger.info(
-                f"-------------------- {json.dumps(self.response)} -------------------"
-            )
-            logger.info(
-                f"-------------------- {json.loads(self.response)} -------------------"
-            )
             # data_dump = self.response.content
             # send_report("registration", data_dump)
 
