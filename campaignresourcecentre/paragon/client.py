@@ -145,7 +145,9 @@ class Client:
             #     "profileId": "",
             # })
 
-            print(self.response.content)
+            logger.info(
+                f"-------------------- {self.response.content} -------------------"
+            )
             # data_dump = self.response.content
             # send_report("registration", data_dump)
 
