@@ -92,7 +92,11 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
+<<<<<<< HEAD
                                                     <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% type_present %}" data-userToken="{% logged_in %}" data-topics="{% topics_present %}" data-campaign="{{ parent_title }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
+=======
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
+>>>>>>> registration reporting test
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>

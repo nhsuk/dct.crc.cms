@@ -4,11 +4,6 @@ import logging
 import requests
 
 from django.conf import settings
-<<<<<<< HEAD
-=======
-from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_data
-from .helpers.reporting import send_report
->>>>>>> registration reporting test
 from .data_classes import (
     Registration,
     User,
@@ -20,10 +15,7 @@ from .data_classes import (
 from .exceptions import ParagonClientError
 
 logger = logging.getLogger(__name__)
-
-
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ":ECDH+AES256:DH+AES256:!DH"
-
 
 class Client:
     def __init__(self):
