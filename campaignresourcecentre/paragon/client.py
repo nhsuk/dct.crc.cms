@@ -4,7 +4,8 @@ import logging
 import requests
 
 from django.conf import settings
-
+from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_data
+from .helpers.reporting import send_report
 from .data_classes import (
     Registration,
     User,
@@ -124,8 +125,30 @@ class Client:
             created_at,
         )
         self.data.update(registration.params())
+
         self.call()
         if self.response.status_code == 200:
+
+            # send off data to reporting
+            # data_dump = json.dumps({
+            #     "_id": "",
+            #     "resourceId": "",
+            #     "token": self.data.ProductToken,
+            #     "created": created_at,
+            #     "role": "",
+            #     "organisation": organisation,
+            #     "jobTitle": job_title,
+            #     "userType": "",
+            #     "longitude": get_postcode_data.get("longitude"),
+            #     "latitude": get_postcode_data.get("latitude"),
+            #     "region": get_postcode_data.get("region"),
+            #     "profileId": "",
+            # })
+
+            print(self.response.content)
+            # data_dump = self.response.content
+            # send_report("registration", data_dump)
+
             return {
                 "status": "ok",
                 "code": self.response.status_code,
@@ -290,6 +313,49 @@ class Client:
         self.data.update(order.params())
         self.call()
         if self.response.status_code == 200:
+
+            order_date = timezone.now().strftime("%Y-%m-%d")
+            user = self.get_user_profile(user_token).get("content")
+
+            # send off data to reporting
+            data_dump = json.dumps(
+                {
+                    "_id": "",
+                    "_rev": "",
+                    "id": "",
+                    "token": user_token,
+                    "postcode": user.get("ProductRegistrationVar9"),
+                    "crcordernumber": order_number,
+                    "prologordernumber": "",
+                    "orderdate": order_date,
+                    "orderstatus": "",
+                    "type": "",
+                    "CRCLineNumber": "",
+                    "ItemCode": order_items.get("item_code"),
+                    "Quantity": order_items.get("quantity"),
+                    "Status": "",
+                    "LineInfo": "",
+                    "resourceId": "",
+                    "role": "",
+                    "organisation": user.get("ProductRegistrationVar3"),
+                    "jobTitle": user.get("ProductRegistrationVar4"),
+                    "userType": user.get("ProductRegistrationVar1"),
+                    "adminCountyCode": "",
+                    "adminDistrictCode": "",
+                    "longitude": get_postcode_data.get("longitude"),
+                    "latitude": get_postcode_data.get("latitude"),
+                    "region": get_postcode_data.get("region"),
+                    "profileId": "?",
+                    "campaign": order_items.get("campaign"),
+                    "topics": "",
+                    "resourceTypes": "",
+                    "Url": order_items.get("url"),
+                    "ImageUrl": order_items.get("image_url"),
+                    "Title": order_items.get("title"),
+                }
+            )
+            # send_report("registration", data_dump)
+
             return {
                 "status": "ok",
                 "code": self.response.status_code,

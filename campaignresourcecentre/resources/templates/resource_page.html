@@ -92,7 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -127,4 +127,60 @@
         {% include "static/render_resource_basket.html" %}
     {% endblock %}
     </section>
+
+    <script>
+        const REPORTING_ENDPOINT = "{% get_django_setting "REPORTING_ENDPOINT" %}";
+        const REPORTING_QUEUE = "{% get_django_setting "REPORTING_QUEUE" %}";
+        const REPORTING_ENABLED = "{% get_django_setting "REPORTING_ENABLED" %}";
+
+        if( REPORTING_ENABLED ){
+            //perform reporting action
+            const buttons = document.getElementsByClassName("download-button");
+            for(let i=0; i<buttons.length; i++) {
+                buttons[i].addEventListener("click", function(event){
+                    event.preventDefault()
+                    
+                    // Send the API request.
+                    var href = this.getAttribute("href");
+                    var params = this.getAttribute("rel");
+                    var downloaded_at = new Date().toUTCString();
+                    var payload = {
+                        "queue": REPORTING_QUEUE,
+                        "message": params,
+                        "event": "Downloads"
+                    }
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', REPORTING_ENDPOINT, true),
+                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'),
+                    xhr.timeout = 500,
+                    (xhr.onreadystatechange = function () {
+                        // Navigate to the href when readyState is DONE (response is received or after 500 milliseconds)
+                        if (4 === xhr.readyState) {
+                            window.location.href = href
+                        }
+                    }),
+                    xhr.send(JSON.stringify(payload));
+                });
+            }
+        }
+        /*
+Download
+----------
+Admin county code
+Admin district code
+Campaign
+Job title
+Latitude
+Longitude
+Organisation
+Region
+Resource id
+Resource type
+Role
+Token
+Topics
+Ts
+User Type
+        */
+    </script>
 {% endblock %}
