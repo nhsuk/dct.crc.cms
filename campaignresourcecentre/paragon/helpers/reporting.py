@@ -7,15 +7,12 @@ logger = logging.getLogger(__name__)
 
 def send_report(event_type, params={}):
 
-    # queue = "queue={}".format(settings.REPORTING_QUEUE)
     # message = ""
-    # query_string = "queue={}&message={}".format(queue, message)
+    # query_string = "message={}".format(message)
     # url = "{}?{}".format(settings.REPORTING_ENDPOINT, query_string)
 
     url = settings.REPORTING_ENDPOINT
-    payload = json.dumps(
-        {"queue": settings.REPORTING_QUEUE, "message": params, "event": event_type}
-    )
+    payload = json.dumps({"message": params, "event": event_type})
 
     headers = {
         "Content-Type": "application/json; charset=UTF-8",

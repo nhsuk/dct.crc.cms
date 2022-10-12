@@ -130,7 +130,6 @@
 
     <script>
         const REPORTING_ENDPOINT = "{% get_django_setting "REPORTING_ENDPOINT" %}";
-        const REPORTING_QUEUE = "{% get_django_setting "REPORTING_QUEUE" %}";
         const REPORTING_ENABLED = "{% get_django_setting "REPORTING_ENABLED" %}";
 
         if( REPORTING_ENABLED ){
@@ -155,7 +154,6 @@
                     };
                     console.log("--------params---" + params + "----------");
                     var payload = {
-                        "queue": REPORTING_QUEUE,
                         "message": params,
                         "event": "download"
                     }
