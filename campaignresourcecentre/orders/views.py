@@ -13,6 +13,8 @@ from campaignresourcecentre.paragon.client import Client
 from campaignresourcecentre.paragon.exceptions import ParagonClientError
 from campaignresourcecentre.paragon_users.decorators import paragon_user_logged_in
 from campaignresourcecentre.utils.views import bad_request
+from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_data
+from campaignresourcecentre.paragon.helpers.reporting import send_report
 
 from .forms import DeliveryAddressForm
 
@@ -82,6 +84,8 @@ def place_order(request):
     paragon_client = Client()
     basket = Basket(request.session)
     items = basket.get_all_items().values()
+    address = delivery_address = request.session.get("DELIVERY_ADDRESS")
+
     # Front-end shouldn't ever route to this entry with an empty basket
     if len(items) == 0:
         return bad_request(request, "Incomplete address")
@@ -107,6 +111,39 @@ def place_order(request):
             response = paragon_client.create_order(user_token, order_number, items)
             if response["status"] == "ok":
                 basket.empty_basket()
+
+                # send off data to reporting
+                date = timezone.now().strftime("%Y-%m-%d")
+                user = self.get_user_profile(user_token).get("content")
+                postcode = delivery_address.get("Address5")
+                checkout_items = []
+
+                for item in items:
+                    checkout_item = {
+                        "ItemCode": item.get("item_code"),
+                        "Quantity": item.get("quantity"),
+                        "Url": item.get("url"),
+                        "Campaign": item.get("campaign"),
+                        "ImageUrl": item.get("image_url"),
+                        "Title": item.get("title"),
+                    }
+                    checkout_items.append(checkout_item)
+
+                data_dump = json.dumps(
+                    {
+                        "userToken": user_token,
+                        "postcode": postcode,
+                        "crcordernumber": order_number,
+                        "orderItems": checkout_item,
+                        "orderItemCount": len(checkout_item),
+                        "orderdate": date,
+                        "longitude": get_postcode_data(postcode).get("longitude"),
+                        "latitude": get_postcode_data(postcode).get("latitude"),
+                        "region": get_postcode_data(postcode).get("region"),
+                    }
+                )
+                send_report("order", data_dump)
+
                 return render(request, "thank_you.html", {"order_number": order_number})
         # Orders never seem to be rejected for their content
         except ParagonClientError as PCE:

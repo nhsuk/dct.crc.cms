@@ -26,11 +26,15 @@ def send_report(event_type, params={}):
             response = requests.post(url, headers=headers, data=payload)
             if response.ok:
                 logger.info(
-                    "Successfully sent {} report: {}".format(event_type, response)
+                    "Successfully sent reporting data for user {} : {}".format(
+                        event_type, response.content
+                    )
                 )
             else:
                 logger.info(
-                    "Error sending {} report: {}".format(event_type, response.content)
+                    "Error sending reporting data for user {} : {}".format(
+                        event_type, response.content
+                    )
                 )
         except Exception as err:
             logger.error("Exception raised : %s", err)
