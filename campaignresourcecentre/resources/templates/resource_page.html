@@ -92,15 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-<<<<<<< HEAD
-<<<<<<< HEAD
                                                     <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% type_present %}" data-userToken="{% logged_in %}" data-topics="{% topics_present %}" data-campaign="{{ parent_title }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
-=======
-                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
->>>>>>> registration reporting test
-=======
-                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% type_present %}" data-userToken="{% logged_in %}" data-topics="{% topics_present %}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
->>>>>>> reporting data collection test
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -147,25 +139,15 @@
             for(let i=0; i<buttons.length; i++) {
                 buttons[i].addEventListener("click", function(event){
                     event.preventDefault();
-<<<<<<< HEAD
 
                     // Send the API request.
                     const date = new Date();
                     let href = this.getAttribute("href");
                     let params = {
-=======
-                    
-                    console.log("--------this---" + this + "----------");
-
-                    // Send the API request.
-                    var href = this.getAttribute("href");
-                    var params = {
->>>>>>> reporting data collection test
                         "resourceId" : this.dataset.resourceId,
                         "resourceType" : this.dataset.resourceType,
                         "userToken" : this.dataset.userToken,
                         "topics" : this.dataset.topics,
-<<<<<<< HEAD
                         "campaign" : this.dataset.campaign,
                         "resourceTitle" : this.dataset.resourceTitle,
                         "date": `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
@@ -176,16 +158,6 @@
                         "payload": params,
                         "event": "download",
                         "group": "crc"
-=======
-                        "resourceTitle" : this.dataset.resourceTitle,
-                        "ts" :new Date().toUTCString()
-                    };
-                    console.log("--------params---" + params + "----------");
-                    var payload = {
-                        "queue": REPORTING_QUEUE,
-                        "message": params,
-                        "event": "download"
->>>>>>> reporting data collection test
                     }
                     let xhr = new XMLHttpRequest();
                     xhr.open('POST', REPORTING_ENDPOINT, true),
