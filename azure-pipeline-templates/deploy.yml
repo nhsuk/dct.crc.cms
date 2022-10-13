@@ -143,7 +143,7 @@ steps:
       releaseName: $(appName)
       version: $(buildId),
       chartName: dct-campaigns-helm-app-chart #$(parameters.appName)
-      arguments: '--install --repo https://digitalcampaignsstorage.blob.core.windows.net/helm/ --version 2.1.3 --create-namespace -f helm/values.yaml -f helm/extra-values.yaml --timeout 900s'
+      arguments: '--install --repo https://digitalcampaignsstorage.blob.core.windows.net/helm/ --version 2.2.2 --create-namespace -f helm/values.yaml -f helm/extra-values.yaml --timeout 900s'
   - task: KubectlInstaller@0
     inputs:
       kubectlVersion: 'latest'
