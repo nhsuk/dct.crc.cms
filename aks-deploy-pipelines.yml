@@ -122,7 +122,6 @@ stages:
       namespace: 'dct-crc-v3-review-$(sourceBranchName)-ns'
       tag: 'review-$(sourceBranchName)'
       hostUrl: 'crc-v3-review-$(sourceBranchName).nhswebsite-dev.nhs.uk'
-      hostUrlCertSecretName: 'nhsuk-haproxy-ns/campaigns-resources-stag-tls-cert'
       appName: 'crc-v3'
       devEnv: 'int'
       appEnv: 'review'
