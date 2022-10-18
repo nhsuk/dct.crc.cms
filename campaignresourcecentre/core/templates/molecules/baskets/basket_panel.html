@@ -16,6 +16,7 @@
                 <form id="remove_item-{{ item.id }}" action="/baskets/remove_item/" method="POST" aria-label="Remove from basket" onsubmit="return basketRemove(this.id)">
                     {% csrf_token %}
                     <fieldset class="govuk-fieldset">
+                        <legend class="govuk-visually-hidden">Remove item</legend>
                         <div class="govuk-form-group govuk-!-padding-top-6">
                             <input type="hidden" name="item_id" value="{{ item.id }}">
                             <button name="add-to-basket" class="link-only" aria-describedby="id-{{ item.id }}">Remove from basket</button>
