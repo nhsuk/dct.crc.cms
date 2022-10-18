@@ -82,18 +82,22 @@
             <ul class="nhsuk-grid-row nhsuk-card-group">
                 {% for resource in search_results %}
                     <li class="nhsuk-grid-column-one-third nhsuk-card-group__item">
-                        <div class="nhsuk-card image-card  nhsuk-card--clickable">
-                            <a class="image-card" href="{{ resource.url }}">
+                        <div class="nhsuk-card image-card nhsuk-card--clickable">
+                            
                                 {% if resource.image_url %}
                                     <div class="image">
                                         <img src="{{ resource.image_url }}" alt="{{ resource.image_alt }}"/>
                                     </div>
+
                                 {% endif %}
                                 <div class="nhsuk-card__content">
-                                    <h3 class="nhsuk-card__heading nhsuk-card__link govuk-!-font-size-19">{{ resource.title }}</h3>
+                                    <h3 class="nhsuk-card__heading govuk-!-font-size-19">
+                                        <a class="nhsuk-card__link" href="{{ resource.url }}">
+                                            {{ resource.title }}
+                                        </a>
+                                    </h3>
                                     <p class="govuk-!-font-size-16">{{ resource.campaign_title }}</p>
                                 </div>
-                            </a>
                         </div>
                     </li>
                 {% endfor %}

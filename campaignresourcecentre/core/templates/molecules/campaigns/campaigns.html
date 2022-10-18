@@ -6,17 +6,18 @@
             {% for campaign in campaigns %}
                 <li class="nhsuk-grid-column-one-third nhsuk-card-group__item">
                     <div class="nhsuk-card image-card  nhsuk-card--clickable ">
-                        <a class="image-card" href="{{ campaign.url }}">
+                        
                             {% if campaign.image_url %}
                             <img src="{{ campaign.image_url }}" alt="{{ campaign.image_alt }}"/>
                             {% else %}
                                 {% image campaign.image width-400 %}
                             {% endif %}
                             <div class="nhsuk-card__content ">
-                                <h3 class="nhsuk-card__heading nhsuk-card__link">{{ campaign.title }}</h3>
+                                <h3 class="nhsuk-card__heading">
+                                    <a href="{{ campaign.url }}" class="nhsuk-card__link">{{ campaign.title }}</a>
+                                </h3>
                                 {{ campaign.summary|safe }}
                             </div>
-                        </a>
                     </div>
                 </li>
             {% endfor %}
