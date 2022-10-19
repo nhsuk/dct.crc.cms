@@ -109,6 +109,7 @@
                 <form id="place_order" action="/orders/place/" method="POST" aria-label="Place order">
                     {% csrf_token %}
                     <fieldset class="govuk-fieldset">
+                        <legend class="govuk-visually-hidden">Order</legend>
                         <div class="govuk-form-group">
                             <button name="place-order" class="govuk-button primary-button" {% if items_in_basket == 0 %}disabled="yes"{% endif %}>Place order</button>
                         </div>
