@@ -19,7 +19,7 @@ RUN npm run build:prod
 FROM python:3.10-buster as backend
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.1.13
+ARG POETRY_VERSION=1.2.2
 
 RUN useradd campaignresourcecentre -m && mkdir /app && chown campaignresourcecentre /app
 
