@@ -313,13 +313,6 @@ class AdminPasswordSetForm(PasswordSetForm):
     password_check = None
 
 
-def checked_value(newsdict: dict, name: str):
-    if newsdict.__len__ != 0 and newsdict.get(name):
-        return "checked"
-    else:
-        return "checked"
-
-
 class NewsLetterPreferencesForm(forms.Form):
     # Ages
 
