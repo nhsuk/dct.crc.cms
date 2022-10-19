@@ -19,5 +19,5 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
     export PATH="/opt/poetry/bin:$PATH" && \
     poetry config virtualenvs.create false && \
     cd ./poetry && \
-    poetry install --extras gunicorn && \
+    poetry install && \
     cd .

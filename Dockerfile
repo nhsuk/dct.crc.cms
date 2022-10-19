@@ -68,7 +68,7 @@ RUN wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION
 
 COPY --chown=campaignresourcecentre ./poetry ./poetry
 
-RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
+RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --all-extras; else poetry install --without dev --all-extras; fi; cd ../
 
 COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
