@@ -42,8 +42,7 @@ WORKDIR /app
 #    read by Gunicorn. Taken from pipeline variable
 #  * GUNICORN_CMD_ARGS - additional arguments to be passed to Gunicorn. This
 #    variable is read by Gunicorn. Taken from pipeline variable
-ENV PATH=$PATH:${POETRY_HOME}/bin \
-    PYTHONUNBUFFERED=1 \
+ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     DJANGO_SETTINGS_MODULE=campaignresourcecentre.settings.production \
     PORT=8000 
@@ -58,17 +57,16 @@ ENV BUILD_ENV=${BUILD_ENV}
 EXPOSE 8000
 
 # Install poetry using the installer (keeps Poetry's dependencies isolated from the app's)
-RUN wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION}/get-poetry.py && \
-    #echo "eedf0fe5a31e5bb899efa581cbe4df59af02ea5f get-poetry.py" | sha1sum -c - && \
-    python get-poetry.py && \
-    rm get-poetry.py && \
-    poetry config virtualenvs.create false
+ARG POETRY_HOME=/opt/poetry
+
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="${POETRY_HOME}/bin:$PATH"
 
 # Install your app's Python requirements
 
 COPY --chown=campaignresourcecentre ./poetry ./poetry
 
-RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --all-extras; else poetry install --without dev --all-extras; fi; cd ../
+RUN poetry config virtualenvs.create false && cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --all-extras; else poetry install --without dev --all-extras; fi; cd ../
 
 COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
