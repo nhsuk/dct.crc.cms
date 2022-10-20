@@ -235,7 +235,7 @@ stages:
       tag: '$(sourceBranchName)'
       hostUrl: 'campaignresources.dhsc.gov.uk'
       hostUrlCertSecretName: 'campaigns-resources-prod-tls-cert'
-      intHostUrl: 'crc-v3.nhswebsite.nhs.uk'
+      # intHostUrl: 'crc-v3.nhswebsite.nhs.uk'
       appName: 'crc-v3'
       appEnv: 'production'
       devEnv: 'prod'
