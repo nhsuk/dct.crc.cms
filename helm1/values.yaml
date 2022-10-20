@@ -1,0 +1,66 @@
+labelName: dct-application
+labelOwner: digital-campaigns
+labelCostCode: campaigns
+labelType: ns
+labelOrg: dct
+
+imageName: nhsuk.azurecr.io/dct/dct-application
+imageTag: review-aks-deploy
+imagePullPolicy: Always
+
+namespace: ""
+hostName: ""
+appName: "dct-application"
+appEnv: "production"
+secretKeyBase: ''
+appFramework: 'rails'
+appPort: '3000'
+webPath: '/manage'
+
+# Autoscale configuration. Set autoscale config only for stag and prod.
+autoscaleEnv: "int"
+
+webReplicaCount: 1
+celeryReplicaCount: 1
+clockworkReplicaCount: 1
+delayedJobReplicaCount: 1
+redisReplicaCount: 1
+sidekiqReplicaCount: 1
+
+averageUtilization: 90
+
+webMinReplicas: 1
+celeryMinReplicas: 1
+clockworkMinReplicas: 1
+delayedJobMinReplicas: 1
+redisMinReplicas: 1
+sidekiqMinReplicas: 1
+
+# Container configuration for staging and production.
+requestscpu: 600m
+requestsmemory: 700Mi
+limitsmemory: 1Gi
+limitscpu:  1000m
+
+redisPassword: ''
+dctApiEndPoint: ''
+azureAccessKey: ''
+azureContainer: ''
+azureStorageAccountName: ''
+azureStorageBlobHost: ''
+dctPublishingDevelopmentApiEndpoint: ''
+dctPublishingDevelopmentApiToken: ''
+dctPublishingStagingApiEndpoint: ''
+dctPublishingStagingApiToken: ''
+dctPublishingProductionApiEndpoint: ''
+dctPublishingProductionApiToken: ''
+prefix: ''
+
+instanaApiKey:
+
+envVariables:
+  PORT: '3000'
+appArgs:
+  - "bash"
+  - "-c"
+  - "RAILS_ENV=production bundle exec puma -C config/puma.rb"

@@ -1,0 +1,6 @@
+dependencies:
+- name: appchart
+  repository: https://digitalcampaignsstorage.blob.core.windows.net/helm
+  version: 0.0.1
+digest: sha256:f2bd0208c2de020b3cc5efe5fc3e455de6a22953fff29601841d8cc289a8927b
+generated: "2021-01-05T17:15:24.512034Z"
