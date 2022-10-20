@@ -122,6 +122,7 @@ stages:
       namespace: 'dct-crc-v3-review-$(sourceBranchName)-ns'
       tag: 'review-$(sourceBranchName)'
       hostUrl: 'crc-v3-review-$(sourceBranchName).nhswebsite-dev.nhs.uk'
+      intHostUrl: 'crc-v3-helm-test.nhswebsite-dev.nhs.uk'
       appName: 'crc-v3'
       devEnv: 'int'
       appEnv: 'review'
