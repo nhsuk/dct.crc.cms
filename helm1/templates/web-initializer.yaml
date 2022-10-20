@@ -1,0 +1,46 @@
+{{- if .Values.webInitializer }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-initializer-job
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-initializer
+{{ include "charts.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook": pre-install,pre-upgrade
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-initializer
+    spec:
+      nodeSelector:
+        org: {{ .Values.labelOrg | quote }}
+      tolerations:
+      - key: "org"
+        operator: "Equal"
+        effect: "NoSchedule"
+        value:  {{ .Values.labelOrg | quote }}
+      {{- if .Values.initializerNonRootUser }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 2001
+        fsGroup: 3001
+      {{- end}}
+      restartPolicy: Never
+        #securityContext:
+        #  runAsUser: 1001
+      containers:
+      - name: {{ .Values.appName }}-initializer
+        image: "{{ .Values.imageName }}:{{ .Values.imageTag }}"
+        {{ if ne .Values.autoscaleEnv "int" }}
+        {{- include "charts.resources-limits" . | nindent 8 }}
+        {{ end }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        securityContext:
+          allowPrivilegeEscalation: false
+        {{- include "dct-application.env-initializer-variables" . | nindent 8 }}
+        args: {{ .Values.initializerArgs | toJson }}
+{{- end }}

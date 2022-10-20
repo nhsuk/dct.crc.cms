@@ -1,0 +1,57 @@
+{{- if .Values.clockworkDeployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-clockwork-deploy
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-clockwork
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.clockworkReplicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-clockwork
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-clockwork
+        date: "{{ now |  unixEpoch }}"
+        ingress: haproxy
+    spec:
+      nodeSelector:
+        org: {{ .Values.labelOrg | quote }}
+      tolerations:
+      - key: "org"
+        operator: "Equal"
+        effect: "NoSchedule"
+        value:  {{ .Values.labelOrg | quote }}
+      {{- if .Values.deploymentNonRootUser }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 2001
+        fsGroup: 3001
+      {{- end}}
+      containers:
+      - name: {{ .Values.appName }}-clockwork
+        image: {{ .Values.imageName }}:{{ .Values.imageTag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        {{ if ne .Values.autoscaleEnv "int" }}
+        {{- include "charts.resources-limits" . | nindent 8 }}
+        {{ end }}
+        #readinessProbe:
+        #  tcpSocket:
+        #    port: {{ .Values.appPort }}
+        #  initialDelaySeconds: 2
+        #  periodSeconds: 2
+        #livenessProbe:
+        #  httpGet:
+        #    path: /sample-cms-healthcheck
+        #    port: {{ .Values.appPort }}
+        {{- if .Values.clockworkPort }}
+        ports:
+        - containerPort: {{ .Values.clockworkPort }}
+        {{- end }}
+        {{- include "dct-application.env-clockwork-variables" . | nindent 8 }}
+        args: {{ .Values.clockworkArgs | toJson }}
+{{- end }}

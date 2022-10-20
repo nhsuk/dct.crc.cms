@@ -1,0 +1,3 @@
+{{- template "appchart.egress-to-external-netpol" (list . "dct-application.egress-to-external-netpol") -}}
+{{- define "dct-application.egress-to-external-netpol" -}}
+{{- end -}}

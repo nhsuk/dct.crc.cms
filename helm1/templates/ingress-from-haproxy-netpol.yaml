@@ -1,0 +1,3 @@
+{{- template "appchart.ingress-from-haproxy-netpol" (list . "dct-application.ingress-from-haproxy-netpol") -}}
+{{- define "dct-application.ingress-from-haproxy-netpol" -}}
+{{- end -}}

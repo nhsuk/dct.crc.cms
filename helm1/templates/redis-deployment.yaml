@@ -1,0 +1,45 @@
+{{- if .Values.redisDeployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-redis-deploy
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-redis
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.redisReplicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}-redis
+    spec:
+      nodeSelector:
+        org: {{ .Values.labelOrg | quote }}
+      tolerations:
+      - key: "org"
+        operator: "Equal"
+        effect: "NoSchedule"
+        value:  {{ .Values.labelOrg | quote }}
+      containers:
+      - name: {{ .Values.appName }}-redis
+        image: {{ .Values.redisImageName }}
+        {{ if ne .Values.devEnv "int" }}
+        {{- include "charts.resources-limits" . | nindent 8 }}
+        {{ end }}
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 6379
+        #   initialDelaySeconds: 2
+        #   periodSeconds: 2
+        ports:
+        - containerPort: 6379
+{{- end }}

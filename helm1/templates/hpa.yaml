@@ -1,0 +1,143 @@
+{{- if .Values.webDeployment }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.appFramework }}-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  minReplicas: {{ .Values.webMinReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-{{ .Values.appFramework }}-deploy
+{{- end }}
+---
+{{- if .Values.sidekiqDeployment }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-sidekiq-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  minReplicas: {{ .Values.sidekiqMinReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-sidekiq-deploy
+{{- end }}
+---
+{{- if .Values.redisDeployment }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-redis-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  minReplicas: {{ .Values.redisMinReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-redis-deploy
+{{- end }}
+---
+{{- if .Values.delayedJobDeployment }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-delayed-job-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  minReplicas: {{ .Values.delayedJobMinReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-delayed-job-deploy
+{{- end }}
+---
+{{- if .Values.clockworkDeployment }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-clockwork-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  minReplicas: {{ .Values.clockworkMinReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-clockwork-deploy
+{{- end }}
+---
+{{- if .Values.celeryDeployment }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-celery-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  minReplicas: {{ .Values.celeryMinReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: {{ .Values.averageUtilization }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-celery-deploy
+{{- end }}

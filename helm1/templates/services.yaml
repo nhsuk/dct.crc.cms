@@ -1,0 +1,85 @@
+{{- if .Values.webDeployment }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-{{ .Values.appFramework }}-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-svc
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.appPort }}
+    targetPort: {{ .Values.appPort }}
+  selector:
+    app: {{ .Values.appName }}
+{{- end }}
+---
+{{- if .Values.redisDeployment }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-redis-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-redis
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  selector:
+    app: {{ .Values.appName }}-redis
+  ports:
+  - port: {{ default "6379" .Values.redisPort }}
+    targetPort: {{ default "6379" .Values.redisPort }}
+{{- end }}
+---
+{{- if .Values.sidekiqPort }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-sidekiq-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-sidekiq
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  selector:
+    app: {{ .Values.appName }}-sidekiq
+  ports:
+  - port: {{ .Values.sidekiqPort }}
+    targetPort: {{ .Values.sidekiqPort }}
+{{- end }}
+---
+{{- if .Values.clockworkPort }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-clockwork-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-clockwork
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  selector:
+    app: {{ .Values.appName }}-clockwork
+  ports:
+  - port: {{ .Values.clockworkPort }}
+    targetPort: {{ .Values.clockworkPort }}
+{{- end }}
+---
+{{- if .Values.celeryPort }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appName }}-celery-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}-celery
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  selector:
+    app: {{ .Values.appName }}-celery
+  ports:
+  - port: {{  .Values.celeryPort  }}
+    targetPort: {{ .Values.celeryPort }}
+{{- end }}

@@ -1,0 +1,3 @@
+{{- template "appchart.ingress-egress-deny-all-netpol" (list . "dct-application.ingress-egress-deny-all-netpol") -}}
+{{- define "dct-application.ingress-egress-deny-all-netpol" -}}
+{{- end -}}

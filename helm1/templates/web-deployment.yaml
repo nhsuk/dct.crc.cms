@@ -1,0 +1,55 @@
+{{- if .Values.webDeployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.appFramework }}-deploy
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.appName }}
+{{ include "charts.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.webReplicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        date: "{{ now |  unixEpoch }}"
+        ingress: haproxy
+    spec:
+      nodeSelector:
+        org: {{ .Values.labelOrg | quote }}
+      tolerations:
+      - key: "org"
+        operator: "Equal"
+        effect: "NoSchedule"
+        value:  {{ .Values.labelOrg | quote }}
+      {{- if .Values.deploymentNonRootUser }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 2001
+        fsGroup: 3001
+      {{- end}}
+      containers:
+      - name: {{ .Values.appName }}-{{ .Values.appFramework }}
+        image: {{ .Values.imageName }}:{{ .Values.imageTag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        {{ if ne .Values.autoscaleEnv "int" }}
+        {{- include "charts.resources-limits" . | nindent 8 }}
+        {{ end }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.appPort }}
+          initialDelaySeconds: 2
+          periodSeconds: 2
+        #livenessProbe:
+        #  httpGet:
+        #    path: /sample-cms-healthcheck
+        #    port: {{ .Values.appPort }}
+        ports:
+        - containerPort: {{ .Values.appPort }}
+        {{- include "dct-application.env-app-variables" . | nindent 8 }}
+        args: {{ .Values.appArgs | toJson }}
+{{- end }}
