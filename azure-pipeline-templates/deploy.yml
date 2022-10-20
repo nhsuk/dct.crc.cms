@@ -133,6 +133,18 @@ steps:
       command: 'repo'
       arguments: 'update'
   - task: HelmDeploy@0
+    displayName: 'Helm dryrun'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
+      command: 'upgrade'
+      chartType: 'Name'
+      namespace: $(namespace)
+      releaseName: $(appName)
+      version: $(buildId),
+      chartName: dct-campaigns-helm-app-chart #$(parameters.appName)
+      arguments: '--install --dry-run --debug --repo https://digitalcampaignsstorage.blob.core.windows.net/helm/ --version 2.2.2 --create-namespace -f helm/values.yaml -f helm/extra-values.yaml --timeout 900s'
+  - task: HelmDeploy@0
     displayName: 'Helm Upgrade'
     inputs:
       connectionType: 'Kubernetes Service Connection'
