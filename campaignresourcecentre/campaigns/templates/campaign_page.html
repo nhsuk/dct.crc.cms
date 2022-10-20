@@ -134,22 +134,24 @@
                             <div class="govuk-grid-row resource-list">
                             {% for resource in item %}
                                 <div class="govuk-grid-column-one-half flex-resource">
-                                    <div class="resource-panel related">
-                                        <a href="{{ resource.url }}">
-                                            <div class="govuk-grid-row">
-                                                <div class="govuk-grid-column-one-half">
-                                                    {% if resource.image %}
-                                                        {% image resource.image width-200 as resource_image %}
-                                                        <img src="{{ resource_image.url }}" width="{{ resource_image.width }}" height="{{ resource_image.height }}"  alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
-                                                    {% endif %}
-                                                </div>
-                                                <div class="govuk-grid-column-one-half">
-                                                    <h3>{{ resource.title }}</h3>
-                                                    <p>{{ resource.summary|safe }}</p>
-                                                    <p class="govuk-!-margin-top-2 last-updated">Last updated: {{ resource.last_published_at|date:"j F Y" }}</p>
-                                                </div>
+                                    <div class="resource-panel related nhsuk-card--clickable">
+                                        <div class="govuk-grid-row">
+                                            <div class="govuk-grid-column-one-half">
+                                                {% if resource.image %}
+                                                    {% image resource.image width-200 as resource_image %}
+                                                    <img src="{{ resource_image.url }}" width="{{ resource_image.width }}" height="{{ resource_image.height }}"  alt="{% if resource.image_alt_text %}{{ resource.image_alt_text }}{% endif %}" />
+                                                {% endif %}
                                             </div>
-                                        </a>
+                                            <div class="govuk-grid-column-one-half">
+                                                <h3>
+                                                    <a href="{{ resource.url }}">
+                                                        {{ resource.title }}
+                                                    </a>
+                                                </h3>
+                                                <p>{{ resource.summary|safe }}</p>
+                                                <p class="govuk-!-margin-top-2 last-updated">Last updated: {{ resource.last_published_at|date:"j F Y" }}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             {% endfor %}
