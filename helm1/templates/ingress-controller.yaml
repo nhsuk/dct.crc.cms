@@ -57,17 +57,3 @@ spec:
                 number: {{ $values.appPort }}
         {{- end }}
   {{ end }}
-  {{ if .Values.intDrHostUrl }}
-  - host: {{ .Values.intDrHostUrl }}
-    http:
-      paths:
-        {{- range .Values.intDrHostUrlPaths }}
-        - path: {{ . | quote }}
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: {{ $values.appName }}-{{ $values.appFramework }}-svc
-              port:
-                number: {{ $values.appPort }}
-        {{- end }}
-  {{ end }}
