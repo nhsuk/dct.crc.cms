@@ -29,12 +29,6 @@ spec:
                   number: {{ $values.appPort }}
         {{- end }}
   {{ end }}
-  {{ if .Values.hostUrlCertSecretName }}
-  tls:
-    - hosts:
-        - {{ .Values.hostUrl }}
-      secretName: {{ .Values.hostUrlCertSecretName }}
-  {{ end }}
   {{ if .Values.intHostUrl }}
   - host: {{ .Values.intHostUrl }}
     http:
