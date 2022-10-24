@@ -1,11 +1,12 @@
 {% load i18n wagtailadmin_tags %}
 <table class="listing">
+    <caption class="govuk-visually-hidden">CRC users</caption>
     <thead>
         <tr>
-            <th class="name">{% trans "Name" %}</th>
-            <th class="email">{% trans "Email" %}</th>
-            <th class="level">{% trans "Level" %}</th>
-            <th class="registered">{% trans "Registered" %}</th>
+            <th scope="col" class="name">{% trans "Name" %}</th>
+            <th scope="col" class="email">{% trans "Email" %}</th>
+            <th scope="col" class="level">{% trans "Level" %}</th>
+            <th scope="col" class="registered">{% trans "Registered" %}</th>
         </tr>
     </thead>
     <tbody>
