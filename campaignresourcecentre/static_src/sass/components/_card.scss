@@ -50,39 +50,13 @@
     }
 }
 
-a.image-card {
-    text-decoration: none;
-    display: block;
-    height: 100%;
 
-    &:focus {
-        background-color: $white;
-        box-shadow: none;
-        
-        h3 {
-            display: inline-block;
-        }
-    }
-
-    p {
-        color: $black;
-    }
-
-    .nhsuk-card__heading {
-        text-decoration: underline;
-    }
-
-    &:hover .nhsuk-card__heading {
-        text-decoration: none;
-    }
-
-    &:focus .nhsuk-card__heading {
-        background-color: $focus;
-        color: $black;
-        text-decoration: none;
-        box-shadow: 0 -2px $focus, 0 4px $black;
+.image-card {
+    img {
+        width: 100%;
     }
 }
+
 
 .app-section--grey .intro-card {
     background-color: $white;
