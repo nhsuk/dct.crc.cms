@@ -29,6 +29,7 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: 'dependency-scan-results\*junit.xml'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/*junit.xml'
     testRunTitle: 'Dependency check'
+    searchFolder: '$(Common.TestResultsDirectory)'
 - task: SonarQubeAnalyze@5
