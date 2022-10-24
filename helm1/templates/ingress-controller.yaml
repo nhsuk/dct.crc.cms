@@ -49,20 +49,20 @@ spec:
                 number: {{ $values.appPort }}
         {{- end }}
   {{ end }}
-#   {{ if .Values.intHostUrl }}
-#   - host: {{ .Values.intHostUrl }}
-#     http:
-#       paths:
-#         {{- range .Values.intHostUrlPaths }}
-#         - path: {{ . | quote }}
-#           pathType: ImplementationSpecific
-#           backend:
-#             service:
-#               name: {{ $values.appName }}-{{ $values.appFramework }}-svc
-#               port:
-#                 number: {{ $values.appPort }}
-#         {{- end }}
-#   {{ end }}
+  {{ if .Values.intHostUrl }}
+  - host: {{ .Values.intHostUrl }}
+    http:
+      paths:
+        {{- range .Values.intHostUrlPaths }}
+        - path: {{ . | quote }}
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ $values.appName }}-{{ $values.appFramework }}-svc
+              port:
+                number: {{ $values.appPort }}
+        {{- end }}
+  {{ end }}
 #   {{ if .Values.intDrHostUrl }}
 #   - host: {{ .Values.intDrHostUrl }}
 #     http:
