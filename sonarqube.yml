@@ -21,18 +21,9 @@ steps:
     cliSources: '.'
     extraProperties: |
       sonar.exclusions = campaignresourcecentre/**/migrations/*
-- task: OWASPDependencyCheck@0
-  displayName: OWASP Dependency Check
+- task: dependency-check-build-task@6
   inputs:
-    outputDirectory: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results'
-    scanDirectory: '$(Build.SourcesDirectory)'
-    outputFormat: 'JUNIT'
-    useSonarQubeIntegration: true
-    additionalArguments: --format "HTML"
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
-    testResultsFiles: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results/*junit.xml'
-    searchFolder: '$(Common.TestResultsDirectory)'
-    testRunTitle: Dependency Check # Optional
+    projectName: 'dct-campaign-resource-centre'
+    scanPath: '/'
+    format: "HTML"
 - task: SonarQubeAnalyze@5
