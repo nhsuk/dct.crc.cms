@@ -26,6 +26,7 @@ steps:
     projectName: 'dct-campaign-resource-centre'
     scanPath: '$(Build.SourcesDirectory)'
     format: "JUNIT"
+    additionalArguments: --format "HTML"
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
