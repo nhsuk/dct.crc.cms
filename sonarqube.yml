@@ -24,6 +24,6 @@ steps:
 - task: dependency-check-build-task@6
   inputs:
     projectName: 'dct-campaign-resource-centre'
-    scanPath: '/'
+    scanPath: '$(Build.SourcesDirectory)'
     format: "HTML"
 - task: SonarQubeAnalyze@5
