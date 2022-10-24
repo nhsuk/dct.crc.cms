@@ -35,20 +35,20 @@ spec:
         - {{ .Values.hostUrl }}
       secretName: {{ .Values.hostUrlCertSecretName }}
   {{ end }}
-#   {{ if .Values.drHostUrl }}
-#   - host: {{ .Values.drHostUrl }}
-#     http:
-#       paths:
-#         {{- range .Values.hostUrlPaths }}
-#         - path: {{ . | quote }}
-#           pathType: ImplementationSpecific
-#           backend:
-#             service:
-#               name: {{ $values.appName }}-{{ $values.appFramework }}-svc
-#               port:
-#                 number: {{ $values.appPort }}
-#         {{- end }}
-#   {{ end }}
+  {{ if .Values.drHostUrl }}
+  - host: {{ .Values.drHostUrl }}
+    http:
+      paths:
+        {{- range .Values.hostUrlPaths }}
+        - path: {{ . | quote }}
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ $values.appName }}-{{ $values.appFramework }}-svc
+              port:
+                number: {{ $values.appPort }}
+        {{- end }}
+  {{ end }}
 #   {{ if .Values.intHostUrl }}
 #   - host: {{ .Values.intHostUrl }}
 #     http:
