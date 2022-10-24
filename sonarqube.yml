@@ -24,13 +24,14 @@ steps:
 - task: dependency-check-build-task@6
   inputs:
     projectName: 'dct-campaign-resource-centre'
+    reportsDirectory: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results'
     scanPath: '$(Build.SourcesDirectory)'
     format: "JUNIT"
     additionalArguments: --format "HTML"
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '$(System.DefaultWorkingDirectory)/*junit.xml'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results/*junit.xml'
     testRunTitle: 'Dependency check'
     searchFolder: '$(Common.TestResultsDirectory)'
 - task: SonarQubeAnalyze@5
