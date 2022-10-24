@@ -26,4 +26,10 @@ steps:
     projectName: 'dct-campaign-resource-centre'
     scanPath: '$(Build.SourcesDirectory)'
     format: "HTML"
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/app/dependency-scan-results/*junit.xml'
+    searchFolder: '$(Common.TestResultsDirectory)'
+    testRunTitle: Dependency Check # Optional
 - task: SonarQubeAnalyze@5
