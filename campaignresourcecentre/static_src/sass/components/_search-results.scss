@@ -4,8 +4,6 @@
     .nhsuk-card {
         padding: 10px;
         background-color: $grey;
-        border: 0;
-        box-shadow: 0 4px 0 0 $border-bottom;
 
         .nhsuk-card__content {
             padding: 10px 0 0 0;
@@ -21,7 +19,7 @@
         }
 
 
-        @media (max-width: 40.0525em) {
+        @media (max-width: 48.0525em) {
             .image {
                 float: left;
                 width: 50%;
@@ -62,6 +60,14 @@ label {
                 background-color: $focus;
                 color: $black;
             }
+        }
+    }
+}
+
+#search-panel {
+    @media (min-width: 40.0625em) and (max-width: 48.0525em) {
+        .govuk-grid-column-one-quarter {
+            width: 75%;
         }
     }
 }
