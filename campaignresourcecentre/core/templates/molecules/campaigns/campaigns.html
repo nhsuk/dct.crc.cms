@@ -5,7 +5,7 @@
         <ul class="nhsuk-grid-row nhsuk-card-group">
             {% for campaign in campaigns %}
                 <li class="nhsuk-grid-column-one-third nhsuk-card-group__item">
-                    <div class="nhsuk-card image-card  nhsuk-card--clickable ">
+                    <div class="nhsuk-card image-card nhsuk-card--clickable">
                         
                             {% if campaign.image_url %}
                             <img src="{{ campaign.image_url }}" alt="{{ campaign.image_alt }}"/>

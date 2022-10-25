@@ -104,10 +104,11 @@
                         {% for sub_campaign in sub_campaigns %}
                             <li class="nhsuk-grid-column-one-half nhsuk-card-group__item">
                                 <div class="nhsuk-card image-card nhsuk-card--clickable ">
-                                    <a class="image-card" href="{{ sub_campaign.url }}">
                                         {% image sub_campaign.image width-800 alt=sub_campaign.image_alt_text %}
                                         <div class="nhsuk-card__content ">
-                                            <h3 class="nhsuk-card__heading nhsuk-card__link">{{ sub_campaign.title }}</h3>
+                                            <h3 class="nhsuk-card__heading">
+                                                <a class="nhsuk-card__link" href="{{ sub_campaign.url }}">{{ sub_campaign.title }}</a>
+                                            </h3>
                                             {{ sub_campaign.summary|safe }}
                                         </div>
                                     </a>
@@ -134,7 +135,7 @@
                             <div class="govuk-grid-row resource-list">
                             {% for resource in item %}
                                 <div class="govuk-grid-column-one-half flex-resource">
-                                    <div class="resource-panel related nhsuk-card--clickable">
+                                    <div class="resource-panel related nhsuk-card image-card nhsuk-card--clickable">
                                         <div class="govuk-grid-row">
                                             <div class="govuk-grid-column-one-half">
                                                 {% if resource.image %}
@@ -144,7 +145,7 @@
                                             </div>
                                             <div class="govuk-grid-column-one-half">
                                                 <h3>
-                                                    <a href="{{ resource.url }}">
+                                                    <a class="nhsuk-card__link"  href="{{ resource.url }}">
                                                         {{ resource.title }}
                                                     </a>
                                                 </h3>
