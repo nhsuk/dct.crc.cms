@@ -5,11 +5,27 @@
     padding: 0;
     display: block;
     margin-bottom: 48px;
-}
+    
+    
 
-.intro-panel__content {
-    padding: 24px;
-    position: relative;
+        .govuk-grid-column-two-thirds {
+            float: left;
+            width: 66.66%;
+        }
+
+
+    @media (max-width: 40.0525em) {
+        .govuk-grid-column-two-thirds {
+            float: none;
+            width: 100%;
+
+        }
+    }
+    
+    &__content {
+        padding: 24px;
+        position: relative;
+    }
 }
 
 .page-intro {
