@@ -20,7 +20,7 @@ steps:
     cliProjectName: 'DCT_Campaigns_Resource_Centre'
     cliSources: '.'
     extraProperties: |
-      sonar.exclusions = campaignresourcecentre/**/migrations/*
+      sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html
 - task: dependency-check-build-task@6
   inputs:
     projectName: 'dct-campaign-resource-centre'
