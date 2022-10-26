@@ -92,7 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% type_present %}" data-userToken="{% logged_in %}" data-topics="{% topics_present %}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% type_present %}" data-userToken="{% logged_in %}" data-topics="{% topics_present %}" data-campaign="{{ parent_title }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -143,21 +143,25 @@
                     console.log("--------this---" + this + "----------");
 
                     // Send the API request.
-                    var href = this.getAttribute("href");
-                    var params = {
+                    const date = new Date();
+                    let href = this.getAttribute("href");
+                    let params = {
                         "resourceId" : this.dataset.resourceId,
                         "resourceType" : this.dataset.resourceType,
                         "userToken" : this.dataset.userToken,
                         "topics" : this.dataset.topics,
+                        "campaign" : this.dataset.campaign,
                         "resourceTitle" : this.dataset.resourceTitle,
+                        "date": `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
                         "ts" :new Date().toUTCString()
                     };
                     console.log("--------params---" + params + "----------");
-                    var payload = {
-                        "message": params,
-                        "event": "download"
+                    let payload = {
+                        "payload": params,
+                        "event": "download",
+                        "group": "crc"
                     }
-                    var xhr = new XMLHttpRequest();
+                    let xhr = new XMLHttpRequest();
                     xhr.open('POST', REPORTING_ENDPOINT, true),
                     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'),
                     xhr.timeout = 500,
@@ -167,7 +171,7 @@
                             window.location.href = href
                         }
                     }),
-                    xhr.send(JSON.stringify(payload));
+                    xhr.send(JSON.stringify({"data": payload}));
                 });
             }
         }

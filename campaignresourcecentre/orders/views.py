@@ -120,12 +120,12 @@ def place_order(request):
 
                 for item in items:
                     checkout_item = {
-                        "ItemCode": item.get("item_code"),
-                        "Quantity": item.get("quantity"),
-                        "Url": item.get("url"),
-                        "Campaign": item.get("campaign"),
-                        "ImageUrl": item.get("image_url"),
-                        "Title": item.get("title"),
+                        "itemCode": item.get("item_code"),
+                        "quantity": item.get("quantity"),
+                        "url": item.get("url"),
+                        "campaign": item.get("campaign"),
+                        "imageUrl": item.get("image_url"),
+                        "title": item.get("title"),
                     }
                     checkout_items.append(checkout_item)
 
@@ -133,13 +133,13 @@ def place_order(request):
                     {
                         "userToken": user_token,
                         "postcode": postcode,
-                        "crcordernumber": order_number,
+                        "crcOrderNumber": order_number,
                         "orderItems": checkout_item,
-                        "orderItemCount": len(checkout_item),
-                        "orderdate": date,
+                        "orderDate": date,
                         "longitude": get_postcode_data(postcode).get("longitude"),
                         "latitude": get_postcode_data(postcode).get("latitude"),
                         "region": get_postcode_data(postcode).get("region"),
+                        "ts": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
                     }
                 )
                 send_report("order", data_dump)

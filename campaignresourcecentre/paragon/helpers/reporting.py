@@ -7,12 +7,8 @@ logger = logging.getLogger(__name__)
 
 def send_report(event_type, params={}):
 
-    # message = ""
-    # query_string = "message={}".format(message)
-    # url = "{}?{}".format(settings.REPORTING_ENDPOINT, query_string)
-
     url = settings.REPORTING_ENDPOINT
-    payload = json.dumps({"message": params, "event": event_type})
+    payload = json.dumps({"payload": params, "event": event_type, "group": "crc"})
 
     headers = {
         "Content-Type": "application/json; charset=UTF-8",

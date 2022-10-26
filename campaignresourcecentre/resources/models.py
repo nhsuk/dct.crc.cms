@@ -102,6 +102,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
 
         return [
             {
+                "id": resource.id,
                 "items_in_basket_count": basket.get_item_count(resource.id),
                 "image": resource.image,
                 "title": resource.title,
