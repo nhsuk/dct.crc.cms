@@ -5,20 +5,16 @@
     padding: 0;
     display: block;
     margin-bottom: 48px;
-    
-    
 
-        .govuk-grid-column-two-thirds {
-            float: left;
-            width: 66.66%;
-        }
-
+    .govuk-grid-column-two-thirds {
+        float: left;
+        width: 66.66%;
+    }
 
     @media (max-width: 40.0525em) {
         .govuk-grid-column-two-thirds {
             float: none;
             width: 100%;
-
         }
     }
     
