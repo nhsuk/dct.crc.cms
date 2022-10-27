@@ -136,9 +136,9 @@ def signup(request):
                             "jobTitle": job_title,
                             "role": get_role(email, job_title),
                             "postcode": postcode,
-                            "longitude": get_postcode_data(postcode).get("longitude"),
-                            "latitude": get_postcode_data(postcode).get("latitude"),
-                            "region": get_postcode_data(postcode).get("region"),
+                            "longitude": postcode_data.get("longitude"),
+                            "latitude": postcode_data.get("latitude"),
+                            "region": postcode_data.get("region"),
                             "date": timezone.now().strftime("%Y-%m-%d"),
                         }
                     )
