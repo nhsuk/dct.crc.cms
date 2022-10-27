@@ -139,7 +139,6 @@
         if( REPORTING_ENABLED ){
             //perform reporting action
             const buttons = document.getElementsByClassName("download-button");
-            console.log("--------buttons---" + buttons + "----------");
             for(let i=0; i<buttons.length; i++) {
                 buttons[i].addEventListener("click", function(event){
                     event.preventDefault();
