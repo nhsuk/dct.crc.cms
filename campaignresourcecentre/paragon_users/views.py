@@ -108,6 +108,7 @@ def signup(request):
                     token = response["content"]
                     url = request.build_absolute_uri(reverse("verification"))
                     send_verification(token, url, email, first_name)
+                    postcode_data = get_postcode_data(postcode)
 
                     # send off data to reporting
                     data_dump = json.dumps(
@@ -118,9 +119,9 @@ def signup(request):
                             "jobTitle": job_title,
                             "role": get_role(email, job_title),
                             "postcode": postcode,
-                            "longitude": get_postcode_data(postcode).get("longitude"),
-                            "latitude": get_postcode_data(postcode).get("latitude"),
-                            "region": get_postcode_data(postcode).get("region"),
+                            "longitude": postcode_data.get("longitude"),
+                            "latitude": postcode_data.get("latitude"),
+                            "region": postcode_data.get("region"),
                             "date": timezone.now().strftime("%Y-%m-%d"),
                         }
                     )

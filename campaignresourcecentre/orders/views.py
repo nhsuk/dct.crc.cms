@@ -116,6 +116,7 @@ def place_order(request):
                 date = timezone.now().strftime("%Y-%m-%d")
                 user = self.get_user_profile(user_token).get("content")
                 postcode = delivery_address.get("Address5")
+                postcode_data = get_postcode_data(postcode)
                 checkout_items = []
 
                 for item in items:
@@ -136,9 +137,9 @@ def place_order(request):
                         "crcOrderNumber": order_number,
                         "orderItems": checkout_item,
                         "orderDate": date,
-                        "longitude": get_postcode_data(postcode).get("longitude"),
-                        "latitude": get_postcode_data(postcode).get("latitude"),
-                        "region": get_postcode_data(postcode).get("region"),
+                        "longitude": postcode_data.get("longitude"),
+                        "latitude": postcode_data.get("latitude"),
+                        "region": postcode_data.get("region"),
                         "ts": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
                     }
                 )
