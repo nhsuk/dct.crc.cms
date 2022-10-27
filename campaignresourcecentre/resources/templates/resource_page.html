@@ -92,7 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" >Download this resource </a>
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% type_present %}" data-userToken="{% logged_in %}" data-topics="{% topics_present %}" data-campaign="{{ parent_title }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -127,4 +127,50 @@
         {% include "static/render_resource_basket.html" %}
     {% endblock %}
     </section>
+
+    <script>
+        const REPORTING_ENDPOINT = "{% get_django_setting "REPORTING_ENDPOINT" %}";
+        const REPORTING_ENABLED = "{% get_django_setting "REPORTING_ENABLED" %}";
+
+        if( REPORTING_ENABLED ){
+            //perform reporting action
+            const buttons = document.getElementsByClassName("download-button");
+            for(let i=0; i<buttons.length; i++) {
+                buttons[i].addEventListener("click", function(event){
+                    event.preventDefault();
+
+                    // Send the API request.
+                    const date = new Date();
+                    let href = this.getAttribute("href");
+                    let params = {
+                        "resourceId" : this.dataset.resourceId,
+                        "resourceType" : this.dataset.resourceType,
+                        "userToken" : this.dataset.userToken,
+                        "topics" : this.dataset.topics,
+                        "campaign" : this.dataset.campaign,
+                        "resourceTitle" : this.dataset.resourceTitle,
+                        "date": `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
+                        "ts" :new Date().toUTCString()
+                    };
+                    console.log("--------params---" + params + "----------");
+                    let payload = {
+                        "payload": params,
+                        "event": "download",
+                        "group": "crc"
+                    }
+                    let xhr = new XMLHttpRequest();
+                    xhr.open('POST', REPORTING_ENDPOINT, true),
+                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'),
+                    xhr.timeout = 500,
+                    (xhr.onreadystatechange = function () {
+                        // Navigate to the href when readyState is DONE (response is received or after 500 milliseconds)
+                        if (4 === xhr.readyState) {
+                            window.location.href = href
+                        }
+                    }),
+                    xhr.send(JSON.stringify({"data": payload}));
+                });
+            }
+        }
+    </script>
 {% endblock %}

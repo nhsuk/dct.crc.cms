@@ -18,6 +18,8 @@ from campaignresourcecentre.paragon_users.decorators import (
     paragon_user_logged_in,
     paragon_user_logged_out,
 )
+from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_data
+from campaignresourcecentre.paragon.helpers.reporting import send_report
 
 from .forms import (
     LoginForm,
@@ -106,6 +108,24 @@ def signup(request):
                     token = response["content"]
                     url = request.build_absolute_uri(reverse("verification"))
                     send_verification(token, url, email, first_name)
+                    postcode_data = get_postcode_data(postcode)
+
+                    # send off data to reporting
+                    data_dump = json.dumps(
+                        {
+                            "userToken": token,
+                            "createdAt": created_at,
+                            "organisation": organisation,
+                            "jobTitle": job_title,
+                            "role": get_role(email, job_title),
+                            "postcode": postcode,
+                            "longitude": postcode_data.get("longitude"),
+                            "latitude": postcode_data.get("latitude"),
+                            "region": postcode_data.get("region"),
+                            "date": timezone.now().strftime("%Y-%m-%d"),
+                        }
+                    )
+                    send_report("registration", data_dump)
 
                     return render(
                         request,

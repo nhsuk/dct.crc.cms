@@ -4,7 +4,6 @@ import logging
 import requests
 
 from django.conf import settings
-
 from .data_classes import (
     Registration,
     User,
@@ -124,6 +123,7 @@ class Client:
             created_at,
         )
         self.data.update(registration.params())
+
         self.call()
         if self.response.status_code == 200:
             return {
