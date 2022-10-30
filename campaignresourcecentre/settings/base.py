@@ -717,7 +717,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # renews session after every request
 SESSION_SAVE_EVERY_REQUEST = True
 # expires cookies after 30 mins
-SESSION_COOKIE_AGE = 1800
+SESSION_COOKIE_AGE = 3600
 
 CAMPAIGNS_FROM_AZ = getenv_bool("CAMPAIGNS_FROM_AZ", True)
 # Events tracking
