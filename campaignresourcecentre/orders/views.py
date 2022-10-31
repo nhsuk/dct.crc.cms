@@ -7,6 +7,7 @@ from psycopg2.errors import UniqueViolation
 
 import datetime
 import logging
+import json
 
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.paragon.client import Client

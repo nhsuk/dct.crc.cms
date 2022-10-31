@@ -1,6 +1,7 @@
 from datetime import date
 from logging import getLogger
 from urllib.parse import quote
+import json
 
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseServerError
@@ -109,23 +110,6 @@ def signup(request):
                     url = request.build_absolute_uri(reverse("verification"))
                     send_verification(token, url, email, first_name)
                     postcode_data = get_postcode_data(postcode)
-
-                    # send off data to reporting
-                    data_dump = json.dumps(
-                        {
-                            "userToken": token,
-                            "createdAt": created_at,
-                            "organisation": organisation,
-                            "jobTitle": job_title,
-                            "role": get_role(email, job_title),
-                            "postcode": postcode,
-                            "longitude": postcode_data.get("longitude"),
-                            "latitude": postcode_data.get("latitude"),
-                            "region": postcode_data.get("region"),
-                            "date": timezone.now().strftime("%Y-%m-%d"),
-                        }
-                    )
-                    send_report("registration", data_dump)
 
                     # send off data to reporting
                     data_dump = json.dumps(
