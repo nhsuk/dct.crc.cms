@@ -17,6 +17,7 @@ from .exceptions import ParagonClientError
 logger = logging.getLogger(__name__)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ":ECDH+AES256:DH+AES256:!DH"
 
+
 class Client:
     def __init__(self):
         self.headers = {
