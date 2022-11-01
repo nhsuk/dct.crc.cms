@@ -83,7 +83,7 @@ steps:
           PARAGON_SIGN_KEY: $(paragonSignKey)
           PARAGON_SALT: $(paragonSalt)
           PHE_PARTNERSHIPS_EMAIL: $(phePartnershipsEmail)
-          REPORTING_ENDPOINT: $(reportingEnpoint)
+          REPORTING_ENDPOINT: $(reportingEndpoint)
           REPORTING_ENABLED: $(reportingEnabled)
         envInitializerVariables:
           PRIMARY_HOST: $(primaryHost)
@@ -106,7 +106,7 @@ steps:
           WEB_CONCURRENCY: $(workers)
           GUNICORN_CMD_ARGS: $(gunicornArgs)
           NOTIFY_DEBUG: $(notifyDebug)
-          REPORTING_ENDPOINT: $(reportingEnpoint)
+          REPORTING_ENDPOINT: $(reportingEndpoint)
           REPORTING_ENABLED: $(reportingEnabled)
         appArgs:
           - 'bash'
