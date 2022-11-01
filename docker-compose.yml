@@ -53,7 +53,7 @@ services:
       WEB_CONCURRENCY: ${WEB_CONCURRENCY}
       GUNICORN_CMD_ARGS: ${GUNICORN_CMD_ARGS}
       PHE_PARTNERSHIPS_EMAIL: ${PHE_PARTNERSHIPS_EMAIL}
-      REPORTING_ENDPOINT: ${reportingEnpoint}
+      REPORTING_ENDPOINT: ${reportingEndpoint}
       REPORTING_ENABLED: ${reportingEnabled}
     command: tail -f /dev/null # do nothing forever - exec commands elsewhere
     ports:
