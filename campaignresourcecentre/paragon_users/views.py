@@ -128,23 +128,6 @@ def signup(request):
                     )
                     send_report("registration", data_dump)
 
-                    # send off data to reporting
-                    data_dump = json.dumps(
-                        {
-                            "userToken": token,
-                            "createdAt": created_at,
-                            "organisation": organisation,
-                            "jobTitle": job_title,
-                            "role": get_role(email, job_title),
-                            "postcode": postcode,
-                            "longitude": get_postcode_data(postcode).get("longitude"),
-                            "latitude": get_postcode_data(postcode).get("latitude"),
-                            "region": get_postcode_data(postcode).get("region"),
-                            "date": timezone.now().strftime("%Y-%m-%d"),
-                        }
-                    )
-                    send_report("registration", data_dump)
-
                     return render(
                         request,
                         "users/confirmation_registration.html",
