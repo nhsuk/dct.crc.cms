@@ -131,10 +131,10 @@
     <script>
         const REPORTING_ENDPOINT = '{% get_django_setting "REPORTING_ENDPOINT" %}';
         const REPORTING_ENABLED = '{% get_django_setting "REPORTING_ENABLED" %}';
-        const userToken = "{% logged_in %}";
+        const userToken = "{{ logged_in }}";
         const resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}";
         const topics="{% get_taxonomies taxonomy_json 'TOPIC' %}";
-        const campaign="{{ parent_title }}";
+        const campaign="{{ parent_title|escapejs }}";
 
         if( REPORTING_ENABLED ){
             //perform reporting action
