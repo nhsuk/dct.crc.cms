@@ -92,7 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}" data-userToken="{% logged_in %}" data-topics="{% get_taxonomies taxonomy_json 'TOPIC' %}" data-campaign="{{ parent_title }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -131,10 +131,15 @@
     <script>
         const REPORTING_ENDPOINT = '{% get_django_setting "REPORTING_ENDPOINT" %}';
         const REPORTING_ENABLED = '{% get_django_setting "REPORTING_ENABLED" %}';
+        const userToken = "{{ logged_in }}";
+        const resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}";
+        const topics="{% get_taxonomies taxonomy_json 'TOPIC' %}";
+        const campaign="{{ parent_title|escapejs }}";
 
         if( REPORTING_ENABLED ){
             //perform reporting action
             const buttons = document.getElementsByClassName("download-button");
+            console.log("--------buttons---" + buttons + "----------");
             for(let i=0; i<buttons.length; i++) {
                 buttons[i].addEventListener("click", function(event){
                     event.preventDefault();
@@ -144,10 +149,10 @@
                     let href = this.getAttribute("href");
                     let params = {
                         "resourceId" : this.dataset.resourceId,
-                        "resourceType" : this.dataset.resourceType,
-                        "userToken" : this.dataset.userToken,
-                        "topics" : this.dataset.topics,
-                        "campaign" : this.dataset.campaign,
+                        "resourceType" : resourceType,
+                        "userToken" : userToken,
+                        "topics" : topics,
+                        "campaign" : campaign,
                         "resourceTitle" : this.dataset.resourceTitle,
                         "date": `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
                         "ts" :new Date().toUTCString()
