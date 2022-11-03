@@ -71,21 +71,6 @@ def CRCV3_Campaigns_Planning_list_h3(context):
         # i= i+1
         # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
 
-
-@Step("Verify list of campaigns listed in campaigns Planning tab and have H3")
-def CRCV3_Campaigns_Planning_list_h3(context):
-    context.support_page = CRCV3MainPage(context.browser, context.logger)
-    Campaigns_list = context.support_page.CRCV3_Campaigns_Planning_list_h3()
-    # i = int
-    # i = 0
-    for list in Campaigns_list:
-        h3 = list.split("\n")[0]
-        print(h3)
-        # url = context.get_url(h3)
-        context.support_page.click_h3(h3)
-        # i= i+1
-        # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
-
     # Verify message prompts for get support when no country selected
 
 
