@@ -7,7 +7,6 @@ from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
 
-
 from AcceptanceTests.common.common_test_methods import *
 
 
@@ -51,8 +50,6 @@ class CRCV3MainPage(BasePage):
         By.XPATH, "//ul[@class='nhsuk-grid-row nhsuk-card-group']/li"
     )
     sort = PageElement(By.ID, "sort")
-    # Campaigns_list_id = PageElement(By.ID, "campaigns/ul/li")
-    # Campaigns_list = PageElement(By.ID, "campaigns")
     campaigns_tab = PageElement(By.XPATH, "//a[@href='/campaigns/']")
     Start4Life_link = PageElement(By.LINK_TEXT, "Start4Life")
     Start4Life_landing = PageElement(By.XPATH, "//h1[text()='Start4Life']")
@@ -865,7 +862,7 @@ class CRCV3MainPage(BasePage):
         WebDriverWait(self.driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
         )
-   
+
     def Sign_Out(self, context):
         context.landing_page = CRCV3MainPage(context.browser, context.logger)
         # self.interact.click_element(self.Sign_out_link)
