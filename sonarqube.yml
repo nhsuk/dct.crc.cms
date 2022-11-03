@@ -3,7 +3,8 @@ schedules:
   displayName: Weekly SonarQube build
   branches:
     include:
-    - main
+    - 'review/*'
+    - 'main'
   always: true
 
 pool:
