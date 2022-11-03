@@ -73,7 +73,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 #    Then verify logout displayed in place of Sign in
 #    #Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-007 @wip
+  @CRCV3-007
   Scenario: open CRCV3 site and verify Home tab and its links
     Given I loaded CRCV3 site to load the home page
     #When I Click click on Home page tab
@@ -216,7 +216,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       |Oldest       |
     Then I Click on Filter by topic
 
-  @CRCV3-022 @Smoke
+  @CRCV3-022
   Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password

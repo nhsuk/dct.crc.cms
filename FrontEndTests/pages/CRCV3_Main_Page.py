@@ -732,6 +732,7 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.basket)
         order = self.interrogate.get_attribute(self.order_quantity, "value")
         assert_that(order, not_none(), "order quantity is empty")
+        sleep(5)
         self.interact.click_element(self.Proceed_to_checout)
         sleep(5)
 
