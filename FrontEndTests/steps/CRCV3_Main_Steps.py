@@ -1,3 +1,4 @@
+import csv
 from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
@@ -86,6 +87,15 @@ def Login_fields(context, email, password):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.sign_up_for_email_form(email, password)
     # context.support_page.CRCV3_SignIn()
+
+
+@Step("I enter your login details")
+def Login_fields_valid_Inputs(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    with open("./login.csv") as csvfile:
+        reader = csv.reader(csvfile)
+        email, password = next(reader)
+    context.support_page.sign_up_for_email_form(email, password)
 
 
 @Step("I sign in")
