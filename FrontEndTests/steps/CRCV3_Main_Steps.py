@@ -1,5 +1,4 @@
 import csv
-
 from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
@@ -29,8 +28,6 @@ def load_tobacco_landing_page(context):
 def CRCV3_PHE_Link(context):
     context.CRCV3_home = CRCV3MainPage(context.browser, context.logger)
     context.CRCV3_home.Click_PHE_Link()
-    # context.Tobacco_page.select_country()
-    # context.Tobacco_page.click_get_support_button()
 
 
 @Step(
@@ -53,7 +50,6 @@ def CRCV3_Campaigns_list_h3(context):
         # url = context.get_url(h3)
         context.support_page.click_h3(h3)
         # i= i+1
-        # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
 
 
 @Step("Verify list of campaigns listed in campaigns Planning tab and have H3")

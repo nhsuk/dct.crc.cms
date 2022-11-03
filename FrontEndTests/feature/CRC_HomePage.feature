@@ -1,5 +1,5 @@
 #noinspection CucumberUndefinedStep
-Feature: CRCV3 Main Page  - NHSUK CRC Website
+Feature: CRCV3 Automation tests
 
   @CRCV3-001 @Smoke
     Scenario: open CRCV3 site and verify resources in campaigns tab
