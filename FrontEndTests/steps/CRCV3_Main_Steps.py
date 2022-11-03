@@ -5,8 +5,6 @@ from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
 from pages.CRCV3_Main_Page import CRCV3MainPage
 
-# from common.common_test_methods import create_list_from_feature_table_column
-
 
 @Step("I loaded CRCV3 site to load the home page")
 def load_tobacco_landing_page(context):
@@ -81,6 +79,7 @@ def CRCV3_Campaigns_Planning_list_h3(context):
 def Sign_in_link(context):
     context.CRCV3_home = CRCV3MainPage(context.browser, context.logger)
     context.CRCV3_home.CRCV3_SignIn()
+
 
 @Step("I enter your login details")
 def Login_fields_valid_Inputs(context):

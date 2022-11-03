@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
 from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
@@ -249,7 +250,6 @@ class CRCV3MainPage(BasePage):
     How_to_use_this_campaign_Paragraph_1 = PageElement(
         By.XPATH, "//p[@data-block-key='tcavw']"
     )
-    # Research_beyond_this_campaign_S4LBF_Paragraph = PageElement(By.CSS_SELECTOR, ".govuk-details__summary")
 
     Breastfeeding_leaflet = PageElement(By.LINK_TEXT, "Breastfeeding leaflet")
     Breastfeeding_leaflet_Landing = PageElement(
@@ -291,8 +291,7 @@ class CRCV3MainPage(BasePage):
     Pre_measurement_leaflet_Landing = PageElement(
         By.XPATH, "//h1[text()='Pre-measurement leaflet']"
     )
-    # Social_media_toolkit = PageElement(By.XPATH, "(//h3[text()='Social media toolkit'])[2]")
-    # Social_media_toolkit_Landing = PageElement(By.XPATH, "//h1[text()='Social media toolkit']")
+
     The_Eatwell_Guide = PageElement(By.XPATH, "//h3[text()='The Eatwell Guide']")
     The_Eatwell_Guide_Landing = PageElement(
         By.XPATH, "//h1[text()='The Eatwell Guide']"
@@ -620,14 +619,6 @@ class CRCV3MainPage(BasePage):
             self.click_h3(h3)
             # context.support_page.click_h3(h3)
         return
-
-        # def click_h3(self, text):
-        #     # right_click_Text_link(self, link)
-        #     link = f'"{text}"'
-        #     # // h3[text() = 'Better Health Food Scanner App']
-        #     Element = PageElement(By.XPATH, "//h3[text() ='"' + link + '"']")
-        #     self.interact.click_element(Element)
-        #     self.driver.back()
 
     def click_resource(self):
         self.interact.click_element(self.click_resource_tab)
