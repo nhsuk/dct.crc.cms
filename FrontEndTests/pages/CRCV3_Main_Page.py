@@ -23,7 +23,7 @@ class CRCV3MainPage(BasePage):
         "//h2[text()[normalize-space()='Coronavirus (COVID-19) advice and resources']]",
     )
     Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")
-    S4l_Image = PageElement(By.XPATH, "//img[@alt='Baby breastfeeding']")
+    S4l_h1 = PageElement(By.TAG_NAME, "h1")
     Sign_In_link = PageElement(By.LINK_TEXT, "Sign in")
     Sign_In_label = PageElement(By.XPATH, "//h1[text()[normalize-space()='Sign in']]")
     email_id = PageElement(By.ID, "id_email")
@@ -46,43 +46,42 @@ class CRCV3MainPage(BasePage):
     Campaigns_list = PageElement(
         By.XPATH, "//ul[@class='nhsuk-grid-row nhsuk-card-group']/li"
     )
-    campaigns_tab = PageElement(By.XPATH, "//a[@href='/campaigns/']")
-    Start4Life_link = PageElement(
-        By.XPATH, "//h3[text()[normalize-space()='Start4Life']]"
+    Campaigns_Planning_list = PageElement(
+        By.XPATH, "//ul[@class='nhsuk-grid-row nhsuk-card-group']/li"
     )
+    sort = PageElement(By.ID, "sort")
+    # Campaigns_list_id = PageElement(By.ID, "campaigns/ul/li")
+    # Campaigns_list = PageElement(By.ID, "campaigns")
+    campaigns_tab = PageElement(By.XPATH, "//a[@href='/campaigns/']")
+    Start4Life_link = PageElement(By.LINK_TEXT, "Start4Life")
     Start4Life_landing = PageElement(By.XPATH, "//h1[text()='Start4Life']")
-    Change4Life_link = PageElement(By.XPATH, "//h3[text()='Change4Life']")
+    Change4Life_link = PageElement(By.XPATH, "//a[@href='/campaigns/change4life/']")
     Change4Life_landing = PageElement(By.XPATH, "//h1[text()='Change4Life']")
     BetterHealth_link = PageElement(
         By.XPATH, "//h3[text()='Better Health Every Mind Matters']"
     )
-    Cervical_Screening = PageElement(By.XPATH, "//h3[text()='Cervical Screening']")
-    We_Are_Undefeatable = PageElement(By.XPATH, "//h3[text()='We Are Undefeatable']")
+    Cervical_Screening = PageElement(By.LINK_TEXT, "Cervical Screening")
+    We_Are_Undefeatable = PageElement(By.LINK_TEXT, "We Are Undefeatable")
     Better_Health_Local_Authority_Tier_2 = PageElement(
-        By.XPATH,
-        "//h3[text()='Better Health Local Authority Tier 2 Adult Weight Management Programme']",
+        By.LINK_TEXT,
+        "Better Health Local Authority Tier 2 Adult Weight Management Programme",
     )
     BetterHealth_landing = PageElement(
         By.XPATH, "//h1[text()='Better Health Every Mind Matters']"
     )
-    Cervical_Screening_landing = PageElement(
-        By.XPATH, "//h1[text()='Cervical Screening']"
-    )
-    We_Are_Undefeatable_landing = PageElement(
-        By.XPATH, "//h1[text()='We Are Undefeatable']"
-    )
-    Better_Health_Local_Authority_Tier_2_landing = PageElement(
-        By.XPATH,
-        "//h1[text()='Better Health Local Authority Tier 2 Adult Weight Management Programme']",
-    )
+    Cervical_Screening_landing = PageElement(By.TAG_NAME, "h1")
+    We_Are_Undefeatable_landing = PageElement(By.TAG_NAME, "h1")
+    Better_Health_Local_Authority_Tier_2_landing = PageElement(By.TAG_NAME, "h1")
     how_to_guides_link = PageElement(By.LINK_TEXT, "How to guides")
     how_to_guide_landing = PageElement(By.XPATH, "//h1[text()='How to guides']")
     S4L_related_website_link = PageElement(By.LINK_TEXT, "www.nhs.uk/start4life")
-    C4L_related_website_link = PageElement(By.LINK_TEXT, "www.nhs.uk/change4life")
+    C4L_related_website_link = PageElement(
+        By.LINK_TEXT, "www.nhs.uk/healthier-families"
+    )
     Betterhealth_related_website_link = PageElement(
         By.XPATH, "//h3[text()='Better Health Every Mind Matters']"
     )
-    Betterhealth_Start4Life_link = PageElement(By.LINK_TEXT, "www.nhs.uk/start4life/")
+    Betterhealth_Start4Life_link = PageElement(By.LINK_TEXT, "www.nhs.uk/start4life")
     Cervical_Screening_link = PageElement(
         By.XPATH, "//a[@href='https://www.nhs.uk/conditions/cervical-screening/']"
     )
@@ -154,7 +153,7 @@ class CRCV3MainPage(BasePage):
     How_to_use_this_campaign_link = PageElement(
         By.XPATH, "//h3[text()[normalize-space()='How to use this campaign']]"
     )
-    Campaign_tookit = PageElement(By.XPATH, "//h3[text()='Campaign toolkit']")
+    Campaign_tookit = PageElement(By.LINK_TEXT, "Campaign toolkit")
     Accessible_social_media_assets = PageElement(
         By.XPATH, "//h3[text()='Accessible social media assets']"
     )
@@ -170,37 +169,29 @@ class CRCV3MainPage(BasePage):
     Radio_advert = PageElement(By.XPATH, "//h3[text()='Radio advert']")
     Digital_screens = PageElement(By.XPATH, "//h3[text()='Digital screens']")
     Abdominal_and_urological_symptoms_of_cancer = PageElement(
-        By.XPATH, "(//h3[@class='nhsuk-card__heading nhsuk-card__link'])[3]"
+        By.LINK_TEXT, "Abdominal and Urological Symptoms of Cancer"
     )
     Accessible_campaign_posters = PageElement(
-        By.XPATH, "//h3[text()='Accessible campaign posters']"
+        By.LINK_TEXT, "Accessible campaign posters"
     )
     BSL_social_versions_of_TV_ad_with_copy = PageElement(
         By.XPATH, "//h3[text()='BSL social versions of TV ad with copy']"
     )
-    Childhood_vaccination_2022 = PageElement(
-        By.XPATH, "//h3[text()='Childhood vaccination 2022']"
-    )
+    Childhood_vaccination_2022 = PageElement(By.LINK_TEXT, "Childhood Vaccination 2022")
     BSL_social_versions_of_TV_ad_with_copy_landing = PageElement(
         By.XPATH, "//h1[text()='BSL social versions of TV ad with copy']"
     )
-    Childhood_vaccination_2022_Landing = PageElement(
-        By.XPATH, "//h1[text()='Childhood vaccination 2022']"
-    )
+    Childhood_vaccination_2022_Landing = PageElement(By.TAG_NAME, "h1")
     Digital_screens_landing = PageElement(By.XPATH, "//h1[text()='Digital screens']")
-    Abdominal_and_urological_symptoms_of_cancer_Landing = PageElement(
-        By.XPATH, "//h1[text()='Abdominal and urological symptoms of cancer']"
-    )
-    Accessible_campaign_posters_landing = PageElement(
-        By.XPATH, "//h1[text()='Accessible campaign posters']"
-    )
+    Abdominal_and_urological_symptoms_of_cancer_Landing = PageElement(By.TAG_NAME, "h1")
+    Accessible_campaign_posters_landing = PageElement(By.TAG_NAME, "h1")
     Calls_to_action_for_the_campaign_paragraph = PageElement(
         By.XPATH, "//p[@data-block-key='0n3te']"
     )
     Radio_advert_landing = PageElement(By.XPATH, "//h1[text()='Radio advert']")
     A3_A4_Posters = PageElement(By.XPATH, "//h3[text()='A3 and A4 posters']")
     Social_Media_calendar_assets = PageElement(
-        By.XPATH, "//h3[text()='Social media calendar and assets']"
+        By.LINK_TEXT, "Social media calendar and assets"
     )
     Social_media_post_copy_and_assets = PageElement(
         By.XPATH, "//h3[text()='Social media post copy and assets']"
@@ -260,13 +251,11 @@ class CRCV3MainPage(BasePage):
     )
     # Research_beyond_this_campaign_S4LBF_Paragraph = PageElement(By.CSS_SELECTOR, ".govuk-details__summary")
 
-    Breastfeeding_leaflet = PageElement(
-        By.XPATH, "//h3[text()='Breastfeeding leaflet']"
-    )
+    Breastfeeding_leaflet = PageElement(By.LINK_TEXT, "Breastfeeding leaflet")
     Breastfeeding_leaflet_Landing = PageElement(
         By.XPATH, "//h1[text()='Breastfeeding leaflet']"
     )
-    Posters = PageElement(By.XPATH, "//h3[text()='Posters']")
+    Posters = PageElement(By.LINK_TEXT, "Posters")
     Posters_Landing = PageElement(By.XPATH, "//h1[text()='Posters']")
     Digital_web_banners = PageElement(By.XPATH, "//h3[text()='Digital web banners']")
     Digital_web_banners_Landing = PageElement(
@@ -278,8 +267,8 @@ class CRCV3MainPage(BasePage):
     )
     Email_signature = PageElement(By.XPATH, "//h3[text()='Email signature']")
     Email_signature_Landing = PageElement(By.XPATH, "//h1[text()='Email signature']")
-    Social_media_toolkit = PageElement(By.XPATH, "//h3[text()='Social media toolkit']")
-    Open_artwork = PageElement(By.XPATH, "//h3[text()='Open artwork']")
+    Social_media_toolkit = PageElement(By.LINK_TEXT, "Social media toolkit")
+    Open_artwork = PageElement(By.LINK_TEXT, "Open artwork")
     Social_media_toolkit_Landing = PageElement(
         By.XPATH, "//h1[text()='Social media toolkit']"
     )
@@ -294,13 +283,11 @@ class CRCV3MainPage(BasePage):
 
     A4_poster = PageElement(By.XPATH, "(//h3[text()='A4 poster'])[2]")
     A4_poster_Landing = PageElement(By.XPATH, "//h1[text()='A4 poster']")
-    Top_tips_flyer = PageElement(By.XPATH, "//h3[text()='Top tips flyer']")
+    Top_tips_flyer = PageElement(By.LINK_TEXT, "Top tips flyer")
     Top_tips_flyer_Landing = PageElement(By.XPATH, "//h1[text()='Top tips flyer']")
-    Smarter_snacking = PageElement(By.XPATH, "//h3[text()='Smarter snacking']")
+    Smarter_snacking = PageElement(By.LINK_TEXT, "Smarter snacking")
     Smarter_snacking_Landing = PageElement(By.XPATH, "//h1[text()='Smarter snacking']")
-    Pre_measurement_leaflet = PageElement(
-        By.XPATH, "//h3[text()='Pre-measurement leaflet']"
-    )
+    Pre_measurement_leaflet = PageElement(By.XPATH, "Pre-measurement leaflet")
     Pre_measurement_leaflet_Landing = PageElement(
         By.XPATH, "//h1[text()='Pre-measurement leaflet']"
     )
@@ -326,10 +313,8 @@ class CRCV3MainPage(BasePage):
     Briefing_document_Landing = PageElement(
         By.XPATH, "//h1[text()='Briefing document']"
     )
-    Social_statics = PageElement(By.XPATH, "//h3[text()='Social statics']")
-    Communications_toolkit = PageElement(
-        By.XPATH, "//h3[text()='Communications toolkit']"
-    )
+    Social_statics = PageElement(By.LINK_TEXT, "Social statics")
+    Communications_toolkit = PageElement(By.LINK_TEXT, "Communications toolkit")
     Social_statics_Landing = PageElement(By.XPATH, "//h1[text()='Social statics']")
     Communications_toolkit_Landing = PageElement(
         By.XPATH, "//h1[text()='Communications toolkit']"
@@ -363,26 +348,20 @@ class CRCV3MainPage(BasePage):
         By.XPATH, "//h3[text()='Start4Life Weaning']"
     )
     How_To_Guides_Link = PageElement(By.PARTIAL_LINK_TEXT, "How To Guides")
-    Help_us_help_you_link = PageElement(By.XPATH, "//h3[text()='Help Us, Help You']")
+    Help_us_help_you_link = PageElement(By.LINK_TEXT, "Help Us, Help You")
     BH_Start4Life_link = PageElement(
-        By.XPATH, "//h3[text()='Better Health Start for Life Introducing Solid Foods']"
+        By.LINK_TEXT, "Better Health Start for Life Introducing Solid Foods"
     )
     Help_us_help_you_Landing = PageElement(By.XPATH, "//h1[text()='Help Us, Help You']")
-    BH_Start4Life_Landing = PageElement(
-        By.XPATH, "//h1[text()='Better Health Start for Life Introducing Solid Foods']"
-    )
+    BH_Start4Life_Landing = PageElement(By.TAG_NAME, "h1")
     Accessing_NHS_maternity_services = PageElement(
-        By.XPATH, "//h3[text()='Accessing NHS maternity services']"
+        By.LINK_TEXT, "Accessing NHS Maternity Services"
     )
     Accessing_NHS_mental_health_services = PageElement(
-        By.XPATH, "//h3[text()='Accessing NHS mental health services']"
+        By.LINK_TEXT, "Accessing NHS Mental Health Services"
     )
-    Accessing_NHS_mental_health_services_Landing = PageElement(
-        By.XPATH, "//h1[text()='Accessing NHS mental health services']"
-    )
-    Accessing_NHS_maternity_services_Landing = PageElement(
-        By.XPATH, "//h1[text()='Accessing NHS maternity services']"
-    )
+    Accessing_NHS_mental_health_services_Landing = PageElement(By.TAG_NAME, "h1")
+    Accessing_NHS_maternity_services_Landing = PageElement(By.TAG_NAME, "h1")
     Start4Life_Guide_to_feeding_Landing = PageElement(
         By.XPATH, "//h1[text()='Guide to bottle feeding']"
     )
@@ -440,6 +419,32 @@ class CRCV3MainPage(BasePage):
     Sign_in = PageElement(By.XPATH, "//a[@href='/resources/login/']")
     register_link = PageElement(By.LINK_TEXT, "Register")
     Register_Button = PageElement(By.XPATH, "//button[text()='Register']")
+    topics = PageElement(By.XPATH, "//span[text()[normalize-space()='Topics']]")
+    target_audience = PageElement(
+        By.XPATH, "//span[text()[normalize-space()='Target audience']]"
+    )
+    Topics_Expanded = PageElement(By.ID, "TOPIC")
+    target_audience_Expanded = PageElement(
+        By.XPATH, "//label[text()[normalize-space()='Adults']]"
+    )
+    Language = PageElement(By.XPATH, "//span[text()[normalize-space()='Language']]")
+    Language_Expanded = PageElement(By.ID, "LANGUAGE")
+    Profession_Expanded = PageElement(
+        By.XPATH, "//label[text()[normalize-space()='Commercial partner']]"
+    )
+    Alternative_format_Expanded = PageElement(
+        By.XPATH, "//label[text()[normalize-space()='Audio']]"
+    )
+    Profession = PageElement(By.XPATH, "//span[text()[normalize-space()='Profession']]")
+    Alternative_format = PageElement(
+        By.XPATH, "//span[text()[normalize-space()='Alternative format']]"
+    )
+    Resource_type = PageElement(
+        By.XPATH, "//span[text()[normalize-space()='Resource type']]"
+    )
+    Resource_type_Expanded = PageElement(
+        By.XPATH, "//label[text()[normalize-space()='Brand assets and guidelines']]"
+    )
     register_landing = PageElement(By.XPATH, "//h1[text()='Register']")
     Breastfeeding_friend_A3_poster_link = PageElement(
         By.XPATH, "(//h3[text()='Breastfeeding Friend A3 poster'])[2]"
@@ -461,25 +466,30 @@ class CRCV3MainPage(BasePage):
     register_invalid_error_problem_list = PageElement(
         By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']//li"
     )
+    Address_error_list = PageElement(
+        By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']//li"
+    )
+    Empty_error = PageElement(
+        By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']//a[1]"
+    )
     filter_by_topics_list = PageElement(
         By.XPATH, "//div[@class='campaign-filters']/ul/li"
     )
-    sort = PageElement(By.ID, "sort")
-    order_confirmation_message = PageElement(
-        By.XPATH, "//h1[text()='Your order has been placed']"
-    )
-    review_order = PageElement(By.XPATH, "//button[text()='Review order']")
-    place_order = PageElement(By.NAME, "place-order")
+    All_topics = PageElement(By.LINK_TEXT, "All")
     click_resource_tab = PageElement(By.LINK_TEXT, "Resources")
+    click_campaign_planning_tab = PageElement(By.LINK_TEXT, "Campaign planning")
+    click_about_tab = PageElement(By.LINK_TEXT, "About")
     Resource_Search_label = PageElement(By.XPATH, "//h1[text()='Search']")
-    select_resource_add = PageElement(
-        By.XPATH, "//h3[text()='Food Scanner app posters']"
+    Campaign_Planning_label = PageElement(By.TAG_NAME, "h1")
+    about_label = PageElement(By.TAG_NAME, "h1")
+    select_resource_add = PageElement(By.LINK_TEXT, "Food Scanner app posters")
+    resource_count_text_box = PageElement(By.ID, "resource-BHCHO-NUT2")
+    invalid_resource_errors_list = PageElement(
+        By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']//a[1]"
     )
     A4_Poster = PageElement(By.XPATH, "//button[text()='Add to basket']")
     Add_to_Basket = PageElement(By.XPATH, "//button[text()='Add to basket']")
-    A4_poster_resource = PageElement(
-        By.XPATH, "//h3[text()='A4 poster – ready to use']"
-    )
+    A4_poster_resource = PageElement(By.TAG_NAME, "h1")
     basket = PageElement(By.XPATH, "(//a[@href='/baskets/view_basket ']//span)[2]")
     order_quantity = PageElement(By.ID, "resource-BHCHO-NUT2")
     Proceed_to_checout = PageElement(By.ID, "proceed-to-checkout")
@@ -489,9 +499,41 @@ class CRCV3MainPage(BasePage):
     postcode = PageElement(By.ID, "id_Address5")
     review_order = PageElement(By.XPATH, "//button[text()='Review order']")
     place_order = PageElement(By.NAME, "place-order")
+    order_confirmation_message = PageElement(
+        By.XPATH, "//h1[text()='Your order has been placed']"
+    )
+    account_page_landing = PageElement(
+        By.XPATH, "//strong[text()='Manage your account']"
+    )
+    account_details_page = PageElement(By.TAG_NAME, "h1")
+    Newsletter_preferences_page = PageElement(By.TAG_NAME, "h1")
+    Order_history_page = PageElement(By.TAG_NAME, "h1")
+    Password_reset_page = PageElement(By.TAG_NAME, "h1")
+    account_link = PageElement(By.XPATH, "//a[@href='/account ']")
+    account_details = PageElement(By.LINK_TEXT, "Account details")
+    password_reset_link = PageElement(By.LINK_TEXT, "Reset your password")
+    Newsletter_preferences = PageElement(By.LINK_TEXT, "Newsletter preferences")
+    Order_history = PageElement(By.LINK_TEXT, "Order history")
+    Signout_account_link = PageElement(By.LINK_TEXT, "Sign out")
+    show_all_sections_expand = PageElement(
+        By.CLASS_NAME, "govuk-accordion__show-all-text"
+    )
+    hide_all_sections = PageElement(By.XPATH, "//span[text()='Hide all sections']")
+    we_are_locally_driven_expand = PageElement(By.XPATH, "//span[text()='Show']")
+    hide_we_are_locally_driven = PageElement(By.XPATH, "//span[text()='Hide']")
+    we_are_prototype_learn_expand = PageElement(By.XPATH, "(//span[text()='Show'])[2]")
+    hide_we_are_prototype = PageElement(By.XPATH, "//span[text()='Hide']")
 
     def CRCV3_Campaigns_list_h3(self):
+        # self.interact.click_element(self.campaigns_tab)
         list_elements = self.find.elements(self.Campaigns_list)
+        elements = []
+        for element in list_elements:
+            elements.append(element.text)
+        return elements
+
+    def CRCV3_Campaigns_Planning_list_h3(self):
+        list_elements = self.find.elements(self.Campaigns_Planning_list)
         elements = []
         for element in list_elements:
             elements.append(element.text)
@@ -506,6 +548,12 @@ class CRCV3MainPage(BasePage):
         # x_path = f'.//a[@href='/campaigns/?topic=list&sort=newest']
         # self.interact.click_element(x_path)
         # sleep(5)
+        # self.driver.back()
+
+        # x_path = f'\'{list}\']'
+        # #// h3[text() = 'Better Health Food Scanner App']
+        # Element = PageElement(By.XPATH, "//h3[text() ='"' + link + '"']")
+        # self.interact.click_element(Element)
         # self.driver.back()
 
     def return_empty_register_errors_link_url(self):
@@ -529,15 +577,29 @@ class CRCV3MainPage(BasePage):
             elements.append(element.text)
         return elements
 
-    def return_filter_by_topics_list(self):
-        list_elements = self.find.elements(self.filter_by_topics_list)
+    def return_errors_lists(self):
+        list_elements = self.find.elements(self.Address_error_list)
         elements = []
         for element in list_elements:
             elements.append(element.text)
         return elements
 
-    def return_invalid_register_errors_link_url(self):
-        list_elements = self.find.elements(self.register_invalid_error_problem_list)
+    def Empty_email_error(self):
+        list_elements = self.find.elements(self.Empty_error)
+        elements = []
+        for element in list_elements:
+            elements.append(element.text)
+        return elements
+
+    # def Invalid_email_error(self):
+    #     list_elements = self.find.elements(self.Empty_error)
+    #     elements = []
+    #     for element in list_elements:
+    #         elements.append(element.text)
+    #     return elements
+
+    def return_invalid_resource_errors_link_url(self):
+        list_elements = self.find.elements(self.invalid_resource_errors_list)
         elements = []
         for element in list_elements:
             elements.append(element.text)
@@ -577,13 +639,92 @@ class CRCV3MainPage(BasePage):
             "Search",
         )
 
+    def click_campaign_planning(self):
+        self.interact.click_element(self.click_campaign_planning_tab)
+        assert_that(
+            self.interrogate.is_element_visible(self.Campaign_Planning_label),
+            equal_to(True),
+            "Campaign Planning tab is not opening",
+        )
+
+    def Click_About(self):
+        self.interact.click_element(self.click_about_tab)
+        assert_that(
+            self.interrogate.is_element_visible(self.about_label),
+            equal_to(True),
+            "about tab is not opening",
+        )
+
+    def Click_OHID_link(self):
+        assert_that(
+            right_click_link(
+                self, "Office for Health Improvement and Disparities (OHID)"
+            ),
+            contains_string(
+                "https://www.gov.uk/government/organisations/office-for-health-improvement-and-disparities/about"
+            ),
+            "We are undefeatable campaign detail url doesn't match",
+        )
+
+    def what_guides_us_expand_collapse(self):
+        self.interact.click_element(self.show_all_sections_expand)
+        assert_that(
+            self.interrogate.is_element_visible(self.hide_all_sections),
+            equal_to(True),
+            "show all sections isn't expanded",
+        )
+        self.interact.click_element(self.show_all_sections_expand)
+        self.interact.click_element(self.we_are_locally_driven_expand)
+        assert_that(
+            self.interrogate.is_element_visible(self.hide_we_are_locally_driven),
+            equal_to(True),
+            "we are locally driven isn't expanded",
+        )
+        self.interact.click_element(self.we_are_locally_driven_expand)
+        self.interact.click_element(self.we_are_prototype_learn_expand)
+        assert_that(
+            self.interrogate.is_element_visible(self.hide_we_are_prototype),
+            equal_to(True),
+            "we are prototype learn isn't expanded",
+        )
+        self.interact.click_element(self.we_are_prototype_learn_expand)
+
     def select_resource(self):
         self.interact.click_element(self.select_resource_add)
         assert_that(
-            self.interrogate.get_attribute(self.A4_poster_resource, "innerHTML"),
-            equal_to("A4 poster – ready to use"),
+            self.interrogate.is_element_visible(self.A4_poster_resource),
+            equal_to(True),
             "A4 Poster title is not displayed",
         )
+        self.interact.click_element(self.Add_to_Basket)
+        sleep(5)
+
+    def select_resource_add_tab(self):
+        self.interact.click_element(self.select_resource_add)
+
+    def select_invalid_resource_count(self, count):
+        # self.interact.click_element(self.select_resource_add)
+        self.driver.find_element_by_id("resource-BHCHO-NUT2").clear()
+        # self.interact.send_keys(self.resource_count_text_box).delete()
+        self.interact.send_keys(self.resource_count_text_box, count)
+        self.interact.click_element(self.Add_to_Basket)
+        actual_Register_error_list = self.return_invalid_resource_errors_link_url()
+        # for error in expected_Register_problem_error_url_list:
+        #     assert_that(any(error in s for s in actual_Register_error_list), equal_to(True),
+        #                 f"error link as not as expected: {error}")
+        assert_that(
+            actual_Register_error_list[0],
+            contains_string(
+                "A4 poster – ready to use: Enter a quantity of 10 or fewer"
+            ),
+            "Invalid Resource count validation",
+        )
+        # self.interact.click_element(self.Add_to_Basket)
+        sleep(5)
+
+    def select_valid_resource_count(self, count):
+        self.driver.find_element_by_id("resource-BHCHO-NUT2").clear()
+        self.interact.send_keys(self.resource_count_text_box, count)
         self.interact.click_element(self.Add_to_Basket)
         sleep(5)
 
@@ -607,6 +748,55 @@ class CRCV3MainPage(BasePage):
     def click_place_order(self):
         self.interact.click_element(self.place_order)
         sleep(5)
+
+    def click_account(self):
+        self.interact.click_element(self.account_link)
+        assert_that(
+            self.interrogate.is_element_visible(self.account_page_landing),
+            equal_to(True),
+            "account page is not displayed",
+        )
+        sleep(5)
+
+    def account_links(self):
+        self.interact.click_element(self.account_details)
+        assert_that(
+            self.interrogate.is_element_visible(self.account_details_page),
+            equal_to(True),
+            "account details page is not displayed",
+        )
+        self.interact.click_element(self.Newsletter_preferences)
+        assert_that(
+            self.interrogate.is_element_visible(self.Newsletter_preferences_page),
+            equal_to(True),
+            "Newsletter preferences page is not displayed",
+        )
+        self.interact.click_element(self.Order_history)
+        assert_that(
+            self.interrogate.is_element_visible(self.Order_history_page),
+            equal_to(True),
+            "Order history page is not displayed",
+        )
+        sleep(5)
+        self.interact.click_element(self.Signout_account_link)
+        sleep(5)
+        assert_that(
+            self.interrogate.get_attribute(self.Sign_In_label, "innerHTML"),
+            contains_string("Sign in"),
+            "Sign In Page is not loaded",
+        )
+
+    def password_reset(self):
+        self.interact.click_element(self.password_reset_link)
+        assert_that(
+            self.interrogate.is_element_visible(self.Password_reset_page),
+            equal_to(True),
+            "Password reset page is not displayed",
+        )
+
+    def Empty_Email_validation(self):
+        self.submit_button()
+        # assert_that()
 
     def order_confirmation(self):
         assert_that(
@@ -651,13 +841,15 @@ class CRCV3MainPage(BasePage):
 
     def CRCV3_Mainpage_labels(self):
         assert_that(
-            self.interrogate.get_attribute(self.Covid_label, "innerHTML"),
-            contains_string("Coronavirus (COVID-19) advice and resources"),
+            self.interrogate.is_image_visible_by_checking_src(self.Covid_label),
+            equal_to(True),
             "Covid label is not displayed",
         )
         assert_that(
-            self.interrogate.get_attribute(self.Latest_updates_label, "innerHTML"),
-            equal_to("Latest updates"),
+            self.interrogate.is_image_visible_by_checking_src(
+                self.Latest_updates_label
+            ),
+            equal_to(True),
             "Latest updates label is not displayed",
         )
 
@@ -667,6 +859,7 @@ class CRCV3MainPage(BasePage):
 
     def CRCV3_SignIn(self):
         self.interact.click_element(self.Sign_In_link)
+        sleep(5)
         assert_that(
             self.interrogate.get_attribute(self.Sign_In_label, "innerHTML"),
             contains_string("Sign in"),
@@ -677,32 +870,36 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Sign_in_button)
 
     def verify_logout(self):
-        WebDriverWait(self.driver, 120).until(
+        WebDriverWait(self.driver, 30).until(
             EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
         )
-        # assert_that(
-        #     self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable),
-        #     equal_to(True),
-        #     "Sign out label is not displayed",
-        # )
+        # self.wait.until(self.interrogate.get_attribute(self.Sign_out_lable), "Sign out")
+        # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable), equal_to(True), "Sign out label is not displayed")
 
     def Sign_Out(self, context):
         context.landing_page = CRCV3MainPage(context.browser, context.logger)
-        self.interact.click_element(self.Sign_out_link)
-        sleep(5)
-        WebDriverWait(self.driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//a[@href='/login/ ']"))
-        )
         # self.interact.click_element(self.Sign_out_link)
         # Signout_displayed = context.landing_page.is_Signout_displayed()
-        # if Signout_displayed is True:
-        #     self.interact.click_element(self.Sign_out_link)
-        # sleep(5)
-        # assert_that(
-        #     self.interrogate.is_element_visible(self.Sign_In_link),
-        #     equal_to(True),
-        #     "Sign out is not working",
-        # )
+        # if Signout_displayed == "Sign out":
+        self.interact.click_element(self.Sign_out_link)
+        sleep(15)
+        # WebDriverWait(self.driver, 30).until(
+        #   EC.presence_of_element_located((By.XPATH, "//a[@href='/login/ ']")))
+        # assert_that(self.wait.until(self.Sign_In_link), equal_to(True), "Sign out is not working")
+        # assert_that(self.interrogate.is_element_visible(self.Sign_In_link), equal_to(True), "Sign out is not working")
+
+    #
+    # self.interact.click_element(self.Sign_out_link)
+    # sleep(5)
+    # Signout_displayed = context.landing_page.is_Signout_displayed()
+    # if Signout_displayed is True:
+    #     self.interact.click_element(self.Sign_out_link)
+    # sleep(5)
+    # assert_that(
+    #     self.interrogate.is_element_visible(self.Sign_In_link),
+    #     equal_to(True),
+    #     "Sign out is not working",
+    # )
 
     def forgot_password_click(self):
         self.interact.click_element(self.forgot_password_link)
@@ -770,32 +967,26 @@ class CRCV3MainPage(BasePage):
         elif option == "Cervical_Screening":
             self.interact.click_element(self.Cervical_Screening)
             assert_that(
-                self.interrogate.get_attribute(
-                    self.Cervical_Screening_landing, "innerHTML"
-                ),
-                equal_to("Cervical Screening"),
+                self.interrogate.is_element_visible(self.Cervical_Screening_landing),
+                equal_to(True),
                 "Cervical Screening page not loaded",
             )
             # self.driver.back()
         elif option == "We_Are_Undefeatable":
             self.interact.click_element(self.We_Are_Undefeatable)
             assert_that(
-                self.interrogate.get_attribute(
-                    self.We_Are_Undefeatable_landing, "innerHTML"
-                ),
-                equal_to("We Are Undefeatable"),
+                self.interrogate.is_element_visible(self.We_Are_Undefeatable_landing),
+                equal_to(True),
                 "We Are Undefeatable page not loaded",
             )
             # self.driver.back()
         elif option == "Better_Health_Local_Authority_Tier_2":
             self.interact.click_element(self.Better_Health_Local_Authority_Tier_2)
             assert_that(
-                self.interrogate.get_attribute(
-                    self.Better_Health_Local_Authority_Tier_2_landing, "innerHTML"
+                self.interrogate.is_element_visible(
+                    self.Better_Health_Local_Authority_Tier_2_landing
                 ),
-                equal_to(
-                    "Better Health Local Authority Tier 2 Adult Weight Management Programme"
-                ),
+                equal_to(True),
                 "Better Health Local Authority Tier 2 page not loaded",
             )
             # self.driver.back()
@@ -862,7 +1053,7 @@ class CRCV3MainPage(BasePage):
             self.driver.back()
         elif Link == "We_Are_Undefeatable":
             assert_that(
-                right_click_link(self, "weareundefeatable.co.uk/"),
+                right_click_link(self, "www.weareundefeatable.co.uk"),
                 contains_string("https://weareundefeatable.co.uk/"),
                 "We are undefeatable campaign detail url doesn't match",
             )
@@ -872,19 +1063,19 @@ class CRCV3MainPage(BasePage):
             # self.driver.back()
         elif Link == "Better_Health_Local_Authority_Tier_2":
             assert_that(
-                right_click_link(self, "www.nhs.uk/better-health/"),
+                right_click_link(self, "www.nhs.uk/better-health"),
                 contains_string("https://www.nhs.uk/better-health/"),
                 "Better Health Local Authority Tier 2 detail url doesn't match",
             )
 
     def Research_behind_this_campaign(self, source):
         if source == "Start4Life":
-            text = assert_that(
-                self.interrogate.is_image_visible_by_checking_src(self.S4l_Image),
+            assert_that(
+                self.interrogate.is_element_visible(self.S4l_h1),
                 equal_to(True),
-                "Alt is not available",
+                "S4L header is not available",
             )
-            print(text)
+            # print(text)
             self.interact.click_element(self.Research_beyond_this_campaign_S4L_link)
             assert_that(
                 self.interrogate.is_image_visible_by_checking_src(
@@ -1084,16 +1275,10 @@ class CRCV3MainPage(BasePage):
             )
             # self.Sign_In_register_link()
             self.driver.back()
-            self.interact.click_element(self.Pre_measurement_leaflet)
-            assert_that(
-                self.interrogate.is_image_visible_by_checking_src(
-                    self.Pre_measurement_leaflet_Landing
-                ),
-                equal_to(True),
-                "Pre-measurement leaflet link not working",
-            )
-            # self.Sign_In_register_link()
-            self.driver.back()
+            # self.interact.click_element(self.Pre_measurement_leaflet)
+            # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Pre_measurement_leaflet_Landing), equal_to(True), "Pre-measurement leaflet link not working")
+            # #self.Sign_In_register_link()
+            # self.driver.back()
         elif source == "Betterhealth":
             self.interact.click_element(self.Social_statics)
             assert_that(
@@ -1181,7 +1366,7 @@ class CRCV3MainPage(BasePage):
         elif Campaigns == "Accessing NHS mental health services":
             self.interact.click_element(self.Accessing_NHS_mental_health_services)
             assert_that(
-                self.interrogate.is_image_visible_by_checking_src(
+                self.interrogate.is_element_visible(
                     self.Accessing_NHS_mental_health_services_Landing
                 ),
                 equal_to(True),
@@ -1200,7 +1385,7 @@ class CRCV3MainPage(BasePage):
                 self.Abdominal_and_urological_symptoms_of_cancer
             )
             assert_that(
-                self.interrogate.is_image_visible_by_checking_src(
+                self.interrogate.is_element_visible(
                     self.Abdominal_and_urological_symptoms_of_cancer_Landing
                 ),
                 equal_to(True),
@@ -1208,7 +1393,7 @@ class CRCV3MainPage(BasePage):
             )
             self.interact.click_element(self.Accessible_campaign_posters)
             assert_that(
-                self.interrogate.is_image_visible_by_checking_src(
+                self.interrogate.is_element_visible(
                     self.Accessible_campaign_posters_landing
                 ),
                 equal_to(True),
@@ -1224,7 +1409,7 @@ class CRCV3MainPage(BasePage):
         elif Campaigns == "Childhood vaccination 2022":
             self.interact.click_element(self.Childhood_vaccination_2022)
             assert_that(
-                self.interrogate.is_image_visible_by_checking_src(
+                self.interrogate.is_element_visible(
                     self.Childhood_vaccination_2022_Landing
                 ),
                 equal_to(True),
@@ -1297,9 +1482,7 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.campaigns_tab)
         self.interact.click_element(self.BH_Start4Life_link)
         assert_that(
-            self.interrogate.is_image_visible_by_checking_src(
-                self.BH_Start4Life_Landing
-            ),
+            self.interrogate.is_element_visible(self.BH_Start4Life_Landing),
             equal_to(True),
             "BH Start4Life link not working",
         )
@@ -1375,6 +1558,50 @@ class CRCV3MainPage(BasePage):
             # assert_that(self.interrogate.get_attribute(self.register_Success, "innerHTML"),
             # equal_to("Thank you for registering"), "Register a user is not working")
 
+    def expand_collapse_filter_results(self):
+        self.interact.click_element(self.topics)
+        assert_that(
+            self.interrogate.is_element_visible(self.Topics_Expanded),
+            equal_to(True),
+            "Topics link isn't expanded",
+        )
+        self.interact.click_element(self.topics)
+        self.interact.click_element(self.target_audience)
+        assert_that(
+            self.interrogate.is_element_visible(self.target_audience_Expanded),
+            equal_to(True),
+            "target audience link isn't expanded",
+        )
+        self.interact.click_element(self.target_audience)
+        self.interact.click_element(self.Language)
+        assert_that(
+            self.interrogate.is_element_visible(self.Language_Expanded),
+            equal_to(True),
+            "Language link isn't expanded",
+        )
+        self.interact.click_element(self.Language)
+        self.interact.click_element(self.Profession)
+        assert_that(
+            self.interrogate.is_element_visible(self.Profession_Expanded),
+            equal_to(True),
+            "Profession link isn't expanded",
+        )
+        self.interact.click_element(self.Profession)
+        self.interact.click_element(self.Alternative_format)
+        assert_that(
+            self.interrogate.is_element_visible(self.Alternative_format_Expanded),
+            equal_to(True),
+            "Alternative format link isn't expanded",
+        )
+        self.interact.click_element(self.Alternative_format)
+        self.interact.click_element(self.Resource_type)
+        assert_that(
+            self.interrogate.is_element_visible(self.Resource_type_Expanded),
+            equal_to(True),
+            "Resource type link isn't expanded",
+        )
+        self.interact.click_element(self.Resource_type)
+
     def is_error_message_displayed(self):
         actual_message = "Please choose a UK country"
         return self.interrogate.is_element_visible_and_contains_text(
@@ -1385,7 +1612,10 @@ class CRCV3MainPage(BasePage):
         return self.interrogate.is_element_visible(self.cookie_banner)
 
     def is_Signout_displayed(self):
-        return self.interrogate.is_element_visible(self.Sign_out_lable)
+        Element = WebDriverWait(self.driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
+        )
+        # return self.wait.until(self.interrogate.is_element_visible_and_contains_text(self.Sign_out_lable, "Sign Out"), "Sign out is not displayed")
 
     def click_do_not_accept_on_cookie_banner(self):
         return self.interact.click_element(self.cookie_banner_do_not_accept)

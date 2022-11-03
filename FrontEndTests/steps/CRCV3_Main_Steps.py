@@ -1,8 +1,3 @@
-from os import environ
-
-# import pandas as pd
-import os
-import csv
 from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
@@ -60,6 +55,21 @@ def CRCV3_Campaigns_list_h3(context):
         # i= i+1
         # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
 
+
+@Step("Verify list of campaigns listed in campaigns Planning tab and have H3")
+def CRCV3_Campaigns_Planning_list_h3(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    Campaigns_list = context.support_page.CRCV3_Campaigns_Planning_list_h3()
+    # i = int
+    # i = 0
+    for list in Campaigns_list:
+        h3 = list.split("\n")[0]
+        print(h3)
+        # url = context.get_url(h3)
+        context.support_page.click_h3(h3)
+        # i= i+1
+        # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
+
     # Verify message prompts for get support when no country selected
 
 
@@ -71,19 +81,11 @@ def Sign_in_link(context):
     context.CRCV3_home.CRCV3_SignIn()
 
 
-@Step("I enter your login details")
-def Login_fields_valid_Inputs(context):
-    context.support_page = CRCV3MainPage(context.browser, context.logger)
-    with open("./login.csv") as csvfile:
-        reader = csv.reader(csvfile)
-        email, password = next(reader)
-    context.support_page.sign_up_for_email_form(email, password)
-
-
 @Step('I enter your details of "{email}" "{password}"')
 def Login_fields(context, email, password):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.sign_up_for_email_form(email, password)
+    # context.support_page.CRCV3_SignIn()
 
 
 @Step("I sign in")
@@ -122,10 +124,10 @@ def forgot_password_click(context):
     context.support_page.forgot_password_click()
 
 
-@Step('I enter Email address field with "{email}"')
-def forgot_Password(context, email):
+@Step('I enter Email address field with "{invalid_email}"')
+def forgot_Password(context, invalid_email):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
-    context.support_page.forgot_password_email(email)
+    context.support_page.forgot_password_email(invalid_email)
 
 
 @Step("I submit")
@@ -162,14 +164,12 @@ def Home_Tab(context):
     context.support_page.HomeTab()
 
 
-@Step(
-    "Verify Covid advices resources links and Coronavirus campaigns and resources button working"
-)
-def Home_Tab(context):
-    context.support_page = CRCV3MainPage(context.browser, context.logger)
-    context.support_page.Covid_19_links()
+# @Step("Verify Covid advices resources links and Coronavirus campaigns and resources button working")
+# def Home_Tab(context):
+#     #context.support_page = CRCV3MainPage(context.browser, context.logger)
+#     #context.support_page.Covid_19_links()
 
-    # @CRCV3-008 - open CRCV3 site and verify Latest Updated links are loaded to respective pages
+# @CRCV3-008 - open CRCV3 site and verify Latest Updated links are loaded to respective pages
 
 
 @Step("I click on Latest updates links")
@@ -180,7 +180,7 @@ def Latest_Updates_links(context):
         context.support_page.Latest_Updates_links(links)
         # Close_window(context, 'back')
         # context.driver.back()
-    context.support_page.How_to_guides()
+    # context.support_page.How_to_guides()
 
 
 @Step("Verify how to guide page loaded successfully")
@@ -405,6 +405,124 @@ def place_order(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.click_place_order()
     context.support_page.order_confirmation()
+
+
+@Step("select any resource and change the count less than 1 and more than 10")
+def resource_validation(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    expected_counts = create_list_from_feature_table_column(context, "count")
+    context.support_page.select_resource_add_tab()
+    # context.support_page.select_invalid_resource_count()
+    for count in expected_counts:
+        context.support_page.select_invalid_resource_count(count)
+    sleep(5)
+    context.support_page.select_valid_resource_count(1)
+
+
+@Step("verify empty and invalid delivery address and click review order Error_lists")
+def address_validation(context):
+    context.support_page.click_review_order()
+    expected_error_lists = create_list_from_feature_table_column(context, "Error_lists")
+    actual_error_lists = context.support_page.return_errors_lists()
+    for error in expected_error_lists:
+        assert_that(
+            any(error in s for s in actual_error_lists),
+            equal_to(True),
+            f"error link as not as expected: {error}",
+        )
+
+
+@Step("click on account tab and verify page loaded")
+def Manage_your_accounts(context):
+    context.support_page.click_account()
+
+
+@Step("verify all Manage your account links are working and loading the details")
+def Account_links(context):
+    context.support_page.account_links()
+
+
+@Step("click on reset password link and verify the page loaded successfully")
+def Password_reset(context):
+    context.support_page.password_reset()
+
+
+@Step("verify the Empty_email address validation")
+def address_validation(context):
+    context.support_page.Empty_Email_validation()
+    expected_error_lists = create_list_from_feature_table_column(context, "Empty_email")
+    actual_error_lists = context.support_page.Empty_email_error()
+    for error in expected_error_lists:
+        assert_that(
+            any(error in s for s in actual_error_lists),
+            equal_to(True),
+            f"error link as not as expected: {error}",
+        )
+
+
+@Step("verify the Invalid_email address validation")
+def Invalid_Email(context):
+    expected_error_lists = create_list_from_feature_table_column(
+        context, "Invalid_email"
+    )
+    actual_error_lists = context.support_page.Empty_email_error()
+    for error in expected_error_lists:
+        assert_that(
+            any(error in s for s in actual_error_lists),
+            equal_to(True),
+            f"error link as not as expected: {error}",
+        )
+
+
+@Step(
+    "I enter Email address field with invalid_email and click submit button then verify invalid_email_error"
+)
+def Empty_email(context):
+    invalid_email_lists = create_list_from_feature_table_column(
+        context, "invalid_email"
+    )
+    for email in invalid_email_lists:
+        context.support_page.forgot_password_email(email)
+        context.support_page.submit_button()
+        expected_error_lists = create_list_from_feature_table_column(
+            context, "invalid_email_error"
+        )
+        actual_error_lists = context.support_page.Empty_email_error()
+        for error in expected_error_lists:
+            assert_that(
+                any(error in s for s in actual_error_lists),
+                equal_to(True),
+                f"error link as not as expected: {error}",
+            )
+
+
+@Step("click on filter results by links expand and collapse")
+def filter_results_collaps_Expand(context):
+    context.support_page.expand_collapse_filter_results()
+
+
+@Step("click on campaign planning tab and verify its loaded")
+def Campaign_planning_tab(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.click_campaign_planning()
+
+
+@Step("click on about tab and verify its loaded")
+def About_tab(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.Click_About()
+
+
+@Step("verify OHID link is accessible")
+def about_ohid(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.Click_OHID_link()
+
+
+@Step("verify what guides us sections are working")
+def what_guides_us(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.what_guides_us_expand_collapse()
 
 
 def Close_window(context, option):
