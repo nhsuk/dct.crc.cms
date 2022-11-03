@@ -1,3 +1,4 @@
+import csv
 from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
@@ -103,8 +104,6 @@ def Login_fields(context, email, password):
     # context.support_page.CRCV3_SignIn()
 
 
-<<<<<<< Updated upstream
-=======
 @Step("I enter your login details")
 def Login_fields_valid_Inputs(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
@@ -114,7 +113,6 @@ def Login_fields_valid_Inputs(context):
     context.support_page.sign_up_for_email_form(email, password)
 
 
->>>>>>> Stashed changes
 @Step("I sign in")
 def Sign_In(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
