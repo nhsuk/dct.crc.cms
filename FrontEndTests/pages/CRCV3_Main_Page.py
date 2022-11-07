@@ -89,7 +89,7 @@ class CRCV3MainPage(BasePage):
         By.LINK_TEXT, "https://weareundefeatable.co.uk/"
     )
     related_website_link_Breastfeeding = PageElement(
-        By.LINK_TEXT, "http://www.nhs.uk/start4life"
+        By.LINK_TEXT, "https://www.nhs.uk/start4life"
     )
     C4L_related_website_landing = PageElement(
         By.XPATH, "//h2[text()='Easy ways to eat well and move more']"

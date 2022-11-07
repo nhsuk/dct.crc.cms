@@ -668,6 +668,8 @@ NOTIFY_DEBUG = getenv_bool("NOTIFY_DEBUG", False)
 
 ADOBE_TRACKING_URL = env.get("ADOBE_TRACKING_URL")
 
+COOKIE_DECLARATION = env.get("COOKIE_DECLARATION")
+
 # Silence system checks.
 
 SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]

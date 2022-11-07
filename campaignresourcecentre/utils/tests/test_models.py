@@ -23,6 +23,6 @@ class TrackingTest(TestCase):
                 "GOOGLE_TAG_MANAGER_ID": "GTM-123456",
                 "SEO_NOINDEX": False,
                 "BASKET_ITEM_COUNT": 0,
-                "CANONICAL_PATH": "http://testserver/",
+                "CANONICAL_PATH": "https://testserver/",
             },
         )

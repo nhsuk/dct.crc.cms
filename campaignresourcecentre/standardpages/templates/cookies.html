@@ -1,5 +1,6 @@
 {% extends "base_page.html" %}
 {% load wagtailcore_tags navigation_tags reading_time_tags static %}
+{% load get_django_setting %}
 
 {% block title %}Cookie Declaration{% endblock %}
 
@@ -44,7 +45,7 @@
                             </h3>
                         </summary>
                         <div class="govuk-details__text">
-                            <div class="CookieDeclaration" lang="en" dir="ltr"></div> <script id="CookieDeclaration" src="https://consent.cookiebot.com/9d5293f5-cb06-4c3c-a81c-58ac270dec41/cd.js" async></script>
+                            <div class="CookieDeclaration" lang="en" dir="ltr"></div> <script id="CookieDeclaration" src="{% get_django_setting "COOKIE_DECLARATION" %}" async></script>
                         </div>
                     </details>
                 </div> 
