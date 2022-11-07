@@ -11,7 +11,7 @@ pool:
   vmImage: ubuntu-latest
 
 jobs:
-  - job: SonarQube analysis
+  - job: SonarQube_analysis
     steps:
     - task: Docker@2
       inputs:
@@ -56,8 +56,8 @@ jobs:
         searchFolder: '$(Common.TestResultsDirectory)'
     - task: SonarQubeAnalyze@5
 
-  - job: Post SonarQube PR review
-    dependsOn: SonarQube analysis
+  - job: SonarQube_review
+    dependsOn: SonarQube_analysis
     condition: and(startsWith(variables['Build.SourceBranch'], 'refs/pull/'), endsWith(variables['Build.SourceBranch'],'/head') )
     steps: 
 
