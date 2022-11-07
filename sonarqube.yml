@@ -58,7 +58,7 @@ jobs:
 
   - job: SonarQube_review
     dependsOn: SonarQube_analysis
-    condition: and(startsWith(variables['Build.SourceBranch'], 'refs/pull/'), endsWith(variables['Build.SourceBranch'],'/head') )
+    condition: eq(variables['Build.Reason'], 'PullRequest')
     steps: 
 
       - task: AzureKeyVault@1
