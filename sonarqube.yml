@@ -10,7 +10,7 @@ schedules:
 pool:
   vmImage: ubuntu-latest
 
-- jobs:
+jobs:
   - job: SonarQube analysis
     steps:
     - task: Docker@2
