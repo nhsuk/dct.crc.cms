@@ -74,6 +74,6 @@ jobs:
           pip install PyGithub==1.57
           pip install python-sonarqube-api==1.3.5
           ls
-          python3 ./spqr/src/sqpr.py -g $(githubToken) -k DCT_Campaigns_Resource_Centre -p $(System.PullRequest.PullRequestId) -r nhsuk/dct-campaign-resource-centre -s $(sonarqubeToken) -u https://sonarqube.nhswebsite-staging.nhs.uk
+          python3 spqr/src/sqpr.py -g $(githubToken) -k DCT_Campaigns_Resource_Centre -p $(System.PullRequest.PullRequestId) -r nhsuk/dct-campaign-resource-centre -s $(sonarqubeToken) -u https://sonarqube.nhswebsite-staging.nhs.uk
 
         displayName: 'Post PR Review'
