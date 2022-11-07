@@ -151,8 +151,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
