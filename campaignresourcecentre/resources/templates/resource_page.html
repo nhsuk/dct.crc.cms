@@ -171,15 +171,13 @@
                     (xhr.onreadystatechange = function () {
                         // Navigate to the href when readyState is DONE (response is received or after 500 milliseconds)
                         if (4 === xhr.readyState) {
-                            if (xhr.status === 200) {
-                                console.log(xhr.responseText)
-                            } else {
-                                console.log("Error", xhr.statusText);
-                            }
                             window.location.href = href
+                            if(xhr.status != 200) {
+                                console.log("Error: "+ xhr.status + "-" + xhr.responseText);
+                            }
                         }
                     }),
-                    xhr.send(JSON.stringify({"data": message}));
+                    xhr.send(JSON.stringify({"message": message}));
                 });
             }
         }
