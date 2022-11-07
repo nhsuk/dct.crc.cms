@@ -65,7 +65,7 @@ jobs:
         inputs:
           azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
           KeyVaultName: 'dct-crc-v3-vlt-int-uks'
-          SecretsFilter: 'githubToken','sonarqubeToken'
+          SecretsFilter: '*'
           RunAsPreJob: false
 
       - bash: |
