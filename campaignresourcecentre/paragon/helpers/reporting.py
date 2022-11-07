@@ -10,7 +10,7 @@ def send_report(event_type, params={}):
 
     url = settings.REPORTING_ENDPOINT
     payload = json.dumps(
-        {"data": {"payload": params, "event": event_type, "group": "crc"}}
+        {"message": {"payload": params, "event": event_type, "group": "crc"}}
     )
 
     headers = {
@@ -27,9 +27,9 @@ def send_report(event_type, params={}):
                     )
                 )
             else:
-                logger.info(
-                    "Error sending reporting data for user {} : {}".format(
-                        event_type, response.content
+                logger.error(
+                    "Error sending reporting data for user {} : Code {} - {}".format(
+                        event_type, response.status_code, response.content
                     )
                 )
         except Exception as err:
