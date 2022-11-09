@@ -54,8 +54,8 @@ variables:
   maxReplicas: 7
   averageUtilization: 90
   requestscpu: '600m'
-  requestsmemory: '700Mi'
-  limitsmemory: '1Gi'
+  requestsmemory: '1400Mi'
+  limitsmemory: '2Gi'
   limitscpu:  '1000m'
   appPort: '8000'
   redisUrl: 'redis://crc-v3-redis-svc:6379/0'
