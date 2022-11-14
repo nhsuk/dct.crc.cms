@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.decorators.cache import never_cache
 from django.views.decorators.vary import vary_on_headers
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import TemplateView
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.contrib.sitemaps.views import sitemap
 from wagtail.core import urls as wagtail_urls
@@ -23,14 +23,15 @@ from campaignresourcecentre.paragon_users.views import (
     password_set,
     logout,
     user_profile,
-    newsletter_preferences,
     resend_verification,
+    NewslettersView,
+    NewsletterRegisteringView,
+    EmailUpdatesView,
 )
 from campaignresourcecentre.baskets import views as basket_views
 from campaignresourcecentre.orders import views as orders_views
 from campaignresourcecentre.resources import views as resource_views
 from campaignresourcecentre.campaigns import views as campaign_views
-from campaignresourcecentre.standardpages import views as standardpages_views
 from campaignresourcecentre.standardpages.views import (
     contact_us,
     thank_you,
@@ -38,6 +39,7 @@ from campaignresourcecentre.standardpages.views import (
     session_summary,
     cookie_confirmation,
     cookie_settings,
+    cookie_declaration,
     update_index,
 )
 
@@ -61,7 +63,8 @@ private_urlpatterns = [
     path("logout/", logout, name="logout"),
     path("account/", user_profile, name="account"),
     path("session/summary", session_summary, name="session_summary"),
-    path("account/newsletters/", newsletter_preferences, name="newsletter_preferences"),
+    path("account/newsletters/", NewslettersView.as_view(), name="newsletter_preferences"),
+    path("newsletters/", NewsletterRegisteringView.as_view(), name="newsletter_preferences"),
     path("account/orders/", order_history, name="order_history"),
     path("account/reverification/", resend_verification, name="resend_verification"),
     path("baskets/empty/", basket_views.empty_basket, name="empty_basket"),
@@ -98,15 +101,17 @@ private_urlpatterns = [
     path("render_topic/", campaign_views.render_topic, name="render_topic"),
     path("contact-us/", contact_us, name="contact_us"),
     path("thank_you/", thank_you, name="thank_you"),
-    path("cookies/", standardpages_views.cookie_declaration, name="cookies"),
+    path("cookies/", cookie_declaration, name="cookies"),
     path(
-        "cookie_settings/", standardpages_views.cookie_settings, name="cookie_settings"
+        "cookie_settings/", cookie_settings, name="cookie_settings"
     ),
     path(
         "cookie_confirmation/",
-        standardpages_views.cookie_confirmation,
+        cookie_confirmation,
         name="cookie_confirmation",
     ),
+    path("email_updates/", EmailUpdatesView.as_view(), name="email_updates"),
+
 ]
 private_urlpatterns = decorate_urlpatterns(private_urlpatterns, never_cache)
 
