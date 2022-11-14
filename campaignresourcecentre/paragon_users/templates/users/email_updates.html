@@ -1,0 +1,93 @@
+{% extends "base_page.html" %}
+{% block title %}Email updates{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="POST" class="form-group" novalidate id="signin" autocomplete="off">
+                {% if form.non_field_errors or form.errors %}
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert"
+                        data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>
+                                            <a href="#{{field.id_for_label}}">{{error}}</a>
+                                        </li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            Email updates
+                        </h1>
+                    </legend>
+                    <p>Choose whether you want to recieve emails from us with updates about campaigns and resources
+                        relevant to you.</p>
+                    <p>You can change your preferences, opt in or out of these updates at any time after registering.</p>
+
+                    {% csrf_token %}
+                    <div
+                        class="govuk-form-group {% if form.email_updates.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                        {% if form.email_updates.errors %}
+                            <p id="choice-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {% for error in form.email_updates.errors %}
+                                    {{ error}}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                {{ form.email_updates.0.tag }}
+                                <label class="govuk-label govuk-radios__label"
+                                    for="{{form.email_updates.0.id_for_label}}">
+                                    {{form.email_updates.0.choice_label}}
+                                </label>
+                                <div id="email-updates-item-hint" class="govuk-hint govuk-radios__hint">
+                                    You can choose your preferences on the next page
+                                </div>
+                            </div>
+                            <div class="govuk-radios__item">
+                                {{ form.email_updates.1.tag }}
+                                <label class="govuk-label govuk-radios__label"
+                                    for="{{form.email_updates.1.id_for_label}}">
+                                    {{form.email_updates.1.choice_label}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="govuk-form-group">
+                        <button class="govuk-button primary-button" data-module="govuk-button">Continue</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
