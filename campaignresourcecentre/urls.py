@@ -63,8 +63,14 @@ private_urlpatterns = [
     path("logout/", logout, name="logout"),
     path("account/", user_profile, name="account"),
     path("session/summary", session_summary, name="session_summary"),
-    path("account/newsletters/", NewslettersView.as_view(), name="newsletter_preferences"),
-    path("newsletters/", NewsletterRegisteringView.as_view(), name="newsletter_preferences"),
+    path(
+        "account/newsletters/", NewslettersView.as_view(), name="newsletter_preferences"
+    ),
+    path(
+        "newsletters/",
+        NewsletterRegisteringView.as_view(),
+        name="newsletter_preferences",
+    ),
     path("account/orders/", order_history, name="order_history"),
     path("account/reverification/", resend_verification, name="resend_verification"),
     path("baskets/empty/", basket_views.empty_basket, name="empty_basket"),
@@ -102,16 +108,13 @@ private_urlpatterns = [
     path("contact-us/", contact_us, name="contact_us"),
     path("thank_you/", thank_you, name="thank_you"),
     path("cookies/", cookie_declaration, name="cookies"),
-    path(
-        "cookie_settings/", cookie_settings, name="cookie_settings"
-    ),
+    path("cookie_settings/", cookie_settings, name="cookie_settings"),
     path(
         "cookie_confirmation/",
         cookie_confirmation,
         name="cookie_confirmation",
     ),
     path("email_updates/", EmailUpdatesView.as_view(), name="email_updates"),
-
 ]
 private_urlpatterns = decorate_urlpatterns(private_urlpatterns, never_cache)
 

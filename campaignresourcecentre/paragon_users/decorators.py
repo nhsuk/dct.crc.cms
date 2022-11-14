@@ -79,4 +79,5 @@ def paragon_user_registering(view_func, url="/"):
             return view_func(request, *args, **kwargs)
         else:
             return redirect(url)
+
     return _wrapped_view_func

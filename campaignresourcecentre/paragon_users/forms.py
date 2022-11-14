@@ -206,7 +206,7 @@ class EmailUpdatesForm(forms.Form):
         ("no", "I do not want to receive email updates"),
     )
     email_updates = forms.ChoiceField(
-        widget=forms.RadioSelect(attrs={'class': "govuk-radios__input"}),
+        widget=forms.RadioSelect(attrs={"class": "govuk-radios__input"}),
         choices=EMAIL_UPDATES_CHOICES,
         required=True,
         error_messages={"required": "Select an option"},

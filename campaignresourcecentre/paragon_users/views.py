@@ -161,7 +161,7 @@ class EmailUpdatesView(FormView):
             return redirect("/newsletters")
         elif email_choice == "no":
             # Delete the registaion session variable
-            del self.request.session['registration']
+            del self.request.session["registration"]
             return render(
                 self.request,
                 "users/confirmation_registration.html",
@@ -509,7 +509,8 @@ class NewslettersView(View):
 
             try:
                 self.paragon_client.update_user_profile(
-                    user_token=request.session.get("ParagonUser") or request.session.get("registration"),
+                    user_token=request.session.get("ParagonUser")
+                    or request.session.get("registration"),
                     subscriptions=serialised_newsletters,
                 )
                 # Find all items that haven't changed or have the value of False
@@ -540,7 +541,7 @@ class NewslettersView(View):
             "users/confirmation_newsletters.html",
             {"preferences": newsletters_cleaned},
         )
-    
+
     def render_preferences(self, request, newsletter_form):
         return render(
             request,
@@ -558,7 +559,7 @@ class NewsletterRegisteringView(NewslettersView):
 
     def render_confirmation(self, request, newsletters_cleaned):
         # Delete the registaion session variable
-        del request.session['registration']
+        del request.session["registration"]
         return render(
             request,
             "users/confirmation_registration.html",
@@ -571,6 +572,7 @@ class NewsletterRegisteringView(NewslettersView):
             "users/newsletter_preferences_registration.html",
             {"form": newsletter_form},
         )
+
 
 @paragon_user_logged_in
 def order_history(request):
