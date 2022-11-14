@@ -8,6 +8,9 @@ from django.http import HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 from django.utils import timezone
+from django.views import View
+from django.views.generic.edit import FormView
+from django.utils.decorators import method_decorator
 
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 from campaignresourcecentre.paragon.client import Client
@@ -18,6 +21,7 @@ from campaignresourcecentre.paragon.exceptions import (
 from campaignresourcecentre.paragon_users.decorators import (
     paragon_user_logged_in,
     paragon_user_logged_out,
+    paragon_user_registering,
 )
 from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_data
 from campaignresourcecentre.paragon.helpers.reporting import send_report
@@ -28,6 +32,7 @@ from .forms import (
     PasswordResetForm,
     PasswordSetForm,
     RegisterForm,
+    EmailUpdatesForm,
 )
 from .helpers.newsletter import deserialise, serialise
 from .helpers.postcodes import get_region
@@ -127,12 +132,9 @@ def signup(request):
                         }
                     )
                     send_report("registration", data_dump)
-
-                    return render(
-                        request,
-                        "users/confirmation_registration.html",
-                        {"email": settings.PHE_PARTNERSHIPS_EMAIL},
-                    )
+                    # store user state in session
+                    request.session["registration"] = token
+                    return redirect("/email_updates")
                 else:
                     # Report the failure and return a server error
                     logger.error("Failed to create account: %s" % (response,))
@@ -146,6 +148,30 @@ def signup(request):
         f = RegisterForm()
 
     return render(request, "users/signup.html", {"form": f})
+
+
+@method_decorator(paragon_user_registering, name="dispatch")
+class EmailUpdatesView(FormView):
+    template_name = "users/email_updates.html"
+    form_class = EmailUpdatesForm
+
+    def form_valid(self, form):
+        email_choice = form.cleaned_data.get("email_updates")
+        if email_choice == "yes":
+            return redirect("/newsletters")
+        elif email_choice == "no":
+            # Delete the registaion session variable
+            del self.request.session['registration']
+            return render(
+                self.request,
+                "users/confirmation_registration.html",
+                {"email": settings.PHE_PARTNERSHIPS_EMAIL},
+            )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = EmailUpdatesForm()
+        return context
 
 
 @paragon_user_logged_in
@@ -460,24 +486,30 @@ def user_profile(request):
     return render(request, "users/account.html", context)
 
 
-@paragon_user_logged_in
-def newsletter_preferences(request):
+@method_decorator(paragon_user_logged_in, name="dispatch")
+class NewslettersView(View):
     paragon_client = Client()
-    client_user = paragon_client.get_user_profile(request.session.get("ParagonUser"))[
-        "content"
-    ]
-    newsletters = deserialise(client_user["ProductRegistrationVar7"])
 
-    if request.method == "POST":
+    def get(self, request):
+        client_user = self.paragon_client.get_user_profile(
+            request.session.get("ParagonUser") or request.session.get("registration")
+        )["content"]
+
+        newsletters = deserialise(client_user["ProductRegistrationVar7"])
+
+        newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
+
+        return self.render_preferences(request, newsletter_form)
+
+    def post(self, request):
         newsletter_form = NewsLetterPreferencesForm(request.POST)
-
         if newsletter_form.is_valid():
             newsletters_form = dict(newsletter_form.cleaned_data)
             serialised_newsletters = serialise(newsletters_form)
 
             try:
-                paragon_client.update_user_profile(
-                    user_token=request.session.get("ParagonUser"),
+                self.paragon_client.update_user_profile(
+                    user_token=request.session.get("ParagonUser") or request.session.get("registration"),
                     subscriptions=serialised_newsletters,
                 )
                 # Find all items that haven't changed or have the value of False
@@ -492,12 +524,7 @@ def newsletter_preferences(request):
                     newsletter_form.fields.get(key).label
                     for key in newsletters_form.keys()
                 ]
-
-                return render(
-                    request,
-                    "users/confirmation_newsletters.html",
-                    {"preferences": newsletters_cleaned},
-                )
+                return self.render_confirmation(request, newsletters_cleaned)
             except ParagonClientError as PCE:
                 for error in PCE.args:
                     paresedError = ParseError(error)
@@ -505,20 +532,45 @@ def newsletter_preferences(request):
                         newsletter_form.add_error(None, paresedError[1])
                     else:
                         newsletter_form.add_error(paresedError[0], paresedError[1])
-            return render(
-                request,
-                "users/newsletter_preferences.html",
-                {"form": newsletter_form},
-            )
-    else:
-        newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
+            return self.render_preferences(request, newsletter_form)
 
+    def render_confirmation(self, request, newsletters_cleaned):
+        return render(
+            request,
+            "users/confirmation_newsletters.html",
+            {"preferences": newsletters_cleaned},
+        )
+    
+    def render_preferences(self, request, newsletter_form):
         return render(
             request,
             "users/newsletter_preferences.html",
             {"form": newsletter_form},
         )
 
+
+class NewsletterRegisteringView(NewslettersView):
+
+    # Override the dispatch method for registration decorator
+    @method_decorator(paragon_user_registering)
+    def dispatch(self, *args, **kwargs):
+        return super(NewslettersView, self).dispatch(*args, **kwargs)
+
+    def render_confirmation(self, request, newsletters_cleaned):
+        # Delete the registaion session variable
+        del request.session['registration']
+        return render(
+            request,
+            "users/confirmation_registration.html",
+            {"email": settings.PHE_PARTNERSHIPS_EMAIL},
+        )
+
+    def render_preferences(self, request, newsletter_form):
+        return render(
+            request,
+            "users/newsletter_preferences_registration.html",
+            {"form": newsletter_form},
+        )
 
 @paragon_user_logged_in
 def order_history(request):
