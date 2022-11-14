@@ -93,7 +93,7 @@ def signup(request):
             # Paragon sets its own created_at field but this is only available from the
             # Search API and not from the RetrieveProfile API
             now = timezone.now()
-            created_at = now.strftime("%Y-%m-%dT%H:%M:%S")
+            created_at = now.strftime("%Y-%m-%d %H:%M:%S")
 
             paragon_client = Client()
             try:

@@ -145,6 +145,8 @@
 
                     // Send the API request.
                     const date = new Date();
+                    const _date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    const date_time = `${_date} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
                     let href = this.getAttribute("href");
                     let params = {
                         "resourceId" : this.dataset.resourceId,
@@ -153,8 +155,8 @@
                         "topics" : topics,
                         "campaign" : campaign,
                         "resourceTitle" : this.dataset.resourceTitle,
-                        "date": `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
-                        "ts" :new Date().toUTCString()
+                        "date": _date,
+                        "ts" : date_time,
                     };
                     console.log("--------params---" + JSON.stringify(params) + "----------");
                     

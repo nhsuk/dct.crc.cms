@@ -141,7 +141,7 @@ def place_order(request):
                         "longitude": postcode_data.get("longitude"),
                         "latitude": postcode_data.get("latitude"),
                         "region": postcode_data.get("region"),
-                        "ts": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                        "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
                 send_report("order", data_dump)
