@@ -139,13 +139,14 @@
         if( REPORTING_ENABLED ){
             //perform reporting action
             const buttons = document.getElementsByClassName("download-button");
-            console.log("--------buttons---" + buttons + "----------");
             for(let i=0; i<buttons.length; i++) {
                 buttons[i].addEventListener("click", function(event){
                     event.preventDefault();
 
                     // Send the API request.
                     const date = new Date();
+                    const _date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    const date_time = `${_date} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
                     let href = this.getAttribute("href");
                     let params = {
                         "resourceId" : this.dataset.resourceId,
@@ -154,8 +155,8 @@
                         "topics" : topics,
                         "campaign" : campaign,
                         "resourceTitle" : this.dataset.resourceTitle,
-                        "date": `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
-                        "ts" :new Date().toUTCString()
+                        "date": _date,
+                        "ts" : date_time,
                     };
                     console.log("--------params---" + JSON.stringify(params) + "----------");
                     
@@ -171,15 +172,13 @@
                     (xhr.onreadystatechange = function () {
                         // Navigate to the href when readyState is DONE (response is received or after 500 milliseconds)
                         if (4 === xhr.readyState) {
-                            if (xhr.status === 200) {
-                                console.log(xhr.responseText)
-                            } else {
-                                console.log("Error", xhr.statusText);
-                            }
                             window.location.href = href
+                            if(xhr.status != 200) {
+                                console.log("Error: "+ xhr.status + "-" + xhr.responseText);
+                            }
                         }
                     }),
-                    xhr.send(JSON.stringify({"data": message}));
+                    xhr.send(JSON.stringify({"message": message}));
                 });
             }
         }

@@ -66,6 +66,7 @@ steps:
           NOTIFY_DEBUG: $(notifyDebug)
           NOTIFY_API_KEY: $(notifyApiKey)
           ADOBE_TRACKING_URL: $(adobeTrackingUrl)
+          COOKIE_DECLARATION: $(cookieDeclaration)
           AZURE_SEARCH_CONTAINER: $(azureSearchContainer)
           AZURE_SEARCH_ACCESS_KEY: $(azureSearchAccessKey)
           AZURE_SEARCH_STORAGE_ACCOUNT_NAME: $(azureSearchStorageAccountName)

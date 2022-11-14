@@ -116,7 +116,6 @@ def place_order(request):
 
                 # send off data to reporting
                 date = timezone.now().strftime("%Y-%m-%d")
-                user = self.get_user_profile(user_token).get("content")
                 postcode = delivery_address.get("Address5")
                 postcode_data = get_postcode_data(postcode)
                 checkout_items = []
@@ -142,7 +141,7 @@ def place_order(request):
                         "longitude": postcode_data.get("longitude"),
                         "latitude": postcode_data.get("latitude"),
                         "region": postcode_data.get("region"),
-                        "ts": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                        "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
                 send_report("order", data_dump)

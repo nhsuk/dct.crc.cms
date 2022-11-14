@@ -24,8 +24,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
             "quantity": 2,
         }
@@ -39,8 +39,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
@@ -79,8 +79,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
@@ -109,8 +109,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -118,8 +118,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "http://test.com/item21",
-            "image_url": "http://test.com/assets/item2/imgge.png",
+            "item_url": "https://test.com/item21",
+            "image_url": "https://test.com/assets/item2/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
@@ -130,8 +130,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -139,8 +139,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "http://test.com/item21",
-            "image_url": "http://test.com/assets/item2/imgge.png",
+            "item_url": "https://test.com/item21",
+            "image_url": "https://test.com/assets/item2/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
@@ -151,8 +151,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -163,8 +163,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "http://test.com/item1",
-            "image_url": "http://test.com/assets/item1/imgge.png",
+            "item_url": "https://test.com/item1",
+            "image_url": "https://test.com/assets/item1/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -172,8 +172,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "http://test.com/item21",
-            "image_url": "http://test.com/assets/item2/imgge.png",
+            "item_url": "https://test.com/item21",
+            "image_url": "https://test.com/assets/item2/imgge.png",
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
