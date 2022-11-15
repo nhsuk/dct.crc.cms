@@ -4,10 +4,11 @@ from django.template.response import TemplateResponse
 from django.utils.cache import add_never_cache_headers, patch_cache_control
 from wagtail.core.models import Page
 from wagtail.search.models import Query
+from django.views.decorators.http import require_http_methods
 
 from campaignresourcecentre.utils.cache import get_default_cache_control_kwargs
 
-
+@require_http_methods(["GET"])
 def search(request):
     search_query = request.GET.get("query", None)
     page = request.GET.get("page", 1)

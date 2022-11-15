@@ -5,6 +5,7 @@ from django.template.response import TemplateResponse
 from django.shortcuts import render
 from wagtailreacttaxonomy.models import TaxonomyTerms
 from campaignresourcecentre.search.azure import AzureSearchBackend
+from django.views.decorators.http import require_http_methods
 
 logger = logging.getLogger(__name__)
 
@@ -82,13 +83,13 @@ def _search(request):
     }
     return response
 
-
+@require_http_methods(["GET"])
 def search(request):
     search = _search(request)
     response = TemplateResponse(request, "search.html", search)
     return response
 
-
+@require_http_methods(["GET"])
 def render_search(request):
     search = _search(request)
     response = render(request, "molecules/search-result/refresh-search.html", search)

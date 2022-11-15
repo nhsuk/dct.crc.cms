@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.template import Context, loader
 from django.views.decorators.cache import never_cache
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.http import require_http_methods
 
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.notifications.dataclasses import ContactUsData
@@ -18,15 +19,15 @@ from campaignresourcecentre.notifications.adapters import gov_notify_factory
 
 from .forms import ContactUsForm
 
-
+@require_http_methods(["GET"])
 def cookie_declaration(request):
     return render(request, "cookies.html")
 
-
+@require_http_methods(["GET"])
 def cookie_settings(request):
     return render(request, "cookie_settings.html")
 
-
+@require_http_methods(["GET"])
 def cookie_confirmation(request):
     return render(request, "cookie_confirmation.html")
 
@@ -75,14 +76,14 @@ def contact_us(request):
 def thank_you(request):
     return render(request, "thank_you_page.html")
 
-
+@require_http_methods(["GET"])
 def clear_cache(request):
     if not request.user.is_superuser:
         raise PermissionDenied
     cache.clear()
     return HttpResponse("Cache has been cleared")
 
-
+@require_http_methods(["GET"])
 def update_index(request):
     if not request.user.is_superuser:
         raise PermissionDenied

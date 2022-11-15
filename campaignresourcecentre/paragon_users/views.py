@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic.edit import FormView
 from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_http_methods
 
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 from campaignresourcecentre.paragon.client import Client
@@ -309,7 +310,7 @@ def login(request):
                 return HttpResponseServerError()
     return render(request, "users/login.html", {"form": login_form})
 
-
+@require_http_methods(["GET"])
 def logout(request):
     try:
         request.session.flush()
@@ -320,7 +321,7 @@ def logout(request):
     else:
         return redirect("/")
 
-
+@require_http_methods(["POST", "GET"])
 def password_reset(request):
     if request.method == "POST":
         password_reset_form = PasswordResetForm(request.POST)
@@ -380,7 +381,7 @@ def password_reset(request):
         {"form": password_reset_form},
     )
 
-
+@require_http_methods(["POST", "GET"])
 def password_set(request):
     if request.GET.get("q"):
         paragon_client = Client()
