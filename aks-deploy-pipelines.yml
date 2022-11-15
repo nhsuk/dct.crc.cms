@@ -33,7 +33,7 @@ parameters:
 - name: gunicornArgs
   displayName: Gunicorn commands
   type: string
-  default: -c gunicorn-conf.py --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 1
+  default: -c gunicorn-conf.py --worker-class 'gthread' --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 1 
 - name: azureSearchUpdate
   displayName: Update Azure search (forced true in staging and production)
   type: boolean
@@ -54,8 +54,8 @@ variables:
   maxReplicas: 7
   averageUtilization: 90
   requestscpu: '600m'
-  requestsmemory: '700Mi'
-  limitsmemory: '1Gi'
+  requestsmemory: '1400Mi'
+  limitsmemory: '2Gi'
   limitscpu:  '1000m'
   appPort: '8000'
   redisUrl: 'redis://crc-v3-redis-svc:6379/0'
