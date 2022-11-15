@@ -1,6 +1,8 @@
 from django import forms
 from django.core.validators import RegexValidator
 
+from campaignresourcecentre.paragon_users.forms import validate_postcode
+
 
 class DeliveryAddressForm(forms.Form):
 
@@ -62,13 +64,7 @@ class DeliveryAddressForm(forms.Form):
         ),
         required=True,
         error_messages={"required": "Enter your postcode"},
-        validators=[
-            RegexValidator(
-                regex="^[A-Za-z]{1,2}[0-9]{1,2}[A-Za-z]?(\\s*[0-9][A-Za-z]{1,2})?$",
-                message="Enter a valid postcode",
-                code="invalid_postcode",
-            )
-        ],
+        validators=[validate_postcode],
     )
 
     class Meta:
