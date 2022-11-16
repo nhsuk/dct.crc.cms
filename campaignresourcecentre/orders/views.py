@@ -124,7 +124,7 @@ def place_order(request):
                     checkout_item = {
                         "itemCode": item.get("item_code"),
                         "quantity": item.get("quantity"),
-                        "url": item.get("url"),
+                        "url": item.get("item_url"),
                         "campaign": item.get("campaign"),
                         "imageUrl": item.get("image_url"),
                         "title": item.get("title"),
