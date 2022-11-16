@@ -310,6 +310,7 @@ def login(request):
                 return HttpResponseServerError()
     return render(request, "users/login.html", {"form": login_form})
 
+
 @require_http_methods(["GET"])
 def logout(request):
     try:
@@ -320,6 +321,7 @@ def logout(request):
         return redirect(request.META.get("HTTP_REFERER"))
     else:
         return redirect("/")
+
 
 @require_http_methods(["POST", "GET"])
 def password_reset(request):
@@ -380,6 +382,7 @@ def password_reset(request):
         "users/password_reset.html",
         {"form": password_reset_form},
     )
+
 
 @require_http_methods(["POST", "GET"])
 def password_set(request):

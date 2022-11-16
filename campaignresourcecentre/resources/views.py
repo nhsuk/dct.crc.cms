@@ -83,11 +83,13 @@ def _search(request):
     }
     return response
 
+
 @require_http_methods(["GET"])
 def search(request):
     search = _search(request)
     response = TemplateResponse(request, "search.html", search)
     return response
+
 
 @require_http_methods(["GET"])
 def render_search(request):

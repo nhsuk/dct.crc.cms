@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 
 from campaignresourcecentre.utils.cache import get_default_cache_control_kwargs
 
+
 @require_http_methods(["GET"])
 def search(request):
     search_query = request.GET.get("query", None)
