@@ -21,7 +21,7 @@ steps:
     cliProjectName: 'DCT_Campaigns_Resource_Centre'
     cliSources: '.'
     extraProperties: |
-      sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html
+      sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html, campaignresourcecentre/utils/tests/test_models.py, campaignresourcecentre/paragon/tests.py, campaignresourcecentre/notifications/adapters.py
 - task: dependency-check-build-task@6
   inputs:
     projectName: 'dct-campaign-resource-centre'
