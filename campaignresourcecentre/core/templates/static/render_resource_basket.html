@@ -17,6 +17,7 @@
         data.append('order_quantity', selectedField.value);
         data.append('csrfmiddlewaretoken', csrfToken);
         data.append('sku', resourceForm['sku'].value);
+        data.append('campaign', resourceForm['campaign'].value);
         data.append('title', title);
         data.append('resource_page_id', resourceForm['resource_page_id'].value);
         button.disabled = true;
