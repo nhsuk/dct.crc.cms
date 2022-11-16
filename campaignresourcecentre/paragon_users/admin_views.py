@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from wagtail.admin import messages
 from wagtail.admin.auth import any_permission_required
@@ -74,6 +75,7 @@ class UsersWrapper:
     "paragon_users.manage_paragon_users",
     "paragon_users.manage_paragon_users_all_fields",
 )
+@require_http_methods(["GET"])
 def index(request):
     search_string = ""
     is_searching = False
@@ -153,6 +155,7 @@ def index(request):
     "paragon_users.manage_paragon_users",
     "paragon_users.manage_paragon_users_all_fields",
 )
+@require_http_methods(["POST"])
 def edit(request, user_token):
     paragon_error = False
     form = None
@@ -235,6 +238,7 @@ def edit(request, user_token):
     "paragon_users.manage_paragon_users",
     "paragon_users.manage_paragon_users_all_fields",
 )
+@require_http_methods(["POST"])
 def set_password(request, user_token):
     paragon_error = False
     form = None
