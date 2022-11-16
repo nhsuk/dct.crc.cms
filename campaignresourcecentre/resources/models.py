@@ -72,6 +72,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         user_role = None
         user_details = request.session.get("UserDetails")
         key = quote(sign(self.permission_role))
+        campaign = self.get_parent()
         if user_details:
             user_role = user_details.get("ProductRegistrationVar1")
 
@@ -119,6 +120,8 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "has_error": basket.get_item_has_error(resource.id),
                 "item": basket.get_item(resource.id),
                 "resource_page_id": self.id,
+                "campaign_title": campaign.title,
+                "campaign_url": campaign.url,
             }
             for resource in self.resource_items.select_related("image", "document")
         ]
