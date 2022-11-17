@@ -89,8 +89,9 @@ def place_order(request):
     address = delivery_address = request.session.get("DELIVERY_ADDRESS")
 
     print("----------------------TEST-------------")
-    print(json.dumps(items, indent=4))
-    print(json.dumps(basket.get_all_items(), indent=4))
+    print(json.dumps(basket.get_all_items().items(), indent=4))
+    print(basket.get_all_items())
+    print(basket.get_all_items())
     logger.info("Can't place order in review")
 
     # Front-end shouldn't ever route to this entry with an empty basket
