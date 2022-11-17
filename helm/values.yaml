@@ -44,8 +44,8 @@ maxReplicas: 7
 
 # Container configuration for staging and production.
 requestscpu: 600m
-requestsmemory: 1400Mi
-limitsmemory: 2Gi
+requestsmemory: 700Mi
+limitsmemory: 1Gi
 limitscpu:  1000m
 
 database:
