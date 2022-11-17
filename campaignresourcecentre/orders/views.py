@@ -120,6 +120,7 @@ def place_order(request):
                 postcode_data = get_postcode_data(postcode)
                 checkout_items = []
 
+                print("----------------------TEST-------------")
                 for item in items:
                     checkout_item = {
                         "itemCode": item.get("item_code"),
@@ -130,6 +131,7 @@ def place_order(request):
                         "title": item.get("title"),
                     }
                     checkout_items.append(checkout_item)
+                    print(checkout_items)
 
                 data_dump = json.dumps(
                     {
@@ -144,6 +146,8 @@ def place_order(request):
                         "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
+
+                print(data_dump)
                 send_report("order", data_dump)
 
                 return render(request, "thank_you.html", {"order_number": order_number})
