@@ -90,7 +90,7 @@ def place_order(request):
 
     print("----------------------TEST-------------")
     print(basket.get_all_items().items())
-    print(basket.get_all_items())
+    print(basket.get_all_items().values())
     print(basket.get_all_items())
     logger.info("Can't place order in review")
 
