@@ -120,9 +120,8 @@ def place_order(request):
                 postcode_data = get_postcode_data(postcode)
                 checkout_items = []
 
-                print("----------------------TEST-------------")
                 for item in items:
-                    checkout_item = {
+                    citem = {
                         "itemCode": item.get("item_code"),
                         "quantity": item.get("quantity"),
                         "url": item.get("item_url"),
@@ -130,22 +129,21 @@ def place_order(request):
                         "imageUrl": item.get("image_url"),
                         "title": item.get("title"),
                     }
-                    checkout_items.append(checkout_item)
-                    print(checkout_items)
+                    checkout_items.append(citem)
 
-                data_dump = {
-                    "userToken": user_token,
-                    "postcode": postcode,
-                    "crcOrderNumber": order_number,
-                    "orderItems": checkout_item,
-                    "orderDate": date,
-                    "longitude": postcode_data.get("longitude"),
-                    "latitude": postcode_data.get("latitude"),
-                    "region": postcode_data.get("region"),
-                    "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
-                }
-
-                print(data_dump)
+                data_dump = json.dumps(
+                    {
+                        "userToken": user_token,
+                        "postcode": postcode,
+                        "crcOrderNumber": order_number,
+                        "orderItems": checkout_items,
+                        "orderDate": date,
+                        "longitude": postcode_data.get("longitude"),
+                        "latitude": postcode_data.get("latitude"),
+                        "region": postcode_data.get("region"),
+                        "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    }
+                )
                 send_report("order", data_dump)
 
                 return render(request, "thank_you.html", {"order_number": order_number})
