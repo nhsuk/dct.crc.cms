@@ -133,19 +133,17 @@ def place_order(request):
                     checkout_items.append(checkout_item)
                     print(checkout_items)
 
-                data_dump = json.dumps(
-                    {
-                        "userToken": user_token,
-                        "postcode": postcode,
-                        "crcOrderNumber": order_number,
-                        "orderItems": checkout_item,
-                        "orderDate": date,
-                        "longitude": postcode_data.get("longitude"),
-                        "latitude": postcode_data.get("latitude"),
-                        "region": postcode_data.get("region"),
-                        "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    }
-                )
+                data_dump = {
+                    "userToken": user_token,
+                    "postcode": postcode,
+                    "crcOrderNumber": order_number,
+                    "orderItems": checkout_item,
+                    "orderDate": date,
+                    "longitude": postcode_data.get("longitude"),
+                    "latitude": postcode_data.get("latitude"),
+                    "region": postcode_data.get("region"),
+                    "ts": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
+                }
 
                 print(data_dump)
                 send_report("order", data_dump)
