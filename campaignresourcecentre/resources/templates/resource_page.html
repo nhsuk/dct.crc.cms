@@ -92,7 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceid="{{ resource.id }}" data-resourcetitle="{{ resource.title }}">Download this resource </a>
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceid="{{ resource.id }}" data-resourcetitle="{{ resource.title }}" data-campaign="{{ resource.campaign_title }}">Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -134,7 +134,6 @@
         const userToken = "{{ logged_in }}";
         const resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}";
         const topics="{% get_taxonomies taxonomy_json 'TOPIC' %}";
-        const campaign="{{ parent_title|escapejs }}";
 
         if( REPORTING_ENABLED ){
             //perform reporting action
@@ -153,12 +152,11 @@
                         "resourceType" : resourceType,
                         "userToken" : userToken,
                         "topics" : topics,
-                        "campaign" : campaign,
+                        "campaign" : this.getAttribute("data-campaign"),
                         "resourceTitle" : this.getAttribute("data-resourcetitle"),
                         "date": _date,
                         "ts" : date_time,
                     };
-                    console.log("--------params---" + JSON.stringify(params) + "----------");
                     
                     let message = {
                         "payload": params,

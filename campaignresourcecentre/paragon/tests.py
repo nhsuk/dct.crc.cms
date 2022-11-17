@@ -228,7 +228,7 @@ class TestClient(TestCase):
             {
                 "item_code": "ITEM1",
                 "quantity": "2",
-                "url": "https://test.com/item/1",
+                "item_url": "https://test.com/item/1",
                 "campaign": "test campaign",
                 "image_url": "https://blobstorage.com/image1",
                 "title": "Title",
@@ -523,7 +523,7 @@ class TestCreateOrderDataClass(TestCase):
             {
                 "item_code": "ITEM1",
                 "quantity": "2",
-                "url": "https://test.com/item/1",
+                "item_url": "https://test.com/item/1",
                 "campaign": "test campaign",
                 "image_url": "https://blobstorage.com/image1",
                 "title": "Title",

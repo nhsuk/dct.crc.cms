@@ -88,6 +88,11 @@ def place_order(request):
     items = basket.get_all_items().values()
     address = delivery_address = request.session.get("DELIVERY_ADDRESS")
 
+    print("----------------------TEST-------------")
+    print(json.dumps(items, indent=4))
+    print(json.dumps(basket.get_all_items(), indent=4))
+    logger.info("Can't place order in review")
+
     # Front-end shouldn't ever route to this entry with an empty basket
     if len(items) == 0:
         return bad_request(request, "Incomplete address")
@@ -124,7 +129,7 @@ def place_order(request):
                     checkout_item = {
                         "itemCode": item.get("item_code"),
                         "quantity": item.get("quantity"),
-                        "url": item.get("url"),
+                        "url": item.get("item_url"),
                         "campaign": item.get("campaign"),
                         "imageUrl": item.get("image_url"),
                         "title": item.get("title"),
