@@ -1749,39 +1749,6 @@ python-versions = "~3.10"
 content-hash = "0a5fe786eb053a2e94407b3d974f52ad418ea2c43673d56d674aed4cc2b75396"
 
 [metadata.files]
-<<<<<<< HEAD
-anyascii = []
-asgiref = []
-autowrapt = []
-azure-common = []
-azure-core = []
-azure-storage-blob = []
-azure-storage-common = []
-azure-storage-file = []
-basictracer = []
-bcrypt = []
-beautifulsoup4 = []
-black = []
-certifi = []
-cffi = []
-cfgv = []
-charset-normalizer = []
-click = []
-colorama = []
-contextlib2 = []
-coverage = []
-cryptography = []
-deprecated = []
-detect-secrets = []
-distlib = []
-dj-database-url = []
-django = []
-django-cprofile-middleware = []
-django-csp = []
-django-debug-toolbar = []
-django-extensions = []
-django-filter = []
-=======
 anyascii = [
     {file = "anyascii-0.3.1-py3-none-any.whl", hash = "sha256:8707d3185017435933360462a65e2c70a4818490745804f38a5ca55e59eb56a0"},
     {file = "anyascii-0.3.1.tar.gz", hash = "sha256:dedf57728206e286c91eed7c759505a5e45c8cd01367dd40c2f7248bb15c11f6"},
@@ -2080,7 +2047,6 @@ django-filter = [
     {file = "django-filter-21.1.tar.gz", hash = "sha256:632a251fa8f1aadb4b8cceff932bb52fe2f826dd7dfe7f3eac40e5c463d6836e"},
     {file = "django_filter-21.1-py3-none-any.whl", hash = "sha256:f4a6737a30104c98d2e2a5fb93043f36dd7978e0c7ddc92f5998e85433ea5063"},
 ]
->>>>>>> bdf5224 (Bump cryptography from 38.0.2 to 38.0.3 in /poetry)
 django-gov-notify = []
 django-modelcluster = []
 django-otp = []
