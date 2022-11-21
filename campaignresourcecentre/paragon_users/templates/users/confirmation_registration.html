@@ -2,18 +2,17 @@
 {% block title %}Registration{% endblock %}
 
 {% block content %}
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl"> Thank you. Check your email to complete your registration</h1>
-
-                <p>We will email you a link within the next 15 minutes. Click on the link to complete your registration or copy and paste it into a web browser.</p>
-                <p>If you do not get this email within 15 minutes, check your spam folder.</p> 
-                <p>If it still has not arrived or you have any other issues with registration,
-                    email <a href="mailto:{{ email }}">{{ email }}</a></p>
-                <p>Remember to set up your email newsletter preferences when you first sign in after completing your registration.</p>
-            </div>
+<div class="govuk-width-container">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">Check your email to complete your registration</h1>
+            <p>We have sent you an email that contains a unique link. You may need to check your spam folder.</p>
+            <p>Click or tap the link in the email to complete your registration and activate your account.</p>
+            <p>If the email has not arrived after 15 minutes or you have any other issues with your registration,
+                contact us at <a href="mailto:{{ email }}">{{ email }}</a>
+            </p>
         </div>
     </div>
+</div>
 
 {% endblock %}
