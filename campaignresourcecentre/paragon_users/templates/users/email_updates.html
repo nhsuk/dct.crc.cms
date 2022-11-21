@@ -48,7 +48,7 @@
                     </legend>
                     <p>Choose whether you want to recieve emails from us with updates about campaigns and resources
                         relevant to you.</p>
-                    <p>You can change your preferences, opt in or out of these updates at any time after registering.</p>
+                    <p>You can change your preferences, opt in or opt out of these updates at any time after registering.</p>
 
                     {% csrf_token %}
                     <div
@@ -64,7 +64,7 @@
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 {{ form.email_updates.0.tag }}
-                                <label class="govuk-label govuk-radios__label"
+                                <label class="govuk-radios__label"
                                     for="{{form.email_updates.0.id_for_label}}">
                                     {{form.email_updates.0.choice_label}}
                                 </label>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="govuk-radios__item">
                                 {{ form.email_updates.1.tag }}
-                                <label class="govuk-label govuk-radios__label"
+                                <label class="govuk-radios__label"
                                     for="{{form.email_updates.1.id_for_label}}">
                                     {{form.email_updates.1.choice_label}}
                                 </label>
