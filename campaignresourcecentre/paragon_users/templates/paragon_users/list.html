@@ -12,7 +12,7 @@
     <tbody>
         {% for user in users %}
             <tr>
-                <td class="title" valign="top">
+                <td class="title">
                     <div class="title-wrapper">
                         <a href="{% url 'paragon_users:edit' user.user_token %}">{{ user.full_name }}</a>
                     </div>
@@ -21,9 +21,9 @@
                         <li><a class="button button-secondary button-small" href="{% url 'paragon_users:set_password' user.user_token %}" title="Set password for this user">Set password</a></li>
                     </ul>
                 </td>
-                <td class="name" valign="top">{{ user.email }}</td>
-                <td class="level" valign="top">{{ user.role }}</td>
-                <td class="created-at" valign="top">{{ user.created_at|date:"d M Y H:i" }}</td>
+                <td class="name">{{ user.email }}</td>
+                <td class="level">{{ user.role }}</td>
+                <td class="created-at">{{ user.created_at|date:"d M Y H:i" }}</td>
             </tr>
         {% endfor %}
     </tbody>
