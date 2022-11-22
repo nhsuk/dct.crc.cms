@@ -22,7 +22,6 @@ def load_tobacco_landing_page(context):
         print("CRCV3 Now is success")
 
 
-
 @Step("I click on PHE link to check whether its loading the home page")
 def CRCV3_PHE_Link(context):
     context.CRCV3_home = CRCV3MainPage(context.browser, context.logger)
@@ -148,11 +147,11 @@ def forgot_password_validation(context):
         )
 
 
-
 @Step("I Click click on Home page tab")
 def Home_Tab(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.HomeTab()
+
 
 @Step("I click on Latest updates links")
 def Latest_Updates_links(context):
@@ -166,7 +165,6 @@ def Latest_Updates_links(context):
 def How_to_guide(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.How_to_guides()
-
 
 
 @Step("I browsed to Start4life resource campaign")

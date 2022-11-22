@@ -573,7 +573,6 @@ class CRCV3MainPage(BasePage):
             elements.append(element.text)
         return elements
 
-
     def return_invalid_resource_errors_link_url(self):
         list_elements = self.find.elements(self.invalid_resource_errors_list)
         elements = []
@@ -829,7 +828,6 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Sign_out_link)
         sleep(15)
 
-
     def forgot_password_click(self):
         self.interact.click_element(self.forgot_password_link)
         assert_that(
@@ -852,7 +850,6 @@ class CRCV3MainPage(BasePage):
             equal_to("Password reset request sent"),
             "Password reset request sent confirmation label not displayed",
         )
-
 
     def HomeTab(self):
         self.interact.click_element(self.Home)
