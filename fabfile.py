@@ -1,4 +1,3 @@
-# import datetime
 import os
 import subprocess
 from shlex import quote, split
