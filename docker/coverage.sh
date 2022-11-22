@@ -1,5 +1,4 @@
 #!/bin/sh
-sudo -u campaignresourcecentre
 python manage.py migrate
 echo "1"
 python manage.py test --noinput 
