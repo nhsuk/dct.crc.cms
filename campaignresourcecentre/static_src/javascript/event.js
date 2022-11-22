@@ -7,7 +7,7 @@
         window.location.href = href;
         return;
       }
-  
+
       // Send the API request.
       var body = { key: group + ':' + name, date: new Date().toISOString().split('T')[0] };
       var xhr = new XMLHttpRequest();
@@ -22,12 +22,12 @@
       }),
       xhr.send(JSON.stringify(body));
     }
-  
+
     function getEventName(elem) {
       // Use data attribute if supplied.
       var eventName = elem.getAttribute('data-event');
       if (eventName) return eventName;
-  
+
       // Check if there are child nodes.
       if (elem.hasChildNodes()) {
         // Look for alt on enclosed img tag.
@@ -36,7 +36,7 @@
           eventName = image.getAttribute('alt');
           if (eventName) return eventName;
         }
-  
+
         // Look for h3 or h4 text.
         var heading = elem.querySelector('h3');
         if (!heading) heading = elem.querySelector('h4');
@@ -45,14 +45,14 @@
           if (eventName) return eventName;
         }
       }
-  
+
       return elem.innerText;
     }
-  
+
     function addListeners() {
       var main = document.getElementById('main-content');
       var elems = main.querySelectorAll('a');
-  
+
       // Attach click handlers to each <a> tag in the main content.
       for (let i=0; i<elems.length; i++) {
         elems[i].addEventListener('click', function(e) {
@@ -61,8 +61,9 @@
         });
       }
     }
-  
+
     document.addEventListener("DOMContentLoaded", function () {
       addListeners();
     });
   })();
+  
