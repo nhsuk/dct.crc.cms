@@ -21,7 +21,7 @@ FROM python:3.10-buster as backend
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.1.13
 
-RUN useradd campaignresourcecentre -m && mkdir /app && chown campaignresourcecentre /app
+RUN mkdir /app
 
 WORKDIR /app
 
@@ -66,14 +66,14 @@ RUN cd ./poetry; wget https://raw.githubusercontent.com/python-poetry/poetry/${P
 
 # Install your app's Python requirements
 
-COPY --chown=campaignresourcecentre ./poetry ./
+COPY ./poetry ./
 
 RUN if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
 
-COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
+COPY --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
 # Copy application code.
-COPY --chown=campaignresourcecentre . .
+COPY . .
 
 # Collect static. This command will move static files from application
 # directories and "static_compiled" folder to the main static directory that
@@ -82,8 +82,3 @@ RUN SECRET_KEY=none python manage.py collectstatic --noinput --clear
 
 # Load shortcuts
 COPY ./docker/bashrc.sh /home/campaignresourcecentre/.bashrc
-
-# Don't use the root user as it's an anti-pattern and Heroku does not run
-# containers as root either.
-# https://devcenter.heroku.com/articles/container-registry-and-runtime#dockerfile-commands-and-runtime
-USER campaignresourcecentre
