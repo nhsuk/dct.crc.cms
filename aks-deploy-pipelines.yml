@@ -177,6 +177,7 @@ stages:
       namespace: 'dct-crc-v3-ns'
       tag: 'latest'
       hostUrl: 'crc-v3.nhswebsite-dev.nhs.uk'
+      hostUrlCertSecretName: 'haproxy-tls-cert'
       appName: 'crc-v3'
       devEnv: 'int'
       appEnv: 'integration'
