@@ -233,7 +233,7 @@ toml = ["toml"]
 
 [[package]]
 name = "cryptography"
-version = "38.0.3"
+version = "38.0.4"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
 category = "main"
 optional = false
@@ -726,7 +726,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-co
 
 [[package]]
 name = "instana"
-version = "1.31.1"
+version = "1.38.0"
 description = "🐍 Python Distributed Tracing & Metrics Sensor for Instana"
 category = "main"
 optional = false
@@ -738,9 +738,10 @@ basictracer = ">=3.1.0"
 certifi = ">=2018.4.16"
 fysom = ">=2.1.2"
 opentracing = ">=2.3.0"
-requests = ">=2.8.0"
+protobuf = "<4.0.0"
+requests = ">=2.6.0"
 six = ">=1.12.0"
-urllib3 = ">=1.21.1,<1.26"
+urllib3 = ">=1.26.5,<1.27"
 
 [[package]]
 name = "invoke"
@@ -1044,8 +1045,8 @@ virtualenv = ">=20.0.8"
 
 [[package]]
 name = "protobuf"
-version = "4.21.9"
-description = ""
+version = "3.20.3"
+description = "Protocol Buffers"
 category = "main"
 optional = false
 python-versions = ">=3.7"
@@ -1489,20 +1490,20 @@ python-versions = ">=2"
 
 [[package]]
 name = "urllib3"
-version = "1.25.11"
+version = "1.26.13"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [package.extras]
-brotli = ["brotlipy (>=0.6.0)"]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+brotli = ["brotlicffi (>=0.8.0)", "brotli (>=1.0.9)", "brotlipy (>=0.6.0)"]
+secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "urllib3-secure-extra", "ipaddress"]
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.16.7"
+version = "20.17.0"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -1734,7 +1735,7 @@ python-versions = "*"
 
 [[package]]
 name = "zipp"
-version = "3.10.0"
+version = "3.11.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "dev"
 optional = false
@@ -1742,7 +1743,7 @@ python-versions = ">=3.7"
 
 [package.extras]
 docs = ["sphinx (>=3.5)", "jaraco.packaging (>=9)", "rst.linker (>=1.9)", "furo", "jaraco.tidelift (>=1.4)"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "flake8 (<5)", "pytest-cov", "pytest-enabler (>=1.3)", "jaraco.itertools", "func-timeout", "jaraco.functools", "more-itertools", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "flake8 (<5)", "pytest-cov", "pytest-enabler (>=1.3)", "jaraco.itertools", "func-timeout", "jaraco.functools", "more-itertools", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)", "pytest-flake8"]
 
 [extras]
 gunicorn = ["gunicorn"]
@@ -1750,7 +1751,7 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "76085fd43c298f36dd408e1838d0dfa22a463003a95911b19c3be28ca7e4e8f3"
+content-hash = "ca5e33ff9172d2d85896845e7eb0f54b4e59309e70c83dc04a58f50a7963c2ab"
 
 [metadata.files]
 anyascii = []
