@@ -2,7 +2,6 @@
 
 (function () {
     function recordEvent(group, name, href) {
-      // Navigate straight to the href if no event API endpoint given. 
       if (!window.CRC_SETTINGS.CAMPAIGNS_EVENT_API_ENDPOINT) {
         window.location.href = href;
         return;
@@ -66,4 +65,3 @@
       addListeners();
     });
   })();
-  
