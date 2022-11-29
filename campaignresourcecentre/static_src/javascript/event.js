@@ -10,15 +10,15 @@
       // Send the API request.
       var body = { key: group + ':' + name, date: new Date().toISOString().split('T')[0] };
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', window.CRC_SETTINGS.CAMPAIGNS_EVENT_API_ENDPOINT, true),
-      xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'),
-      xhr.timeout = 500,
-      (xhr.onreadystatechange = function () {
+      xhr.open('POST', window.CRC_SETTINGS.CAMPAIGNS_EVENT_API_ENDPOINT, true);
+      xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      xhr.timeout = 500;
+      xhr.onreadystatechange = function () {
         // Navigate to the href when readyState is DONE (response is received or after 500 milliseconds)
         if (4 === xhr.readyState) {
           window.location.href = href
         }
-      }),
+      };
       xhr.send(JSON.stringify(body));
     }
 
