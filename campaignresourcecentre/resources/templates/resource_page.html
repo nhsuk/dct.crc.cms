@@ -135,6 +135,20 @@
         const resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}";
         const topics="{% get_taxonomies taxonomy_json 'TOPIC' %}";
 
+        function formatDate() {
+            var d = new Date(),
+                month = '' + (d.getUTCMonth() + 1),
+                day = '' + d.getUTCDate(),
+                year = d.getUTCFullYear();
+
+            if (month.length < 2) 
+                month = '0' + month;
+            if (day.length < 2) 
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
         if( REPORTING_ENABLED ){
             //perform reporting action
             const buttons = document.getElementsByClassName("download-button");
@@ -144,7 +158,7 @@
 
                     // Send the API request.
                     const date = new Date();
-                    const _date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    const _date = formatDate();
                     const date_time = `${_date} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
                     let href = this.getAttribute("href");
                     let params = {
