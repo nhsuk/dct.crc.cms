@@ -7,7 +7,6 @@ services:
         BUILD_ENV: dev
     init: true
     environment:
-      2FA: ${2FA}
       ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost
       DB_HOST: db
       DB_NAME: campaignresourcecentre
@@ -57,6 +56,7 @@ services:
       PHE_PARTNERSHIPS_EMAIL: ${PHE_PARTNERSHIPS_EMAIL}
       REPORTING_ENDPOINT: ${REPORTING_ENDPOINT}
       REPORTING_ENABLED: ${REPORTING_ENABLED}
+      TWO_FA: ${TWO_FA}
     command: tail -f /dev/null # do nothing forever - exec commands elsewhere
     ports:
       - 8000:8000 # runserver
