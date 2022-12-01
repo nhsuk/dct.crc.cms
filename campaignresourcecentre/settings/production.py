@@ -13,4 +13,4 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 # forces users to use 2fa flow on staging and prod
-WAGTAIL_2FA_REQUIRED = env.get("2FA", True)
+WAGTAIL_2FA_REQUIRED = env.get("2FA", "true").lower() == "true"
