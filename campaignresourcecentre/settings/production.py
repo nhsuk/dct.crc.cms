@@ -11,3 +11,6 @@ SESSION_COOKIE_SECURE = True
 # Ensure that the CSRF cookie is only sent by browsers under an HTTPS connection.
 # https://docs.djangoproject.com/en/stable/ref/settings/#csrf-cookie-secure
 CSRF_COOKIE_SECURE = True
+
+# forces users to use 2fa flow on staging and prod
+WAGTAIL_2FA_REQUIRED = True
