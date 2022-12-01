@@ -7,6 +7,7 @@ services:
         BUILD_ENV: dev
     init: true
     environment:
+      2FA: ${2FA}
       ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost
       DB_HOST: db
       DB_NAME: campaignresourcecentre
