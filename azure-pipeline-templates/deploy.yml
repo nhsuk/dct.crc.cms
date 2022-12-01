@@ -86,6 +86,7 @@ steps:
           PHE_PARTNERSHIPS_EMAIL: $(phePartnershipsEmail)
           REPORTING_ENDPOINT: $(reportingEndpoint)
           REPORTING_ENABLED: $(reportingEnabled)
+          TWO_FA: $(twoFA)
         envInitializerVariables:
           PRIMARY_HOST: $(primaryHost)
           DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
