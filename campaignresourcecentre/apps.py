@@ -31,6 +31,7 @@ class CRCV3Config(AppConfig):
             logger.info("File storage: %s", settings.DEFAULT_FILE_STORAGE)
             logger.info("Search storage: %s", settings.SEARCH_STORAGE_CLASS)
             logger.info("Updating Azure search: %s", settings.AZURE_SEARCH_UPDATE)
+            logger.info("2FA required: %s", settings.WAGTAIL_2FA_REQUIRED)
             # If using runserver we must force CONN_MAX_AGE to zero or
             # database connection limit will be exceeded under heavy loads
             if len(argv) >= 2 and argv[1] == "runserver":

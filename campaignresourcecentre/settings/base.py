@@ -643,6 +643,9 @@ WAGTAILDOCS_DOCUMENT_MODEL = "documents.CustomDocument"
 PASSWORD_REQUIRED_TEMPLATE = "wagtail/password_required.html"
 
 
+WAGTAIL_2FA_REQUIRED = getenv_bool("WAGTAIL_2FA_REQUIRED", True)
+
+
 # Default size of the pagination used on the front-end.
 DEFAULT_PER_PAGE = 20
 

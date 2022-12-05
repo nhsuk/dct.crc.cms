@@ -74,8 +74,6 @@ if USING_DEBUG_TOOLBAR:
     except ImportError:
         pass
 
-WAGTAIL_2FA_REQUIRED = False
-
 # Import settings from local.py file if it exists. Please use it to keep
 # settings that are not meant to be checked into Git and never check it in.
 try:

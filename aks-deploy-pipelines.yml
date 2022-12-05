@@ -38,6 +38,10 @@ parameters:
   displayName: Update Azure search (forced true in staging and production)
   type: boolean
   default: false
+- name: wagtail2FARequired
+  displayName: Require 2FA
+  type: boolean
+  default: true
 
 resources:
 - repo: self
@@ -131,6 +135,7 @@ stages:
       notifyDebug: ${{ parameters.notifyDebug }}
       workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
+      wagtail2FARequired: false
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
       tags: ${{ parameters.tags }}
       imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
@@ -160,6 +165,7 @@ stages:
       notifyDebug: ${{ parameters.notifyDebug }}
       workers: ${{ parameters.workers }}
       gunicornArgs: ${{ parameters.gunicornArgs }}
+      wagtail2FARequired: false
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
       redisUrl: 'redis://crc-v3-test-redis-svc:6379/0'
     steps:
@@ -187,6 +193,7 @@ stages:
       notifyDebug: ${{ parameters.notifyDebug }}
       workers: 2
       gunicornArgs: ${{ parameters.gunicornArgs }}
+      wagtail2FARequired: ${{ parameters.wagtail2FARequired }}
       azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
     steps:
     - template: azure-pipeline-templates/deploy.yml
@@ -214,6 +221,7 @@ stages:
       notifyDebug: false
       workers: ${{ parameters.workers }}
       gunicornArgs: ${{ parameters.gunicornArgs }}
+      wagtail2FARequired: ${{ parameters.wagtail2FARequired }}
       azureSearchUpdate: true
     steps:
     - template: azure-pipeline-templates/deploy.yml
@@ -249,6 +257,7 @@ stages:
       notifyDebug: false
       workers: ${{ parameters.workers }}
       gunicornArgs: ${{ parameters.gunicornArgs }}
+      wagtail2FARequired: true
       azureSearchUpdate: true
     pool:
       vmImage: 'ubuntu-latest'
@@ -286,6 +295,7 @@ stages:
       notifyDebug: false
       workers: ${{ parameters.workers }}
       gunicornArgs: ${{ parameters.gunicornArgs }}
+      wagtail2FARequired: true
       azureSearchUpdate: true
     pool:
       vmImage: 'ubuntu-latest'
