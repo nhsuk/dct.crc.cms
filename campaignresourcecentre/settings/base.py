@@ -747,3 +747,6 @@ PHE_PARTNERSHIPS_EMAIL = env.get("PHE_PARTNERSHIPS_EMAIL")
 
 REPORTING_ENDPOINT = env.get("REPORTING_ENDPOINT")
 REPORTING_ENABLED = getenv_bool("REPORTING_ENABLED", True)
+
+# forces users to use 2fa flow when true
+WAGTAIL_2FA_REQUIRED = env.get("TWO_FA", "true").lower() == "true"
