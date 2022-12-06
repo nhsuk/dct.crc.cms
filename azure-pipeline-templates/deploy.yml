@@ -110,6 +110,7 @@ steps:
           NOTIFY_DEBUG: $(notifyDebug)
           REPORTING_ENDPOINT: $(reportingEndpoint)
           REPORTING_ENABLED: $(reportingEnabled)
+          TWO_FA: $(twoFA)
         appArgs:
           - 'bash'
           - '-c'
