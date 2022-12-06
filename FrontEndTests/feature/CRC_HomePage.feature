@@ -7,7 +7,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
 
-  @CRCV3-002
+  @CRCV3-002 @wip
   Scenario Outline: open CRCV3 site and verify email field validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -69,11 +69,11 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 #    #Then I Register
 #     Examples:
 #      | FirstName   | LastName      | Org_Name      | Postcode      | Email          | Password     |
-#      | Jim         | Smith         | NHS Digital   | SL109LH       | qie1@qie14.com | aDmin_c_11!  |
+#      | Jim         | Smith         | NHS Digital   | SL109LH       | qie1@qie15.com | aDmin_c_11!  |
 #    Then verify logout displayed in place of Sign in
 #    #Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-007 @wip
+  @CRCV3-007
   Scenario: open CRCV3 site and verify Home tab and its links
     Given I loaded CRCV3 site to load the home page
     #When I Click click on Home page tab
@@ -138,7 +138,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | Postcode '%$%$^%^%' not recognised                                                                                                         |
       | Enter a valid email address.                                                                                                  |
       | Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol |
-      #| Please accept the terms and conditions                                                                                        |
+      | Please accept the terms and conditions                                                                                        |
 
   @CRCV3-013
   Scenario: open CRCV3 site and verify Change4Life Campaigns pages and links
@@ -148,13 +148,13 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Change4Life"
     Then Verify "Change4Life" Resources
 
-#  @CRCV3-014 @wip
-#  Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
-#    Given I loaded CRCV3 site to load the home page
-#    When I browsed to Betterhealth resource campaign
-#    Then Verify Campaign details for "Betterhealth"
-#    Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth"
-#    Then Verify "Betterhealth" Resources
+  @CRCV3-014
+  Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
+    Given I loaded CRCV3 site to load the home page
+    When I browsed to Betterhealth resource campaign
+    Then Verify Campaign details for "Betterhealth"
+    Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth"
+    Then Verify "Betterhealth" Resources
 
   @CRCV3-015
   Scenario Outline: open CRCV3 site and verify help us Help you Campaigns pages and links
@@ -228,8 +228,25 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on basket to proceed to checkout
     Then enter delivery address and click review order
     Then Place order and verify confirmation
+    Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-023
+  @CRV3-023
+  Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
+    Given I loaded CRCV3 site to load the home page
+    When  I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
+    Then click on resources tab and verify the searches
+    Then select any resource and add to basket
+    Then click on basket to proceed to checkout
+    Then enter delivery address and click review order
+    Then Place order and verify confirmation
+    Then click on account tab and verify page loaded
+    Then download the resources from order history and verify its downloaded successfully
+    Then click Sign Out link and verify its logged out successfully
+
+  @CRCV3-024
   Scenario: open CRCV3 site and Automate Validations check for invalid entry during purchase resources.
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -250,7 +267,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
        |Enter your postcode|
     Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-024
+  @CRCV3-025
   Scenario: open CRCV3 site and Automate manage your account links are displaying
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -260,7 +277,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on account tab and verify page loaded
     Then verify all Manage your account links are working and loading the details
 
-  @CRCV3-025
+  @CRCV3-026
   Scenario: open CRCV3 site and reset password
     Given I loaded CRCV3 site to load the home page
     When I click on Sign in button Sign in page loaded with Email_address and and password
@@ -278,19 +295,19 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | email@example    | Enter a valid email address.|
       | example          | Enter a valid email address.|
 
-  @CRCV3-026
+  @CRCV3-027
   Scenario: open CRCV3 site filter results by filter
     Given I loaded CRCV3 site to load the home page
     When click on resources tab and verify the searches
     Then click on filter results by links expand and collapse
 
-  @CRCV3-027
+  @CRCV3-028
   Scenario: open CRCV3 site and verify resources in campaigns tab
     Given I loaded CRCV3 site to load the home page
     When click on campaign planning tab and verify its loaded
     Then Verify list of campaigns listed in campaigns Planning tab and have H3
 
-  @CRCV3-028
+  @CRCV3-029
   Scenario: open CRCV3 site and verify resources in campaigns tab
     Given I loaded CRCV3 site to load the home page
     When click on about tab and verify its loaded

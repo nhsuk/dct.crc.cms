@@ -418,7 +418,7 @@ class CRCV3MainPage(BasePage):
     )
     Sign_in = PageElement(By.XPATH, "//a[@href='/resources/login/']")
     register_link = PageElement(By.LINK_TEXT, "Register")
-    Register_Button = PageElement(By.XPATH, "//button[text()='Register']")
+    Register_Button = PageElement(By.XPATH, "//button[text()='Continue']")
     topics = PageElement(By.XPATH, "//span[text()[normalize-space()='Topics']]")
     target_audience = PageElement(
         By.XPATH, "//span[text()[normalize-space()='Target audience']]"
@@ -490,7 +490,7 @@ class CRCV3MainPage(BasePage):
     A4_Poster = PageElement(By.XPATH, "//button[text()='Add to basket']")
     Add_to_Basket = PageElement(By.XPATH, "//button[text()='Add to basket']")
     A4_poster_resource = PageElement(By.TAG_NAME, "h1")
-    basket = PageElement(By.XPATH, "(//a[@href='/baskets/view_basket ']//span)[2]")
+    basket = PageElement(By.XPATH, "//a[@href='/baskets/view_basket ']")
     order_quantity = PageElement(By.ID, "resource-BHCHO-NUT2")
     Proceed_to_checout = PageElement(By.ID, "proceed-to-checkout")
     full_name = PageElement(By.ID, "id_Address1")
@@ -731,6 +731,7 @@ class CRCV3MainPage(BasePage):
     def Proceed_checout(self):
         self.interact.click_element(self.basket)
         order = self.interrogate.get_attribute(self.order_quantity, "value")
+        print(order)
         assert_that(order, not_none(), "order quantity is empty")
         self.interact.click_element(self.Proceed_to_checout)
         sleep(5)
