@@ -190,7 +190,7 @@ class CreateOrder:
             checkout_item = {
                 "ItemCode": item.get("item_code"),
                 "Quantity": item.get("quantity"),
-                "Url": item.get("url"),
+                "Url": item.get("item_url"),
                 "Campaign": item.get("campaign"),
                 "ImageUrl": item.get("image_url"),
                 "Title": item.get("title"),

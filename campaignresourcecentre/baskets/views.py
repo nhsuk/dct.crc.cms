@@ -44,6 +44,7 @@ def _add_item(request):
             # Look like a resource object if necessary
             "maximum_order_quantity": item_obj.maximum_order_quantity,
             "sku": item_obj.sku,
+            "campaign": payload.get("campaign"),
             "resource_page_id": item_obj.resource_page.id,
         }
         basket.add_item(item, payload.get("order_quantity"))

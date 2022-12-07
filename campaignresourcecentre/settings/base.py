@@ -328,10 +328,26 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     # AZURE_SEARCH_UPDATE determines whether search resources are indexed as updates are made
     AZURE_SEARCH_UPDATE = getenv_bool("AZURE_SEARCH_UPDATE", True)
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
+    # 2MB max memory spooled to memory before writing to disk
+    AZURE_BLOB_MAX_MEMORY_SIZE = 2 * 1024 * 1024
+    # 60 seconds timeout for Azure connection
+    AZURE_CONNECTION_TIMEOUT_SECS = 60
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
     AZURE_SEARCH_UPDATE = False
+
+# File upload settings
+# https://docs.djangoproject.com/en/dev/ref/settings/#std-setting-FILE_UPLOAD_HANDLERS
+FILE_UPLOAD_HANDLERS = [
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
+# max file size in bytes for memory upload
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5MB
+# directory to store files large than FILE_UPLOAD_MAX_MEMORY_SIZE if None => defaults to \tmp
+FILE_UPLOAD_TEMP_DIR = None
+
 
 # Logging
 # This logging is configured to be used with Sentry and console logs. Console
@@ -703,7 +719,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # renews session after every request
 SESSION_SAVE_EVERY_REQUEST = True
 # expires cookies after 30 mins
-SESSION_COOKIE_AGE = 1800
+SESSION_COOKIE_AGE = 3600
 
 CAMPAIGNS_FROM_AZ = getenv_bool("CAMPAIGNS_FROM_AZ", True)
 # Events tracking
@@ -728,8 +744,9 @@ CAMPAIGN_HUB_PAGE_FILTERS = [
 
 PHE_PARTNERSHIPS_EMAIL = env.get("PHE_PARTNERSHIPS_EMAIL")
 
-# forces users to use 2fa flow
-WAGTAIL_2FA_REQUIRED = True
 
 REPORTING_ENDPOINT = env.get("REPORTING_ENDPOINT")
 REPORTING_ENABLED = getenv_bool("REPORTING_ENABLED", True)
+
+# forces users to use 2fa flow when true
+WAGTAIL_2FA_REQUIRED = env.get("TWO_FA", "true").lower() == "true"

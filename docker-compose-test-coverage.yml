@@ -1,0 +1,95 @@
+version: '3.7'
+services:
+  campaignresourcecentre-test-coverage:
+    build:
+      context: .
+      dockerfile: ./UnitTestDockerfile
+      args:
+        BUILD_ENV: dev
+    init: true
+    environment:
+      ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost
+      DB_HOST: db-test
+      DB_NAME: campaignresourcecentre
+      DB_PASS: campaignresourcecentre
+      DB_USER: campaignresourcecentre
+      DJANGO_SETTINGS_MODULE: campaignresourcecentre.settings.test
+      MEDIA_DIR: /app/media/
+      RECAPTCHA_PRIVATE_KEY: UPDATE_THIS # pragma: allowlist secret
+      RECAPTCHA_PUBLIC_KEY: UPDATE_THIS
+      REDIS_URL: redis://redis-test
+      SECRET_KEY: local_dev_secret_key
+      SECURE_SSL_REDIRECT: 'false'
+      STATIC_DIR: /app/static/
+      STATIC_URL: /static/
+      PARAGON_API_ENDPOINT: "http://localhost:8000"
+      PARAGON_API_KEY: "paragon-api-key"
+      ADOBE_TRACKING_URL: ${ADOBE_TRACKING_URL}
+      AZURE_SEARCH_CONTAINER: index
+      AZURE_SEARCH_ACCESS_KEY: ""
+      AZURE_SEARCH_STORAGE_ACCOUNT_NAME: account_name
+      AZURE_SEARCH_PREFIX: content/resource/
+      AZURE_SEARCH_API_HOST: https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3
+      AZURE_SEARCH_API_VERSION: v1
+      AZURE_SEARCH_API_KEY: search_api_key
+      AZURE_SEARCH_FACETS: TOPIC,TARGAUD
+      NOTIFY_API_KEY: ${NOTIFY_API_KEY}
+      AZURE_CONTAINER: ${AZURE_CONTAINER}
+      AZURE_CUSTOM_DOMAIN: ${AZURE_CUSTOM_DOMAIN}
+      AZURE_ACCOUNT_NAME: ${AZURE_ACCOUNT_NAME}
+      AZURE_ACCOUNT_KEY: ${AZURE_ACCOUNT_KEY}
+      AZURE_ACCOUNT_PUBLIC_ENDPOINT: ${AZURE_ACCOUNT_PUBLIC_ENDPOINT}
+      AZURE_ACCOUNT_PRIVATE_ENDPOINT: ${AZURE_ACCOUNT_PRIVATE_ENDPOINT}
+      PARAGON_ENCRYPTION_KEY: ${PARAGON_ENCRYPTION_KEY}
+      PARAGON_SIGN_KEY: ${PARAGON_SIGN_KEY}
+      PARAGON_SALT: ${PARAGON_SALT}
+      DEBUG: ${DEBUG}
+      NOTIFY_DEBUG: "true"
+      PARAGON_MOCK: ${PARAGON_MOCK}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY}
+      GUNICORN_CMD_ARGS: ${GUNICORN_CMD_ARGS}
+      PHE_PARTNERSHIPS_EMAIL: ${PHE_PARTNERSHIPS_EMAIL}
+      REPORTING_ENDPOINT: ${REPORTING_ENDPOINT}
+      REPORTING_ENABLED: ${REPORTING_ENABLED}
+    command: bash -c "./docker/coverage.sh"
+    ports:
+      - 8000:8000 # runserver
+      - 8001:8001 # mkdocs serve
+      - 4000:4000 # debugger
+    volumes:
+      - ./README.md:/app/README.md:delegated,ro
+      - ./docs:/app/docs:delegated,ro
+      - ./manage.py:/app/manage.py:delegated,ro
+      - ./gunicorn-config.py:/app/gunicorn-config.py:delegated,ro
+      - ./campaignresourcecentre:/app/campaignresourcecentre:delegated,rw
+      - ./media:/app/media:delegated,rw
+      - ./mkdocs.yml:/app/mkdocs.yml:delegated,ro
+      - ./poetry:/app/poetry:delegated,rw
+      - ./public:/app/public:delegated,ro
+      - ./setup.cfg:/app/setup.cfg:delegated,ro
+      - ./docker:/app/docker:delegated,rw
+    depends_on:
+      - db-test
+      - redis-test
+
+  db-test:
+    image: postgres:12.3
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: campaignresourcecentre
+      POSTGRES_USER: campaignresourcecentre
+      POSTGRES_PASSWORD: campaignresourcecentre # pragma: allowlist secret
+      PGDATABASE: campaignresourcecentre
+      PGUSER: campaignresourcecentre
+      PGPASSWORD: campaignresourcecentre # pragma: allowlist secret
+      POSTGRES_HOST_AUTH_METHOD: trust
+    logging:
+      driver: none
+
+  redis-test:
+    image: redis:3.0
+    expose:
+      - 6379
+    logging:
+      driver: none

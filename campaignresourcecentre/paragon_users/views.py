@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic.edit import FormView
 from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_http_methods
 
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 from campaignresourcecentre.paragon.client import Client
@@ -141,8 +142,8 @@ def signup(request):
                     return HttpResponseServerError()
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    f.add_error(paresedError[0], paresedError[1])
+                    parseError = ParseError(error)
+                    f.add_error(parseError[0], parseError[1])
                 return render(request, "users/signup.html", {"form": f})
     else:
         f = RegisterForm()
@@ -297,19 +298,20 @@ def login(request):
                         logger.error("Couldn't set test cookie")
                         return HttpResponseServerError()
                     return redirect("/")
-            except ParagonClientError as PCE:
-                for error in PCE.args:
-                    paresedError = ParseError(error)
-                    if paresedError[0] is None:
-                        login_form.add_error(None, paresedError[1])
-                    else:
-                        login_form.add_error(paresedError[0], paresedError[1])
-                return render(request, "users/login.html", {"form": login_form})
             except ParagonClientTimeout:
                 return HttpResponseServerError()
+            except ParagonClientError as PCE:
+                for error in PCE.args:
+                    parseError = ParseError(error)
+                    if parseError[0] is None:
+                        login_form.add_error(None, parseError[1])
+                    else:
+                        login_form.add_error(parseError[0], parseError[1])
+                return render(request, "users/login.html", {"form": login_form})
     return render(request, "users/login.html", {"form": login_form})
 
 
+@require_http_methods(["GET"])
 def logout(request):
     try:
         request.session.flush()
@@ -321,6 +323,7 @@ def logout(request):
         return redirect("/")
 
 
+@require_http_methods(["POST", "GET"])
 def password_reset(request):
     if request.method == "POST":
         password_reset_form = PasswordResetForm(request.POST)
@@ -361,11 +364,11 @@ def password_reset(request):
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    if paresedError[0] is None:
-                        password_reset_form.add_error(None, paresedError[1])
+                    parseError = ParseError(error)
+                    if parseError[0] is None:
+                        password_reset_form.add_error(None, parseError[1])
                     else:
-                        password_reset_form.add_error(paresedError[0], paresedError[1])
+                        password_reset_form.add_error(parseError[0], parseError[1])
                 return render(
                     request,
                     "users/password_reset.html",
@@ -381,6 +384,7 @@ def password_reset(request):
     )
 
 
+@require_http_methods(["POST", "GET"])
 def password_set(request):
     if request.GET.get("q"):
         paragon_client = Client()
@@ -418,12 +422,12 @@ def password_set(request):
 
                         except ParagonClientError as PCE:
                             for error in PCE.args:
-                                paresedError = ParseError(error)
-                                if paresedError[0] is None:
-                                    password_set_form.add_error(None, paresedError[1])
+                                parseError = ParseError(error)
+                                if parseError[0] is None:
+                                    password_set_form.add_error(None, parseError[1])
                                 else:
                                     password_set_form.add_error(
-                                        paresedError[0], paresedError[1]
+                                        parseError[0], parseError[1]
                                     )
                             return render(
                                 request,
@@ -528,11 +532,11 @@ class NewslettersView(View):
                 return self.render_confirmation(request, newsletters_cleaned)
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    paresedError = ParseError(error)
-                    if paresedError[0] is None:
-                        newsletter_form.add_error(None, paresedError[1])
+                    parseError = ParseError(error)
+                    if parseError[0] is None:
+                        newsletter_form.add_error(None, parseError[1])
                     else:
-                        newsletter_form.add_error(paresedError[0], paresedError[1])
+                        newsletter_form.add_error(parseError[0], parseError[1])
             return self.render_preferences(request, newsletter_form)
 
     def render_confirmation(self, request, newsletters_cleaned):

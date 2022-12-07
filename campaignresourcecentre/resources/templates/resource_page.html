@@ -92,7 +92,7 @@
                                         {% if resource.can_download and resource.document %}
                                             {% if resource.permission_to_download %}
                                                 <p>
-                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceId="{{ resource.id }}" data-resourceTitle="{{ resource.title }}">Download this resource </a>
+                                                    <a class="govuk-button secondary-button download-button" role="button" href="{{ resource.document.url }}?a={{ resource.key }}" aria-describedby="{{ resource.title|slugify }}" data-resourceid="{{ resource.id }}" data-resourcetitle="{{ resource.title }}" data-campaign="{{ resource.campaign_title }}">Download this resource </a>
                                                     <span class="file-info">{{ resource.document.file_extension|upper }}, </span>
                                                     <span class="file-info">{{ resource.document.get_file_size|filesizeformat }}</span>
                                                 </p>
@@ -134,7 +134,20 @@
         const userToken = "{{ logged_in }}";
         const resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}";
         const topics="{% get_taxonomies taxonomy_json 'TOPIC' %}";
-        const campaign="{{ parent_title|escapejs }}";
+
+        function formatDate() {
+            var d = new Date(),
+                month = '' + (d.getUTCMonth() + 1),
+                day = '' + d.getUTCDate(),
+                year = d.getUTCFullYear();
+
+            if (month.length < 2) 
+                month = '0' + month;
+            if (day.length < 2) 
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
 
         if( REPORTING_ENABLED ){
             //perform reporting action
@@ -145,20 +158,19 @@
 
                     // Send the API request.
                     const date = new Date();
-                    const _date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    const _date = formatDate();
                     const date_time = `${_date} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
                     let href = this.getAttribute("href");
                     let params = {
-                        "resourceId" : this.dataset.resourceId,
+                        "resourceId" : this.getAttribute("data-resourceid"),
                         "resourceType" : resourceType,
                         "userToken" : userToken,
                         "topics" : topics,
-                        "campaign" : campaign,
-                        "resourceTitle" : this.dataset.resourceTitle,
+                        "campaign" : this.getAttribute("data-campaign"),
+                        "resourceTitle" : this.getAttribute("data-resourcetitle"),
                         "date": _date,
                         "ts" : date_time,
                     };
-                    console.log("--------params---" + JSON.stringify(params) + "----------");
                     
                     let message = {
                         "payload": params,

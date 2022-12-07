@@ -121,22 +121,22 @@ def place_order(request):
                 checkout_items = []
 
                 for item in items:
-                    checkout_item = {
+                    citem = {
                         "itemCode": item.get("item_code"),
                         "quantity": item.get("quantity"),
-                        "url": item.get("url"),
+                        "url": item.get("item_url"),
                         "campaign": item.get("campaign"),
                         "imageUrl": item.get("image_url"),
                         "title": item.get("title"),
                     }
-                    checkout_items.append(checkout_item)
+                    checkout_items.append(citem)
 
                 data_dump = json.dumps(
                     {
                         "userToken": user_token,
                         "postcode": postcode,
                         "crcOrderNumber": order_number,
-                        "orderItems": checkout_item,
+                        "orderItems": checkout_items,
                         "orderDate": date,
                         "longitude": postcode_data.get("longitude"),
                         "latitude": postcode_data.get("latitude"),

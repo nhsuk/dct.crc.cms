@@ -54,13 +54,11 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <div class="govuk-form-group govuk-!-margin-bottom-0">
-                    <!-- <input class="govuk-input resource-search-field govuk-!-width-one-half" id="search-field" name="q" type="search" placeholder="Search for resources" value="{{search_query}}" autocomplete="off" />
-                    <button id="submit-search" class="govuk-button" type="submit">Search</button> -->
 
                     <div class="nhsuk-header__search filter-search-results govuk-!-margin-bottom-8 govuk-!-margin-top-1">
                         <div class="nhsuk-header__search-wrap" id="wrap-search">
                             <div class="search-form">
-                                <form class="resource-search-form nhsuk-header__search-form" id="search" action="/search/" method="get" role="search" onsubmit="return submitSearch(this)">
+                                <form class="resource-search-form nhsuk-header__search-form" id="search" action="/search/" method="get" role="search" onsubmit="return submitSearch(this)" aria-label="Site search">
                                 <label class="nhsuk-u-visually-hidden" for="search-field">Search the CRC website</label>
                                 <input class="nhsuk-search__input" id="search-field" name="q" value="{{search_query}}" type="search" placeholder="Search for resources" autocomplete="off">
                                 <button id="submit-search" class="nhsuk-search__submit" type="submit">
@@ -80,7 +78,7 @@
         <div class="govuk-grid-row" id="search-panel">
             <div class="govuk-grid-column-one-quarter">
                 <h3>Filter results by</h3>
-                <form class="resource-filter-form" id="resource-filter-form" action="/search/" method="get" role="search">
+                <form class="resource-filter-form" id="resource-filter-form" action="/search/" method="get" role="search" aria-label="Search filters">
                     <input type="hidden" name="q" value="{{search_query}}">
                     {% for taxonomy in taxonomies %}
                         <details class="govuk-details resource-filters" data-module="govuk-details">

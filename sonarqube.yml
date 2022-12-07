@@ -11,7 +11,23 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  
+- task: Docker@2
+  inputs:
+    containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
+    command: 'login'
+# Run CMS Test Coverage using pytest
+- script: |
+    docker-compose -f ./docker-compose-test-coverage.yml up --build --force-recreate
+  displayName: 'Run Coverage Test'
+  enabled: true
+# Publish the test coverage report
+#- task: PublishCodeCoverageResults@1
+#  inputs:
+#    codeCoverageTool: Cobertura
+#    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/**/coverage.xml'
+#    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+#  displayName: 'Publish Test Report'
+#  enabled: true
 - task: SonarQubePrepare@5
   inputs:
     SonarQube: 'SonarQube'
@@ -21,7 +37,8 @@ steps:
     cliProjectName: 'DCT_Campaigns_Resource_Centre'
     cliSources: '.'
     extraProperties: |
-      sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html
+      sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html, campaignresourcecentre/utils/tests/test_models.py, campaignresourcecentre/paragon/tests.py, campaignresourcecentre/notifications/adapters.py
+      sonar.python.coverage.reportPaths = /home/vsts/work/1/s/docker/coverage.xml
 - task: dependency-check-build-task@6
   inputs:
     projectName: 'dct-campaign-resource-centre'
