@@ -411,7 +411,7 @@ class NewsLetterPreferencesForm(forms.Form):
             }
         ),
         required=False,
-        label="All themes",
+        label="All health behaviours",
     )
 
     BecomingSmokefree = forms.BooleanField(
@@ -508,7 +508,7 @@ class NewsLetterPreferencesForm(forms.Form):
             }
         ),
         required=False,
-        label="All subjects",
+        label="All topics",
     )
 
     Coronavirus = forms.BooleanField(
