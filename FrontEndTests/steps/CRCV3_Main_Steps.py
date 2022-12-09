@@ -441,10 +441,14 @@ def address_validation(context):
             f"error link as not as expected: {error}",
         )
 
-@Step("download the resources from order history and verify its downloaded successfully")
+
+@Step(
+    "download the resources from order history and verify its downloaded successfully"
+)
 def download_resoiurce(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.download_resource()
+
 
 @Step("click on account tab and verify page loaded")
 def Manage_your_accounts(context):

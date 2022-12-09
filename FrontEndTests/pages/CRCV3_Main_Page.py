@@ -491,7 +491,7 @@ class CRCV3MainPage(BasePage):
     A4_poster_resource = PageElement(By.TAG_NAME, "h1")
     basket = PageElement(By.XPATH, "//a[@href='/baskets/view_basket']")
     your_Basket_lable = PageElement(By.XPATH, "//h1[text()='Your basket']")
-    #basket = PageElement(By.LINK_TEXT, "your basket")
+    # basket = PageElement(By.LINK_TEXT, "your basket")
     order_quantity = PageElement(By.ID, "resource-BHCHO-NUT2")
     Proceed_to_checout = PageElement(By.ID, "proceed-to-checkout")
     full_name = PageElement(By.ID, "id_Address1")
@@ -519,8 +519,12 @@ class CRCV3MainPage(BasePage):
     show_all_sections_expand = PageElement(
         By.CLASS_NAME, "govuk-accordion__show-all-text"
     )
-    A4_poster_ready_to_use_download_link = PageElement(By.LINK_TEXT, "A4 poster – ready to use")
-    download_resource_link = PageElement(By.XPATH, "//a[contains(@class,'govuk-button secondary-button')]")
+    A4_poster_ready_to_use_download_link = PageElement(
+        By.LINK_TEXT, "A4 poster – ready to use"
+    )
+    download_resource_link = PageElement(
+        By.XPATH, "//a[contains(@class,'govuk-button secondary-button')]"
+    )
     hide_all_sections = PageElement(By.XPATH, "//span[text()='Hide all sections']")
     we_are_locally_driven_expand = PageElement(By.XPATH, "//span[text()='Show']")
     hide_we_are_locally_driven = PageElement(By.XPATH, "//span[text()='Hide']")
@@ -695,8 +699,11 @@ class CRCV3MainPage(BasePage):
     def download_resource(self):
         self.interact.click_element(self.Order_history)
         self.interact.click_element(self.show_all_sections_expand)
-        assert_that(self.interrogate.is_element_visible(self.hide_all_sections),
-                    equal_to(True), "show all sections isn't expanded")
+        assert_that(
+            self.interrogate.is_element_visible(self.hide_all_sections),
+            equal_to(True),
+            "show all sections isn't expanded",
+        )
         self.interact.click_element(self.A4_poster_ready_to_use_download_link)
         self.interact.click_element(self.download_resource_link)
 
@@ -758,7 +765,6 @@ class CRCV3MainPage(BasePage):
         self.interact.send_keys(self.address, "101 Invito house")
         self.interact.send_keys(self.town, "Ilford")
         self.interact.send_keys(self.postcode, "IG2 6NU")
-
 
     def click_review_order(self):
         self.interact.click_element(self.review_order)
@@ -905,7 +911,7 @@ class CRCV3MainPage(BasePage):
         # WebDriverWait(self.driver, 30).until(
         #   EC.presence_of_element_located((By.LINK_TEXT, "Sign in")))
         # assert_that(self.wait.until(self.Sign_In_link), equal_to(True), "Sign out is not working")
-        #assert_that(self.interrogate.is_element_visible(self.Sign_In_link), equal_to(True), "Sign out is not working")
+        # assert_that(self.interrogate.is_element_visible(self.Sign_In_link), equal_to(True), "Sign out is not working")
 
     #
     # self.interact.click_element(self.Sign_out_link)
