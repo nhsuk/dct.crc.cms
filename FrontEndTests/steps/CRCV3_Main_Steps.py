@@ -8,7 +8,7 @@ from pages.CRCV3_Main_Page import CRCV3MainPage
 
 
 @Step("I loaded CRCV3 site to load the home page")
-def load_tobacco_landing_page(context):
+def load_CRCV3_landing_page(context):
     context.landing_page = CRCV3MainPage(context.browser, context.logger)
     context.landing_page.interact.open_url(context.url)
     cookie_banner_displayed = context.landing_page.is_cookie_banner_displayed()
@@ -400,7 +400,7 @@ def select_resource(context):
 @Step("click on basket to proceed to checkout")
 def proceed_to_checkout(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
-    context.support_page.Proceed_checout()
+    context.support_page.Proceed_checkout()
 
 
 @Step("enter delivery address and click review order")

@@ -33,7 +33,7 @@ class CRCV3MainPage(BasePage):
     Login_error_list = PageElement(
         By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']/li"
     )
-    Sign_out_link = PageElement(By.PARTIAL_LINK_TEXT, "Sign out")
+    Sign_out_link = PageElement(By.LINK_TEXT, "Sign out")
     forgot_password_link = PageElement(By.PARTIAL_LINK_TEXT, "Forgot password")
     forgot_password_label = PageElement(
         By.XPATH, "//h1[text()[normalize-space()='Forgotten your password?']]"
@@ -280,7 +280,6 @@ class CRCV3MainPage(BasePage):
         By.XPATH, "//h1[text()='Bottle feeding leaflet']"
     )
     Email_signatures_landing = PageElement(By.XPATH, "//h1[text()='Email signatures']")
-
     A4_poster = PageElement(By.XPATH, "(//h3[text()='A4 poster'])[2]")
     A4_poster_Landing = PageElement(By.XPATH, "//h1[text()='A4 poster']")
     Top_tips_flyer = PageElement(By.LINK_TEXT, "Top tips flyer")
@@ -490,7 +489,9 @@ class CRCV3MainPage(BasePage):
     A4_Poster = PageElement(By.XPATH, "//button[text()='Add to basket']")
     Add_to_Basket = PageElement(By.XPATH, "//button[text()='Add to basket']")
     A4_poster_resource = PageElement(By.TAG_NAME, "h1")
-    basket = PageElement(By.XPATH, "//a[@href='/baskets/view_basket ']")
+    basket = PageElement(By.XPATH, "//a[@href='/baskets/view_basket']")
+    your_Basket_lable = PageElement(By.XPATH, "//h1[text()='Your basket']")
+    #basket = PageElement(By.LINK_TEXT, "your basket")
     order_quantity = PageElement(By.ID, "resource-BHCHO-NUT2")
     Proceed_to_checout = PageElement(By.ID, "proceed-to-checkout")
     full_name = PageElement(By.ID, "id_Address1")
@@ -518,6 +519,8 @@ class CRCV3MainPage(BasePage):
     show_all_sections_expand = PageElement(
         By.CLASS_NAME, "govuk-accordion__show-all-text"
     )
+    A4_poster_ready_to_use_download_link = PageElement(By.LINK_TEXT, "A4 poster – ready to use")
+    download_resource_link = PageElement(By.XPATH, "//a[contains(@class,'govuk-button secondary-button')]")
     hide_all_sections = PageElement(By.XPATH, "//span[text()='Hide all sections']")
     we_are_locally_driven_expand = PageElement(By.XPATH, "//span[text()='Show']")
     hide_we_are_locally_driven = PageElement(By.XPATH, "//span[text()='Hide']")
@@ -689,6 +692,14 @@ class CRCV3MainPage(BasePage):
         )
         self.interact.click_element(self.we_are_prototype_learn_expand)
 
+    def download_resource(self):
+        self.interact.click_element(self.Order_history)
+        self.interact.click_element(self.show_all_sections_expand)
+        assert_that(self.interrogate.is_element_visible(self.hide_all_sections),
+                    equal_to(True), "show all sections isn't expanded")
+        self.interact.click_element(self.A4_poster_ready_to_use_download_link)
+        self.interact.click_element(self.download_resource_link)
+
     def select_resource(self):
         self.interact.click_element(self.select_resource_add)
         assert_that(
@@ -728,19 +739,26 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Add_to_Basket)
         sleep(5)
 
-    def Proceed_checout(self):
-        self.interact.click_element(self.basket)
+    def Proceed_checkout(self):
         order = self.interrogate.get_attribute(self.order_quantity, "value")
         print(order)
         assert_that(order, not_none(), "order quantity is empty")
+        sleep(10)
+        self.interact.click_element(self.basket)
+        # assert_that(
+        #     self.interrogate.get_attribute(self.your_Basket_lable, "innerHTML"),
+        #     equal_to("Your basket"),
+        #     "Your Basket label is displayed",
+        # )
         self.interact.click_element(self.Proceed_to_checout)
         sleep(5)
 
     def delivery_addess(self):
-        self.interact.send_keys(self.full_name, "Campaign Tester")
-        self.interact.send_keys(self.address, "7 Wellington Pl")
-        self.interact.send_keys(self.town, "Leeds")
-        self.interact.send_keys(self.postcode, "SL109LH")
+        self.interact.send_keys(self.full_name, "Tester")
+        self.interact.send_keys(self.address, "101 Invito house")
+        self.interact.send_keys(self.town, "Ilford")
+        self.interact.send_keys(self.postcode, "IG2 6NU")
+
 
     def click_review_order(self):
         self.interact.click_element(self.review_order)
@@ -883,11 +901,11 @@ class CRCV3MainPage(BasePage):
         # Signout_displayed = context.landing_page.is_Signout_displayed()
         # if Signout_displayed == "Sign out":
         self.interact.click_element(self.Sign_out_link)
-        sleep(15)
+        sleep(10)
         # WebDriverWait(self.driver, 30).until(
-        #   EC.presence_of_element_located((By.XPATH, "//a[@href='/login/ ']")))
+        #   EC.presence_of_element_located((By.LINK_TEXT, "Sign in")))
         # assert_that(self.wait.until(self.Sign_In_link), equal_to(True), "Sign out is not working")
-        # assert_that(self.interrogate.is_element_visible(self.Sign_In_link), equal_to(True), "Sign out is not working")
+        #assert_that(self.interrogate.is_element_visible(self.Sign_In_link), equal_to(True), "Sign out is not working")
 
     #
     # self.interact.click_element(self.Sign_out_link)
