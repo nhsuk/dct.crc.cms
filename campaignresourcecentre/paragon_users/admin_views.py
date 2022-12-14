@@ -155,7 +155,7 @@ def index(request):
     "paragon_users.manage_paragon_users",
     "paragon_users.manage_paragon_users_all_fields",
 )
-@require_http_methods(["POST"])
+@require_http_methods(["POST", "GET"])
 def edit(request, user_token):
     paragon_error = False
     form = None
