@@ -106,9 +106,7 @@ def datetime_from_str(datetime_str):
     try:
         time_str = datetime.datetime.strptime(cleaned_datetime_str, "%Y-%m-%dT%H:%M:%S")
     except ValueError:
-        time_str = datetime.datetime.strptime(
-            cleaned_datetime_str, "%Y-%m-%d %H:%M:%S %z"
-        )
+        time_str = datetime.datetime.strptime(cleaned_datetime_str, "%Y-%m-%d %H:%M:%S")
     return time_str
 
 

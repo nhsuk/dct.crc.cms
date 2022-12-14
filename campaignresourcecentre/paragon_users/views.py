@@ -203,7 +203,7 @@ def verification(request):
         except Exception as e:
             logging.error("Failed to unsign token: %s" % (e,))
             return HTTPResponseBadRequest()
-        todays_date = date.today().strftime("%d/%m/%Y")
+        todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
         # set user parameters
         client = Client()
         client_user = client.get_user_profile(unsignedToken)["content"]
