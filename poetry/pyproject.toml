@@ -36,7 +36,7 @@ django-cprofile-middleware = "1.0.5"
 django-treebeard = "4.5.1"
 django-debug-toolbar = "~3.2"
 redis = "~4.1"
-wagtail-2fa = {git = "https://github.com/Ross-Clark/wagtail-2fa.git", rev = "fa90d9d851ea6a8214e2dd04fdfba073b4dd0305"}
+wagtail-2fa = {git = "https://github.com/labd/wagtail-2fa.git", rev = "f029a7c0838e763ae77ce0d292604bacf8c5833e"}
 setuptools = "65.5.0"
 
 [tool.poetry.extras]
