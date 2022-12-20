@@ -750,6 +750,6 @@ REPORTING_ENABLED = getenv_bool("REPORTING_ENABLED", True)
 # forces users to use 2fa flow when true
 WAGTAIL_2FA_REQUIRED = env.get("TWO_FA", "true").lower() == "true"
 if WAGTAIL_2FA_REQUIRED:
-    MIDDLEWARE += "wagtail_2fa.middleware.VerifyUserMiddleware"
+    MIDDLEWARE.append("wagtail_2fa.middleware.VerifyUserMiddleware")
 else:
-    MIDDLEWARE += "'wagtail_2fa.middleware.VerifyUserPermissionsMiddleware'"
+    MIDDLEWARE.append("wagtail_2fa.middleware.VerifyUserPermissionsMiddleware")
