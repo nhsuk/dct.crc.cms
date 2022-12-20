@@ -124,7 +124,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "wagtail_2fa.middleware.VerifyUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
@@ -750,3 +749,7 @@ REPORTING_ENABLED = getenv_bool("REPORTING_ENABLED", True)
 
 # forces users to use 2fa flow when true
 WAGTAIL_2FA_REQUIRED = env.get("TWO_FA", "true").lower() == "true"
+if WAGTAIL_2FA_REQUIRED:
+    MIDDLEWARE += "wagtail_2fa.middleware.VerifyUserMiddleware"
+else:
+    MIDDLEWARE += "'wagtail_2fa.middleware.VerifyUserPermissionsMiddleware'"
