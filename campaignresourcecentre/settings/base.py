@@ -747,8 +747,10 @@ PHE_PARTNERSHIPS_EMAIL = env.get("PHE_PARTNERSHIPS_EMAIL")
 REPORTING_ENDPOINT = env.get("REPORTING_ENDPOINT")
 REPORTING_ENABLED = getenv_bool("REPORTING_ENABLED", True)
 
-# forces users to use 2fa flow when true
-WAGTAIL_2FA_REQUIRED = env.get("TWO_FA", "true").lower() == "true"
+# forces users to use 2fa unless explicitly disabled
+two_fa = env.get("TWO_FA", "true").lower()
+# only disable if TWO_FA is set to "false"
+WAGTAIL_2FA_REQUIRED = (two_fa != "false")
 if WAGTAIL_2FA_REQUIRED:
     MIDDLEWARE.append("wagtail_2fa.middleware.VerifyUserMiddleware")
 else:
