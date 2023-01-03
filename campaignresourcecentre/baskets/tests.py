@@ -105,7 +105,7 @@ class TestClient(TestCase):
         with self.assertRaises(KeyError):
             self.basket.contents[1]["quantity"]
 
-        with self.assertRaises(ItemNotInBasketError):
+        with self.assertRaises(ItemNotInBasketError) as error:
             self.basket.change_item_quantity(2, 4)
         self.assert_exception(error, "Item is not added to basket!")
 
