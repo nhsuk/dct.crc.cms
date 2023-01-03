@@ -58,25 +58,25 @@ class TestClient(TestCase):
         self.assertEqual(self.basket.contents[1]["quantity"], 2)
         self.basket.add_item(item, None)
         self.assertEqual(self.basket.contents[1]["no_quantity"], True)
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["quantity"]
         self.basket.add_item(item, "")
         self.assertEqual(self.basket.contents[1]["no_quantity"], True)
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["quantity"]
         self.basket.add_item(item, "garbage")
         self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["quantity"]
         self.basket.change_item_quantity(1, None)
         self.assertEqual(self.basket.contents[1]["no_quantity"], True)
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["quantity"]
 
     def test_change_item_quantity(self):
@@ -100,12 +100,12 @@ class TestClient(TestCase):
         self.assertEqual(self.basket.contents[1]["no_quantity"], False)
         self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
         self.basket.change_item_quantity(1, None)
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             self.basket.contents[1]["quantity"]
 
-        with self.assertRaises(ItemNotInBasketError) as error:
+        with self.assertRaises(ItemNotInBasketError):
             self.basket.change_item_quantity(2, 4)
         self.assert_exception(error, "Item is not added to basket!")
 

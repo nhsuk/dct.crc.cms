@@ -9,6 +9,8 @@ from campaignresourcecentre.baskets.exceptions import ItemNotInBasketError
 from campaignresourcecentre.paragon_users.decorators import paragon_user_logged_in
 from campaignresourcecentre.resources.models import ResourceItem
 
+VIEW_BASKET_PATH = "/baskets/view_basket/"
+
 logger = getLogger("__name__")
 
 
@@ -17,7 +19,7 @@ logger = getLogger("__name__")
 def empty_basket(request):
     basket = Basket(request.session)
     basket.empty_basket()
-    return redirect("/baskets/view_basket/")
+    return redirect(VIEW_BASKET_PATH)
 
 
 def _add_item(request):
@@ -88,7 +90,7 @@ def view_basket(request):
 @require_http_methods(["POST"])
 def change_item_quantity(request):
     _change_item_quantity(request)
-    return redirect("/baskets/view_basket/")
+    return redirect(VIEW_BASKET_PATH)
 
 
 def _change_item_quantity(request):
@@ -98,7 +100,7 @@ def _change_item_quantity(request):
         item_id = int(payload["item_id"])
         return basket.change_item_quantity(item_id, payload.get("order_quantity"))
     except Exception as e:
-        logger.error("Change item quantity error. Payload: %s", payload)
+        logger.error("Change item quantity error. Payload: %s (%s)", payload, e)
     raise SuspiciousOperation
 
 
@@ -117,23 +119,23 @@ def render_basket_errors(request):
     if r:
         try:
             id = int(r)
-            items = basket.get_resource_page_items(id).items()
+            basket_items = basket.get_resource_page_items(id).items()
         except ValueError:
             raise SuspiciousOperation
     else:
-        items = basket.get_all_items().items()
+        basket_items = basket.get_all_items().items()
 
     error_count = sum(
         (
             1 if (item[1].get("no_quantity") or item[1].get("bad_quantity")) else 0
-            for item in items
+            for item in basket_items
         )
     )
     return render(
         request,
         "molecules/baskets/basket_errors.html",
         {
-            "items": items,
+            "items": basket_items,
             "has_errors": error_count > 0,
         },
     )
@@ -143,7 +145,7 @@ def render_basket_errors(request):
 @require_http_methods(["POST"])
 def remove_item(request):
     _remove_item(request)
-    return redirect("/baskets/view_basket/")
+    return redirect(VIEW_BASKET_PATH)
 
 
 @paragon_user_logged_in
@@ -155,7 +157,7 @@ def _remove_item(request):
         item_id = int(payload["item_id"])
         basket.remove_item(item_id)
     except Exception as e:
-        logger.error("Remove item error. Payload: %s", payload)
+        logger.error("Remove item error. Payload: %s (%s)", payload, e)
         raise SuspiciousOperation
 
 
