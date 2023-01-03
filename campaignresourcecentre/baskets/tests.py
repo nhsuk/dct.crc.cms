@@ -4,6 +4,11 @@ from django.test.client import Client
 from .basket import Basket
 from .exceptions import ItemNotInBasketError
 
+TEST1_ITEM_URL = "https://test.com/item1"
+TEST1_IMAGE_URL = "https://test.com/assets/item1/image.png"
+TEST2_ITEM_URL = "https://test.com/item2"
+TEST2_IMAGE_URL = "https://test.com/assets/item2/image.png"
+
 
 class TestClient(TestCase):
     def setUp(self):
@@ -24,8 +29,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
             "quantity": 2,
         }
@@ -39,8 +44,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
@@ -79,8 +84,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
@@ -109,8 +114,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -118,8 +123,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "https://test.com/item21",
-            "image_url": "https://test.com/assets/item2/imgge.png",
+            "item_url": TEST2_ITEM_URL,
+            "image_url": TEST2_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
@@ -130,8 +135,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -139,8 +144,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "https://test.com/item21",
-            "image_url": "https://test.com/assets/item2/imgge.png",
+            "item_url": TEST2_ITEM_URL,
+            "image_url": TEST2_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
@@ -151,8 +156,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -163,8 +168,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -172,8 +177,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "https://test.com/item21",
-            "image_url": "https://test.com/assets/item2/imgge.png",
+            "item_url": TEST2_ITEM_URL,
+            "image_url": TEST2_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")

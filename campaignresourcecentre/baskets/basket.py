@@ -21,48 +21,39 @@ class Basket:
     # Key - no_quantity: True if no quantity provided for this item
     # Key - bad_quantity: undefined if no_quantity, otherwise True if quantity is outside range 1..maximum
 
-    def _update_quantity(self, item, quantity_text):
-        def assign_new_quantity():
-            if "no_quantity" in item:
-                del item["no_quantity"]
-            bad_quantity = not quantity_text.isdigit()
-            if not bad_quantity:
-                quantity = int(quantity_text)
-                bad_quantity = quantity < 1
-
-        def clear_quantity():
-            item["no_quantity"] = True
-            if "bad_quantity" in item:
-                del item["bad_quantity"]
-            if "quantity" in item:
-                del item["quantity"]
-
-        if item.get("updated"):
-            del item["updated"]
-
-        def validate_quantity():
+    def _assign_new_quantity(self, item, quantity_text):
+        item["no_quantity"] = False
+        previous_quantity = item.get("quantity")
+        bad_quantity = not quantity_text.isdigit()
+        if not bad_quantity:
+            quantity = int(quantity_text)
+            bad_quantity = quantity < 1
             if not bad_quantity:
                 max_quantity = item["max_quantity"]
-                new_quantity = quantity
-                if new_quantity <= max_quantity:
-                    item["quantity"] = new_quantity
-                    if (
-                        previous_quantity is not None
-                        and previous_quantity != new_quantity
-                    ):
+                if quantity <= max_quantity:
+                    item["quantity"] = quantity
+                    if previous_quantity is not None and previous_quantity != quantity:
                         item["updated"] = True
                 else:
                     bad_quantity = True
-
         item["bad_quantity"] = bad_quantity
-        previous_quantity = item.get("quantity")
+
+    def _clear_quantity(self, item):
+        item["no_quantity"] = True
+        if "bad_quantity" in item:
+            del item["bad_quantity"]
+        if "quantity" in item:
+            del item["quantity"]
+
+    def _update_quantity(self, item, quantity_text):
+        if item.get("updated"):
+            del item["updated"]
+
         if quantity_text:
-            assign_new_quantity()
+            self._assign_new_quantity(item, quantity_text)
         else:
-            clear_quantity()
-            return item
-        item["no_quantity"] = False
-        validate_quantity()
+            self._clear_quantity(item)
+
         return item
 
     def get_item(self, item_id):
