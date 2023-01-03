@@ -1,6 +1,9 @@
 from .exceptions import ItemNotInBasketError
 
 
+NOT_ADDED_ERROR = "Item is not added to basket!"
+
+
 class Basket:
     def __init__(self, session):
         self.session = session
@@ -19,34 +22,47 @@ class Basket:
     # Key - bad_quantity: undefined if no_quantity, otherwise True if quantity is outside range 1..maximum
 
     def _update_quantity(self, item, quantity_text):
-        if item.get("updated"):
-            del item["updated"]
-        previousQuantity = item.get("quantity")
-        if quantity_text:
+        def assign_new_quantity():
             if "no_quantity" in item:
                 del item["no_quantity"]
             bad_quantity = not quantity_text.isdigit()
             if not bad_quantity:
                 quantity = int(quantity_text)
                 bad_quantity = quantity < 1
-        else:
+
+        def clear_quantity():
             item["no_quantity"] = True
             if "bad_quantity" in item:
                 del item["bad_quantity"]
             if "quantity" in item:
                 del item["quantity"]
+
+        if item.get("updated"):
+            del item["updated"]
+
+        def validate_quantity():
+            if not bad_quantity:
+                max_quantity = item["max_quantity"]
+                new_quantity = quantity
+                if new_quantity <= max_quantity:
+                    item["quantity"] = new_quantity
+                    if (
+                        previous_quantity is not None
+                        and previous_quantity != new_quantity
+                    ):
+                        item["updated"] = True
+                else:
+                    bad_quantity = True
+
+        item["bad_quantity"] = bad_quantity
+        previous_quantity = item.get("quantity")
+        if quantity_text:
+            assign_new_quantity()
+        else:
+            clear_quantity()
             return item
         item["no_quantity"] = False
-        if not bad_quantity:
-            max_quantity = item["max_quantity"]
-            new_quantity = quantity
-            if new_quantity <= max_quantity:
-                item["quantity"] = new_quantity
-                if previousQuantity is not None and previousQuantity != new_quantity:
-                    item["updated"] = True
-            else:
-                bad_quantity = True
-        item["bad_quantity"] = bad_quantity
+        validate_quantity()
         return item
 
     def get_item(self, item_id):
@@ -69,7 +85,7 @@ class Basket:
             self._update_session_basket()
             return item
         else:
-            raise ItemNotInBasketError("Item is not added to basket!")
+            raise ItemNotInBasketError(NOT_ADDED_ERROR)
 
     def get_all_items(self):
         return self.contents
@@ -102,12 +118,12 @@ class Basket:
     def get_max_quantity(self, item_id):
         if item_id in self.contents:
             return self.contents[item_id]["max_quantity"]
-        raise ItemNotInBasketError("Item is not added to basket!")
+        raise ItemNotInBasketError(NOT_ADDED_ERROR)
 
     def get_title(self, item_id):
         if item_id in self.contents:
             return self.contents[item_id]["title"]
-        raise ItemNotInBasketError("Item is not added to basket!")
+        raise ItemNotInBasketError(NOT_ADDED_ERROR)
 
     @property
     def has_errors(self):
