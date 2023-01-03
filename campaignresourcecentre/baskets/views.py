@@ -118,8 +118,7 @@ def render_basket_errors(request):
     r = request.GET.get("r")
     if r:
         try:
-            id = int(r)
-            basket_items = basket.get_resource_page_items(id).items()
+            basket_items = basket.get_resource_page_items(int(r)).items()
         except ValueError:
             raise SuspiciousOperation
     else:

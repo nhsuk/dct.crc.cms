@@ -34,6 +34,8 @@ from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 from .blocks import CampaignDetailsBlock, CampaignsPageBlocks, CommonBlocks
 import logging
 
+HOME_PAGE_NAME = "home.HomePage"
+CAMPAIGN_PAGE_NAME = "campaigns.CampaignPage"
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +57,8 @@ class CampaignHubPage(BasePage):
     max_count = 1
     template = "campaign_hub.html"
 
-    parent_page_types = ["home.HomePage"]
-    subpage_types = ["campaigns.CampaignPage"]
+    parent_page_types = [HOME_PAGE_NAME]
+    subpage_types = [CAMPAIGN_PAGE_NAME]
 
     introduction = models.TextField(blank=True)
     campaign_updates_heading = models.CharField(
@@ -279,7 +281,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
                 ImageChooserPanel("image"),
                 FieldPanel("description"),
                 FieldPanel("image_alt_text"),
-                PageChooserPanel("link_page", "campaigns.CampaignPage"),
+                PageChooserPanel("link_page", CAMPAIGN_PAGE_NAME),
                 FieldPanel("link_url"),
                 FieldPanel("link_text"),
             ],
@@ -297,8 +299,8 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
 
     template = "campaign_page.html"
 
-    parent_page_types = ["campaigns.CampaignHubPage", "campaigns.CampaignPage"]
-    subpage_types = ["campaigns.CampaignPage", "resources.ResourcePage"]
+    parent_page_types = ["campaigns.CampaignHubPage", CAMPAIGN_PAGE_NAME]
+    subpage_types = [CAMPAIGN_PAGE_NAME, "resources.ResourcePage"]
 
     base_form_class = PageLifecycleForm
 
