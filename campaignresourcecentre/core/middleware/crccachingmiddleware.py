@@ -27,13 +27,13 @@ campaign_page_re = _lazy_re_compile(r"/campaigns/[^\/]+/?$")
 logger = logging.getLogger(__name__)
 
 
-def remove_vary_headers(response, headersToRemove):
-    existingHeaders = response.get("Vary")
-    if existingHeaders:
+def remove_vary_headers(response, headers_to_remove):
+    existing_headers = response.get("Vary")
+    if existing_headers:
         vary_headers = [
-            headerName
-            for headerName in cc_delim_re.split(existingHeaders)
-            if headerName not in headersToRemove
+            header_name
+            for header_name in cc_delim_re.split(existing_headers)
+            if header_name not in headers_to_remove
         ]
         if vary_headers:
             response["Vary"] = ", ".join(vary_headers)
@@ -55,13 +55,10 @@ def is_cacheable(request, response, path):
 
 
 class CRCUpdateCacheMiddleware(UpdateCacheMiddleware):
-    def process_request(self, request):
-        pass
-
     def process_response(self, request, response):
         path = request.get_full_path()
-        canCache = is_cacheable(request, response, path)
-        if canCache:
+        can_cache = is_cacheable(request, response, path)
+        if can_cache:
             if len(response.cookies):
                 logger.info(
                     "Potentially cachable page %s set cookies %s",
@@ -74,7 +71,7 @@ class CRCUpdateCacheMiddleware(UpdateCacheMiddleware):
         else:
             add_never_cache_headers(response)
         response = super().process_response(request, response)
-        logger.debug("Update process response for %s, cachable %s", path, canCache)
+        logger.debug("Update process response for %s, cachable %s", path, can_cache)
 
         return response
 
