@@ -16,7 +16,7 @@ class TestClient(TestCase):
         session = self.client.session
         session.save()
         basket = Basket(session)
-        self.assertEqual(len(basket.basket), 0)
+        self.assertEqual(len(basket.contents), 0)
 
     def test_init_with_item_in_session(self):
         session = self.client.session
@@ -32,7 +32,7 @@ class TestClient(TestCase):
         session["BASKET"] = {1: item}
         session.save()
         basket = Basket(session)
-        self.assertEqual(len(basket.basket), 1)
+        self.assertEqual(len(basket.contents), 1)
 
     def test_add_item(self):
         item = {
@@ -48,31 +48,31 @@ class TestClient(TestCase):
         self.assertEqual(self.basket.get_item_count(1), 3)
         self.basket.add_item(item, "2")
         self.assertEqual(self.basket.get_item_count(1), 2)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["quantity"], 2)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["quantity"], 2)
         self.basket.add_item(item, None)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], True)
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
+            self.basket.contents[1]["bad_quantity"]
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+            self.basket.contents[1]["quantity"]
         self.basket.add_item(item, "")
-        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], True)
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
+            self.basket.contents[1]["bad_quantity"]
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+            self.basket.contents[1]["quantity"]
         self.basket.add_item(item, "garbage")
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+            self.basket.contents[1]["quantity"]
         self.basket.change_item_quantity(1, None)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], True)
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
+            self.basket.contents[1]["bad_quantity"]
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+            self.basket.contents[1]["quantity"]
 
     def test_change_item_quantity(self):
         item = {
@@ -85,20 +85,20 @@ class TestClient(TestCase):
         }
         self.basket.add_item(item, "3")
         self.basket.change_item_quantity(1, "4")
-        self.assertEqual(self.basket.basket[1]["quantity"], 4)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["quantity"], 4)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], False)
         self.basket.change_item_quantity(1, "6")
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
         self.basket.change_item_quantity(1, "A")
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
         self.basket.change_item_quantity(1, None)
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
+            self.basket.contents[1]["bad_quantity"]
         with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+            self.basket.contents[1]["quantity"]
 
         with self.assertRaises(ItemNotInBasketError) as error:
             self.basket.change_item_quantity(2, 4)
@@ -178,5 +178,5 @@ class TestClient(TestCase):
         }
         self.basket.add_item(item2, "2")
         self.basket.empty_basket()
-        self.assertEqual(len(self.basket.basket), 0)
-        self.assertEqual(self.basket.basket, {})
+        self.assertEqual(len(self.basket.contents), 0)
+        self.assertEqual(self.basket.contents, {})

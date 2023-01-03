@@ -4,11 +4,11 @@ from .exceptions import ItemNotInBasketError
 class Basket:
     def __init__(self, session):
         self.session = session
-        self.basket = session.get("BASKET", {})
+        self.contents = session.get("BASKET", {})
         self._has_errors = None
 
     def _update_session_basket(self):
-        self.session["BASKET"] = self.basket
+        self.session["BASKET"] = self.contents
         self.session.save()
         self._has_errors = None
 
@@ -50,20 +50,20 @@ class Basket:
         return item
 
     def get_item(self, item_id):
-        return self.basket.get(item_id)
+        return self.contents.get(item_id)
 
     def add_item(self, new_item, quantity_text):
         self._update_quantity(new_item, quantity_text)
-        self.basket[new_item["id"]] = new_item
+        self.contents[new_item["id"]] = new_item
         self._update_session_basket()
 
     def remove_item(self, item_id):
-        if item_id in self.basket:
-            del self.basket[item_id]
+        if item_id in self.contents:
+            del self.contents[item_id]
             self._update_session_basket()
 
     def change_item_quantity(self, item_id, quantity_text):
-        item = self.basket.get(item_id)
+        item = self.contents.get(item_id)
         if item:
             self._update_quantity(item, quantity_text)
             self._update_session_basket()
@@ -72,41 +72,41 @@ class Basket:
             raise ItemNotInBasketError("Item is not added to basket!")
 
     def get_all_items(self):
-        return self.basket
+        return self.contents
 
     def get_resource_page_items(self, resource_page_id):
         return {
             id: item
-            for id, item in self.basket.items()
+            for id, item in self.contents.items()
             if item["resource_page_id"] == resource_page_id
         }
 
     def get_item_count(self, item_id):
-        item = self.basket.get(item_id)
+        item = self.contents.get(item_id)
         if item:
             return item.get("quantity", 0)
         return 0
 
     def get_item_has_error(self, item_id):
-        item = self.basket.get(item_id)
+        item = self.contents.get(item_id)
         if item:
             return item.get("bad_quantity") or item.get("no_quantity")
 
     def get_items_count(self):
-        return len(self.basket)
+        return len(self.contents)
 
     def empty_basket(self):
-        self.basket = {}
+        self.contents = {}
         self._update_session_basket()
 
     def get_max_quantity(self, item_id):
-        if item_id in self.basket:
-            return self.basket[item_id]["max_quantity"]
+        if item_id in self.contents:
+            return self.contents[item_id]["max_quantity"]
         raise ItemNotInBasketError("Item is not added to basket!")
 
     def get_title(self, item_id):
-        if item_id in self.basket:
-            return self.basket[item_id]["title"]
+        if item_id in self.contents:
+            return self.contents[item_id]["title"]
         raise ItemNotInBasketError("Item is not added to basket!")
 
     @property
@@ -117,7 +117,7 @@ class Basket:
                     1
                     if (item[1].get("no_quantity") or item[1].get("bad_quantity"))
                     else 0
-                    for item in self.basket.items()
+                    for item in self.contents.items()
                 )
             )
             self._has_errors = error_count > 0
