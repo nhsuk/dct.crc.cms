@@ -14,48 +14,65 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def _get_key(request):
+    page_auth = request.GET.get("a")
+    if page_auth is None:
+        logger.warning("No key present in download request")
+        raise ValueError("No key")
+    try:
+        return unsign(page_auth).lower()
+    except (BadSignature, InvalidToken):
+        logger.warning("Malformed key present in download request")
+        raise ValueError("Malformed key")
+
+
+def _get_user_auth(request):
+    if "ParagonUser" in request.session:
+        user_auth = (
+            request.session["UserDetails"]["ProductRegistrationVar1"] or ""
+        ).lower()
+        if user_auth:
+            if user_auth in (r[0] for r in ROLE_CHOICES):
+                return user_auth
+            else:
+                logger.error("Invalid user_auth value '%s'", user_auth)
+                raise ValueError("Invalid user_auth value")
+        else:
+            return "unverified"
+    else:
+        raise PermissionDenied("User has not signed in")
+
+
+def _is_authorized(page_auth, user_auth):
+    if page_auth == "all":
+        return True
+    if page_auth == "standard" and (user_auth == "standard" or user_auth == "uber"):
+        return True
+    if page_auth == "uber" and user_auth == "uber":
+        return True
+    return False
+
+
 # Hook to stop unauthorised users from accessing documents
 @hooks.register("before_serve_document")
 def authorise_users(doc, request):
-    # get key from query string
-    pageAuth = request.GET.get("a")
-    # if Key is present
-    if pageAuth is None:
-        logger.warning("No key present in download request")
-        return bad_request(request, "No key")
-    else:
-        try:
-            pageAuth = unsign(pageAuth).lower()
-        except (BadSignature, InvalidToken):
-            logger.warning("Malformed key present in download request")
-            return bad_request(request, "Malformed key")
-        # if document not universally available, need to check authorisation
-        if pageAuth != "all":
-            # Check if user is logged in
-            if "ParagonUser" in request.session:
-                userAuth = (
-                    request.session["UserDetails"]["ProductRegistrationVar1"] or ""
-                ).lower()
-                if userAuth:
-                    if userAuth in (r[0] for r in ROLE_CHOICES):
-                        # check if page is standard AND the user is standard or uber (higher level) OR
-                        # page is uber and user is uber
-                        if (
-                            pageAuth == "standard"
-                            and (userAuth == "standard" or userAuth == "uber")
-                        ) or (pageAuth == "uber" and userAuth == "uber"):
-                            return  # A null response is OK
-                        # if no userauth then something is wrong => go to 403
-                        else:
-                            raise PermissionDenied
-                    else:  # unknown userAuth
-                        raise Exception("Invalid userAuth value")
-                else:  # Maybe not registered
-                    raise PermissionDenied("Username has not been verified")
-            # not logged in => return a redirect to login page
-            else:
-                logger.info("non-user attempted to access document")
-                resp = HttpResponseRedirect("/login")
-                if "HTTP_REFERER" in request.META.get("HTTP_REFERER", ""):
-                    resp["HTTP_REFERER"] = request.META.get("HTTP_REFERER")
-                return resp
+    # Attempt to get authority required for page
+    try:
+        page_auth = _get_key(request)
+    except ValueError as e:
+        return bad_request(request, str(e))
+
+    # Attempt to established user status
+    try:
+        user_auth = _get_user_auth(request)
+    except PermissionDenied:
+        logger.info("non-user attempted to access document")
+        resp = HttpResponseRedirect("/login")
+        if "HTTP_REFERER" in request.META.get("HTTP_REFERER", ""):
+            resp["HTTP_REFERER"] = request.META.get("HTTP_REFERER")
+        return resp
+
+    # Check page requirement against user status
+    if not _is_authorized(page_auth, user_auth):
+        raise PermissionDenied

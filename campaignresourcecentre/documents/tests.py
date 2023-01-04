@@ -74,7 +74,7 @@ class TestAuthoriseUsers(SessionEnabledTestCase):
         assert isinstance(result, HttpResponseBadRequest)
 
     def test_with_valid_key_and_unauthenticated_user(self):
-        # create a request with a valid key
+        # create a request with a valid key requiring an uber user
         request = self.make_mock_request()
         request.GET = {"a": sign("uber").decode()}
 
@@ -88,7 +88,8 @@ class TestAuthoriseUsers(SessionEnabledTestCase):
         assert isinstance(result, HttpResponseRedirect)
 
     def test_with_valid_key_and_unauthorised_user(self):
-        # create a request with a valid key
+        # create a request with a valid key requiring an Uber user
+        # but user is only standard
         request = self.make_mock_request()
         request.session["ParagonUser"] = "whatever"
         request.session["UserDetails"] = {"ProductRegistrationVar1": "standard"}
@@ -99,10 +100,10 @@ class TestAuthoriseUsers(SessionEnabledTestCase):
 
         # call the hook function, expecting failure
         with self.assertRaises(PermissionDenied):
-            result = authorise_users(doc, request)
+            authorise_users(doc, request)
 
     def test_with_valid_key_and_unregistered_user(self):
-        # create a request with a valid key
+        # create a request with a valid key requiring ab Uber user
         request = self.make_mock_request()
         request.session["ParagonUser"] = "whatever"
         request.session["UserDetails"] = {"ProductRegistrationVar1": ""}
@@ -113,4 +114,18 @@ class TestAuthoriseUsers(SessionEnabledTestCase):
 
         # call the hook function, expecting failure
         with self.assertRaises(PermissionDenied):
-            result = authorise_users(doc, request)
+            authorise_users(doc, request)
+
+    def test_with_valid_key_and_uber_user(self):
+        # create a request with a valid key requiring an Uber user
+        request = self.make_mock_request()
+        request.session["ParagonUser"] = "whatever"
+        request.session["UserDetails"] = {"ProductRegistrationVar1": "uber"}
+        request.GET = {"a": sign("uber").decode()}
+
+        # create a mock document
+        doc = Mock()
+
+        # call the hook function, should be o problem
+
+        authorise_users(doc, request)
