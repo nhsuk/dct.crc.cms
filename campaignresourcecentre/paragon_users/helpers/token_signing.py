@@ -1,3 +1,4 @@
+from base64 import b64encode
 from django.core.signing import TimestampSigner
 from cryptography.fernet import Fernet
 from django.conf import settings
@@ -13,6 +14,9 @@ SALT = settings.PARAGON_SALT
 PARAGON_ENCRYPTION_KEY = settings.PARAGON_ENCRYPTION_KEY or "Default Value"
 if PARAGON_ENCRYPTION_KEY == "Default Value":
     logger.warning("Paragon Encryption Key Not Set")
+    # Key must be base 64 encoding of a 32 byte value
+    # We use the encoding of 'DEFAULTVALUE34567890123456789012' as default for testing
+    PARAGON_ENCRYPTION_KEY = b64encode("DEFAULTVALUE34567890123456789012")
 ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY.encode()
 
 
