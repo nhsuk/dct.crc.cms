@@ -35,7 +35,7 @@ class SessionEnabledTestCase(TestCase):
 
     def make_mock_request(self):
         request = HttpRequest()
-        request.META["SERVER_NAME"] = "mock"
+        request.META["SERVER_NAME"] = "localhost"
         request.META["SERVER_PORT"] = 8000
 
         request.session = self.get_session()
