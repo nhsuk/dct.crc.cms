@@ -16,8 +16,8 @@ if PARAGON_ENCRYPTION_KEY == "Default Value":
     logger.warning("Paragon Encryption Key Not Set")
     # Key must be base 64 encoding of a 32 byte value
     # We use the encoding of 'DEFAULTVALUE34567890123456789012' as default for testing
-    PARAGON_ENCRYPTION_KEY = b64encode("DEFAULTVALUE34567890123456789012")
-ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY.encode()
+    PARAGON_ENCRYPTION_KEY = b64encode(b"DEFAULTVALUE34567890123456789012")
+ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY
 
 
 def sign(token: str, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
