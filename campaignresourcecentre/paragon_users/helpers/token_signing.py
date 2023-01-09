@@ -20,25 +20,25 @@ if PARAGON_ENCRYPTION_KEY == "Default Value":
 ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY
 
 
-def sign(token: str, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
+def sign(token: str, sig_key=KEY, cryptKey=ENCRYPTION_KEY):
     """
     signs strings and then encrypts them
     """
 
-    signer = TimestampSigner(key=sigKey, salt=SALT)
+    signer = TimestampSigner(key=sig_key, salt=SALT)
     token = signer.sign(token).encode()  # sign
     token = encrypt(token, key=cryptKey)  # ecrypt
 
     return token
 
 
-def unsign(token, max_age=None, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
+def unsign(token, max_age=None, sig_key=KEY, cryptKey=ENCRYPTION_KEY):
     """
     dencrypts strings and then unsigns them
     """
     token = token.encode()
     token = decrypt(token, key=cryptKey)  # decrypt
-    signer = TimestampSigner(key=sigKey, salt=SALT)
+    signer = TimestampSigner(key=sig_key, salt=SALT)
     token = token.decode()
     token = signer.unsign(value=str(token), max_age=max_age)  # unsign
 
