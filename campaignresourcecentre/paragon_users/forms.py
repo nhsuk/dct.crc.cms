@@ -38,24 +38,31 @@ HEALTH_CHOICES = (
 
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
+ENTER_EMAIL = "Enter your email address"
+ENTER_PASSWORD = "Enter your password"
+
+DESELECTALL_AGES = "DeselectAllOption(this,'Ages')"
+DESELECTALL_THEMES = "DeselectAllOption(this,'Themes')"
+DESELECTALL_SUBJECTS = "DeselectAllOption(this,'Subjects')"
+
 # uses regex to restrict usage of everything but a expression of allowed characters
 class SpecialCharacterRestrictionValidator(RegexValidator):
     regex = "^[a-zA-Z0-9\\-' ]*$"
-    fieldName = "this field"
+    field_name = "this field"
     message = "The only special characters you can use in {} are a hyphen (-) and an apostrophe (')".format(
-        fieldName
+        field_name
     )
 
-    def __init__(self, fieldName):
-        if fieldName is not None:
-            self.fieldName = fieldName
+    def __init__(self, field_name):
+        if field_name is not None:
+            self.field_name = field_name
         self.regex = _lazy_re_compile(self.regex, self.flags)
 
 
 # uses get_postcode_region to verify existence of specified postcode
 def validate_postcode(postcode):
     try:
-        postcode_region = get_postcode_region(postcode)
+        get_postcode_region(postcode)
     except Exception as e:
         logger.warn("Failed to verify postcode '%s' (%s)", postcode, e)
         raise ValidationError(
@@ -76,7 +83,7 @@ class RegisterForm(forms.Form):
         required=True,
         error_messages={"required": "Enter your first name"},
         validators=[
-            SpecialCharacterRestrictionValidator(fieldName="the first name field")
+            SpecialCharacterRestrictionValidator(field_name="the first name field")
         ],
     )
 
@@ -91,7 +98,7 @@ class RegisterForm(forms.Form):
         required=True,
         error_messages={"required": "Enter your last name"},
         validators=[
-            SpecialCharacterRestrictionValidator(fieldName="the last name field")
+            SpecialCharacterRestrictionValidator(field_name="the last name field")
         ],
     )
 
@@ -133,7 +140,7 @@ class RegisterForm(forms.Form):
         error_messages={"required": "Enter your organisation name"},
         validators=[
             SpecialCharacterRestrictionValidator(
-                fieldName="the organisation name field"
+                field_name="the organisation name field"
             )
         ],
     )
@@ -160,7 +167,7 @@ class RegisterForm(forms.Form):
             }
         ),
         validators=[EmailValidator],
-        error_messages={"required": "Enter your email address"},
+        error_messages={"required": "ENTER_EMAIL"},
     )
 
     password = forms.CharField(
@@ -172,7 +179,7 @@ class RegisterForm(forms.Form):
             }
         ),
         validators=[validate_password_form],
-        error_messages={"required": "Enter your password"},
+        error_messages={"required": "ENTER_PASSWORD"},
     )
 
     terms = forms.BooleanField(
@@ -196,7 +203,8 @@ class RegisterForm(forms.Form):
             "organisation",
             "job_title",
             "area_work",
-            "postcode" "terms",
+            "postcode",
+            "terms",
         ]
 
 
@@ -269,7 +277,7 @@ class LoginForm(forms.Form):
             }
         ),
         validators=[EmailValidator],
-        error_messages={"required": "Enter your email address"},
+        error_messages={"required": "ENTER_EMAIL"},
     )
 
     password = forms.CharField(
@@ -279,7 +287,7 @@ class LoginForm(forms.Form):
                 "autocomplete": "current-password",
             }
         ),
-        error_messages={"required": "Enter your password"},
+        error_messages={"required": "ENTER_PASSWORD"},
     )
     previous_page = forms.CharField(required=False)
 
@@ -294,7 +302,7 @@ class PasswordResetForm(forms.Form):
             }
         ),
         validators=[EmailValidator],
-        error_messages={"required": "Enter your email address"},
+        error_messages={"required": "ENTER_EMAIL"},
     )
 
 
@@ -307,7 +315,7 @@ class PasswordSetForm(forms.Form):
                 "autocomplete": "new-password",
             }
         ),
-        error_messages={"required": "Enter your password"},
+        error_messages={"required": "ENTER_PASSWORD"},
         validators=[validate_password_form],
         help_text="Password must contain at least one number, at least one capital letter and at least one symbol and must be more than 8 characters long.",  # noqa
     )
@@ -318,7 +326,7 @@ class PasswordSetForm(forms.Form):
                 "autocomplete": "new-password",
             }
         ),
-        error_messages={"required": "Enter your password"},
+        error_messages={"required": "ENTER_PASSWORD"},
     )
 
 
@@ -346,7 +354,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
-                "onclick": "DeselectAllOption(this,'Ages')",
+                "onclick": DESELECTALL_AGES,
             }
         ),
         required=False,
@@ -358,7 +366,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
-                "onclick": "DeselectAllOption(this,'Ages')",
+                "onclick": DESELECTALL_AGES,
             }
         ),
         required=False,
@@ -370,7 +378,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
-                "onclick": "DeselectAllOption(this,'Ages')",
+                "onclick": DESELECTALL_AGES,
             }
         ),
         required=False,
@@ -382,7 +390,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
-                "onclick": "DeselectAllOption(this,'Ages')",
+                "onclick": DESELECTALL_AGES,
             }
         ),
         required=False,
@@ -394,7 +402,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
-                "onclick": "DeselectAllOption(this,'Ages')",
+                "onclick": DESELECTALL_AGES,
             }
         ),
         required=False,
@@ -419,7 +427,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -431,7 +439,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -443,7 +451,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -455,7 +463,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -467,7 +475,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -479,7 +487,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -491,7 +499,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
-                "onclick": "DeselectAllOption(this,'Themes')",
+                "onclick": DESELECTALL_THEMES,
             }
         ),
         required=False,
@@ -516,7 +524,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -528,7 +536,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -540,7 +548,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -552,7 +560,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -564,7 +572,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -576,7 +584,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -588,7 +596,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -600,7 +608,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -612,7 +620,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -624,7 +632,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -636,7 +644,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -648,7 +656,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -660,7 +668,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
@@ -672,7 +680,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
-                "onclick": "DeselectAllOption(this,'Subjects')",
+                "onclick": DESELECTALL_SUBJECTS,
             }
         ),
         required=False,
