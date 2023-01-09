@@ -14,8 +14,8 @@ def send_verification(token, url, email, first_name):
     url = url + "?q=" + quote(token)
     # send email
     try:
-        emailClient = gov_notify_factory()
-        emailClient.confirm_registration(email, first_name, url)
+        email_client = gov_notify_factory()
+        email_client.confirm_registration(email, first_name, url)
     except Exception as e1:
         logger.error("Error sending verification email: %s", e1)
         try:
