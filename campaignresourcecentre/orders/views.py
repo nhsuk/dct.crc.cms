@@ -64,7 +64,7 @@ def delivery_address(request):
         if f.is_valid():
             request.session["DELIVERY_ADDRESS"] = f.cleaned_data
             try:
-                response = paragon_client.set_user_address(user_token, f.cleaned_data)
+                paragon_client.set_user_address(user_token, f.cleaned_data)
                 return redirect("/orders/summary")
             # This doesn't seem to be called whatever is given as address to Parkhouse
             # so it should be treated as an unknown problem, i.e. server error
@@ -86,7 +86,7 @@ def place_order(request):
     paragon_client = Client()
     basket = Basket(request.session)
     items = basket.get_all_items().values()
-    address = delivery_address = request.session.get("DELIVERY_ADDRESS")
+    delivery_address = request.session.get("DELIVERY_ADDRESS")
 
     # Front-end shouldn't ever route to this entry with an empty basket
     if len(items) == 0:
