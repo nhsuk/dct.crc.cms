@@ -26,10 +26,10 @@ def send_verification(token, url, email, first_name):
                 len(url),
                 len(first_name),
             )
-            vEmail = VerificationEmail(
+            verification_email = VerificationEmail(
                 user_token=token, email=email, url=url, first_name=first_name
             )
-            vEmail.save()
+            verification_email.save()
         except Exception as e2:
             # Sometimes even recording the send failure fails,
             # log it but the main problem to raise is the the send failure itself
