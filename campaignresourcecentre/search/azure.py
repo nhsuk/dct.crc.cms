@@ -332,14 +332,14 @@ class AzureSearchBackend(BaseSearchBackend):
             pages = Page.objects.none()
             for r in result_urls:
                 page_slugs = ["home"] + [slug for slug in r.split("/") if slug]
-                pageOrPages = slugpages(page_slugs[-1])
-                n = pageOrPages.count()
+                page_or_pages = slugpages(page_slugs[-1])
+                n = page_or_pages.count()
                 if n == 0:
                     logger.error("Index entry for non-existent page %s", page_slugs[-1])
                 else:
                     if n > 1:
                         logger.error("%d pages share slug '%s'", n, page_slugs[-1])
-                    pages = pages.union(pageOrPages)
+                    pages = pages.union(page_or_pages)
             return AzureSearchResults(self, None, None, pages)
 
         else:
