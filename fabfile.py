@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from shlex import quote, split
@@ -157,15 +158,15 @@ def kill(c):
     """
     result = local("docker ps -q", warn=True, hide=True)
     if result:
-        containerIdList = [id for id in result.stdout.split("\n") if id]
-        if containerIdList:
+        container_id_list = [id for id in result.stdout.split("\n") if id]
+        if container_id_list:
             result = local(
-                "docker container kill %s" % " ".join(containerIdList),
+                "docker container kill %s" % " ".join(container_id_list),
                 warn=True,
                 hide=True,
             )
             if result:
-                print("%d running container(s) killed" % len(containerIdList))
+                print("%d running container(s) killed" % len(container_id_list))
             else:
                 print(
                     "Docker command exited with code %d: %s"
@@ -287,15 +288,32 @@ def sync_db(c, env):
 
 @task
 def create_dump(c):
-    try:
-        local(
-            """az pipelines release create \
+    result = local(
+        """az pipelines release create \
             --organization "https://dev.azure.com/nhsuk/" \
             --project "dct.campaign-resource-centre-v3" \
             --definition-id 2 \
-            --open"""
+            --open""",
+        warn=True,
+        hide=True,
+    )
+    if result:
+        result_object = json.loads(result.stdout)
+        # print (json.dumps (result_object, indent=4))
+        release_id = result_object["id"]
+        release_devops_url = (
+            "https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_releaseProgress?_a=release-pipeline-progress&releaseId=%s"
+            % release_id
         )
-    except:  # noqa
+        print(
+            "Database dump pipeline triggered - review progress at %s"
+            % release_devops_url
+        )
+    else:
+        print(
+            "Pipeline trigger failed with error code %d: %s"
+            % (result.exited, result.stderr)
+        )
         print(
             "Please ensure that you are logged in az cli and have the az cli extension installed."
         )
