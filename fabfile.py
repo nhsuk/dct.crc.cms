@@ -155,7 +155,27 @@ def kill(c):
     """
     Kills all running docker contaners
     """
-    local("docker container kill $(docker ps -q)")
+    result = local("docker ps -q", warn=True, hide=True)
+    if result:
+        containerIdList = [id for id in result.stdout.split("\n") if id]
+        if containerIdList:
+            result = local(
+                "docker container kill %s" % " ".join(containerIdList),
+                warn=True,
+                hide=True,
+            )
+            if result:
+                print("%d running container(s) killed" % len(containerIdList))
+            else:
+                print(
+                    "Docker command exited with code %d: %s"
+                    % (result.exited, result.stderr)
+                )
+        else:
+            print("No running containers to kill")
+    else:
+        print("Docker command exited with code %d: %s" % (result.exited, result.stderr))
+    # local("docker container kill $(docker ps -q)")
 
 
 @task
@@ -164,10 +184,7 @@ def qstart(c):
     Quick start - kill, start and SH into the container
     """
 
-    try:
-        kill(c)
-    except:  # noqa
-        pass
+    kill(c)
 
     start(c)
     sh(c)
@@ -253,7 +270,8 @@ def sync_db(c, env):
                 --version "*" \
                 --path database_dumps"""
             )
-        except:  # noqa
+        except Exception as e:
+            print("Exception: %s" % e)
             print(
                 "Please ensure that you are logged in az cli and have the az cli extension installed."
             )
