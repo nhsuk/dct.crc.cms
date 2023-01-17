@@ -34,7 +34,7 @@ class CRCV3Config(AppConfig):
             # If using runserver we must force CONN_MAX_AGE to zero or
             # database connection limit will be exceeded under heavy loads
             if len(argv) >= 2 and argv[1] == "runserver":
-                defaultDatabase = settings.DATABASES.get("default")
-                if defaultDatabase and defaultDatabase.get("CONN_MAX_AGE") != 0:
+                default_database = settings.DATABASES.get("default")
+                if default_database and default_database.get("CONN_MAX_AGE") != 0:
                     logger.info("Forcing connection max age to zero for runserver")
-                    defaultDatabase["CONN_MAX_AGE"] = 0
+                    default_database["CONN_MAX_AGE"] = 0

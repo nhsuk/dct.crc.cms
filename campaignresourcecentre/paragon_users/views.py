@@ -43,7 +43,7 @@ from .helpers.verification import send_verification
 logger = getLogger()
 
 
-def ParseError(error):
+def parse_error(error):
     error_dict = {
         "Account for this email address already exists": [
             "email",
@@ -142,8 +142,8 @@ def signup(request):
                     return HttpResponseServerError()
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    parseError = ParseError(error)
-                    f.add_error(parseError[0], parseError[1])
+                    this_parse_error = parse_error(error)
+                    f.add_error(this_parse_error[0], this_parse_error[1])
                 return render(request, "users/signup.html", {"form": f})
     else:
         f = RegisterForm()
@@ -188,7 +188,8 @@ def resend_verification(request):
         email = user.get("EmailAddress")
         url = request.build_absolute_uri(reverse("verification"))
         send_verification(user_token, url, email, name)
-    except ParagonClientError as PCE:  # noqa
+    except ParagonClientError as e:
+        logger.error("Failed to retrieve user profile: %s", e)
         return redirect("/")
 
     return redirect("/")
@@ -199,14 +200,14 @@ def verification(request):
 
         # unsign Token from URL Query
         try:
-            unsignedToken = unsign(request.GET.get("q"), max_age=86400)
+            unsigned_token = unsign(request.GET.get("q"), max_age=86400)
         except Exception as e:
             logging.error("Failed to unsign token: %s" % (e,))
             return HTTPResponseBadRequest()
         todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
         # set user parameters
         client = Client()
-        client_user = client.get_user_profile(unsignedToken)["content"]
+        client_user = client.get_user_profile(unsigned_token)["content"]
         verified = client_user.get("ProductRegistrationVar2")
         if verified != "True":
             email = client_user["EmailAddress"]
@@ -215,13 +216,13 @@ def verification(request):
 
             # update role
             if client.update_user_profile(
-                user_token=unsignedToken,
+                user_token=unsigned_token,
                 role=get_role(email, user_job),
                 active="True",
                 verified_at=todays_date,
                 postcode=postcode + "|" + get_region(postcode),
             ):
-                if request.session.get("ParagonUser") is unsignedToken:
+                if request.session.get("ParagonUser") == unsigned_token:
                     request.session["Verified"] = "True"
                 return render(request, "users/confirmation_user_verification.html")
             else:
@@ -229,10 +230,12 @@ def verification(request):
     return redirect("/")
 
 
-def get_role(userEmail: str, userJob: str):
-    userEmail = userEmail.lower()
-    if (userEmail.endswith("@nhs.net") or userEmail.endswith("@gov.uk")) and (
-        userJob == "comms" or userJob == "health:improvement" or userJob == "marketing"
+def get_role(user_email: str, user_job: str):
+    user_email = user_email.lower()
+    if (user_email.endswith("@nhs.net") or user_email.endswith("@gov.uk")) and (
+        user_job == "comms"
+        or user_job == "health:improvement"
+        or user_job == "marketing"
     ):
 
         return "uber"
@@ -302,11 +305,11 @@ def login(request):
                 return HttpResponseServerError()
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    parseError = ParseError(error)
-                    if parseError[0] is None:
-                        login_form.add_error(None, parseError[1])
+                    this_parse_error = parse_error(error)
+                    if this_parse_error[0] is None:
+                        login_form.add_error(None, this_parse_error[1])
                     else:
-                        login_form.add_error(parseError[0], parseError[1])
+                        login_form.add_error(this_parse_error[0], this_parse_error[1])
                 return render(request, "users/login.html", {"form": login_form})
     return render(request, "users/login.html", {"form": login_form})
 
@@ -338,25 +341,25 @@ def password_reset(request):
 
                 for dict_item in response_content:
                     if dict_item.get("EmailAddress").lower() == email:
-                        userToken = dict_item.get("UserToken")
-                        firstName = dict_item.get("FirstName")
+                        user_token = dict_item.get("UserToken")
+                        first_name = dict_item.get("FirstName")
                     break
                 else:
                     logger.error("Paragon returned no results for email")
                     return HttpResponseServerError
 
-                signedToken = sign(userToken)
+                signed_token = sign(user_token)
                 url = (
                     request.build_absolute_uri(reverse("password-set"))
                     + "?q="
-                    + quote(signedToken)
+                    + quote(signed_token)
                 )
 
                 # send confirmation email
-                emailClient = (
+                email_client = (
                     gov_notify_factory()
                 )  # This needs to be changed before release
-                emailClient.reset_password(email, firstName, url)
+                email_client.reset_password(email, first_name, url)
                 return render(
                     request,
                     "users/confirmation_password_reset.html",
@@ -364,11 +367,13 @@ def password_reset(request):
                 )
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    parseError = ParseError(error)
-                    if parseError[0] is None:
-                        password_reset_form.add_error(None, parseError[1])
+                    this_parse_error = parse_error(error)
+                    if this_parse_error[0] is None:
+                        password_reset_form.add_error(None, this_parse_error[1])
                     else:
-                        password_reset_form.add_error(parseError[0], parseError[1])
+                        password_reset_form.add_error(
+                            this_parse_error[0], this_parse_error[1]
+                        )
                 return render(
                     request,
                     "users/password_reset.html",
@@ -422,12 +427,14 @@ def password_set(request):
 
                         except ParagonClientError as PCE:
                             for error in PCE.args:
-                                parseError = ParseError(error)
-                                if parseError[0] is None:
-                                    password_set_form.add_error(None, parseError[1])
+                                this_parse_error = parse_error(error)
+                                if this_parse_error[0] is None:
+                                    password_set_form.add_error(
+                                        None, this_parse_error[1]
+                                    )
                                 else:
                                     password_set_form.add_error(
-                                        parseError[0], parseError[1]
+                                        this_parse_error[0], this_parse_error[1]
                                     )
                             return render(
                                 request,
@@ -532,11 +539,13 @@ class NewslettersView(View):
                 return self.render_confirmation(request, newsletters_cleaned)
             except ParagonClientError as PCE:
                 for error in PCE.args:
-                    parseError = ParseError(error)
-                    if parseError[0] is None:
-                        newsletter_form.add_error(None, parseError[1])
+                    this_parse_error = parse_error(error)
+                    if this_parse_error[0] is None:
+                        newsletter_form.add_error(None, this_parse_error[1])
                     else:
-                        newsletter_form.add_error(parseError[0], parseError[1])
+                        newsletter_form.add_error(
+                            this_parse_error[0], this_parse_error[1]
+                        )
             return self.render_preferences(request, newsletter_form)
 
     def render_confirmation(self, request, newsletters_cleaned):

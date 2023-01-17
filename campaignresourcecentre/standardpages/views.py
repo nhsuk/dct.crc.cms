@@ -47,7 +47,6 @@ def contact_us(request):
 
         job_title = contact_us_form.data.get("job_title")
         if job_title == "student":
-            job_title = contact_us_form.data.get("organisation")
             contact_us_form.fields.get("organisation").required = False
 
         if contact_us_form.is_valid():
@@ -92,7 +91,6 @@ def clear_cache(request):
 def update_index(request):
     if not request.user.is_superuser:
         raise PermissionDenied
-    encoding = sys.stdout.encoding
     with StringIO() as responseFile:
         call_command("update_index", stdout=responseFile, stderr=responseFile)
         responseFile.seek(0)

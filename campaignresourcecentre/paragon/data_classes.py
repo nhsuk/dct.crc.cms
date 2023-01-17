@@ -5,6 +5,8 @@ from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_data_classes,
 )
 
+EMPTY_ERROR = "{} is empty!"
+
 
 @dataclass
 class Registration:
@@ -20,7 +22,7 @@ class Registration:
     def valid(self):
         for key, value in self.__dict__.items():
             if not value:
-                raise ValueError("{} is empty!".format(key))
+                raise ValueError(EMPTY_ERROR.format(key))
         validate_password_data_classes(self.password)
         return True
 
@@ -62,7 +64,7 @@ class User:
 
     def valid(self):
         if not self.user_token:
-            raise ValueError("{} is empty!".format("user_token"))
+            raise ValueError(EMPTY_ERROR.format("user_token"))
         return True
 
     def params(self):
@@ -139,7 +141,7 @@ class UpdatePassword:
     def valid(self):
         for key, value in self.__dict__.items():
             if not value:
-                raise ValueError("{} is empty!".format(key))
+                raise ValueError(EMPTY_ERROR.format(key))
         validate_password_data_classes(self.password)
         return True
 
@@ -155,7 +157,7 @@ class Address:
 
     def valid(self):
         if not self.user_token:
-            raise ValueError("{} is empty!".format("user_token"))
+            raise ValueError(EMPTY_ERROR.format("user_token"))
         return True
 
     def params(self):
@@ -179,7 +181,7 @@ class CreateOrder:
     def valid(self):
         for key, value in self.__dict__.items():
             if not value:
-                raise ValueError("{} is empty!".format(key))
+                raise ValueError(EMPTY_ERROR.format(key))
         return True
 
     def checkout_items(self):

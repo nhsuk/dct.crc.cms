@@ -39,7 +39,7 @@ jobs:
         cliProjectName: 'DCT_Campaigns_Resource_Centre'
         cliSources: '.'
         extraProperties: |
-          sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html, campaignresourcecentre/utils/tests/test_models.py, campaignresourcecentre/paragon/tests.py, campaignresourcecentre/notifications/adapters.py
+          sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html, campaignresourcecentre/utils/tests/test_models.py, campaignresourcecentre/paragon/tests.py, campaignresourcecentre/notifications/adapters.py, FrontEndTests/**/*.py
           sonar.python.coverage.reportPaths = /home/vsts/work/1/s/docker/coverage.xml
     - task: dependency-check-build-task@6
       inputs:

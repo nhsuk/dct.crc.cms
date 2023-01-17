@@ -1,3 +1,4 @@
+from base64 import b64encode
 from django.core.signing import TimestampSigner
 from cryptography.fernet import Fernet
 from django.conf import settings
@@ -13,28 +14,31 @@ SALT = settings.PARAGON_SALT
 PARAGON_ENCRYPTION_KEY = settings.PARAGON_ENCRYPTION_KEY or "Default Value"
 if PARAGON_ENCRYPTION_KEY == "Default Value":
     logger.warning("Paragon Encryption Key Not Set")
-ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY.encode()
+    # Key must be base 64 encoding of a 32 byte value
+    # We use the encoding of 'DEFAULTVALUE34567890123456789012' as default for testing
+    PARAGON_ENCRYPTION_KEY = b64encode(b"DEFAULTVALUE34567890123456789012")
+ENCRYPTION_KEY = PARAGON_ENCRYPTION_KEY
 
 
-def sign(token: str, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
+def sign(token: str, sig_key=KEY, crypt_key=ENCRYPTION_KEY):
     """
     signs strings and then encrypts them
     """
 
-    signer = TimestampSigner(key=sigKey, salt=SALT)
+    signer = TimestampSigner(key=sig_key, salt=SALT)
     token = signer.sign(token).encode()  # sign
-    token = encrypt(token, key=cryptKey)  # ecrypt
+    token = encrypt(token, key=crypt_key)  # ecrypt
 
     return token
 
 
-def unsign(token, max_age=None, sigKey=KEY, cryptKey=ENCRYPTION_KEY):
+def unsign(token, max_age=None, sig_key=KEY, crypt_key=ENCRYPTION_KEY):
     """
     dencrypts strings and then unsigns them
     """
     token = token.encode()
-    token = decrypt(token, key=cryptKey)  # decrypt
-    signer = TimestampSigner(key=sigKey, salt=SALT)
+    token = decrypt(token, key=crypt_key)  # decrypt
+    signer = TimestampSigner(key=sig_key, salt=SALT)
     token = token.decode()
     token = signer.unsign(value=str(token), max_age=max_age)  # unsign
 

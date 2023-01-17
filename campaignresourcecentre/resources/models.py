@@ -66,41 +66,40 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def objecttype(self):
         return "resource"
 
+    def _can_download(self, user_role, resource_item):
+        if not resource_item.can_download:
+            return False
+        # If role is ALL, any user (including unauthenticated should be able to download)
+        if self.permission_role == ResourcePage.PermissionRole.ALL:
+            return True
+        if user_role and (
+            user_role.lower() == self.permission_role
+            or user_role.lower() == ResourcePage.PermissionRole.UBER
+        ):
+            return True
+        return False
+
+    def _can_order(self, user_role, resource_item):
+        if not user_role or not resource_item.can_order:
+            return False
+        if self.permission_role == ResourcePage.PermissionRole.ALL:
+            return True
+        if (
+            user_role.lower() == self.permission_role
+            or user_role.lower() == ResourcePage.PermissionRole.UBER
+        ):
+            return True
+        return False
+
     def get_resources(self, request):
         """Get the resources to show on the page."""
         basket = Basket(request.session)
-        user_role = None
         user_details = request.session.get("UserDetails")
+        user_role = (
+            user_details.get("ProductRegistrationVar1") if user_details else None
+        )
         key = quote(sign(self.permission_role))
         campaign = self.get_parent()
-        if user_details:
-            user_role = user_details.get("ProductRegistrationVar1")
-
-        def can_download(resource_item):
-            if not resource_item.can_download:
-                return False
-            # If role is ALL, any user (including unauthenticated should be able to download)
-            if self.permission_role == ResourcePage.PermissionRole.ALL:
-                return True
-            if user_role and (
-                user_role.lower() == self.permission_role
-                or user_role.lower() == ResourcePage.PermissionRole.UBER
-            ):
-                return True
-            return False
-
-        def can_order(resource_item):
-            if not user_role or not resource_item.can_order:
-                return False
-            if self.permission_role == ResourcePage.PermissionRole.ALL:
-                return True
-            if (
-                user_role.lower() == self.permission_role
-                or user_role.lower() == ResourcePage.PermissionRole.UBER
-            ):
-                return True
-            return False
-
         return [
             {
                 "id": resource.id,
@@ -108,11 +107,11 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "image": resource.image,
                 "title": resource.title,
                 "can_download": resource.can_download,
-                "permission_to_download": can_download(resource),
+                "permission_to_download": self._can_download(user_role, resource),
                 "document": resource.document,
                 "document_content": resource.document_content,
                 "can_order": resource.can_order,
-                "permission_to_order": can_order(resource),
+                "permission_to_order": self._can_order(user_role, resource),
                 "maximum_order_quantity": resource.maximum_order_quantity,
                 "sku": resource.sku,
                 "image_alt_text": resource.image_alt_text,
@@ -174,8 +173,8 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         for resource in resources:
             if resource.get("has_error"):
                 item = resource.get("item")
-                id = item.get("id")
-                items.append((id, item))
+                resource_id = item.get("id")
+                items.append((resource_id, item))
         context.update(
             resources=resources,
             logged_in=request.session.get("ParagonUser"),

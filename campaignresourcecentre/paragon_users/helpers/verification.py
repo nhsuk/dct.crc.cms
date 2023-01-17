@@ -14,8 +14,8 @@ def send_verification(token, url, email, first_name):
     url = url + "?q=" + quote(token)
     # send email
     try:
-        emailClient = gov_notify_factory()
-        emailClient.confirm_registration(email, first_name, url)
+        email_client = gov_notify_factory()
+        email_client.confirm_registration(email, first_name, url)
     except Exception as e1:
         logger.error("Error sending verification email: %s", e1)
         try:
@@ -26,10 +26,10 @@ def send_verification(token, url, email, first_name):
                 len(url),
                 len(first_name),
             )
-            vEmail = VerificationEmail(
+            verification_email = VerificationEmail(
                 user_token=token, email=email, url=url, first_name=first_name
             )
-            vEmail.save()
+            verification_email.save()
         except Exception as e2:
             # Sometimes even recording the send failure fails,
             # log it but the main problem to raise is the the send failure itself

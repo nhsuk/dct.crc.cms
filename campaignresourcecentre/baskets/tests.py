@@ -4,6 +4,11 @@ from django.test.client import Client
 from .basket import Basket
 from .exceptions import ItemNotInBasketError
 
+TEST1_ITEM_URL = "https://test.com/item1"
+TEST1_IMAGE_URL = "https://test.com/assets/item1/image.png"
+TEST2_ITEM_URL = "https://test.com/item2"
+TEST2_IMAGE_URL = "https://test.com/assets/item2/image.png"
+
 
 class TestClient(TestCase):
     def setUp(self):
@@ -16,7 +21,7 @@ class TestClient(TestCase):
         session = self.client.session
         session.save()
         basket = Basket(session)
-        self.assertEqual(len(basket.basket), 0)
+        self.assertEqual(len(basket.contents), 0)
 
     def test_init_with_item_in_session(self):
         session = self.client.session
@@ -24,23 +29,23 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
             "quantity": 2,
         }
         session["BASKET"] = {1: item}
         session.save()
         basket = Basket(session)
-        self.assertEqual(len(basket.basket), 1)
+        self.assertEqual(len(basket.contents), 1)
 
     def test_add_item(self):
         item = {
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
@@ -48,57 +53,57 @@ class TestClient(TestCase):
         self.assertEqual(self.basket.get_item_count(1), 3)
         self.basket.add_item(item, "2")
         self.assertEqual(self.basket.get_item_count(1), 2)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["quantity"], 2)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["quantity"], 2)
         self.basket.add_item(item, None)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+        self.assertEqual(self.basket.contents[1]["no_quantity"], True)
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["bad_quantity"]
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["quantity"]
         self.basket.add_item(item, "")
-        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+        self.assertEqual(self.basket.contents[1]["no_quantity"], True)
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["bad_quantity"]
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["quantity"]
         self.basket.add_item(item, "garbage")
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["quantity"]
         self.basket.change_item_quantity(1, None)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], True)
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+        self.assertEqual(self.basket.contents[1]["no_quantity"], True)
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["bad_quantity"]
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["quantity"]
 
     def test_change_item_quantity(self):
         item = {
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item, "3")
         self.basket.change_item_quantity(1, "4")
-        self.assertEqual(self.basket.basket[1]["quantity"], 4)
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["quantity"], 4)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], False)
         self.basket.change_item_quantity(1, "6")
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
         self.basket.change_item_quantity(1, "A")
-        self.assertEqual(self.basket.basket[1]["no_quantity"], False)
-        self.assertEqual(self.basket.basket[1]["bad_quantity"], True)
+        self.assertEqual(self.basket.contents[1]["no_quantity"], False)
+        self.assertEqual(self.basket.contents[1]["bad_quantity"], True)
         self.basket.change_item_quantity(1, None)
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["bad_quantity"]
-        with self.assertRaises(KeyError) as error:
-            self.basket.basket[1]["quantity"]
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["bad_quantity"]
+        with self.assertRaises(KeyError):
+            self.basket.contents[1]["quantity"]
 
         with self.assertRaises(ItemNotInBasketError) as error:
             self.basket.change_item_quantity(2, 4)
@@ -109,8 +114,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -118,8 +123,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "https://test.com/item21",
-            "image_url": "https://test.com/assets/item2/imgge.png",
+            "item_url": TEST2_ITEM_URL,
+            "image_url": TEST2_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
@@ -130,8 +135,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -139,8 +144,8 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "https://test.com/item21",
-            "image_url": "https://test.com/assets/item2/imgge.png",
+            "item_url": TEST2_ITEM_URL,
+            "image_url": TEST2_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
@@ -151,8 +156,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -163,8 +168,8 @@ class TestClient(TestCase):
             "id": 1,
             "title": "Item1",
             "item_code": "ITEM01",
-            "item_url": "https://test.com/item1",
-            "image_url": "https://test.com/assets/item1/imgge.png",
+            "item_url": TEST1_ITEM_URL,
+            "image_url": TEST1_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item1, "3")
@@ -172,11 +177,11 @@ class TestClient(TestCase):
             "id": 2,
             "title": "Item2",
             "item_code": "ITEM02",
-            "item_url": "https://test.com/item21",
-            "image_url": "https://test.com/assets/item2/imgge.png",
+            "item_url": TEST2_ITEM_URL,
+            "image_url": TEST2_IMAGE_URL,
             "max_quantity": 5,
         }
         self.basket.add_item(item2, "2")
         self.basket.empty_basket()
-        self.assertEqual(len(self.basket.basket), 0)
-        self.assertEqual(self.basket.basket, {})
+        self.assertEqual(len(self.basket.contents), 0)
+        self.assertEqual(self.basket.contents, {})

@@ -25,12 +25,17 @@ from wagtailreacttaxonomy.models import TaxonomyTerms
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage, ResourceItem
 
-from .assetdata import *
+from campaignresourcecentre.core.management.commands.assetdata import (
+    TAXONOMY_TERMS_ID,
+    TAXONOMY_TERMS_JSON,
+    CAMPAIGN_IMAGE,
+    RESOURCE_ITEM_IMAGE,
+)
 
 
 def make_wagtail_document(url, user, title):
-    Document = get_document_model()
-    doc = Document(uploaded_by_user=user)
+    document_class = get_document_model()
+    doc = document_class(uploaded_by_user=user)
     doc.save()
     return doc
 
@@ -45,7 +50,7 @@ def make_wagtail_image(url, title, name=None):
     from django.core.files.images import ImageFile
     from wagtail.images import get_image_model
 
-    Image = get_image_model()
+    image_class = get_image_model()
 
     content = request.urlopen(url).read()
 
@@ -54,7 +59,7 @@ def make_wagtail_image(url, title, name=None):
     im = willow.Image.open(BytesIO(content))
     width, height = im.get_size()
 
-    image = Image(title=title, file=image_file, width=width, height=height)
+    image = image_class(title=title, file=image_file, width=width, height=height)
     image.save()
 
     return image
@@ -65,8 +70,7 @@ class Command(BaseCommand):
     requires_system_checks = False
 
     def _create_pages(self):
-        # Find root of our page tree and the initial home page created by Wagtail
-        root = Page.get_first_root_node()
+        # Find the initial home page created by Wagtail
         try:
             self._home = Page.objects.get(title="Campaign Resource Centre")
         except Page.DoesNotExist:
@@ -111,8 +115,8 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
 
     def _ensureSuperuser(self, username, password):
         try:
-            userModel = get_user_model()
-            self.superuser = userModel.objects.create_superuser(
+            user_model = get_user_model()
+            self.superuser = user_model.objects.create_superuser(
                 username=username, email="superuser@example.com", password=password
             )
             self.superuser.save()
@@ -121,7 +125,7 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
         except IntegrityError:
             if self._verbosity > 0:
                 self.stdout.write(f"Superuser '{username}' is already present")
-            self.superuser = userModel.objects.get(username=username)
+            self.superuser = user_model.objects.get(username=username)
 
     def _ensureTaxonomy(self, terms_id, terms_json):
         try:

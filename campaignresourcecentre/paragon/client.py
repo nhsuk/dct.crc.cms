@@ -54,44 +54,42 @@ class Client:
     def call(self):
         if self.may_mock:  # Is this a mocking client?
             # Decide whether to mock this specific call, or not
-            mocking = True
-            if mocking:
-                if self.call_method == "/Login":
-                    self.response = MockParagonResponse(
-                        content=json.dumps({"ParagonUser": "A token token"}),
-                        status_code=200,
-                    )
-                elif self.call_method == "/RetrieveProfile":
-                    self.response = MockParagonResponse(
-                        status_code=200,
-                        content=json.dumps(
-                            {
-                                "UserToken": "token token",
-                                "ProductToken": "the product",
-                                "Title": "mr",
-                                "FirstName": "r",
-                                "LastName": "c",
-                                "EmailAddress": "testemail@email.com",
-                                "ContactVar1": "1",
-                                "ContactVar2": "1",
-                                "ContactVar3": "1",
-                                "ContactVar4": "1",
-                                "ContactVar5": "1",
-                                "ProductRegistrationVar1": "standard",  # or "uber"
-                                "ProductRegistrationVar2": "True",
-                                "ProductRegistrationVar3": "A mockery",
-                                "ProductRegistrationVar4": "other",
-                                "ProductRegistrationVar5": "1",
-                                "ProductRegistrationVar6": "true",
-                                "ProductRegistrationVar7": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-                                "ProductRegistrationVar8": "2021-09-30T16:45",
-                                "ProductRegistrationVar9": "WC1 2AA",
-                                "ProductRegistrationVar10": "2021-09-30T16:40",
-                            }
-                        ),
-                    )
-                else:
-                    self.response = MockParagonResponse(status_code=200)
+            if self.call_method == "/Login":
+                self.response = MockParagonResponse(
+                    content=json.dumps({"ParagonUser": "A token token"}),
+                    status_code=200,
+                )
+            elif self.call_method == "/RetrieveProfile":
+                self.response = MockParagonResponse(
+                    status_code=200,
+                    content=json.dumps(
+                        {
+                            "UserToken": "token token",
+                            "ProductToken": "the product",
+                            "Title": "mr",
+                            "FirstName": "r",
+                            "LastName": "c",
+                            "EmailAddress": "testemail@email.com",
+                            "ContactVar1": "1",
+                            "ContactVar2": "1",
+                            "ContactVar3": "1",
+                            "ContactVar4": "1",
+                            "ContactVar5": "1",
+                            "ProductRegistrationVar1": "standard",  # or "uber"
+                            "ProductRegistrationVar2": "True",
+                            "ProductRegistrationVar3": "A mockery",
+                            "ProductRegistrationVar4": "other",
+                            "ProductRegistrationVar5": "1",
+                            "ProductRegistrationVar6": "true",
+                            "ProductRegistrationVar7": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                            "ProductRegistrationVar8": "2021-09-30T16:45",
+                            "ProductRegistrationVar9": "WC1 2AA",
+                            "ProductRegistrationVar10": "2021-09-30T16:40",
+                        }
+                    ),
+                )
+            else:
+                self.response = MockParagonResponse(status_code=200)
         else:
             self._call()
 

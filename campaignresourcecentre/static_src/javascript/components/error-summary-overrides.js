@@ -1,9 +1,14 @@
 /* eslint-disable */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-        typeof define === 'function' && define.amd ? define('GOVUKFrontend', ['exports'], factory) :
-        (factory((global.GOVUKFrontend = {})));
-}(this, (function (exports) {
+    if(typeof exports === 'object' && typeof module !== 'undefined') {
+        return factory(exports)
+    }
+    if(typeof define === 'function' && define.amd) {
+        return define('GOVUKFrontend', ['exports'], factory)
+    }
+    global.GOVUKFrontend = {}
+    return factory(global.GOVUKFrontend)
+} (this, (function (exports) {
     'use strict';
 
     function ErrorSummary($module) {

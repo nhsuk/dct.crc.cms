@@ -9,8 +9,9 @@ logger = logging.getLogger(__name__)
 # Store the full taxonomy to be used as a lookup table.
 try:
     data = json.loads(TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json)
-except:  # noqa
-    logger.info("Error loading taxonomy JSON")
+except Exception as e:  # noqa
+    logger.info("Error loading taxonomy JSON (%s)", e)
+    data = {}
 
 
 # Find the parent label of the JSON object
