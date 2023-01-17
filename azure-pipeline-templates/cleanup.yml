@@ -1,0 +1,57 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - main
+    exclude:
+    - refs/tags/*
+    - refs/heads/review/*
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+- task: AzureCLI@2
+  inputs:
+    # Subscriptions/Service principal used below is scope to two resouces groups: Dev cluster and to general dev/int resource group.
+    azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e # fail script if any sub commands fail
+
+      # Authenticate with dev cluster to fetch all namespaces
+      az aks get-credentials --admin --name nhsuk-platforms-aks-dev-uksouth --resource-group nhsuk-platforms-rg-dev-uksouth
+
+      # Support a dry-run mode
+      if [[ "$(System.Debug)" == "true" ]]; then
+        DRY_RUN="client"
+        echo "Running in dry-run mode"
+      else
+        DRY_RUN="none"
+      fi
+
+      ./scripts/ci/get-resources-to-delete.sh k8s | xargs -r -n1 kubectl delete --dry-run=$DRY_RUN namespace
+  displayName: 'Delete Review K8S Environments'
+
+#- task: AzureCLI@2
+#  inputs:
+#    azureSubscription: #needs connection to db
+#    scriptType: 'bash'
+#    scriptLocation: 'inlineScript'
+#    inlineScript: |
+#      set -e # fail script if any sub commands fail
+#
+#      # Support a dry-run mode. az cli doesn't support a dry-run mode natively, so we echo the command instead of running it
+#      if [[ "$(System.Debug)" == "true" ]]; then
+#        ECHO="echo"
+#        echo "Running in dry-run mode"
+#      else
+#        ECHO=""
+#      fi
+#
+#      ./scripts/ci/get-resources-to-delete.sh databases | xargs -r -n1 $ECHO az postgres db delete -g nhsuk-dct-rg-dev-uks -s campaigns-cms-psql-dev-uks --yes -n
+#  displayName: 'Delete Review DB Environments'
