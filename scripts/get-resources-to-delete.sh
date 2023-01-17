@@ -1,7 +1,7 @@
 # Get a list of review environment resources to be deleted.
 #
-# We work this out by looking at kubernetes namespaces and postgres databases.
-# If a k8s environment or database exists but the branch doesn't, it needs to be deleted.
+# We work this out by looking at kubernetes namespaces and github branches.
+# If a k8s environment exists but the branch doesn't, it needs to be deleted.
 
 PREFIX="dct-crc-v3-review-"
 
@@ -11,9 +11,10 @@ get_k8s_namespaces() {
 
     # For each namespace, make sure the git branch still exists. If not, delete the namespace
     for namespace in $ALL_K8S_NAMESPACES; do
-        # Remove the prefix and postfix from namespace to just get the review name
+        # Remove the prefix and suffix from the namespace to get the review name
         REVIEW_NAME=$(echo $namespace | sed 's/dct-crc-v3-review-\(.*\)-ns$/\1/')
 
+        # Check if the branch exists
         git show-ref --verify --quiet "refs/remotes/origin/review/$REVIEW_NAME"
         if [[ $? -eq 1 ]]; then
             echo "$namespace"
@@ -36,7 +37,7 @@ get_k8s_namespaces() {
 #    done
 #}
 
-# Require either k8s or databases as the first argument, and run the appropriate function
+# Require either k8s or databases as the first argument (if the db functionality is enabled)
 if [[ $1 == "k8s" ]]; then
     get_k8s_namespaces
 #elif [[ $1 == "databases" ]]; then
