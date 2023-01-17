@@ -3,7 +3,7 @@
 # We work this out by looking at kubernetes namespaces and postgres databases.
 # If a k8s environment or database exists but the branch doesn't, it needs to be deleted.
 
-PREFIX="dct-crcv3-review-"
+PREFIX="dct-crc-v3-review-"
 
 get_k8s_namespaces() {
 
@@ -12,7 +12,7 @@ get_k8s_namespaces() {
     # For each namespace, make sure the git branch still exists. If not, delete the namespace
     for namespace in $ALL_K8S_NAMESPACES; do
         # Remove the prefix and postfix from namespace to just get the review name
-        REVIEW_NAME=$(echo $namespace | sed 's/dct-crcv3-review-\(.*\)-ns$/\1/')
+        REVIEW_NAME=$(echo $namespace | sed 's/dct-crc-v3-review-\(.*\)-ns$/\1/')
 
         git show-ref --verify --quiet "refs/remotes/origin/review/$REVIEW_NAME"
         if [[ $? -eq 1 ]]; then
