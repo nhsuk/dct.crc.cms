@@ -17,7 +17,7 @@ steps:
 - task: AzureCLI@2
   inputs:
     # Subscriptions/Service principal used below is scope to two resouces groups: Dev cluster and to general dev/int resource group.
-    azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth'
+    azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth-dct.campaign-resource-centre-v3'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
