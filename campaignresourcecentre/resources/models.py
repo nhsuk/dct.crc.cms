@@ -57,7 +57,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         max_length=125,
     )
     permission_role = models.CharField(
-        max_length=10, choices=PermissionRole.choices, default=PermissionRole.ALL
+        max_length=10, choices=PermissionRole.choices, default=PermissionRole.STANDARD
     )
 
     def search_indexable(self):
