@@ -37,8 +37,6 @@
 
         {% block extra_css %}{% endblock %}
 
-        {% include "molecules/hotjar_script/hotjar-script.html" %}
-
         <script src="{% get_django_setting "COOKIE_CONSENT_CAMPAIGNS" %}" defer></script>
 
         <script>{{ request.path|add_adobe_analytics }}</script>
