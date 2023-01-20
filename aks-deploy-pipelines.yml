@@ -173,7 +173,7 @@ stages:
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
   - job: deployIntegration
     displayName: 'Deploy Integration'
-    condition: and(succeeded('Test'), eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    condition: and(succeeded('Test'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     variables:
       environmentName: 'integration'
       namespace: 'dct-crc-v3-ns'
