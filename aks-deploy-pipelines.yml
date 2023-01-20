@@ -80,6 +80,7 @@ stages:
 - stage: Build
   displayName: Build
   condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  dependsOn: []
   jobs:
   - job: buildReview
     displayName: 'Build Review'
