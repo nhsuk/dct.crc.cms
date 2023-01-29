@@ -142,6 +142,7 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
+                "aria-required": "true",
             }
         ),
         validators=[
