@@ -81,6 +81,7 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "given-name",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -92,6 +93,7 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "family-name",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -104,6 +106,7 @@ class ContactUsForm(forms.Form):
                 "class": "govuk-select",
                 "onchange": "hideSelect();",
                 "autocomplete": "organization-title",
+                "aria-required": "true",
             },
             choices=JOB_CHOICES,
         ),
@@ -113,14 +116,23 @@ class ContactUsForm(forms.Form):
 
     organisation = forms.CharField(
         widget=forms.TextInput(
-            attrs={"class": "govuk-input", "autocomplete": "organization"}
+            attrs={
+                "class": "govuk-input",
+                "autocomplete": "organization",
+                "aria-required": "true",
+            }
         ),
         required=True,
         error_messages={"required": "Enter your organisation name"},
     )
 
     organisation_type = forms.CharField(
-        widget=forms.TextInput(attrs={"class": "govuk-input"}),
+        widget=forms.TextInput(
+            attrs={
+                "class": "govuk-input",
+                "aria-required": "true",
+            }
+        ),
         required=True,
         error_messages={"required": "Enter your organisation type"},
     )
@@ -130,6 +142,7 @@ class ContactUsForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
+                "aria-required": "true",
             }
         ),
         validators=[
@@ -153,13 +166,25 @@ class ContactUsForm(forms.Form):
     )
 
     audience = forms.CharField(
-        widget=forms.Textarea(attrs={"class": "govuk-textarea", "rows": "5"}),
+        widget=forms.Textarea(
+            attrs={
+                "class": "govuk-textarea",
+                "rows": "5",
+                "aria-required": "true",
+            }
+        ),
         required=True,
         error_messages={"required": "Enter your audience"},
     )
 
     engage_audience = forms.CharField(
-        widget=forms.Textarea(attrs={"class": "govuk-textarea", "rows": "5"}),
+        widget=forms.Textarea(
+            attrs={
+                "class": "govuk-textarea",
+                "rows": "5",
+                "aria-required": "true",
+            }
+        ),
         required=True,
         error_messages={"required": "Enter how you plan to engage this audience"},
     )
@@ -170,7 +195,13 @@ class ContactUsForm(forms.Form):
     )
 
     message = forms.CharField(
-        widget=forms.Textarea(attrs={"class": "govuk-textarea", "rows": "5"}),
+        widget=forms.Textarea(
+            attrs={
+                "class": "govuk-textarea",
+                "rows": "5",
+                "aria-required": "true",
+            }
+        ),
         required=True,
         error_messages={"required": "Enter your message"},
     )

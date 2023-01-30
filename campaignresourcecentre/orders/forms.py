@@ -1,5 +1,4 @@
 from django import forms
-from django.core.validators import RegexValidator
 
 from campaignresourcecentre.paragon_users.forms import validate_postcode
 
@@ -12,6 +11,7 @@ class DeliveryAddressForm(forms.Form):
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "aria-describedby": "full_name-error",
                 "autocomplete": "name",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -24,6 +24,7 @@ class DeliveryAddressForm(forms.Form):
                 "class": "govuk-input",
                 "aria-describedby": "address_line_1-error",
                 "autocomplete": "address-line1",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -48,6 +49,7 @@ class DeliveryAddressForm(forms.Form):
                 "class": "govuk-input",
                 "aria-describedby": "town_or_city-error",
                 "autocomplete": "address-level1",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -60,6 +62,7 @@ class DeliveryAddressForm(forms.Form):
                 "class": "govuk-input govuk-input--width-10",
                 "aria-describedby": "postcode-error",
                 "autocomplete": "postal-code",
+                "aria-required": "true",
             }
         ),
         required=True,

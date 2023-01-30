@@ -230,7 +230,10 @@
             elementLabel.setAttribute("aria-hidden","true");
             inputElement.setAttribute("aria-hidden","true");
             orgElementLabel.setAttribute("aria-hidden","false");
-            orgInput.setAttribute("aria-hidden","false");
+            orgElement.classList.add("govuk-visually-hidden");
+            orgElementLabel.setAttribute("aria-hidden","true");
+            orgInput.setAttribute("aria-hidden","true");
+            orgInput.disabled = true;
             inputElement.setAttribute("disabled","true");
         }, false);
 
@@ -256,6 +259,11 @@
             }
             
             if (jobElement === 'student') {
+                orgElement.classList.add("govuk-visually-hidden");
+                orgElementLabel.setAttribute("aria-hidden","true");
+                orgInput.setAttribute("aria-hidden","true");
+                orgInput.disabled = true;
+            } else if(jobElement === ''){
                 orgElement.classList.add("govuk-visually-hidden");
                 orgElementLabel.setAttribute("aria-hidden","true");
                 orgInput.setAttribute("aria-hidden","true");

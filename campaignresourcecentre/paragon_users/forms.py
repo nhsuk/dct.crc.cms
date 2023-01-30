@@ -78,6 +78,7 @@ class RegisterForm(forms.Form):
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "given-name",
                 "aria-describedby": "first_name-error",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -93,6 +94,7 @@ class RegisterForm(forms.Form):
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "family-name",
                 "aria-describedby": "last_name-error",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -151,6 +153,7 @@ class RegisterForm(forms.Form):
                 "class": "govuk-input govuk-input--width-10",
                 "autocomplete": "postal-code",
                 "aria-describedby": "postcode-error",
+                "aria-required": "true",
             }
         ),
         required=True,
@@ -164,6 +167,7 @@ class RegisterForm(forms.Form):
                 "class": "govuk-input govuk-!-width-two-thirds",
                 "autocomplete": "email",
                 "aria-describedby": "email-error",
+                "aria-required": "true",
             }
         ),
         validators=[EmailValidator],
@@ -176,6 +180,7 @@ class RegisterForm(forms.Form):
                 "class": "govuk-input govuk-input--width-10",
                 "autocomplete": "current-password",
                 "aria-describedby": "password-error",
+                "aria-required": "true",
             }
         ),
         validators=[validate_password_form],
@@ -187,6 +192,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "aria-describedby": "terms-error",
+                "aria-required": "true",
             }
         ),
         error_messages={"required": "Please accept the terms and conditions"},
