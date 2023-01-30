@@ -21,7 +21,6 @@ FROM python:3.10-buster as backend
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.3.2
 
-RUN mkdir /app
 WORKDIR /app
 
 RUN useradd campaignresourcecentre -m && mkdir /app && chown campaignresourcecentre /app
