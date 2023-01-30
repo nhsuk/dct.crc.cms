@@ -58,27 +58,20 @@ ENV BUILD_ENV=${BUILD_ENV}
 EXPOSE 8000
 
 # Install poetry using the installer (keeps Poetry's dependencies isolated from the app's)
-RUN cd ./poetry; wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION}/get-poetry.py && \
-    #echo "eedf0fe5a31e5bb899efa581cbe4df59af02ea5f get-poetry.py" | sha1sum -c - && \
-    python get-poetry.py && \
-    rm get-poetry.py && \
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false
 
 # Install your app's Python requirements
 
-COPY ./poetry ./
+COPY --chown=campaignresourcecentre ./poetry ./poetry
 
-RUN if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
+RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
 
-COPY --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
+COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
 # Copy application code.
-COPY . .
-
-# Collect static. This command will move static files from application
-# directories and "static_compiled" folder to the main static directory that
-# will be served by the WSGI server.
-RUN SECRET_KEY=none python manage.py collectstatic --noinput --clear
+COPY --chown=campaignresourcecentre ./campaignresourcecentre ./campaignresourcecentre
+COPY --chown=campaignresourcecentre ./manage.py  ./docker-entrypoint.sh ./initializer-entrypoint.sh  gunicorn-conf.py ./
 
 # Load shortcuts
 COPY ./docker/bashrc.sh /home/campaignresourcecentre/.bashrc
