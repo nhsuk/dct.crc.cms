@@ -74,5 +74,10 @@ COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/sta
 COPY --chown=campaignresourcecentre ./campaignresourcecentre ./campaignresourcecentre
 COPY --chown=campaignresourcecentre ./manage.py  ./docker-entrypoint.sh ./initializer-entrypoint.sh  gunicorn-conf.py ./
 
+# Collect static. This command will move static files from application
+# directories and "static_compiled" folder to the main static directory that
+# will be served by the WSGI server.
+RUN SECRET_KEY=none python manage.py collectstatic --noinput --clear
+
 # Load shortcuts
 COPY ./docker/bashrc.sh /home/campaignresourcecentre/.bashrc
