@@ -40,7 +40,11 @@ class CRCV3Config(AppConfig):
                 if default_database and default_database.get("CONN_MAX_AGE") != 0:
                     logger.info("Forcing connection max age to zero for runserver")
                     default_database["CONN_MAX_AGE"] = 0
-        # Set plain text gov notify id Django setting here because now we can import it
-        settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = (
-            GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID
-        )
+            # Set plain text gov notify id Django setting here because now we can import it
+            settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = (
+                GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID
+            )
+            logger.info(
+                "Email template setting initialised as %s",
+                settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID,
+            )
