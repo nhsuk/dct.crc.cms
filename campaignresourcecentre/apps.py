@@ -34,7 +34,7 @@ class CRCV3Config(AppConfig):
             logger.info("Search storage: %s", settings.SEARCH_STORAGE_CLASS)
             logger.info("Updating Azure search: %s", settings.AZURE_SEARCH_UPDATE)
             logger.info("Wagtail 2FA required: %s", settings.WAGTAIL_2FA_REQUIRED)
-            logger.info("Debug toolbar: %s", settings.USING_DEBUG_TOOLBAR)
+            logger.info("GOV notify enabled: %s", not settings.NOTIFY_DEBUG)
             # If using runserver we must force CONN_MAX_AGE to zero or
             # database connection limit will be exceeded under heavy loads
             if len(argv) >= 2 and argv[1] == "runserver":
