@@ -126,7 +126,6 @@ class CrcCardGroupBLock(FlattenValueContext, StructBlock):
 
 
 class FeaturePanelBlock(FlattenValueContext, StructBlock):
-
     heading = CharBlock(required=True)
     heading_level = IntegerBlock(
         min_value=2,
@@ -185,7 +184,6 @@ class TextStackImageBlock(FlattenValueContext, StructBlock):
 
 
 class CommonBlocks(StreamBlock):
-
     Card_group = CrcCardGroupBLock()
     Accordian = CampaignAccordiansBlock()
     two_col_container = TwoColContainerBlock()
@@ -196,7 +194,6 @@ class CommonBlocks(StreamBlock):
 
 
 class Section(FlattenValueContext, StructBlock):
-
     section_title = CharBlock(required=False)
     heading_level = IntegerBlock(
         min_value=2,
@@ -232,7 +229,6 @@ class Section(FlattenValueContext, StructBlock):
 
 
 class HomePageSection(Section):
-
     content_blocks = [
         ("content_link", ContentLinkBLock()),
         ("Common_Blocks", CommonBlocks()),
@@ -240,24 +236,20 @@ class HomePageSection(Section):
 
 
 class GuidePageSection(Section):
-
     content_blocks = [("story", StoryBlock()), ("Common_Blocks", CommonBlocks())]
 
 
 class AboutPageSection(StreamBlock):
-
     content_blocks = Section()
 
 
 class HomePageBlocks(StreamBlock):
-
     content_link = ContentLinkBLock()
     Common_Blocks = CommonBlocks()
     section = HomePageSection()
 
 
 class GuidePageBlocks(StreamBlock):
-
     story = StoryBlock()
     Common_Blocks = CommonBlocks()
     section = GuidePageSection()

@@ -150,13 +150,13 @@ class TestNewsletter(unittest.TestCase):
     ]
 
     def test_serialise(self):
-        for (str_value, dict_value) in zip(self.string_list, self.dict_list):
+        for str_value, dict_value in zip(self.string_list, self.dict_list):
             expected = str_value
             actual = serialise(dict_value)
             self.assertEqual(expected, actual)
 
     def test_deserialise(self):
-        for (str_value, dict_value) in zip(self.string_list, self.dict_list):
+        for str_value, dict_value in zip(self.string_list, self.dict_list):
             expected = dict_value
             actual = deserialise(str_value)
             self.assertEqual(expected, actual)

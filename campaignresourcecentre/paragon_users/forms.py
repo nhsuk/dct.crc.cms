@@ -45,6 +45,7 @@ DESELECTALL_AGES = "DeselectAllOption(this,'Ages')"
 DESELECTALL_THEMES = "DeselectAllOption(this,'Themes')"
 DESELECTALL_SUBJECTS = "DeselectAllOption(this,'Subjects')"
 
+
 # uses regex to restrict usage of everything but a expression of allowed characters
 class SpecialCharacterRestrictionValidator(RegexValidator):
     regex = "^[a-zA-Z0-9\\-' ]*$"
@@ -71,7 +72,6 @@ def validate_postcode(postcode):
 
 
 class RegisterForm(forms.Form):
-
     first_name = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -313,7 +313,6 @@ class PasswordResetForm(forms.Form):
 
 
 class PasswordSetForm(forms.Form):
-
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={

@@ -75,7 +75,6 @@ CAMPAIGN_CHOICES = (
 
 
 class ContactUsForm(forms.Form):
-
     first_name = forms.CharField(
         widget=forms.TextInput(
             attrs={

@@ -10,6 +10,7 @@ from django.conf import settings as django_settings
 from campaignresourcecentre.paragon_users.helpers.token_signing import sign
 from .wagtail_hooks import authorise_users
 
+
 # per https://gist.github.com/dustinfarris/4982145
 class SessionEnabledTestCase(TestCase):
     def get_session(self):

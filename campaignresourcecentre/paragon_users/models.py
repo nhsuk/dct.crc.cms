@@ -1,5 +1,6 @@
 from django.db.models import CharField, Model
 
+
 # Dummy model to allow Paragon user management permissions
 # to be added
 class ParagonUserAdmin(Model):

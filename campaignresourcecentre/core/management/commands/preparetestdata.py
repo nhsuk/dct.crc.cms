@@ -41,7 +41,6 @@ def make_wagtail_document(url, user, title):
 
 
 def make_wagtail_image(url, title, name=None):
-
     from io import BytesIO
 
     from urllib import request

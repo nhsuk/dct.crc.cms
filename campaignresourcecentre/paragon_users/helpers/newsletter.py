@@ -86,7 +86,7 @@ def deserialise(news_raw):
 
     news_dict = dict()
 
-    for (bool_value, newsletter) in zip(bool_list, newsletters):
+    for bool_value, newsletter in zip(bool_list, newsletters):
         news_dict[newsletter] = (
             int(bool_value) == True
         )  # noqa This fails if you use the keyword is
