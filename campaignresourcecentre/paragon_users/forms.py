@@ -111,6 +111,7 @@ class RegisterForm(forms.Form):
                 "onchange": "hideSelect();",
                 "autocomplete": "organization-title",
                 "aria-describedby": "job_title-error",
+                "aria-required": "true",
             },
             choices=JOB_CHOICES,
         ),
