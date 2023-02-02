@@ -192,7 +192,6 @@ def qstart(c):
 
 
 def delete_docker_database(c, local_database_name=LOCAL_DATABASE_NAME):
-
     print(f"Deleting existing database {LOCAL_DATABASE_NAME}...")
     dexec(
         "dropdb --if-exists --host db --username={project_name} {database_name}".format(

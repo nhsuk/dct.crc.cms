@@ -4,7 +4,6 @@ from campaignresourcecentre.paragon_users.forms import validate_postcode
 
 
 class DeliveryAddressForm(forms.Form):
-
     Address1 = forms.CharField(
         widget=forms.TextInput(
             attrs={

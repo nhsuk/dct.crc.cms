@@ -104,7 +104,6 @@ def querystring_modify(
     """
     querydict = get_base_querydict(context, base)
     for key, value in kwargs.items():
-
         if isinstance(value, Model):
             value = str(value.pk)
         elif not hasattr(value, "__iter__"):

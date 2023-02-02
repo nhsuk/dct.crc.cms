@@ -20,7 +20,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_login(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Login"),
@@ -34,7 +33,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_create_account(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Signup"),
@@ -65,7 +63,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_search_users(self):
-
         api_url = "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Search")
         responses.add(
             responses.POST, api_url, json=[{"email": "test@gmail.com"}], status=200
@@ -87,7 +84,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_search_users_specify_limit(self):
-
         api_url = "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Search")
         responses.add(
             responses.POST, api_url, json=[{"email": "test@gmail.com"}], status=200
@@ -106,7 +102,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_search_users_specify_offset(self):
-
         api_url = "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Search")
         responses.add(
             responses.POST, api_url, json=[{"email": "test@gmail.com"}], status=200
@@ -125,7 +120,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_get_user_profile(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/RetrieveProfile"),
@@ -142,7 +136,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_update_user_profile(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/UpdateProfile"),
@@ -161,7 +154,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_update_password(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/UpdatePassword"),
@@ -178,7 +170,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_order_history(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/GetOrderHistory"),
@@ -195,7 +186,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_set_user_address(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/SetDeliveryAddress"),
@@ -216,7 +206,6 @@ class TestClient(TestCase):
 
     @responses.activate
     def test_create_order(self):
-
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/CreateCheckout"),

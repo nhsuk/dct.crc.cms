@@ -25,7 +25,6 @@ def get_postcode_data(postcode):
 
 
 def get_postcode_region(postcode):
-
     try:
         response = get_postcode_data(postcode)
         return response.get("region")

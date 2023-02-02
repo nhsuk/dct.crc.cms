@@ -10,7 +10,6 @@ register = template.Library()
 
 @register.inclusion_tag("wagtailnhsukfrontend/breadcrumb.html", takes_context=True)
 def crc_breadcrumb(context):
-
     page = context.get("page", None)
     if isinstance(page, Page):
         site = page.get_site()

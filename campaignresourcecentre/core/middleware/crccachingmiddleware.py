@@ -78,7 +78,6 @@ class CRCUpdateCacheMiddleware(UpdateCacheMiddleware):
 
 class CRCFetchFromCacheMiddleware(FetchFromCacheMiddleware):
     def process_request(self, request):
-
         response = super().process_request(request)
 
         if response is not None:

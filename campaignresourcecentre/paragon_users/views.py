@@ -110,7 +110,6 @@ def signup(request):
                 )
 
                 if response["code"] == 200:
-
                     # Send verification Email
                     token = response["content"]
                     url = request.build_absolute_uri(reverse("verification"))
@@ -197,7 +196,6 @@ def resend_verification(request):
 
 def verification(request):
     if request.GET.get("q"):
-
         # unsign Token from URL Query
         try:
             unsigned_token = unsign(request.GET.get("q"), max_age=86400)
@@ -241,7 +239,6 @@ def get_role(user_email: str, user_job: str):
         or user_job == "health:improvement"
         or user_job == "marketing"
     ):
-
         return "uber"
     else:
         return "standard"
@@ -249,7 +246,6 @@ def get_role(user_email: str, user_job: str):
 
 @paragon_user_logged_out
 def login(request):
-
     if request.method == "GET":
         next_url = request.GET.get("next")
         if request.META.get("HTTP_REFERER") is not None:
@@ -568,7 +564,6 @@ class NewslettersView(View):
 
 
 class NewsletterRegisteringView(NewslettersView):
-
     # Override the dispatch method for registration decorator
     @method_decorator(paragon_user_registering)
     def dispatch(self, *args, **kwargs):
