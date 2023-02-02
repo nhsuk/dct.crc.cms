@@ -392,6 +392,5 @@ def run_test(c):
             "manage.py",
             "test",
             "--settings=campaignresourcecentre.settings.test",
-            "--parallel",
         ]
     )
