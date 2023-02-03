@@ -276,12 +276,26 @@ required packages and all their dependencies and is used instead of pyproject.to
 
 To add a new package, or upgrade an existing one:
 
-1. add an entry for the package in poetry/pyproject.toml
+First add an entry for the package in poetry/pyproject.toml
    [as described here](https://python-poetry.org/docs/basic-usage/#specifying-dependencies)
-   or modify the existing entry if upgrading. 
-1. delete poetry/poetry.lock. This will force poetry to create an updated version next time it runs
-1. rebuild your local container which will create the new poetry/poetry.lock to be committed to
-   the repository along with the modified pyproject.toml
+   or modify the existing entry if upgrading.
+
+Then, there are two ways to proceed.
+
+If you wish to bring *all* the project dependencies up to date (which will necessitate a full regression test):
+1. make any required additions of new packages to poetry/pyproject.toml
+1. run poetry update
+
+This will rewrite the lock file with all packages up-to-date.
+
+If you wish to update just *one* package and its dependencies, there is a rather tricky method:
+(other approaches may be superior):
+1. make your changes to poetry/pyproject.toml
+1. identify a package in the pyproject.toml that is already up to date (let's call it xxx)
+1. run `poetry update xxx`
+
+This will rewrite the poetry.lock with minimal changes. If there is no package that is already up-to-date, it may
+be time to review all the dependencies anyway.
 
 ## Versioning
 

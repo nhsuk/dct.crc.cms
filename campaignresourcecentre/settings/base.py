@@ -52,26 +52,6 @@ if "ALLOWED_HOSTS" in env:
 # Application definition
 
 INSTALLED_APPS = [
-    "campaignresourcecentre.azurestore.apps.AzurestoreConfig",
-    "campaignresourcecentre.apps.CRCV3Config",
-    "campaignresourcecentre.baskets",
-    "campaignresourcecentre.campaigns",
-    "campaignresourcecentre.core",
-    "campaignresourcecentre.documents",
-    "campaignresourcecentre.forms",
-    "campaignresourcecentre.guides",
-    "campaignresourcecentre.home",
-    "campaignresourcecentre.images",
-    "campaignresourcecentre.navigation",
-    "campaignresourcecentre.orders.apps.OrdersConfig",
-    "campaignresourcecentre.page_lifecycle",
-    "campaignresourcecentre.paragon",
-    "campaignresourcecentre.paragon_users",
-    "campaignresourcecentre.resources",
-    "campaignresourcecentre.search",
-    "campaignresourcecentre.standardpages",
-    "campaignresourcecentre.users",
-    "campaignresourcecentre.utils",
     "wagtailnhsukfrontend",
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.settings",
@@ -105,6 +85,26 @@ INSTALLED_APPS = [
     "wagtail_2fa",
     "django_otp",
     "django_otp.plugins.otp_totp",
+    "campaignresourcecentre.azurestore.apps.AzurestoreConfig",
+    "campaignresourcecentre.apps.CRCV3Config",
+    "campaignresourcecentre.baskets",
+    "campaignresourcecentre.campaigns",
+    "campaignresourcecentre.core",
+    "campaignresourcecentre.documents",
+    "campaignresourcecentre.forms",
+    "campaignresourcecentre.guides",
+    "campaignresourcecentre.home",
+    "campaignresourcecentre.images",
+    "campaignresourcecentre.navigation",
+    "campaignresourcecentre.orders.apps.OrdersConfig",
+    "campaignresourcecentre.page_lifecycle",
+    "campaignresourcecentre.paragon",
+    "campaignresourcecentre.paragon_users",
+    "campaignresourcecentre.resources",
+    "campaignresourcecentre.search",
+    "campaignresourcecentre.standardpages",
+    "campaignresourcecentre.users",
+    "campaignresourcecentre.utils",
 ]
 
 
@@ -137,6 +137,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "APP_DIRS": True,
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
