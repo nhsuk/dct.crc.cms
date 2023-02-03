@@ -19,7 +19,7 @@ RUN npm run build:prod
 FROM python:3.10-buster as backend
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.1.13
+ARG POETRY_VERSION=1.3.2
 
 RUN useradd campaignresourcecentre -m && mkdir /app && chown campaignresourcecentre /app
 
@@ -58,10 +58,7 @@ ENV BUILD_ENV=${BUILD_ENV}
 EXPOSE 8000
 
 # Install poetry using the installer (keeps Poetry's dependencies isolated from the app's)
-RUN wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION}/get-poetry.py && \
-    #echo "eedf0fe5a31e5bb899efa581cbe4df59af02ea5f get-poetry.py" | sha1sum -c - && \
-    python get-poetry.py && \
-    rm get-poetry.py && \
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false
 
 # Install your app's Python requirements

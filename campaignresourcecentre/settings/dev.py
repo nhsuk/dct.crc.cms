@@ -58,8 +58,8 @@ SECURE_SSL_REDIRECT = False
 
 # Adds Django Debug Toolbar, if preset and requested
 # (slows system right down, so for use as required)
-USING_DEBUG_TOOLBAR = False
-if USING_DEBUG_TOOLBAR:
+USING_DEBUG_TOOLBAR = getenv_bool("USING_DEBUG_TOOLBAR")
+if USING_DEBUG_TOOLBAR and DEBUG:
     try:
         import debug_toolbar  # noqa
 
@@ -71,6 +71,7 @@ if USING_DEBUG_TOOLBAR:
         # Add more IPs for running in Docker container
         hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
         INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
+        DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 100}
     except ImportError:
         pass
 
