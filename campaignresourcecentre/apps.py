@@ -5,6 +5,8 @@ from sys import argv
 from django.apps import AppConfig
 from django.conf import settings
 
+from campaignresourcecentre.notifications.adapters import GovNotifyNotifications
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,6 +33,8 @@ class CRCV3Config(AppConfig):
             logger.info("File storage: %s", settings.DEFAULT_FILE_STORAGE)
             logger.info("Search storage: %s", settings.SEARCH_STORAGE_CLASS)
             logger.info("Updating Azure search: %s", settings.AZURE_SEARCH_UPDATE)
+            logger.info("Wagtail 2FA required: %s", settings.WAGTAIL_2FA_REQUIRED)
+            logger.info("GOV notify enabled: %s", not settings.NOTIFY_DEBUG)
             # If using runserver we must force CONN_MAX_AGE to zero or
             # database connection limit will be exceeded under heavy loads
             if len(argv) >= 2 and argv[1] == "runserver":
@@ -38,3 +42,11 @@ class CRCV3Config(AppConfig):
                 if default_database and default_database.get("CONN_MAX_AGE") != 0:
                     logger.info("Forcing connection max age to zero for runserver")
                     default_database["CONN_MAX_AGE"] = 0
+            # Set plain text gov notify id Django setting here because now we can import it
+            settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = (
+                GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID
+            )
+            logger.info(
+                "Email template setting initialised as %s",
+                settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID,
+            )

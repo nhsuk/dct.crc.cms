@@ -119,6 +119,8 @@ services:
       PGUSER: campaignresourcecentre
       PGPASSWORD: campaignresourcecentre # pragma: allowlist secret
       POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./database_dumps:/database_dumps:delegated,rw
     logging:
       driver: none
 

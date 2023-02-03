@@ -19,11 +19,12 @@ RUN npm run build:prod
 FROM python:3.10-buster as backend
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.1.13
-
-RUN mkdir /app
+ARG POETRY_VERSION=1.3.2
 
 WORKDIR /app
+
+RUN useradd campaignresourcecentre -m && chown campaignresourcecentre /app
+
 
 # Set default environment variables. They are used at build time and runtime.
 # If you specify your own environment variables on Heroku or Dokku, they will
@@ -58,22 +59,20 @@ ENV BUILD_ENV=${BUILD_ENV}
 EXPOSE 8000
 
 # Install poetry using the installer (keeps Poetry's dependencies isolated from the app's)
-RUN cd ./poetry; wget https://raw.githubusercontent.com/python-poetry/poetry/${POETRY_VERSION}/get-poetry.py && \
-    #echo "eedf0fe5a31e5bb899efa581cbe4df59af02ea5f get-poetry.py" | sha1sum -c - && \
-    python get-poetry.py && \
-    rm get-poetry.py && \
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false
 
 # Install your app's Python requirements
 
-COPY ./poetry ./
+COPY --chown=campaignresourcecentre ./poetry ./poetry
 
-RUN if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
+RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
 
-COPY --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
+COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
 # Copy application code.
-COPY . .
+COPY --chown=campaignresourcecentre ./campaignresourcecentre ./campaignresourcecentre
+COPY --chown=campaignresourcecentre ./manage.py  ./docker-entrypoint.sh ./initializer-entrypoint.sh  gunicorn-conf.py ./
 
 # Collect static. This command will move static files from application
 # directories and "static_compiled" folder to the main static directory that
