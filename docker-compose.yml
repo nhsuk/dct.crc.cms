@@ -4,7 +4,7 @@ services:
     build:
       context: .
       args:
-        BUILD_ENV: dev
+        BUILD_ENV: ${BUILD_ENV}
     init: true
     environment:
       ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost
