@@ -5,7 +5,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resources", "0008_auto_20210721_1514"),
     ]

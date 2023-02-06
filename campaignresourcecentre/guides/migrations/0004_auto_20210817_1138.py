@@ -7,7 +7,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("guides", "0003_add_accordians"),
     ]

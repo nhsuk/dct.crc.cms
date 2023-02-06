@@ -8,7 +8,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("campaigns", "0010_add_sections"),
     ]

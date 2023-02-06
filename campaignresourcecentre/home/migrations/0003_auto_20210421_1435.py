@@ -7,7 +7,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailcore", "0060_fix_workflow_unique_constraint"),
         ("images", "0002_customimage_file_hash"),

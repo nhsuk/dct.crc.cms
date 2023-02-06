@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("wagtailcore", "0066_collection_management_permissions"),
         ("campaigns", "0025_auto_20220202_1715"),

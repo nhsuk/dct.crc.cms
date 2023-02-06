@@ -6,7 +6,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("navigation", "0001_initial"),
     ]

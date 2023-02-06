@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("documents", "0003_customdocument_file_hash"),
         ("resources", "0003_resourcepage_taxonomy_json"),

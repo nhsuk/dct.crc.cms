@@ -8,7 +8,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("standardpages", "0008_auto_image_alt_text"),
     ]

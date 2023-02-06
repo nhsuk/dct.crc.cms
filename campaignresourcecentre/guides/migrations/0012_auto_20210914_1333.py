@@ -8,7 +8,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("guides", "0011_auto_20210913_1118"),
     ]

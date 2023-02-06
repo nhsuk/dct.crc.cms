@@ -5,7 +5,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resources", "0010_resourceitem_image_alt_text"),
     ]

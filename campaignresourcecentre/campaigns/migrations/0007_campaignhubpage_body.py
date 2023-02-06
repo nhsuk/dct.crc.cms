@@ -7,7 +7,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("campaigns", "0006_auto_20210805_1506"),
     ]

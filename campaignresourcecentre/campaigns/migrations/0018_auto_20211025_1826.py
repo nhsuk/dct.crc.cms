@@ -5,7 +5,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("campaigns", "0017_auto_20211004_1215"),
     ]

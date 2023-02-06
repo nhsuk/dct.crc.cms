@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("images", "0002_customimage_file_hash"),
         ("home", "0015_auto_20210914_1333"),

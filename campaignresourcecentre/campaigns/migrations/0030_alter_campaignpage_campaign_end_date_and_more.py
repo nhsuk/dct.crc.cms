@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("campaigns", "0029_campaignpage_campaign_end_date_and_more"),
     ]

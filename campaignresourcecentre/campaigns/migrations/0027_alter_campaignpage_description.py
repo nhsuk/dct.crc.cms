@@ -5,7 +5,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("campaigns", "0026_alter_campaignupdate_link_page"),
     ]

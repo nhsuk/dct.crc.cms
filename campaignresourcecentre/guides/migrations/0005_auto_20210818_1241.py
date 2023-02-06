@@ -9,7 +9,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("images", "0002_customimage_file_hash"),
         ("guides", "0004_auto_20210817_1138"),

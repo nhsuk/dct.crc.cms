@@ -6,7 +6,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("home", "0004_homepage_body"),
     ]

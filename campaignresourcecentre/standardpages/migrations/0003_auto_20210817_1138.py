@@ -7,7 +7,6 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("standardpages", "0002_auto_20210421_1549"),
     ]

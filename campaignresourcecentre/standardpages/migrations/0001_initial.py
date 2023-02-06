@@ -14,7 +14,6 @@ import wagtail.snippets.blocks
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

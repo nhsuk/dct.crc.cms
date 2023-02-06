@@ -6,7 +6,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("images", "0002_customimage_file_hash"),
         ("standardpages", "0003_auto_20210817_1138"),
