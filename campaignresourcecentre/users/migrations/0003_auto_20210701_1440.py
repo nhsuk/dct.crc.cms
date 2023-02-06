@@ -6,46 +6,50 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_auto_20210518_1412'),
+        ("users", "0002_auto_20210518_1412"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='user',
-            name='job_title',
+            model_name="user",
+            name="job_title",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='organisation',
+            model_name="user",
+            name="organisation",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='postcode',
+            model_name="user",
+            name="postcode",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='region',
+            model_name="user",
+            name="region",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='role',
+            model_name="user",
+            name="role",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='second_name',
+            model_name="user",
+            name="second_name",
         ),
         migrations.RemoveField(
-            model_name='user',
-            name='terms',
+            model_name="user",
+            name="terms",
         ),
         migrations.AlterField(
-            model_name='user',
-            name='email',
-            field=models.EmailField(blank=True, max_length=254, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=models.EmailField(
+                blank=True, max_length=254, verbose_name="email address"
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='first_name',
-            field=models.CharField(blank=True, max_length=150, verbose_name='first name'),
+            model_name="user",
+            name="first_name",
+            field=models.CharField(
+                blank=True, max_length=150, verbose_name="first name"
+            ),
         ),
     ]

@@ -7,13 +7,15 @@ import wagtail.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('guides', '0012_auto_20210914_1333'),
+        ("guides", "0012_auto_20210914_1333"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='guidepage',
-            name='summary',
-            field=wagtail.core.fields.RichTextField(default='', help_text='Summary section for the Guides page'),
+            model_name="guidepage",
+            name="summary",
+            field=wagtail.core.fields.RichTextField(
+                default="", help_text="Summary section for the Guides page"
+            ),
         ),
     ]

@@ -7,18 +7,22 @@ import wagtail.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('campaigns', '0016_campaignpage_description'),
+        ("campaigns", "0016_campaignpage_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignpage',
-            name='description',
-            field=wagtail.core.fields.RichTextField(help_text='Introduction section for the resource page'),
+            model_name="campaignpage",
+            name="description",
+            field=wagtail.core.fields.RichTextField(
+                help_text="Introduction section for the resource page"
+            ),
         ),
         migrations.AlterField(
-            model_name='campaignpage',
-            name='summary',
-            field=wagtail.core.fields.RichTextField(help_text='Short line of text for display on the campaign page'),
+            model_name="campaignpage",
+            name="summary",
+            field=wagtail.core.fields.RichTextField(
+                help_text="Short line of text for display on the campaign page"
+            ),
         ),
     ]

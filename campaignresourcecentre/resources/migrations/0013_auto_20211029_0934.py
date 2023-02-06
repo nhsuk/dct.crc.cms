@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('resources', '0012_auto_20211026_2112'),
+        ("resources", "0012_auto_20211026_2112"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourcepage',
-            name='summary',
-            field=models.TextField(help_text='A short line of text for display on campaign hub. Maximum 125 character limit.', max_length=125),
+            model_name="resourcepage",
+            name="summary",
+            field=models.TextField(
+                help_text="A short line of text for display on campaign hub. Maximum 125 character limit.",
+                max_length=125,
+            ),
         ),
     ]

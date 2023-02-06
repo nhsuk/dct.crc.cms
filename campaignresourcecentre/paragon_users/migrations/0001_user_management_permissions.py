@@ -7,18 +7,34 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='ParagonUserAdmin',
+            name="ParagonUserAdmin",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'permissions': [('manage_paragon_users', 'Can view Paragon users and change access level'), ('manage_paragon_users_all_fields', 'Can view Paragon users and change all details')],
-                'default_permissions': [],
+                "permissions": [
+                    (
+                        "manage_paragon_users",
+                        "Can view Paragon users and change access level",
+                    ),
+                    (
+                        "manage_paragon_users_all_fields",
+                        "Can view Paragon users and change all details",
+                    ),
+                ],
+                "default_permissions": [],
             },
         ),
     ]

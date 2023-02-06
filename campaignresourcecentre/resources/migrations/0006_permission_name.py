@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('resources', '0005_can_order_helptext'),
+        ("resources", "0005_can_order_helptext"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourcepage',
-            name='permission_role',
-            field=models.CharField(choices=[('all', 'Unverified users'), ('standard', 'Standard'), ('uber', 'Uber')], default='all', max_length=10),
+            model_name="resourcepage",
+            name="permission_role",
+            field=models.CharField(
+                choices=[
+                    ("all", "Unverified users"),
+                    ("standard", "Standard"),
+                    ("uber", "Uber"),
+                ],
+                default="all",
+                max_length=10,
+            ),
         ),
     ]

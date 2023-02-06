@@ -7,13 +7,15 @@ import wagtail.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('campaigns', '0026_alter_campaignupdate_link_page'),
+        ("campaigns", "0026_alter_campaignupdate_link_page"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignpage',
-            name='description',
-            field=wagtail.core.fields.RichTextField(help_text='Introduction section for the campaign page. This is limited to 480 characters to make sure the page loads properly on frontend. Please preview the page before you publish as this depends on length of the below image and may alter the page overall design.'),
+            model_name="campaignpage",
+            name="description",
+            field=wagtail.core.fields.RichTextField(
+                help_text="Introduction section for the campaign page. This is limited to 480 characters to make sure the page loads properly on frontend. Please preview the page before you publish as this depends on length of the below image and may alter the page overall design."
+            ),
         ),
     ]

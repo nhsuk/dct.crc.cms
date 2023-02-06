@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('resources', '0009_resourcepage_summary'),
+        ("resources", "0009_resourcepage_summary"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='resourceitem',
-            name='image_alt_text',
-            field=models.CharField(blank=True, help_text='Alt text for the image.', max_length=50, null=True),
+            model_name="resourceitem",
+            name="image_alt_text",
+            field=models.CharField(
+                blank=True,
+                help_text="Alt text for the image.",
+                max_length=50,
+                null=True,
+            ),
         ),
     ]

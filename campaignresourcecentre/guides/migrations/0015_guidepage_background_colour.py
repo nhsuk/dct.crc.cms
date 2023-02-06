@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('guides', '0014_auto_20211105_1244'),
+        ("guides", "0014_auto_20211105_1244"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='guidepage',
-            name='background_colour',
-            field=models.CharField(choices=[('app-page-hero--white', 'white'), ('app-page-hero--grey', 'nhs grey')], default='app-page-hero--white', help_text='set background colour for the section', max_length=45),
+            model_name="guidepage",
+            name="background_colour",
+            field=models.CharField(
+                choices=[
+                    ("app-page-hero--white", "white"),
+                    ("app-page-hero--grey", "nhs grey"),
+                ],
+                default="app-page-hero--white",
+                help_text="set background colour for the section",
+                max_length=45,
+            ),
         ),
     ]

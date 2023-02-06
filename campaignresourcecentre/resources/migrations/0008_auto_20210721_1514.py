@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('resources', '0007_resourceitem_document_content'),
+        ("resources", "0007_resourceitem_document_content"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourceitem',
-            name='document_content',
+            model_name="resourceitem",
+            name="document_content",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
     ]

@@ -8,23 +8,51 @@ import wagtail.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('images', '0002_customimage_file_hash'),
-        ('standardpages', '0003_auto_20210817_1138'),
+        ("images", "0002_customimage_file_hash"),
+        ("standardpages", "0003_auto_20210817_1138"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AboutPage',
+            name="AboutPage",
             fields=[
-                ('informationpage_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='standardpages.informationpage')),
-                ('description', wagtail.core.fields.RichTextField(help_text='Introduction section for the resource page')),
-                ('summary', wagtail.core.fields.RichTextField(help_text='Short line of text for display on the campaign page')),
-                ('image_alt_text', models.TextField(blank=True)),
-                ('image', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='images.customimage')),
+                (
+                    "informationpage_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="standardpages.informationpage",
+                    ),
+                ),
+                (
+                    "description",
+                    wagtail.core.fields.RichTextField(
+                        help_text="Introduction section for the resource page"
+                    ),
+                ),
+                (
+                    "summary",
+                    wagtail.core.fields.RichTextField(
+                        help_text="Short line of text for display on the campaign page"
+                    ),
+                ),
+                ("image_alt_text", models.TextField(blank=True)),
+                (
+                    "image",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to="images.customimage",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('standardpages.informationpage',),
+            bases=("standardpages.informationpage",),
         ),
     ]

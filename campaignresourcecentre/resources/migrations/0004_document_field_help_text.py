@@ -7,14 +7,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0003_customdocument_file_hash'),
-        ('resources', '0003_resourcepage_taxonomy_json'),
+        ("documents", "0003_customdocument_file_hash"),
+        ("resources", "0003_resourcepage_taxonomy_json"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourceitem',
-            name='document',
-            field=models.ForeignKey(blank=True, help_text='Choose the relevant file from the         Wagtail document library.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='documents.customdocument'),
+            model_name="resourceitem",
+            name="document",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Choose the relevant file from the         Wagtail document library.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="+",
+                to="documents.customdocument",
+            ),
         ),
     ]

@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('resources', '0011_auto_20211004_1215'),
+        ("resources", "0011_auto_20211004_1215"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourcepage',
-            name='summary',
-            field=models.TextField(help_text='A short line of text for display on campaign hub'),
+            model_name="resourcepage",
+            name="summary",
+            field=models.TextField(
+                help_text="A short line of text for display on campaign hub"
+            ),
         ),
     ]

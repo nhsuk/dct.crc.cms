@@ -7,14 +7,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wagtailcore', '0066_collection_management_permissions'),
-        ('campaigns', '0025_auto_20220202_1715'),
+        ("wagtailcore", "0066_collection_management_permissions"),
+        ("campaigns", "0025_auto_20220202_1715"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignupdate',
-            name='link_page',
-            field=models.ForeignKey(blank=True, help_text='Choose a page to link to.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(app_label)s_%(class)s_link_page', to='wagtailcore.page'),
+            model_name="campaignupdate",
+            name="link_page",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Choose a page to link to.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="%(app_label)s_%(class)s_link_page",
+                to="wagtailcore.page",
+            ),
         ),
     ]

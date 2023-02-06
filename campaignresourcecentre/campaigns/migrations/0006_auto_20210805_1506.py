@@ -9,13 +9,264 @@ import wagtail.images.blocks
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('campaigns', '0005_campaignpage_body'),
+        ("campaigns", "0005_campaignpage_body"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignpage',
-            name='body',
-            field=wagtail.core.fields.StreamField([('Card_group', wagtail.core.blocks.StructBlock([('column', wagtail.core.blocks.ChoiceBlock(choices=[('', 'Full-width'), ('one-half', 'One-half'), ('one-third', 'One-third')], required=False)), ('body', wagtail.core.blocks.StreamBlock([('card_basic', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock(required=True)), ('heading_level', wagtail.core.blocks.IntegerBlock(default=3, help_text='The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.', max_value=6, min_value=2)), ('heading_size', wagtail.core.blocks.ChoiceBlock(choices=[('', 'Default'), ('small', 'Small'), ('medium', 'Medium'), ('large', 'Large')], help_text="The heading size affects the visual size, this follows the front-end library's sizing.", required=False)), ('body', wagtail.core.blocks.RichTextBlock(required=False))])), ('card_clickable', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock(required=True)), ('heading_level', wagtail.core.blocks.IntegerBlock(default=3, help_text='The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.', max_value=6, min_value=2)), ('heading_size', wagtail.core.blocks.ChoiceBlock(choices=[('', 'Default'), ('small', 'Small'), ('medium', 'Medium'), ('large', 'Large')], help_text="The heading size affects the visual size, this follows the front-end library's sizing.", required=False)), ('body', wagtail.core.blocks.RichTextBlock(required=False)), ('internal_page', wagtail.core.blocks.PageChooserBlock(help_text='Interal Page Link for the card', label='Internal Page', required=False)), ('url', wagtail.core.blocks.URLBlock(help_text='External Link for the card', label='URL', required=False))])), ('card_image', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock(required=True)), ('heading_level', wagtail.core.blocks.IntegerBlock(default=3, help_text='The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.', max_value=6, min_value=2)), ('heading_size', wagtail.core.blocks.ChoiceBlock(choices=[('', 'Default'), ('small', 'Small'), ('medium', 'Medium'), ('large', 'Large')], help_text="The heading size affects the visual size, this follows the front-end library's sizing.", required=False)), ('body', wagtail.core.blocks.RichTextBlock(required=False)), ('content_image', wagtail.images.blocks.ImageChooserBlock(label='Image', required=True)), ('alt_text', wagtail.core.blocks.CharBlock(required=True)), ('url', wagtail.core.blocks.URLBlock(help_text='Optional, if there is a link the entire card will be clickable.', label='URL', required=False)), ('internal_page', wagtail.core.blocks.PageChooserBlock(help_text='Optional, if there is a link the entire card will be clickable.', label='Internal Page', required=False))])), ('card_feature', wagtail.core.blocks.StructBlock([('feature_heading', wagtail.core.blocks.CharBlock(required=True)), ('heading_level', wagtail.core.blocks.IntegerBlock(default=3, help_text='The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.', max_value=6, min_value=2)), ('heading_size', wagtail.core.blocks.ChoiceBlock(choices=[('', 'Default'), ('small', 'Small'), ('medium', 'Medium'), ('large', 'Large')], help_text="The heading size affects the visual size, this follows the front-end library's sizing.", required=False)), ('body', wagtail.core.blocks.RichTextBlock(required=True))]))], required=True))]))], blank=True),
+            model_name="campaignpage",
+            name="body",
+            field=wagtail.core.fields.StreamField(
+                [
+                    (
+                        "Card_group",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                (
+                                    "column",
+                                    wagtail.core.blocks.ChoiceBlock(
+                                        choices=[
+                                            ("", "Full-width"),
+                                            ("one-half", "One-half"),
+                                            ("one-third", "One-third"),
+                                        ],
+                                        required=False,
+                                    ),
+                                ),
+                                (
+                                    "body",
+                                    wagtail.core.blocks.StreamBlock(
+                                        [
+                                            (
+                                                "card_basic",
+                                                wagtail.core.blocks.StructBlock(
+                                                    [
+                                                        (
+                                                            "heading",
+                                                            wagtail.core.blocks.CharBlock(
+                                                                required=True
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_level",
+                                                            wagtail.core.blocks.IntegerBlock(
+                                                                default=3,
+                                                                help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",
+                                                                max_value=6,
+                                                                min_value=2,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_size",
+                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                choices=[
+                                                                    ("", "Default"),
+                                                                    ("small", "Small"),
+                                                                    (
+                                                                        "medium",
+                                                                        "Medium",
+                                                                    ),
+                                                                    ("large", "Large"),
+                                                                ],
+                                                                help_text="The heading size affects the visual size, this follows the front-end library's sizing.",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "body",
+                                                            wagtail.core.blocks.RichTextBlock(
+                                                                required=False
+                                                            ),
+                                                        ),
+                                                    ]
+                                                ),
+                                            ),
+                                            (
+                                                "card_clickable",
+                                                wagtail.core.blocks.StructBlock(
+                                                    [
+                                                        (
+                                                            "heading",
+                                                            wagtail.core.blocks.CharBlock(
+                                                                required=True
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_level",
+                                                            wagtail.core.blocks.IntegerBlock(
+                                                                default=3,
+                                                                help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",
+                                                                max_value=6,
+                                                                min_value=2,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_size",
+                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                choices=[
+                                                                    ("", "Default"),
+                                                                    ("small", "Small"),
+                                                                    (
+                                                                        "medium",
+                                                                        "Medium",
+                                                                    ),
+                                                                    ("large", "Large"),
+                                                                ],
+                                                                help_text="The heading size affects the visual size, this follows the front-end library's sizing.",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "body",
+                                                            wagtail.core.blocks.RichTextBlock(
+                                                                required=False
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "internal_page",
+                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                help_text="Interal Page Link for the card",
+                                                                label="Internal Page",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "url",
+                                                            wagtail.core.blocks.URLBlock(
+                                                                help_text="External Link for the card",
+                                                                label="URL",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                    ]
+                                                ),
+                                            ),
+                                            (
+                                                "card_image",
+                                                wagtail.core.blocks.StructBlock(
+                                                    [
+                                                        (
+                                                            "heading",
+                                                            wagtail.core.blocks.CharBlock(
+                                                                required=True
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_level",
+                                                            wagtail.core.blocks.IntegerBlock(
+                                                                default=3,
+                                                                help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",
+                                                                max_value=6,
+                                                                min_value=2,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_size",
+                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                choices=[
+                                                                    ("", "Default"),
+                                                                    ("small", "Small"),
+                                                                    (
+                                                                        "medium",
+                                                                        "Medium",
+                                                                    ),
+                                                                    ("large", "Large"),
+                                                                ],
+                                                                help_text="The heading size affects the visual size, this follows the front-end library's sizing.",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "body",
+                                                            wagtail.core.blocks.RichTextBlock(
+                                                                required=False
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "content_image",
+                                                            wagtail.images.blocks.ImageChooserBlock(
+                                                                label="Image",
+                                                                required=True,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "alt_text",
+                                                            wagtail.core.blocks.CharBlock(
+                                                                required=True
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "url",
+                                                            wagtail.core.blocks.URLBlock(
+                                                                help_text="Optional, if there is a link the entire card will be clickable.",
+                                                                label="URL",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "internal_page",
+                                                            wagtail.core.blocks.PageChooserBlock(
+                                                                help_text="Optional, if there is a link the entire card will be clickable.",
+                                                                label="Internal Page",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                    ]
+                                                ),
+                                            ),
+                                            (
+                                                "card_feature",
+                                                wagtail.core.blocks.StructBlock(
+                                                    [
+                                                        (
+                                                            "feature_heading",
+                                                            wagtail.core.blocks.CharBlock(
+                                                                required=True
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_level",
+                                                            wagtail.core.blocks.IntegerBlock(
+                                                                default=3,
+                                                                help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",
+                                                                max_value=6,
+                                                                min_value=2,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "heading_size",
+                                                            wagtail.core.blocks.ChoiceBlock(
+                                                                choices=[
+                                                                    ("", "Default"),
+                                                                    ("small", "Small"),
+                                                                    (
+                                                                        "medium",
+                                                                        "Medium",
+                                                                    ),
+                                                                    ("large", "Large"),
+                                                                ],
+                                                                help_text="The heading size affects the visual size, this follows the front-end library's sizing.",
+                                                                required=False,
+                                                            ),
+                                                        ),
+                                                        (
+                                                            "body",
+                                                            wagtail.core.blocks.RichTextBlock(
+                                                                required=True
+                                                            ),
+                                                        ),
+                                                    ]
+                                                ),
+                                            ),
+                                        ],
+                                        required=True,
+                                    ),
+                                ),
+                            ]
+                        ),
+                    )
+                ],
+                blank=True,
+            ),
         ),
     ]
