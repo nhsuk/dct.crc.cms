@@ -4,15 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('campaigns', '0022_auto_20220104_1754'),
+        ("campaigns", "0022_auto_20220104_1754"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaignhubpage',
-            name='campaign_updates_bg_colour',
-            field=models.CharField(choices=[('app-section--white', 'white'), ('app-section--grey', 'nhs grey')], default='app-section-white', help_text='set background colour for the section', max_length=45),
+            model_name="campaignhubpage",
+            name="campaign_updates_bg_colour",
+            field=models.CharField(
+                choices=[
+                    ("app-section--white", "white"),
+                    ("app-section--grey", "nhs grey"),
+                ],
+                default="app-section-white",
+                help_text="set background colour for the section",
+                max_length=45,
+            ),
         ),
     ]

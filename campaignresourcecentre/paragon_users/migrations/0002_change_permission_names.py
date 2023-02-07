@@ -4,14 +4,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('paragon_users', '0001_user_management_permissions'),
+        ("paragon_users", "0001_user_management_permissions"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='paragonuseradmin',
-            options={'default_permissions': [], 'permissions': [('manage_paragon_users', 'Can view CRC users and change access level'), ('manage_paragon_users_all_fields', 'Can view CRC users and change all details')]},
+            name="paragonuseradmin",
+            options={
+                "default_permissions": [],
+                "permissions": [
+                    (
+                        "manage_paragon_users",
+                        "Can view CRC users and change access level",
+                    ),
+                    (
+                        "manage_paragon_users_all_fields",
+                        "Can view CRC users and change all details",
+                    ),
+                ],
+            },
         ),
     ]

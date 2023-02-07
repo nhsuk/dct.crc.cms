@@ -7,15 +7,101 @@ import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('standardpages', '0002_auto_20210421_1549'),
+        ("standardpages", "0002_auto_20210421_1549"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='informationpage',
-            name='body',
-            field=wagtail.core.fields.StreamField([('paragraph', wagtail.core.blocks.RichTextBlock()), ('left_image_with_text', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('title', wagtail.core.blocks.CharBlock()), ('text', wagtail.core.blocks.RichTextBlock(features=['bold', 'italic']))])), ('accordion', wagtail.core.blocks.StructBlock([('title', wagtail.core.blocks.CharBlock()), ('text', wagtail.core.blocks.RichTextBlock(features=['bold', 'italic', 'link'])), ('show_numbering', wagtail.core.blocks.BooleanBlock(help_text='Controls whether to show numbers next to the accordion items.', required=False)), ('items', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('title', wagtail.core.blocks.CharBlock()), ('text', wagtail.core.blocks.TextBlock())], icon='pilcrow')))])), ('text_with_image_stack', wagtail.core.blocks.StructBlock([('title', wagtail.core.blocks.CharBlock()), ('heading_level', wagtail.core.blocks.IntegerBlock(default=3, help_text='The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.', max_value=6, min_value=2)), ('text', wagtail.core.blocks.RichTextBlock(features=['bold', 'italic', 'link'])), ('images', wagtail.core.blocks.ListBlock(wagtail.images.blocks.ImageChooserBlock()))]))]),
+            model_name="informationpage",
+            name="body",
+            field=wagtail.core.fields.StreamField(
+                [
+                    ("paragraph", wagtail.core.blocks.RichTextBlock()),
+                    (
+                        "left_image_with_text",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                ("image", wagtail.images.blocks.ImageChooserBlock()),
+                                ("title", wagtail.core.blocks.CharBlock()),
+                                (
+                                    "text",
+                                    wagtail.core.blocks.RichTextBlock(
+                                        features=["bold", "italic"]
+                                    ),
+                                ),
+                            ]
+                        ),
+                    ),
+                    (
+                        "accordion",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                ("title", wagtail.core.blocks.CharBlock()),
+                                (
+                                    "text",
+                                    wagtail.core.blocks.RichTextBlock(
+                                        features=["bold", "italic", "link"]
+                                    ),
+                                ),
+                                (
+                                    "show_numbering",
+                                    wagtail.core.blocks.BooleanBlock(
+                                        help_text="Controls whether to show numbers next to the accordion items.",
+                                        required=False,
+                                    ),
+                                ),
+                                (
+                                    "items",
+                                    wagtail.core.blocks.ListBlock(
+                                        wagtail.core.blocks.StructBlock(
+                                            [
+                                                (
+                                                    "title",
+                                                    wagtail.core.blocks.CharBlock(),
+                                                ),
+                                                (
+                                                    "text",
+                                                    wagtail.core.blocks.TextBlock(),
+                                                ),
+                                            ],
+                                            icon="pilcrow",
+                                        )
+                                    ),
+                                ),
+                            ]
+                        ),
+                    ),
+                    (
+                        "text_with_image_stack",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                ("title", wagtail.core.blocks.CharBlock()),
+                                (
+                                    "heading_level",
+                                    wagtail.core.blocks.IntegerBlock(
+                                        default=3,
+                                        help_text="The heading level affects users with screen readers. Ignore this if there is no label. Default=3, Min=2, Max=6.",
+                                        max_value=6,
+                                        min_value=2,
+                                    ),
+                                ),
+                                (
+                                    "text",
+                                    wagtail.core.blocks.RichTextBlock(
+                                        features=["bold", "italic", "link"]
+                                    ),
+                                ),
+                                (
+                                    "images",
+                                    wagtail.core.blocks.ListBlock(
+                                        wagtail.images.blocks.ImageChooserBlock()
+                                    ),
+                                ),
+                            ]
+                        ),
+                    ),
+                ]
+            ),
         ),
     ]

@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('campaigns', '0020_campaignupdate_image_alt_text'),
-        ('campaigns', '0023_campaignhubpage_campaign_updates_bg_colour'),
+        ("campaigns", "0020_campaignupdate_image_alt_text"),
+        ("campaigns", "0023_campaignhubpage_campaign_updates_bg_colour"),
     ]
 
-    operations = [
-    ]
+    operations = []

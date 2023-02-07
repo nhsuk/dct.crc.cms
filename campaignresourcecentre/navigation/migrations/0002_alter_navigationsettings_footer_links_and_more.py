@@ -6,30 +6,173 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('navigation', '0001_initial'),
+        ("navigation", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='navigationsettings',
-            name='footer_links',
-            field=wagtail.core.fields.StreamField([('link', wagtail.core.blocks.StructBlock([('page', wagtail.core.blocks.PageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(help_text="Leave blank to use the page's own title. Add title if using the URL approach", required=False)), ('url', wagtail.core.blocks.CharBlock(help_text='Only use if page does not exist in CMS', required=False))]))], blank=True, help_text='Single list of elements at the base of the page.'),
+            model_name="navigationsettings",
+            name="footer_links",
+            field=wagtail.core.fields.StreamField(
+                [
+                    (
+                        "link",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                (
+                                    "page",
+                                    wagtail.core.blocks.PageChooserBlock(
+                                        required=False
+                                    ),
+                                ),
+                                (
+                                    "title",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Leave blank to use the page's own title. Add title if using the URL approach",
+                                        required=False,
+                                    ),
+                                ),
+                                (
+                                    "url",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Only use if page does not exist in CMS",
+                                        required=False,
+                                    ),
+                                ),
+                            ]
+                        ),
+                    )
+                ],
+                blank=True,
+                help_text="Single list of elements at the base of the page.",
+            ),
         ),
         migrations.AlterField(
-            model_name='navigationsettings',
-            name='footer_navigation',
-            field=wagtail.core.fields.StreamField([('column', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock(help_text='Leave blank if no header required.', required=False)), ('links', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('page', wagtail.core.blocks.PageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(help_text="Leave blank to use the page's own title. Add title if using the URL approach", required=False)), ('url', wagtail.core.blocks.CharBlock(help_text='Only use if page does not exist in CMS', required=False))])))]))], blank=True, help_text='Multiple columns of footer links with optional header.'),
+            model_name="navigationsettings",
+            name="footer_navigation",
+            field=wagtail.core.fields.StreamField(
+                [
+                    (
+                        "column",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                (
+                                    "heading",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Leave blank if no header required.",
+                                        required=False,
+                                    ),
+                                ),
+                                (
+                                    "links",
+                                    wagtail.core.blocks.ListBlock(
+                                        wagtail.core.blocks.StructBlock(
+                                            [
+                                                (
+                                                    "page",
+                                                    wagtail.core.blocks.PageChooserBlock(
+                                                        required=False
+                                                    ),
+                                                ),
+                                                (
+                                                    "title",
+                                                    wagtail.core.blocks.CharBlock(
+                                                        help_text="Leave blank to use the page's own title. Add title if using the URL approach",
+                                                        required=False,
+                                                    ),
+                                                ),
+                                                (
+                                                    "url",
+                                                    wagtail.core.blocks.CharBlock(
+                                                        help_text="Only use if page does not exist in CMS",
+                                                        required=False,
+                                                    ),
+                                                ),
+                                            ]
+                                        )
+                                    ),
+                                ),
+                            ]
+                        ),
+                    )
+                ],
+                blank=True,
+                help_text="Multiple columns of footer links with optional header.",
+            ),
         ),
         migrations.AlterField(
-            model_name='navigationsettings',
-            name='primary_navigation',
-            field=wagtail.core.fields.StreamField([('link', wagtail.core.blocks.StructBlock([('page', wagtail.core.blocks.PageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(help_text="Leave blank to use the page's own title. Add title if using the URL approach", required=False)), ('url', wagtail.core.blocks.CharBlock(help_text='Only use if page does not exist in CMS', required=False))]))], blank=True, help_text='Main site navigation'),
+            model_name="navigationsettings",
+            name="primary_navigation",
+            field=wagtail.core.fields.StreamField(
+                [
+                    (
+                        "link",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                (
+                                    "page",
+                                    wagtail.core.blocks.PageChooserBlock(
+                                        required=False
+                                    ),
+                                ),
+                                (
+                                    "title",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Leave blank to use the page's own title. Add title if using the URL approach",
+                                        required=False,
+                                    ),
+                                ),
+                                (
+                                    "url",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Only use if page does not exist in CMS",
+                                        required=False,
+                                    ),
+                                ),
+                            ]
+                        ),
+                    )
+                ],
+                blank=True,
+                help_text="Main site navigation",
+            ),
         ),
         migrations.AlterField(
-            model_name='navigationsettings',
-            name='secondary_navigation',
-            field=wagtail.core.fields.StreamField([('link', wagtail.core.blocks.StructBlock([('page', wagtail.core.blocks.PageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(help_text="Leave blank to use the page's own title. Add title if using the URL approach", required=False)), ('url', wagtail.core.blocks.CharBlock(help_text='Only use if page does not exist in CMS', required=False))]))], blank=True, help_text='Alternative navigation'),
+            model_name="navigationsettings",
+            name="secondary_navigation",
+            field=wagtail.core.fields.StreamField(
+                [
+                    (
+                        "link",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                (
+                                    "page",
+                                    wagtail.core.blocks.PageChooserBlock(
+                                        required=False
+                                    ),
+                                ),
+                                (
+                                    "title",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Leave blank to use the page's own title. Add title if using the URL approach",
+                                        required=False,
+                                    ),
+                                ),
+                                (
+                                    "url",
+                                    wagtail.core.blocks.CharBlock(
+                                        help_text="Only use if page does not exist in CMS",
+                                        required=False,
+                                    ),
+                                ),
+                            ]
+                        ),
+                    )
+                ],
+                blank=True,
+                help_text="Alternative navigation",
+            ),
         ),
     ]

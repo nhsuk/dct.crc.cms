@@ -5,15 +5,17 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('campaigns', '0017_auto_20211004_1215'),
+        ("campaigns", "0017_auto_20211004_1215"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignpage',
-            name='description',
-            field=wagtail.core.fields.RichTextField(help_text='Introduction section for the campaign page. This is limited to 400 characters to make sure the page loads properly on frontend. Please preview the page before you publish as this depends on length of the below image and may alter the page overall design.', max_length=480),
+            model_name="campaignpage",
+            name="description",
+            field=wagtail.core.fields.RichTextField(
+                help_text="Introduction section for the campaign page. This is limited to 400 characters to make sure the page loads properly on frontend. Please preview the page before you publish as this depends on length of the below image and may alter the page overall design.",
+                max_length=480,
+            ),
         ),
     ]

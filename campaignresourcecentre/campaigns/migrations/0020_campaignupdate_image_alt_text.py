@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('campaigns', '0019_auto_20211105_1244'),
+        ("campaigns", "0019_auto_20211105_1244"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaignupdate',
-            name='image_alt_text',
+            model_name="campaignupdate",
+            name="image_alt_text",
             field=models.TextField(blank=True),
         ),
     ]

@@ -4,29 +4,44 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('paragon_users', '0002_change_permission_names'),
+        ("paragon_users", "0002_change_permission_names"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PasswordResetEmail',
+            name="PasswordResetEmail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_token', models.CharField(max_length=256)),
-                ('email', models.CharField(max_length=256)),
-                ('url', models.CharField(max_length=256)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("user_token", models.CharField(max_length=256)),
+                ("email", models.CharField(max_length=256)),
+                ("url", models.CharField(max_length=256)),
             ],
         ),
         migrations.CreateModel(
-            name='VerificationEmail',
+            name="VerificationEmail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_token', models.CharField(max_length=256)),
-                ('email', models.CharField(max_length=256)),
-                ('url', models.CharField(max_length=256)),
-                ('first_name', models.CharField(max_length=256)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("user_token", models.CharField(max_length=256)),
+                ("email", models.CharField(max_length=256)),
+                ("url", models.CharField(max_length=256)),
+                ("first_name", models.CharField(max_length=256)),
             ],
         ),
     ]

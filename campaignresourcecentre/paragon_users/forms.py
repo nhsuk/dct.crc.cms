@@ -180,8 +180,7 @@ class RegisterForm(forms.Form):
             attrs={
                 "class": "govuk-input govuk-input--width-10",
                 "autocomplete": "current-password",
-                "aria-describedby": "password-error",
-                "aria-required": "true",
+                "aria-describedby": "helper-text password-error",
             }
         ),
         validators=[validate_password_form],

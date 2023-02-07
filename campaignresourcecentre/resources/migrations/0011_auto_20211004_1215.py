@@ -5,20 +5,23 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resources', '0010_resourceitem_image_alt_text'),
+        ("resources", "0010_resourceitem_image_alt_text"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourcepage',
-            name='description',
-            field=wagtail.core.fields.RichTextField(help_text='Introduction section for the campaign page'),
+            model_name="resourcepage",
+            name="description",
+            field=wagtail.core.fields.RichTextField(
+                help_text="Introduction section for the campaign page"
+            ),
         ),
         migrations.AlterField(
-            model_name='resourcepage',
-            name='summary',
-            field=wagtail.core.fields.RichTextField(help_text='A short line of text for display on campaign hub'),
+            model_name="resourcepage",
+            name="summary",
+            field=wagtail.core.fields.RichTextField(
+                help_text="A short line of text for display on campaign hub"
+            ),
         ),
     ]

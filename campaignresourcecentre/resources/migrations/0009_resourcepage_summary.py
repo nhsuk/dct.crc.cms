@@ -5,16 +5,15 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resources', '0008_auto_20210721_1514'),
+        ("resources", "0008_auto_20210721_1514"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='resourcepage',
-            name='summary',
-            field=wagtail.core.fields.RichTextField(default=''),
+            model_name="resourcepage",
+            name="summary",
+            field=wagtail.core.fields.RichTextField(default=""),
             preserve_default=False,
         ),
     ]

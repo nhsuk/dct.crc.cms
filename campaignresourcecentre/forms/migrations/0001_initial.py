@@ -9,7 +9,6 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

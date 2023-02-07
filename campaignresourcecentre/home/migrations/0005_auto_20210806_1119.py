@@ -6,15 +6,27 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('home', '0004_homepage_body'),
+        ("home", "0004_homepage_body"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='homepage',
-            name='body',
-            field=wagtail.core.fields.StreamField([('content_link', wagtail.core.blocks.StructBlock([('text', wagtail.core.blocks.RichTextBlock()), ('button_text', wagtail.core.blocks.CharBlock()), ('button_url', wagtail.core.blocks.URLBlock())]))]),
+            model_name="homepage",
+            name="body",
+            field=wagtail.core.fields.StreamField(
+                [
+                    (
+                        "content_link",
+                        wagtail.core.blocks.StructBlock(
+                            [
+                                ("text", wagtail.core.blocks.RichTextBlock()),
+                                ("button_text", wagtail.core.blocks.CharBlock()),
+                                ("button_url", wagtail.core.blocks.URLBlock()),
+                            ]
+                        ),
+                    )
+                ]
+            ),
         ),
     ]

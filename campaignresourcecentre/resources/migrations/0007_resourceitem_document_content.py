@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resources', '0006_permission_name'),
+        ("resources", "0006_permission_name"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='resourceitem',
-            name='document_content',
-            field=models.CharField(default='', max_length=15),
+            model_name="resourceitem",
+            name="document_content",
+            field=models.CharField(default="", max_length=15),
             preserve_default=False,
         ),
     ]

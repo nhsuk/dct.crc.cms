@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('resources', '0004_document_field_help_text'),
+        ("resources", "0004_document_field_help_text"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='resourceitem',
-            name='can_order',
-            field=models.BooleanField(default=False, help_text='Controls whether physical copies of the resource can be ordered through the site. Only authenticated users can order resources.'),
+            model_name="resourceitem",
+            name="can_order",
+            field=models.BooleanField(
+                default=False,
+                help_text="Controls whether physical copies of the resource can be ordered through the site. Only authenticated users can order resources.",
+            ),
         ),
     ]

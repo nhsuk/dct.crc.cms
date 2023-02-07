@@ -5,15 +5,14 @@ import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('campaigns', '0004_campaignpage_taxonomy_json'),
+        ("campaigns", "0004_campaignpage_taxonomy_json"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaignpage',
-            name='body',
+            model_name="campaignpage",
+            name="body",
             field=wagtail.core.fields.StreamField([], blank=True),
         ),
     ]
