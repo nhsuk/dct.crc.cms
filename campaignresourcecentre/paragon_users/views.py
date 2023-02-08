@@ -244,6 +244,7 @@ def get_role(user_email: str, user_job: str):
         return "standard"
 
 
+@require_http_methods(["POST", "GET"])
 @paragon_user_logged_out
 def login(request):
     if request.method == "GET":
