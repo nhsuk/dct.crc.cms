@@ -172,7 +172,7 @@ class RegisterForm(forms.Form):
             }
         ),
         validators=[EmailValidator],
-        error_messages={"required": "ENTER_EMAIL"},
+        error_messages={"required": ENTER_EMAIL},
     )
 
     password = forms.CharField(
@@ -184,7 +184,7 @@ class RegisterForm(forms.Form):
             }
         ),
         validators=[validate_password_form],
-        error_messages={"required": "ENTER_PASSWORD"},
+        error_messages={"required": ENTER_PASSWORD},
     )
 
     terms = forms.BooleanField(
@@ -283,7 +283,7 @@ class LoginForm(forms.Form):
             }
         ),
         validators=[EmailValidator],
-        error_messages={"required": "ENTER_EMAIL"},
+        error_messages={"required": ENTER_EMAIL},
     )
 
     password = forms.CharField(
@@ -293,7 +293,7 @@ class LoginForm(forms.Form):
                 "autocomplete": "current-password",
             }
         ),
-        error_messages={"required": "ENTER_PASSWORD"},
+        error_messages={"required": ENTER_PASSWORD},
     )
     previous_page = forms.CharField(required=False)
 
@@ -308,7 +308,7 @@ class PasswordResetForm(forms.Form):
             }
         ),
         validators=[EmailValidator],
-        error_messages={"required": "ENTER_EMAIL"},
+        error_messages={"required": ENTER_EMAIL},
     )
 
 
@@ -320,7 +320,7 @@ class PasswordSetForm(forms.Form):
                 "autocomplete": "new-password",
             }
         ),
-        error_messages={"required": "ENTER_PASSWORD"},
+        error_messages={"required": ENTER_PASSWORD},
         validators=[validate_password_form],
         help_text="Password must contain at least one number, at least one capital letter and at least one symbol and must be more than 8 characters long.",  # noqa
     )
@@ -331,7 +331,7 @@ class PasswordSetForm(forms.Form):
                 "autocomplete": "new-password",
             }
         ),
-        error_messages={"required": "ENTER_PASSWORD"},
+        error_messages={"required": ENTER_PASSWORD},
     )
 
 
