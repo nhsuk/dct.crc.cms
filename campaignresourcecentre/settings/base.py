@@ -338,12 +338,13 @@ else:
 
 # File upload settings
 # https://docs.djangoproject.com/en/dev/ref/settings/#std-setting-FILE_UPLOAD_HANDLERS
+# We use a custom uploader that streams directly to an Azure blob
 FILE_UPLOAD_HANDLERS = [
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
-    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+    "campaignresourcecentre.custom_storages.custom_azure.AzureBlobUploadHandler",
 ]
 # max file size in bytes for memory upload
-FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 16  # Max memory size
 # directory to store files large than FILE_UPLOAD_MAX_MEMORY_SIZE if None => defaults to \tmp
 FILE_UPLOAD_TEMP_DIR = None
 
