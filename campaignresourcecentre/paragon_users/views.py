@@ -20,6 +20,7 @@ from campaignresourcecentre.paragon.exceptions import (
     ParagonClientTimeout,
 )
 from campaignresourcecentre.paragon_users.decorators import (
+    paragon_user_logged_in_unverified,
     paragon_user_logged_in,
     paragon_user_logged_out,
     paragon_user_registering,
@@ -174,7 +175,7 @@ class EmailUpdatesView(FormView):
         return context
 
 
-@paragon_user_logged_in
+@paragon_user_logged_in_unverified
 def resend_verification(request):
     try:
         client = Client()

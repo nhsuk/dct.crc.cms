@@ -73,6 +73,12 @@ def paragon_user_logged_out(view_func=None, url=None):
     return verified_user(view_func, url=url, require_logged_in=False)
 
 
+def paragon_user_logged_in_unverified(view_func=None, url=None):
+    return verified_user(
+        view_func, url=url, require_logged_in=True, require_logged_in_and_verified=False
+    )
+
+
 def paragon_user_registering(view_func, url="/"):
     def _wrapped_view_func(request, *args, **kwargs):
         if "registration" in request.session:
