@@ -50,7 +50,6 @@ class AzureMediaStorage(AzureStorage):
         )
         cleaned_name = clean_name(name)
         name = self._get_valid_path(name)
-        params = self._get_content_settings_parameters(name, content)
 
         # Unwrap django file (wrapped by parent's save call)
         if isinstance(content, File):
@@ -198,7 +197,7 @@ class AzureBlobFile(IOBase):
             try:
                 self.blob_client.delete_blob()
                 self.deleted = True
-            except ResourceNotFoundError as e:
+            except ResourceNotFoundError:
                 logger.error(
                     "Failed to delete blob %s (does not exist)", self.blob_name
                 )
