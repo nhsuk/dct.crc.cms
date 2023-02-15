@@ -7,7 +7,7 @@ from urllib.parse import urlparse, urlunparse
 from uuid import uuid4
 
 from azure.core.exceptions import ResourceNotFoundError
-from azure.storage.blob import BlobBlock
+from azure.storage.blob import BlobBlock, ContentSettings
 from django.conf import settings
 from django.core.files import File
 from django.core.files.storage import get_storage_class, default_storage
@@ -50,12 +50,13 @@ class AzureMediaStorage(AzureStorage):
         )
         cleaned_name = clean_name(name)
         name = self._get_valid_path(name)
+        params = self._get_content_settings_parameters(name, content)
 
         # Unwrap django file (wrapped by parent's save call)
         if isinstance(content, File):
             content = content.file
 
-        saved_file = AzureBlobFile(self.client, cleaned_name, mode="wb")
+        saved_file = AzureBlobFile(self.client, cleaned_name, mode="wb", headers=params)
         copyfileobj(content, saved_file, DEFAULT_BLOB_BLOCK_SIZE)
         saved_file.close()
         logger.info("File %s saved as %s", name, cleaned_name)
@@ -89,6 +90,7 @@ class AzureBlobFile(IOBase):
         mode="rb",
         block_size=DEFAULT_BLOB_BLOCK_SIZE,
         destroy_on_close=False,
+        headers=None,
     ):
         super().__init__()
         if mode not in ("rb", "wb"):
@@ -98,6 +100,8 @@ class AzureBlobFile(IOBase):
         self.block_size = block_size
         self.container_client = container_client
         self.blob_client = container_client.get_blob_client(blob_name)
+        if headers:
+            blob_client.set_http_headers(ContentSettings(headers))
         self.position = 0
         self.destroy_on_close = destroy_on_close
         self.deleted = False
@@ -269,6 +273,7 @@ class AzureBlobUploadHandler(FileUploadHandler):
         # but not yet saved as a document, so the temporary blob cannot yet be deleted.
         # Hence we need a 'burn this after reading' mode for the temporary blob, akin
         # to the Python temporary file that is used for file-based uploads.
+        # This is implemented by the destroy_on_close property in AzureBlobFile
 
         # Worse still, if there are several upload handlers, this method gets called
         # even if new_file was not, so it may not even have the information it needs.
