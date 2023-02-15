@@ -204,6 +204,7 @@ class AzureBlobFile(IOBase):
                 )
 
 
+# As per https://docs.djangoproject.com/en/4.1/ref/files/uploads/
 class AzureBlobUploadHandler(FileUploadHandler):
     chunk_size = int(
         settings.FILE_UPLOAD_MAX_MEMORY_SIZE / 2
@@ -250,6 +251,10 @@ class AzureBlobUploadHandler(FileUploadHandler):
         file = AzureBlobFile(
             default_storage.client, self.blob_name, "rb", destroy_on_close=True
         )
+        # Handler must return a file object. However if this is a local system file
+        # whether temporary or otherwise, in a K8S context it will be in memory
+        # Therefore we have to return a file object that will read directly
+        # from Azure storage
         return AzureUploadedFile(
             file,
             self.file_name,
