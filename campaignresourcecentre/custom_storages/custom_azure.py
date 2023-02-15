@@ -101,7 +101,7 @@ class AzureBlobFile(IOBase):
         self.container_client = container_client
         self.blob_client = container_client.get_blob_client(blob_name)
         if headers:
-            blob_client.set_http_headers(ContentSettings(headers))
+            self.blob_client.set_http_headers(ContentSettings(headers))
         self.position = 0
         self.destroy_on_close = destroy_on_close
         self.deleted = False
