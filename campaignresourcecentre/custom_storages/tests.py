@@ -1,7 +1,4 @@
-import datetime
 import io
-import json
-import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -10,7 +7,6 @@ from azure.storage.blob import BlobProperties
 
 from django.conf import settings
 from django.core.files.storage import default_storage
-from django.core.files.uploadedfile import UploadedFile
 
 
 from campaignresourcecentre.custom_storages.custom_azure import (
@@ -18,15 +14,6 @@ from campaignresourcecentre.custom_storages.custom_azure import (
     AzureBlobUploadHandler,
     AzureUploadedFile,
 )
-
-
-class AttributeDict(dict):
-    def __getattr__(self, name):
-        return (
-            self[name]
-            if not isinstance(self[name], dict)
-            else AttributeDict(self[name])
-        )
 
 
 TEST_CONTENT = b"test_content"
@@ -119,9 +106,23 @@ class TestAzureBlobFile(unittest.TestCase):
         assert self.blob_output_file.blob_client.delete_blob.call_count == 1
 
 
+class MockStorage:
+    def __init__(self):
+        self.client = None
+
+    def get_blob_client(self, _):
+        return MockBlobClient()
+
+
+class MockBlobClient:
+    def get_blob_properties(self):
+        return BlobProperties()
+
+
 class AzureBlobUploadHandlerTestCase(unittest.TestCase):
     def setUp(self):
         self.handler = AzureBlobUploadHandler()
+        self.handler.storage = MockStorage()
         self.field_name = "file"
         self.file_name = "test.txt"
         self.content_type = "text/plain"
@@ -161,7 +162,7 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
 
         result = self.handler.file_complete(len(TEST_CONTENT))
 
-        self.assertIsInstance(result, UploadedFile)
+        self.assertIsInstance(result, AzureUploadedFile)
         self.assertEqual(result.content_type, self.content_type)
         self.assertEqual(result.size, len(TEST_CONTENT))
         self.assertEqual(result.charset, self.charset)
