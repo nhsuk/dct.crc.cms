@@ -33,7 +33,7 @@ parameters:
 - name: gunicornArgs
   displayName: Gunicorn commands
   type: string
-  default: -c gunicorn-conf.py --worker-class 'gthread' --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 1 
+  default: -c gunicorn-conf.py --worker-class 'gthread' --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 5 
 - name: azureSearchUpdate
   displayName: Update Azure search (forced true in staging and production)
   type: boolean
