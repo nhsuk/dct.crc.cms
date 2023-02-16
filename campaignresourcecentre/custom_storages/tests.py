@@ -118,7 +118,16 @@ class MockBlobClient:
     def get_blob_properties(self):
         return BlobProperties()
 
-    def stage_block(self):
+    def stage_block(self, block_id, data):
+        pass
+
+    def set_http_headers(self, headers):
+        pass
+
+    def delete(self):
+        pass
+
+    def commit_block_list(self, block_list):
         pass
 
 
