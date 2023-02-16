@@ -10,7 +10,7 @@ from azure.storage.blob import BlobProperties
 
 from django.conf import settings
 from django.core.files.storage import default_storage
-from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
+from django.core.files.uploadedfile import UploadedFile
 
 
 from campaignresourcecentre.custom_storages.custom_azure import (
@@ -155,16 +155,13 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
 
         self.handler.blob_file.write.assert_called_with(TEST_CONTENT[5:])
 
-    @patch.object(default_storage.client, "get_blob_client")
-    def test_file_complete(self, mock_get_blob_client):
-        mock_blob_client = MagicMock()
-
+    def test_file_complete(self):
         for chunk in self.chunks:
             self.handler.receive_data_chunk(chunk, 0)
 
         result = self.handler.file_complete(len(TEST_CONTENT))
 
-        self.assertIsInstance(result, AzureUploadedFile)
+        self.assertIsInstance(result, UploadedFile)
         self.assertEqual(result.content_type, self.content_type)
         self.assertEqual(result.size, len(TEST_CONTENT))
         self.assertEqual(result.charset, self.charset)
