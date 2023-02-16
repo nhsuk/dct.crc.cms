@@ -1,7 +1,23 @@
 import datetime
+import io
 import json
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
+
+from azure.core.exceptions import ResourceNotFoundError
+from azure.storage.blob import BlobProperties
+
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
+
+
+from campaignresourcecentre.custom_storages.custom_azure import (
+    AzureBlobFile,
+    AzureBlobUploadHandler,
+    AzureUploadedFile,
+)
 
 
 class AttributeDict(dict):
@@ -12,10 +28,6 @@ class AttributeDict(dict):
             else AttributeDict(self[name])
         )
 
-
-from azure.core.exceptions import ResourceNotFoundError
-
-from campaignresourcecentre.custom_storages.custom_azure import AzureBlobFile
 
 TEST_CONTENT = b"test_content"
 
@@ -105,3 +117,55 @@ class TestAzureBlobFile(unittest.TestCase):
         self.blob_output_file.delete()
         assert self.blob_output_file.deleted == True
         assert self.blob_output_file.blob_client.delete_blob.call_count == 1
+
+
+class AzureBlobUploadHandlerTestCase(unittest.TestCase):
+    def setUp(self):
+        self.handler = AzureBlobUploadHandler()
+        self.field_name = "file"
+        self.file_name = "test.txt"
+        self.content_type = "text/plain"
+        self.content_length = 12
+        self.charset = "utf-8"
+        self.content_type_extra = None
+        self.chunks = [
+            TEST_CONTENT[:5],
+            TEST_CONTENT[5:],
+        ]
+        self.handler.new_file(
+            self.field_name,
+            self.file_name,
+            self.content_type,
+            self.content_length,
+            self.charset,
+            self.content_type_extra,
+        )
+
+    def test_new_file(self):
+        self.assertIsInstance(self.handler.blob_name, str)
+        self.assertEqual(self.handler.file_name, self.file_name)
+        self.assertIsInstance(self.handler.blob_file, AzureBlobFile)
+        self.assertEqual(self.handler.chunks, 0)
+
+    def test_receive_data_chunk(self):
+        self.handler.blob_file = MagicMock()
+
+        for chunk in self.chunks:
+            self.handler.receive_data_chunk(chunk, 0)
+
+        self.handler.blob_file.write.assert_called_with(TEST_CONTENT[5:])
+
+    @patch.object(default_storage.client, "get_blob_client")
+    def test_file_complete(self, mock_get_blob_client):
+        mock_blob_client = MagicMock()
+
+        for chunk in self.chunks:
+            self.handler.receive_data_chunk(chunk, 0)
+
+        result = self.handler.file_complete(len(TEST_CONTENT))
+
+        self.assertIsInstance(result, AzureUploadedFile)
+        self.assertEqual(result.content_type, self.content_type)
+        self.assertEqual(result.size, len(TEST_CONTENT))
+        self.assertEqual(result.charset, self.charset)
+        self.assertEqual(result.content_type_extra, self.content_type_extra)

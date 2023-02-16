@@ -232,8 +232,8 @@ class AzureBlobUploadHandler(FileUploadHandler):
             file_name,
             content_type,
             content_length,
-            charset=None,
-            content_type_extra=None,
+            charset=charset,
+            content_type_extra=content_type_extra,
         )
         self.blob_name = str(uuid4())
         logger.info(
