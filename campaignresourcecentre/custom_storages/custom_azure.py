@@ -246,7 +246,7 @@ class AzureBlobUploadHandler(FileUploadHandler):
             self.blob_name,
         )
         self.chunks = 0
-        self.blob_file = AzureBlobFile(default_storage.client, self.blob_name, "wb")
+        self.blob_file = AzureBlobFile(self.storage, self.blob_name, "wb")
 
     def receive_data_chunk(self, raw_data, start):
         self.blob_file.write(raw_data)
