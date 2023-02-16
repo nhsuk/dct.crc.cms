@@ -157,6 +157,7 @@ class AzureBlobFile(IOBase):
         while data_used < len(data):
             if self.block_offset >= self.block_size:
                 self._write_block()
+                data_used += self.block_size
             block_remaining = self.block_size - self.block_offset
             block_to_use = min(block_remaining, len(data) - data_used)
             self.block_buffer[
@@ -171,7 +172,7 @@ class AzureBlobFile(IOBase):
         if whence == 0:
             new_position = offset
         elif whence == 1:
-            new_position += offset
+            new_position = self.position + offset
         elif whence == 2:
             blob_properties = self.blob_client.get_blob_properties()
             new_position = blob_properties.size + offset
