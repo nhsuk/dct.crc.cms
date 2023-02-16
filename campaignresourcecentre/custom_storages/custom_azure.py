@@ -29,7 +29,7 @@ DEFAULT_BLOB_BLOCK_SIZE = 1024 * 1024 * 4
 
 class AzureMediaStorageFile(AzureStorageFile):
     def _get_file(self):
-        logger.info("get AzureMediaStorageFile for %s", self._blob)
+        logger.info("get AzureMediaStorageFile from %s", self._blob)
         return super._get_file(self)
 
 
@@ -74,7 +74,7 @@ class AzureMediaStorage(AzureStorage):
         return new_url
 
     def _open(self, name, mode="rb"):
-        logger.log("Opening media storage: %s %s", self.name, self.mode)
+        logger.log("Opening media storage: %s %s", name, mode)
         return AzureMediaStorageFile(name, mode, self)
 
 
