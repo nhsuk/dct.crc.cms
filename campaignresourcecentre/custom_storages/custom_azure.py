@@ -74,7 +74,7 @@ class AzureMediaStorage(AzureStorage):
         return new_url
 
     def _open(self, name, mode="rb"):
-        logger.log("Opening media storage: %s %s", name, mode)
+        logger.info("Opening media storage: %s %s", name, mode)
         return AzureMediaStorageFile(name, mode, self)
 
 
