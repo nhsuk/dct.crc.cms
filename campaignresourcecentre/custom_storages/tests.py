@@ -118,6 +118,9 @@ class MockBlobClient:
     def get_blob_properties(self):
         return BlobProperties()
 
+    def stage_block(self):
+        pass
+
 
 class AzureBlobUploadHandlerTestCase(unittest.TestCase):
     def setUp(self):
