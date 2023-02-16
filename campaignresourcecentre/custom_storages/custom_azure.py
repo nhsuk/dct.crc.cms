@@ -100,12 +100,13 @@ class AzureBlobFile(IOBase):
         self.block_size = block_size
         self.container_client = container_client
         self.blob_client = container_client.get_blob_client(blob_name)
-        if headers:
-            self.blob_client.set_http_headers(ContentSettings(headers))
         self.position = 0
         self.destroy_on_close = destroy_on_close
         self.deleted = False
         self.reported_closed = False
+        self.headers = {}
+        if headers:
+            self.headers.update(headers)
 
         # Used for writing. We need to write blocks one-by-one. Each block gets an id
         # that we remember in a list
@@ -186,6 +187,9 @@ class AzureBlobFile(IOBase):
             if self.mode == "wb":
                 self._write_block()
                 self.blob_client.commit_block_list(self.block_list)
+                # Rather curiously, write blob headers after the blob itself
+                if self.headers:
+                    self.blob_client.set_http_headers(ContentSettings(self.headers))
                 logger.info(
                     "Blob %s written as %d block(s)",
                     self.blob_name,
