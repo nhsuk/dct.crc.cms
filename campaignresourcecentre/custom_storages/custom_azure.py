@@ -226,7 +226,6 @@ class AzureBlobUploadHandler(FileUploadHandler):
         charset=None,
         content_type_extra=None,
     ):
-        logger.info("new_file")
         super().new_file(
             field_name,
             file_name,
