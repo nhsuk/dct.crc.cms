@@ -117,15 +117,19 @@ class MockBlobClient:
         return BlobProperties()
 
     def stage_block(self, block_id, data):
+        # Omitted for mocking
         pass
 
     def set_http_headers(self, headers):
+        # Omitted for mocking
         pass
 
     def delete(self):
+        # Omitted for mocking
         pass
 
     def commit_block_list(self, block_list):
+        # Omitted for mocking
         pass
 
 
