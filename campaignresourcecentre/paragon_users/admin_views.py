@@ -238,7 +238,7 @@ def edit(request, user_token):
     "paragon_users.manage_paragon_users",
     "paragon_users.manage_paragon_users_all_fields",
 )
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 def set_password(request, user_token):
     paragon_error = False
     form = None
