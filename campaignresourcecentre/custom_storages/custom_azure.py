@@ -246,7 +246,7 @@ class AzureBlobUploadHandler(FileUploadHandler):
             self.blob_name,
         )
         self.chunks = 0
-        self.blob_file = AzureBlobFile(self.storage, self.blob_name, "wb")
+        self.blob_file = AzureBlobFile(self.storage.client, self.blob_name, "wb")
 
     def receive_data_chunk(self, raw_data, start):
         self.blob_file.write(raw_data)
@@ -259,7 +259,9 @@ class AzureBlobUploadHandler(FileUploadHandler):
             "All %d chunk(s) received, total %d byte(s)", self.chunks, file_size
         )
         self.size = file_size
-        file = AzureBlobFile(self.storage, self.blob_name, "rb", destroy_on_close=True)
+        file = AzureBlobFile(
+            self.storage.client, self.blob_name, "rb", destroy_on_close=True
+        )
         # Handler must return a file object. However if this is a local system file
         # whether temporary or otherwise, in a K8S context it will be in memory
         # Therefore we have to return a file object that will read directly

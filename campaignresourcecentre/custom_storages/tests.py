@@ -107,9 +107,12 @@ class TestAzureBlobFile(unittest.TestCase):
 
 
 class MockStorage:
-    def __init__(self):
-        self.client = None
+    @property
+    def client(self):
+        return MockClient()
 
+
+class MockClient:
     def get_blob_client(self, _):
         return MockBlobClient()
 
