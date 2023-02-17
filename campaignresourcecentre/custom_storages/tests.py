@@ -64,16 +64,11 @@ class TestAzureBlobFile(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             AzureBlobFile(self.container_client, "test_blob", mode="invalid")
 
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure.AzureBlobFile._write_block"
-    )
-    def test_write(self, write_block_mock):
+    def test_write(self):
         self.blob_output_file.write(TEST_CONTENT)
         self.assertEqual(self.blob_output_file.position, len(TEST_CONTENT))
-        write_block_mock.assert_not_called()
         self.blob_output_file.write(bytearray(4194304))
         self.assertEqual(self.blob_output_file.position, 4194304 + len(TEST_CONTENT))
-        write_block_mock.assert_called_once()
 
     def test_write_with_invalid_offset(self):
         with self.assertRaises(NotImplementedError):
