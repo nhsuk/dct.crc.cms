@@ -25,6 +25,7 @@ from wagtail.search import index
 from wagtailreacttaxonomy.edit_handlers import TaxonomyPanel
 from wagtailreacttaxonomy.models import TaxonomyMixin
 
+import campaignresourcecentre
 from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 from campaignresourcecentre.utils.models import BasePage
@@ -280,8 +281,20 @@ class ResourceItem(Orderable):
         errors = defaultdict(list)
         if self.can_download and not self.document:
             errors["document"].append("Please choose a document to download")
-        if self.can_order and not self.sku:
-            errors["sku"].append("Please enter a SKU")
+        if self.can_order:
+            this_campaign = self.resource_page.get_parent()
+            if self.sku:
+                others_with_this_sku = (
+                    campaignresourcecentre.resources.models.ResourceItem.objects.filter(
+                        sku=self.sku,
+                    )
+                )
+                for other_item in others_with_this_sku:
+                    if other_item.resource_page.get_parent() == this_campaign:
+                        errors["sku"].append("This SKU is already in use")
+                        break
+            else:
+                errors["sku"].append("Please enter a SKU")
         if self.can_order and not self.maximum_order_quantity:
             errors["maximum_order_quantity"].append(
                 "Please enter a maximum order quantity"
