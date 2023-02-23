@@ -9,8 +9,6 @@
 # dj preparetestdata
 # djrun
 
-from datetime import datetime
-
 from django.core.management.base import BaseCommand
 
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
