@@ -290,7 +290,7 @@ class ResourceItem(Orderable):
                     )
                 )
                 for other_item in others_with_this_sku:
-                    if other_item.resource_page.get_parent() == this_campaign:
+                    if other_item.resource_page.get_parent().pk == this_campaign.pk:
                         errors["sku"].append("This SKU is already in use")
                         break
             else:
