@@ -11,20 +11,19 @@ class Command(BaseCommand):
         if wagtail_user:
             wagtail_password = environ.get("WAGTAIL_PASSWORD")
             if wagtail_password:
-                UserModel = get_user_model()
+                userModel = get_user_model()
                 try:
-                    superuser = UserModel.objects.get(username=wagtail_user)
+                    superuser = userModel.objects.get(username=wagtail_user)
                     superuser.set_password(wagtail_password)
                     self.stdout.write("Superuser '%s' updated" % wagtail_user)
-                except UserModel.DoesNotExist:
-                    superuser = UserModel.objects.create_superuser(
+                except userModel.DoesNotExist:
+                    superuser = userModel.objects.create_superuser(
                         username=wagtail_user,
                         email="noone@example.com",
                         password=wagtail_password,
                     )
                     self.stdout.write("Superuser '%s' created" % wagtail_user)
                 superuser.save()
-
             else:
                 self.stdout.write(
                     "No WAGTAIL_PASSWORD symbol in environment - no superuser created"

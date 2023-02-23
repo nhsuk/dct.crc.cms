@@ -276,11 +276,7 @@ class ResourceItem(Orderable):
         "through the site. Required if 'Can Order' is checked.",
     )
 
-    def clean(self):
-        super().clean()
-        errors = defaultdict(list)
-        if self.can_download and not self.document:
-            errors["document"].append("Please choose a document to download")
+    def _check_for_dup_skus(self, errors):
         if self.can_order:
             this_campaign = self.resource_page.get_parent()
             if self.sku:
@@ -295,6 +291,13 @@ class ResourceItem(Orderable):
                         break
             else:
                 errors["sku"].append("Please enter a SKU")
+
+    def clean(self):
+        super().clean()
+        errors = defaultdict(list)
+        if self.can_download and not self.document:
+            errors["document"].append("Please choose a document to download")
+        self._check_for_dup_skus(errors)
         if self.can_order and not self.maximum_order_quantity:
             errors["maximum_order_quantity"].append(
                 "Please enter a maximum order quantity"
