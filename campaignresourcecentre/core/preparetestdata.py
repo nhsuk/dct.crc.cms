@@ -65,10 +65,10 @@ class PrepareTestData:
         except Page.DoesNotExist:
             self._home = Page.objects.get(title="Home")  # Should exist
             self._home.title = "Campaign Resource Centre"
-        self._ensureSuperuser("wagtail", "wagtail")
-        self._ensureTaxonomy(TAXONOMY_TERMS_ID, TAXONOMY_TERMS_JSON)
-        self._ensureCampaignHubPage()
-        self._ensureCampaignPage(
+        self._ensure_superuser("wagtail", "wagtail")
+        self._ensure_taxonomy(TAXONOMY_TERMS_ID, TAXONOMY_TERMS_JSON)
+        self._ensure_campaign_hub_page()
+        self._ensure_campaign_page(
             "Change4Life",
             """
 Change4Life aims to help families with children aged 5 to 11 to lead healthier lives by eating well and moving more.
@@ -79,14 +79,14 @@ Change4Life aims to help families lead healthier lives by eating well and moving
             """,
             make_wagtail_image(CAMPAIGN_IMAGE, "Change4Life logo", "c4llogo"),
         )
-        self._ensureResourcePage(
+        self._ensure_resource_page(
             "Top tips to keep your family happy and healthy leaflet",
             """Flyer for local authorities to send out with National Child Measurement Programme (NCMP) result letters to parents""",
             """This Change4Life top tips flyer (National Child Measurement Programme (NCMP) post-measurement information for parents) is for local authorities to send with the NCMP result letters to parents. The flyer provides simple tips to help families eat well and move more and highlights the additional ideas available on the Change4Life website.
 For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partnerships@phe.gov.uk for information on ordering.""",
             "all",
         )
-        self._ensureResourceItem(
+        self._ensure_resource_item(
             title="Healthy families top tips leaflet",
             image=make_wagtail_image(
                 RESOURCE_ITEM_IMAGE,
@@ -100,7 +100,7 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
             maximum_order_quantity=1000,
         )
 
-    def _ensureSuperuser(self, username, password):
+    def _ensure_superuser(self, username, password):
         try:
             user_model = get_user_model()
             self.superuser = user_model.objects.create_superuser(
@@ -110,14 +110,14 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
         except IntegrityError:
             self.superuser = user_model.objects.get(username=username)
 
-    def _ensureTaxonomy(self, terms_id, terms_json):
+    def _ensure_taxonomy(self, terms_id, terms_json):
         try:
             tt = TaxonomyTerms.objects.get(taxonomy_id=terms_id)
         except ObjectDoesNotExist:
             tt = TaxonomyTerms(taxonomy_id=terms_id, terms_json=terms_json)
             tt.save()
 
-    def _ensureCampaignHubPage(self):
+    def _ensure_campaign_hub_page(self):
         # Does the campaign hub page exist?
         try:
             self._chp = CampaignHubPage.objects.get()
@@ -144,7 +144,7 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
             self._chp.save_revision().publish()
             self._chp.save()
 
-    def _ensureCampaignPage(self, title, summary, description, img):
+    def _ensure_campaign_page(self, title, summary, description, img):
         try:
             self._cp = CampaignPage.objects.get(title=title)
         except CampaignPage.DoesNotExist:
@@ -160,7 +160,7 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
             self._cp.save_revision().publish()
             self._cp.save()
 
-    def _ensureResourcePage(self, title, summary, description, permission_role="all"):
+    def _ensure_resource_page(self, title, summary, description, permission_role="all"):
         try:
             self._rp = ResourcePage.objects.get(title=title)
         except ResourcePage.DoesNotExist:
@@ -175,7 +175,7 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
             self._rp.save_revision().publish()
             self._rp.save()
 
-    def _ensureResourceItem(
+    def _ensure_resource_item(
         self,
         title,
         image,
