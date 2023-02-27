@@ -306,6 +306,17 @@ MEDIA_ROOT = env.get("MEDIA_DIR", os.path.join(BASE_DIR, "media"))
 # https://docs.djangoproject.com/en/stable/ref/settings/#media-url
 MEDIA_URL = env.get("MEDIA_URL", "/media/")
 
+# File upload settings
+# https://docs.djangoproject.com/en/dev/ref/settings/#std-setting-FILE_UPLOAD_HANDLERS
+
+FILE_UPLOAD_HANDLERS = [
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+]
+# max file size in bytes for memory upload
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 16  # Max memory size
+# directory to store files large than FILE_UPLOAD_MAX_MEMORY_SIZE if None => defaults to \tmp
+FILE_UPLOAD_TEMP_DIR = None
+
 # Azure storage configuration
 # https://docs.djangoproject.com/en/stable/ref/settings/#default-file-storage
 AZURE_CONTAINER = env.get("AZURE_CONTAINER", "")
@@ -331,21 +342,17 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     AZURE_BLOB_MAX_MEMORY_SIZE = 2 * 1024 * 1024
     # 60 seconds timeout for Azure connection
     AZURE_CONNECTION_TIMEOUT_SECS = 60
+    # When using Azure storage, we use a custom uploader that streams directly to an Azure blob
+    FILE_UPLOAD_HANDLERS.append(
+        "campaignresourcecentre.custom_storages.custom_azure.AzureBlobUploadHandler"
+    )
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
     AZURE_SEARCH_UPDATE = False
-
-# File upload settings
-# https://docs.djangoproject.com/en/dev/ref/settings/#std-setting-FILE_UPLOAD_HANDLERS
-FILE_UPLOAD_HANDLERS = [
-    "django.core.files.uploadhandler.MemoryFileUploadHandler",
-    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
-]
-# max file size in bytes for memory upload
-FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5MB
-# directory to store files large than FILE_UPLOAD_MAX_MEMORY_SIZE if None => defaults to \tmp
-FILE_UPLOAD_TEMP_DIR = None
+    FILE_UPLOAD_HANDLERS.append(
+        "django.core.files.uploadhandler.TemporaryFileUploadHandler"
+    )
 
 
 # Logging
