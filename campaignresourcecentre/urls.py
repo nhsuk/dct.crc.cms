@@ -32,6 +32,7 @@ from campaignresourcecentre.baskets import views as basket_views
 from campaignresourcecentre.orders import views as orders_views
 from campaignresourcecentre.resources import views as resource_views
 from campaignresourcecentre.campaigns import views as campaign_views
+from campaignresourcecentre.scheduled_tasks.views import publish_pages
 from campaignresourcecentre.standardpages.views import (
     contact_us,
     thank_you,
@@ -42,6 +43,7 @@ from campaignresourcecentre.standardpages.views import (
     cookie_declaration,
     update_index,
 )
+
 
 from logging import getLogger
 
@@ -54,6 +56,7 @@ private_urlpatterns = [
     path("crc-admin/clear_cache/", clear_cache, name="clear_cache"),
     path("crc-admin/update_index/", update_index, name="update_index"),
     path("crc-admin/", include(wagtailadmin_urls)),
+    path("crc-admin/pub", publish_pages, name="publish_pages"),
     path("crc-documents/", include(wagtaildocs_urls)),
     path("verification/", verification, name="verification"),
     path("signup/", signup, name="signup"),
