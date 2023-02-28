@@ -761,3 +761,7 @@ if WAGTAIL_2FA_REQUIRED:
     MIDDLEWARE.append("wagtail_2fa.middleware.VerifyUserMiddleware")
 else:
     MIDDLEWARE.append("wagtail_2fa.middleware.VerifyUserPermissionsMiddleware")
+
+
+# wagtail schedule pub pages token
+PUBTOKEN = env.get("PUBTOKEN")

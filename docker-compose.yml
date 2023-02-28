@@ -59,6 +59,7 @@ services:
       TWO_FA: ${TWO_FA}
       WAGTAIL_USER: ${WAGTAIL_USER}
       WAGTAIL_PASSWORD: ${WAGTAIL_PASSWORD}
+      PUBTOKEN: ${PUBTOKEN}
     command: tail -f /dev/null # do nothing forever - exec commands elsewhere
     ports:
       - 8000:8000 # runserver

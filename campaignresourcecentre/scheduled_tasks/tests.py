@@ -1,16 +1,28 @@
-from django.test import TestCase, modify_settings
+from django.test import TestCase, override_settings
+import logging
 
 
-@modify_settings(MIDDLEWARE="correct")
+logger = logging.getLogger(__name__)
+
+
 class ScheduledTasksTestCase(TestCase):
     def test_publish_pages_no_pubtoken(self):
-        response = self.client.get("/publish_pages/")
-        self.assertEqual(response.status_code, 401)
+        auth_headers = {}
+        response = self.client.get("/crc-admin/pub", **auth_headers)
+        self.assertEqual(response.status_code, 403)
 
-    def test_publish_pages_no_pubtoken(self):
-        response = self.client.get("/publish_pages/", {"pubToken": "wrong"})
-        self.assertEqual(response.status_code, 401)
+    @override_settings(PUBTOKEN="correct")
+    def test_publish_pages_wrong_pubtoken(self):
+        auth_headers = {
+            "HTTP_AUTHORIZATION": "Bearer incorrect",
+        }
+        response = self.client.get("/crc-admin/pub", **auth_headers)
+        self.assertEqual(response.status_code, 403)
 
-    def test_publish_pages_no_pubtoken(self):
-        response = self.client.get("/publish_pages/", {"pubToken": "correct"})
+    @override_settings(PUBTOKEN="correct")
+    def test_publish_pages_correct_pubtoken(self):
+        auth_headers = {
+            "HTTP_AUTHORIZATION": "Bearer correct",
+        }
+        response = self.client.get("/crc-admin/pub", **auth_headers)
         self.assertEqual(response.status_code, 202)
