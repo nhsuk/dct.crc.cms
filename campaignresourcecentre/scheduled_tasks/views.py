@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 def publish_pages(request):
     """Publish pages that are scheduled to be published"""
 
-    pubToken = getattr(settings, "PUBTOKEN", None)
+    pubtoken = getattr(settings, "PUBTOKEN", None)
     try:
-        if request.headers.get("Authorization", "") == "Bearer " + pubToken:
+        if request.headers.get("Authorization", "") == "Bearer " + pubtoken:
             future_pages = len(Page.objects.filter(go_live_at__gt=timezone.now()))
             if future_pages > 0:
                 logger.info("publishing" + future_pages + "scheduled pages")
@@ -25,7 +25,7 @@ def publish_pages(request):
             else:
                 logger.info("No scehduled pages")
             return HttpResponse("ok", status=202)
-    except TypeError as e:
+    except TypeError:
         logger.warning("PUBTOKEN not set")
         raise PermissionDenied
     # return 401 django error page

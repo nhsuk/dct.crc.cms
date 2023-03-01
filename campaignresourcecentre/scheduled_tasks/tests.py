@@ -6,9 +6,12 @@ logger = logging.getLogger(__name__)
 
 
 class ScheduledTasksTestCase(TestCase):
+
+    url = "/crc-admin/pub"
+
     def test_publish_pages_no_pubtoken(self):
         auth_headers = {}
-        response = self.client.get("/crc-admin/pub", **auth_headers)
+        response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 403)
 
     @override_settings(PUBTOKEN="correct")
@@ -16,7 +19,7 @@ class ScheduledTasksTestCase(TestCase):
         auth_headers = {
             "HTTP_AUTHORIZATION": "Bearer incorrect",
         }
-        response = self.client.get("/crc-admin/pub", **auth_headers)
+        response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 403)
 
     @override_settings(PUBTOKEN="correct")
@@ -24,5 +27,5 @@ class ScheduledTasksTestCase(TestCase):
         auth_headers = {
             "HTTP_AUTHORIZATION": "Bearer correct",
         }
-        response = self.client.get("/crc-admin/pub", **auth_headers)
+        response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 202)
