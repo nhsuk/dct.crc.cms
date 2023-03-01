@@ -51,6 +51,7 @@ services:
       PHE_PARTNERSHIPS_EMAIL: ${PHE_PARTNERSHIPS_EMAIL}
       REPORTING_ENDPOINT: ${REPORTING_ENDPOINT}
       REPORTING_ENABLED: ${REPORTING_ENABLED}
+      PUBTOKEN: correct
     command: bash -c "./docker/coverage.sh"
     ports:
       - 8000:8000 # runserver
