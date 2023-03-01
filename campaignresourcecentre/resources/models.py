@@ -1,10 +1,11 @@
 from datetime import datetime
 from collections import defaultdict
 import json
-from django.core.exceptions import ValidationError
-from django.db import models
+from logging import getLogger
 from urllib.parse import quote
 
+from django.core.exceptions import ValidationError
+from django.db import models
 from modelcluster.fields import ParentalKey
 
 from wagtail.admin.edit_handlers import (
@@ -32,6 +33,8 @@ from campaignresourcecentre.utils.models import BasePage
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 from campaignresourcecentre.paragon_users.helpers.token_signing import sign
+
+logger = getLogger()
 
 
 class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
@@ -276,32 +279,17 @@ class ResourceItem(Orderable):
         "through the site. Required if 'Can Order' is checked.",
     )
 
-    def _check_for_dup_skus(self, errors):
-        if self.can_order:
-            this_campaign = self.resource_page.get_parent()
-            if self.sku:
-                others_with_this_sku = (
-                    campaignresourcecentre.resources.models.ResourceItem.objects.filter(
-                        sku=self.sku
-                    ).exclude(pk=self.pk)
-                )
-                for other_item in others_with_this_sku:
-                    if other_item.resource_page.get_parent().pk == this_campaign.pk:
-                        errors["sku"].append("This SKU is already in use")
-                        break
-            else:
-                errors["sku"].append("Please enter a SKU")
-
     def clean(self):
         super().clean()
         errors = defaultdict(list)
         if self.can_download and not self.document:
             errors["document"].append("Please choose a document to download")
-        self._check_for_dup_skus(errors)
         if self.can_order and not self.maximum_order_quantity:
             errors["maximum_order_quantity"].append(
                 "Please enter a maximum order quantity"
             )
+        if self.can_order and not self.sku:
+            errors["sku"].append("Please enter a SKU")
         if not (self.can_order or self.can_download):
             errors["can_download"].append(
                 "Please enable one - 'can order' or 'can download' field"
