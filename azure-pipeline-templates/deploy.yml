@@ -87,6 +87,7 @@ steps:
           REPORTING_ENDPOINT: $(reportingEndpoint)
           REPORTING_ENABLED: $(reportingEnabled)
           TWO_FA: $(twoFA)
+          PUBTOKEN: $(pubToken)
         envInitializerVariables:
           PRIMARY_HOST: $(primaryHost)
           DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
@@ -113,6 +114,7 @@ steps:
           TWO_FA: $(twoFA)
           WAGTAIL_USER: $(wagtailUser)
           WAGTAIL_PASSWORD: $(wagtailPassword)
+          PUBTOKEN: $(pubToken)
         appArgs:
           - 'bash'
           - '-c'
