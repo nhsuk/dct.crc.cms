@@ -92,6 +92,7 @@ class TestResourceItemAdmin(AdminTestCase):
     def test_prepared_data_operations(self):
         self.prepareTestData()
         # These tests rely on the structure of the test data and make a specific sequence of changes
+        self.internal_test_can_update_existing_item()
         self.internal_test_cannot_save_with_null_sku()
         self.internal_test_identifyDuplicatedSKUs_when_none()
         self.request = new_request()  # Clear messages
@@ -139,6 +140,9 @@ class TestResourceItemAdmin(AdminTestCase):
             ";".join([m.message for m in messages]),
             "1 duplicated SKU(s);1:C4L301B:Healthy families top tips leaflet;2:C4L301B:Healthy families top tips leaflet",
         )
+
+    def internal_test_can_update_existing_item(self):
+        self.resource_item.clean()
 
     def internal_test_can_not_save_with_duplicated_sku_within_campaign(self):
         self.resource_item.pk = None

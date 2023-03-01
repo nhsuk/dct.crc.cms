@@ -282,8 +282,8 @@ class ResourceItem(Orderable):
             if self.sku:
                 others_with_this_sku = (
                     campaignresourcecentre.resources.models.ResourceItem.objects.filter(
-                        sku=self.sku,
-                    )
+                        sku=self.sku
+                    ).exclude(pk=self.pk)
                 )
                 for other_item in others_with_this_sku:
                     if other_item.resource_page.get_parent().pk == this_campaign.pk:
