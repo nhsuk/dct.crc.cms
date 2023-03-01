@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 class ScheduledTasksTestCase(TestCase):
-
     url = "/crc-admin/pub"
 
     def test_publish_pages_no_pubtoken(self):
