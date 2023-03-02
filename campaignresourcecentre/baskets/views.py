@@ -27,7 +27,7 @@ def _add_item(request):
     payload = request.POST
     sku = payload.get("sku")
     if sku:
-        item_obj = ResourceItem.objects.first(sku=sku)
+        item_obj = ResourceItem.objects.filter(sku=sku).first()
     else:
         item_obj = None
     if item_obj:

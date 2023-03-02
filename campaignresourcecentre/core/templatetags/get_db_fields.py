@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 @register.simple_tag
 def get_field(sku):
     # Find the first resource item, if any, matching this SKU
-    resource_item = ResourceItem.objects.first(sku=sku)
+    resource_item = ResourceItem.objects.filter(sku=sku).first()
     if resource_item:
         return resource_item
     else:
