@@ -15,3 +15,4 @@ def get_field(sku):
         return resource_item
     else:
         logger.error("No resource item with SKU '%s'" % sku)
+        raise ResourceItem.DoesNotExist
