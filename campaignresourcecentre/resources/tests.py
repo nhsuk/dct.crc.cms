@@ -63,6 +63,7 @@ class TestResourcePageAdmin(AdminTestCase):
         self.assertEqual(ResourcePageAdmin.search_fields, expected_search_fields)
 
     def test_azure_search_json(self):
+        self.prepareTestData()
         admin_instance = ResourcePageAdmin(ResourcePage, admin.site)
         obj = self.resource_page
         obj.search_indexable = True
@@ -90,8 +91,7 @@ class TestResourceItemAdmin(AdminTestCase):
         self.assertEqual(ResourceItemAdmin.list_display, expected_list_display)
 
     def test_prepared_data_operations(self):
-        self.prepareTestData()
-        # These tests rely on the structure of the test data and make a specific sequence of changes
+        self.prepareTestData()  # These tests rely on the structure of the test data and make a specific sequence of changes
         self.internal_test_can_update_existing_item()
         self.internal_test_cannot_save_with_null_sku()
         self.internal_test_identifyDuplicatedSKUs_when_none()
