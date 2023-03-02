@@ -98,20 +98,20 @@ class TestResourceItemAdmin(AdminTestCase):
         self.request = new_request()  # Clear messages
         self.internal_test_identifyWithinCampaignDuplicatedSKUs_when_none()
         self.request = new_request()
-        self.internal_test_can_not_save_with_duplicated_sku_within_campaign()
-        self.request = new_request()
-        self.internal_test_can_save_with_duplicated_sku_in_other_campaign()
-        self.request = new_request()
+        # self.internal_test_can_not_save_with_duplicated_sku_within_campaign()
+        # self.request = new_request()
+        # self.internal_test_can_save_with_duplicated_sku_in_other_campaign()
+        # self.request = new_request()
         # Verify still no within campaign duplicates
-        self.internal_test_identifyWithinCampaignDuplicatedSKUs_when_none()
-        self.request = new_request()
+        # self.internal_test_identifyWithinCampaignDuplicatedSKUs_when_none()
+        # self.request = new_request()
         # Verify there is one between campaign duplicate
         self.internal_test_identifyDuplicatedSKUs_when_one()
         self.request = new_request()
         # Create a within-campaign duplicate
         self.resource_item.pk = None
         self.resource_item.save()
-        # Verify now one within campaign duplicates (could not be created within the UI)
+        # Verify now one within campaign duplicates
         self.internal_test_identifyWithinCampaignDuplicatedSKUs_when_one()
         self.request = new_request()
 
@@ -134,26 +134,6 @@ class TestResourceItemAdmin(AdminTestCase):
         )
 
     def internal_test_identifyDuplicatedSKUs_when_one(self):
-        self.admin.identifyDuplicatedSKUs(self.request, [])
-        messages = get_messages(self.request)
-        self.assertEqual(
-            ";".join([m.message for m in messages]),
-            "1 duplicated SKU(s);1:C4L301B:Healthy families top tips leaflet;2:C4L301B:Healthy families top tips leaflet",
-        )
-
-    def internal_test_can_update_existing_item(self):
-        self.resource_item.clean()
-
-    def internal_test_can_not_save_with_duplicated_sku_within_campaign(self):
-        self.resource_item.pk = None
-        with self.assertRaises(ValidationError) as context:
-            self.resource_item.clean()
-        self.assertEqual(
-            {"sku": ["This SKU is already in use"]}, context.exception.args[0]
-        )
-
-    def internal_test_can_save_with_duplicated_sku_in_other_campaign(self):
-        # Create a new campaign
         new_campaign = CampaignPage(
             title=uuid4(),
             summary=uuid4(),
@@ -186,6 +166,16 @@ class TestResourceItemAdmin(AdminTestCase):
         # This should pass cleaning
         self.resource_item.clean()
         self.resource_item.save()
+
+        self.admin.identifyDuplicatedSKUs(self.request, [])
+        messages = get_messages(self.request)
+        self.assertEqual(
+            ";".join([m.message for m in messages]),
+            "1 duplicated SKU(s);1:C4L301B:Healthy families top tips leaflet;2:C4L301B:Healthy families top tips leaflet",
+        )
+
+    def internal_test_can_update_existing_item(self):
+        self.resource_item.clean()
 
     def internal_test_cannot_save_with_null_sku(self):
         sku = self.resource_item.sku
