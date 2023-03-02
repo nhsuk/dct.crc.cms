@@ -14,4 +14,4 @@ def get_field(sku):
     if resource_item:
         return resource_item
     else:
-        logger.error("No resource item with SKU '%'" % sku)
+        logger.error("No resource item with SKU '%s'" % sku)
