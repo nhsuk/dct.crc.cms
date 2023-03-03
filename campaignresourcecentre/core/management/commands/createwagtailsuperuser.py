@@ -21,6 +21,7 @@ class Command(BaseCommand):
                         username=wagtail_user,
                         email="noone@example.com",
                         password=wagtail_password,
+                        is_staff=True,
                     )
                     self.stdout.write("Superuser '%s' created" % wagtail_user)
                 superuser.save()

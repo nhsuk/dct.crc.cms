@@ -25,10 +25,12 @@ def empty_basket(request):
 def _add_item(request):
     basket = Basket(request.session)
     payload = request.POST
-    try:
-        # Check if a resource with this SKU exists
-        item_obj = ResourceItem.objects.get(sku=payload["sku"])
-
+    sku = payload.get("sku")
+    if sku:
+        item_obj = ResourceItem.objects.filter(sku=sku).first()
+    else:
+        item_obj = None
+    if item_obj:
         # Compose basket item object
         item_image_rendition = item_obj.image.get_rendition("width-200")
         rendition_img_attrs = item_image_rendition.attrs
@@ -52,8 +54,8 @@ def _add_item(request):
         basket.add_item(item, payload.get("order_quantity"))
         item["items_in_basket_count"] = basket.get_item_count(item_obj.pk)
         return item
-    except Exception as e:
-        logger.error("Failed to find resource item: %s", e)
+    else:
+        logger.error("Failed to find resource item with SKU '%s'", sku)
         raise SuspiciousOperation
 
 

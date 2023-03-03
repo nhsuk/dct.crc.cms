@@ -48,6 +48,12 @@ class CRCV3Config(AppConfig):
                 "Email template setting initialised as %s",
                 GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID,
             )
+            superuser_name = os.environ.get("WAGTAIL_USER")
+            logger.info(
+                f"Wagtail superuser name specified as {superuser_name}"
+                if superuser_name
+                else "No wagtail supervisor name in key vault"
+            )
         settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = (
             GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID
         )
