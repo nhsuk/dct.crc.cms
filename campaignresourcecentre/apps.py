@@ -54,6 +54,13 @@ class CRCV3Config(AppConfig):
                 if superuser_name
                 else "No wagtail supervisor name in key vault"
             )
+            if settings.RESTRICTED_PUBLISHING_GROUP_NAME:
+                logger.info(
+                    "Editors in group '%s' may unpublish but not publish"
+                    % settings.RESTRICTED_PUBLISHING_GROUP_NAME
+                )
+            else:
+                logger.info("All editors may publish and unpublish")
         settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = (
             GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID
         )

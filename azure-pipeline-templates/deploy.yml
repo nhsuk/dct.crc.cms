@@ -90,6 +90,7 @@ steps:
           WAGTAIL_USER: $(wagtailUser)
           WAGTAIL_PASSWORD: $(wagtailPassword)
           PUBTOKEN: $(pubToken)
+          RESTRICTED_PUBLISHING_GROUP_NAME: ${restrictedPublishingGroupName}
         envInitializerVariables:
           PRIMARY_HOST: $(primaryHost)
           DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
