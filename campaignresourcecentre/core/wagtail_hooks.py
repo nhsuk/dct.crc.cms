@@ -16,3 +16,4 @@ def remove_publication_rights_from_nhse_editors(request, page):
         if restricted:
             logger.error("Publication denied to user")
             return HttpResponseBadRequest("You do not have permission to publish pages")
+    logger.info("Page published by unrestricted user")
