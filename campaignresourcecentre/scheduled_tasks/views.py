@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 
-from wagtail.core.models import Page
+from wagtail.core.models import PageRevision
 
 logger = logging.getLogger(__name__)
 
@@ -18,9 +18,11 @@ def publish_pages(request):
     pubtoken = getattr(settings, "PUBTOKEN", None)
     try:
         if request.headers.get("Authorization", "") == "Bearer " + pubtoken:
-            future_pages = len(Page.objects.filter(go_live_at__gt=timezone.now()))
+            future_pages = len(
+                PageRevision.objects.filter(approved_go_live_at__lt=timezone.now())
+            )
             if future_pages > 0:
-                logger.info("publishing" + future_pages + "scheduled pages")
+                logger.info("publishing " + str(future_pages) + " scheduled pages")
                 call_command("publish_scheduled_pages")
             else:
                 logger.info("No scehduled pages")
