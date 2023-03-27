@@ -38,7 +38,7 @@ def _add_item(request):
         item = {
             "id": item_obj.pk,
             "title": item_obj.title,
-            "item_url": f"{item_obj.resource_page.url}",
+            "item_url": request.build_absolute_uri(f"{item_obj.resource_page.url}"),
             "item_code": item_obj.sku,
             "item_image_url": item_image_url,
             "item_img_attrs": rendition_img_attrs,

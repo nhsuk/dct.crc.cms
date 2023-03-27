@@ -1,7 +1,10 @@
 from .exceptions import ItemNotInBasketError
+from logging import getLogger
 
 
 NOT_ADDED_ERROR = "Item is not added to basket!"
+
+logger = getLogger(__name__)
 
 
 class Basket:
@@ -62,6 +65,9 @@ class Basket:
     def add_item(self, new_item, quantity_text):
         self._update_quantity(new_item, quantity_text)
         self.contents[new_item["id"]] = new_item
+        logger.info("Adding new item with quantity '%s'", quantity_text)
+        for i, name in enumerate(sorted(new_item.keys())):
+            logger.info("%d\t%s\t%s", i + 1, name, new_item[name])
         self._update_session_basket()
 
     def remove_item(self, item_id):
