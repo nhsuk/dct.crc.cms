@@ -1,6 +1,5 @@
 from .exceptions import ItemNotInBasketError
 
-
 NOT_ADDED_ERROR = "Item is not added to basket!"
 
 
