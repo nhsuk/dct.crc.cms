@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("resources", "0015_alter_resourceitem_image_alt_text"),
     ]

@@ -60,7 +60,6 @@ services:
       WAGTAIL_USER: ${WAGTAIL_USER}
       WAGTAIL_PASSWORD: ${WAGTAIL_PASSWORD}
       PUBTOKEN: ${PUBTOKEN}
-      RESTRICTED_PUBLISHING_GROUP_NAME: ${RESTRICTED_PUBLISHING_GROUP_NAME}
 
     command: tail -f /dev/null # do nothing forever - exec commands elsewhere
     ports:

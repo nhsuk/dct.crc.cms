@@ -4,7 +4,6 @@ from sys import argv
 
 from django.apps import AppConfig
 from django.conf import settings
-
 from campaignresourcecentre.notifications.adapters import GovNotifyNotifications
 
 logger = logging.getLogger(__name__)
@@ -54,13 +53,53 @@ class CRCV3Config(AppConfig):
                 if superuser_name
                 else "No wagtail supervisor name in key vault"
             )
-            if settings.RESTRICTED_PUBLISHING_GROUP_NAME:
-                logger.info(
-                    "Editors in group '%s' may unpublish but not publish"
-                    % settings.RESTRICTED_PUBLISHING_GROUP_NAME
-                )
-            else:
-                logger.info("All editors may publish and unpublish")
         settings.GOVUK_NOTIFY_PLAIN_EMAIL_TEMPLATE_ID = (
             GovNotifyNotifications.PLAIN_EMAIL_TEMPLATE_ID
+        )
+        # Patch the page permission tester with our custom tester defined above
+        # Modules in Django apps can't be accessed until apps have been loaded
+        from django.contrib.auth.models import Group
+        from wagtail.core.models import PagePermissionTester
+
+        def monkey_patch_can_unpublish(self):
+            if not self.user.is_active:
+                result = False
+            elif (not self.page.live) or self.page_is_root:
+                result = False
+            elif self.page_locked():
+                result = False
+            else:
+                result = (
+                    self.user.is_superuser
+                    or ("publish" in self.permissions)
+                    or ("unpublish" in self.permissions)
+                    or is_user_in_nhse_editors_group(self.user)
+                )
+                if self.user.is_superuser:
+                    logger.info("Superuser has unpublish permission")
+                else:
+                    logger.info(
+                        "Checking for unpublish permissions for %s in %s: %d",
+                        type(self.page),
+                        self.permissions,
+                        result,
+                    )
+            return result
+
+        def is_user_in_nhse_editors_group(user):
+            try:
+                nhse_editors_group = Group.objects.get(name="NHSE Editors")
+            except Group.DoesNotExist:
+                # If the group does not exist, return False
+                return False
+
+            return user.groups.filter(id=nhse_editors_group.id).exists()
+
+        logger.info(
+            "Unpublish permission tester was %s" % (PagePermissionTester.can_unpublish,)
+        )
+        PagePermissionTester.can_unpublish = monkey_patch_can_unpublish
+        logger.info(
+            "Unpublish permission tester is now %s"
+            % (PagePermissionTester.can_unpublish,)
         )
