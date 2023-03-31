@@ -62,6 +62,15 @@ class CRCV3Config(AppConfig):
         from wagtail.core.models import PagePermissionTester
 
         def monkey_patch_can_unpublish(self):
+            def is_user_in_nhse_editors_group(user):
+                try:
+                    nhse_editors_group = Group.objects.get(name="NHSE Editors")
+                except Group.DoesNotExist:
+                    # If the group does not exist, return False
+                    return False
+
+                return user.groups.filter(id=nhse_editors_group.id).exists()
+
             if not self.user.is_active:
                 result = False
             elif (not self.page.live) or self.page_is_root:
@@ -76,14 +85,5 @@ class CRCV3Config(AppConfig):
                     or is_user_in_nhse_editors_group(self.user)
                 )
             return result
-
-        def is_user_in_nhse_editors_group(user):
-            try:
-                nhse_editors_group = Group.objects.get(name="NHSE Editors")
-            except Group.DoesNotExist:
-                # If the group does not exist, return False
-                return False
-
-            return user.groups.filter(id=nhse_editors_group.id).exists()
 
         PagePermissionTester.can_unpublish = monkey_patch_can_unpublish
