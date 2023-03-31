@@ -75,15 +75,6 @@ class CRCV3Config(AppConfig):
                     or ("unpublish" in self.permissions)
                     or is_user_in_nhse_editors_group(self.user)
                 )
-                if self.user.is_superuser:
-                    logger.info("Superuser has unpublish permission")
-                else:
-                    logger.info(
-                        "Checking for unpublish permissions for %s in %s: %d",
-                        type(self.page),
-                        self.permissions,
-                        result,
-                    )
             return result
 
         def is_user_in_nhse_editors_group(user):
@@ -95,11 +86,4 @@ class CRCV3Config(AppConfig):
 
             return user.groups.filter(id=nhse_editors_group.id).exists()
 
-        logger.info(
-            "Unpublish permission tester was %s" % (PagePermissionTester.can_unpublish,)
-        )
         PagePermissionTester.can_unpublish = monkey_patch_can_unpublish
-        logger.info(
-            "Unpublish permission tester is now %s"
-            % (PagePermissionTester.can_unpublish,)
-        )
