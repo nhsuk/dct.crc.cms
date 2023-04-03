@@ -298,6 +298,9 @@ class BasePage(SocialFields, ListingFields, Page):
 
     class Meta:
         abstract = True
+        permissions = [
+            ("unpublish", "Can unpublish a published page"),
+        ]
 
     def search_indexable(self):
         return False

@@ -765,6 +765,3 @@ else:
 
 # wagtail schedule pub pages token
 PUBTOKEN = env.get("PUBTOKEN")
-
-# Name of Django user group that may not publish pages
-RESTRICTED_PUBLISHING_GROUP_NAME = env.get("RESTRICTED_PUBLISHING_GROUP_NAME")
