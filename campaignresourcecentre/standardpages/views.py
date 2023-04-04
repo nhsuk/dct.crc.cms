@@ -49,28 +49,30 @@ def contact_us(request):
         if job_title == "student":
             contact_us_form.fields.get("organisation").required = False
 
-        if contact_us_form.is_valid():
-            payload = contact_us_form.data
-            contact_us_data = ContactUsData(
-                payload.get("email"),
-                payload.get("first_name"),
-                payload.get("last_name"),
-                payload.get("job_title"),
-                payload.get("organisation"),
-                payload.get("organisation_type"),
-                campaign,
-                payload.get("audience"),
-                payload.get("engage_audience"),
-                payload.get("product_service"),
-                payload.get("message"),
-            )
+        # Check the hidden form field has not been filled in by a spammer.
+        if not contact_us_form.data.get("cat6a"):
+            if contact_us_form.is_valid():
+                payload = contact_us_form.data
+                contact_us_data = ContactUsData(
+                    payload.get("email"),
+                    payload.get("first_name"),
+                    payload.get("last_name"),
+                    payload.get("job_title"),
+                    payload.get("organisation"),
+                    payload.get("organisation_type"),
+                    campaign,
+                    payload.get("audience"),
+                    payload.get("engage_audience"),
+                    payload.get("product_service"),
+                    payload.get("message"),
+                )
 
-            gov_notify_factory().contact_submission(
-                settings.PHE_PARTNERSHIPS_EMAIL,
-                f"[CRC Contact Request] {campaign}",
-                contact_us_data,
-            )
-            return render(request, "thank_you_page.html")
+                gov_notify_factory().contact_submission(
+                    settings.PHE_PARTNERSHIPS_EMAIL,
+                    f"[CRC Contact Request] {campaign}",
+                    contact_us_data,
+                )
+                return render(request, "thank_you_page.html")
     return render(request, "contact-us.html", {"form": contact_us_form})
 
 
