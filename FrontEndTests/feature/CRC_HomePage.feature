@@ -1,8 +1,8 @@
 #noinspection CucumberUndefinedStep
 Feature: CRCV3 Main Page  - NHSUK CRC Website
 
-  @CRCV3-001 @Smoke
-    Scenario: open CRCV3 site and verify resources in campaigns tab
+  @CRCV3-001 @SmokeX
+    Scenario: open CRCV3 site and verify resources in campaigns tab (1)
     Given I loaded CRCV3 site to load the home page
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
@@ -200,8 +200,8 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Verify Campaign details for "Better_Health_Local_Authority_Tier_2"
     Then Verify "Better_Health_Local_Authority_Tier_2" Resources
 
-  @CRCV3-020 @Smoke
-  Scenario: open CRCV3 site and verify resources in campaigns tab
+  @CRCV3-020 @SmokeX
+  Scenario: open CRCV3 site and verify resources in campaigns tab (2)
     Given I loaded CRCV3 site to load the home page
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
@@ -285,13 +285,13 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on filter results by links expand and collapse
 
   @CRCV3-027
-  Scenario: open CRCV3 site and verify resources in campaigns tab
+  Scenario: open CRCV3 site and verify resources in campaigns tab (3)
     Given I loaded CRCV3 site to load the home page
     When click on campaign planning tab and verify its loaded
     Then Verify list of campaigns listed in campaigns Planning tab and have H3
 
   @CRCV3-028
-  Scenario: open CRCV3 site and verify resources in campaigns tab
+  Scenario: open CRCV3 site and verify resources in campaigns tab (4)
     Given I loaded CRCV3 site to load the home page
     When click on about tab and verify its loaded
     Then verify OHID link is accessible
