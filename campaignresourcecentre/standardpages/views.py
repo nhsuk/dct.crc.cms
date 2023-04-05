@@ -1,6 +1,8 @@
 from io import StringIO
 import sys
 
+from logging import getLogger
+
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
@@ -18,6 +20,8 @@ from campaignresourcecentre.notifications.dataclasses import ContactUsData
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 
 from .forms import ContactUsForm
+
+logger = getLogger(__name__)
 
 
 @require_http_methods(["GET"])
@@ -38,7 +42,7 @@ def cookie_confirmation(request):
 @require_http_methods(["POST", "GET"])
 def contact_us(request):
     contact_us_form = ContactUsForm()
-    if request.POST:
+    if request.method == "POST":
         contact_us_form = ContactUsForm(request.POST)
         campaign = contact_us_form.data.get("healthy_behaviour")
         if campaign == "other":
@@ -50,7 +54,9 @@ def contact_us(request):
             contact_us_form.fields.get("organisation").required = False
 
         # Check the hidden form field has not been filled in by a spammer.
-        if not contact_us_form.data.get("cat6a"):
+        if contact_us_form.data.get("cat6a"):
+            logger.info("Spam detection field completed.")
+        else:
             if contact_us_form.is_valid():
                 payload = contact_us_form.data
                 contact_us_data = ContactUsData(
