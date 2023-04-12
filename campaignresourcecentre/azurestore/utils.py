@@ -80,12 +80,24 @@ class AzureStorage:
     def __init__(self):
         self._azure_search = settings.AZURE_SEARCH
         self._storage = search_storage
+        self.added_items = set()
+        self.deleted_items = set()
 
     def add_taxonomy_terms(self, taxonomy_id, taxonomy_data):
         pass
 
     def get_taxonomy_terms(self, taxonomy_id):
         pass
+
+    def add_json_file(self, name, data):
+        json_file = ContentFile(json.dumps(data, indent=2).encode())
+        self._storage.delete(name)
+        self._storage.save(name, json_file)
+        logger.info("JSON saved to file %s", name)
+
+    def load_json_file(self, name):
+        with self._storage.open(name) as json_file:
+            return json.loads(json_file.read().decode())
 
     def add_resource(self, resource_id, resource_data):
         page_type = resource_data["resource"]["objecttype"]
@@ -98,6 +110,9 @@ class AzureStorage:
             logger.info(
                 "Blob added to index of type %s: %s" % (page_type, index_file_name)
             )
+            self.added_items.add(
+                (index_file_name, resource_data["resource"]["object_url"])
+            )
         except Exception as err:
             logger.error("Exception raised - Azure Blob Add: %s", err)
             raise
@@ -106,13 +121,16 @@ class AzureStorage:
         if hasattr(resource, "search_indexable"):
             self._delete_from_blob(resource)
         else:
-            logger.info(f"'search_indexable' is not defined in {resource}")
+            logger.info(
+                f"'search_indexable' is not defined in {resource}, so assume no object to delete"
+            )
 
     def _delete_from_blob(self, resource):
         index_file_name = self._get_azure_filename(resource.objecttype(), resource.id)
         try:
             self._storage.delete(index_file_name)
             logger.info("Resource index deleted: %s", resource.id)
+            self.deleted_items.add(index_file_name)
         except Exception as err:
             logger.error("Exception raised - index blob Delete: %s", err)
 

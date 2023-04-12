@@ -15,8 +15,7 @@
 		"ghcr.io/devcontainers-contrib/features/terraform-asdf:2": {},
 		"ghcr.io/devcontainers-contrib/features/wget-apt-get:1": {},
 		"ghcr.io/eitsupi/devcontainer-features/jq-likes:1": {},
-		"ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {},
-		"ghcr.io/frntn/devcontainers-features/gitleaks:1": {}
+		"ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

@@ -42,6 +42,7 @@ from campaignresourcecentre.standardpages.views import (
     cookie_settings,
     cookie_declaration,
     update_index,
+    search_orphans,
 )
 
 
@@ -55,6 +56,7 @@ private_urlpatterns = [
     path("crc-admin/password_reset/", user_admin_views.PasswordResetView.as_view()),
     path("crc-admin/clear_cache/", clear_cache, name="clear_cache"),
     path("crc-admin/update_index/", update_index, name="update_index"),
+    path("crc-admin/search_orphans/", search_orphans, name="search_orphans"),
     path("crc-admin/", include(wagtailadmin_urls)),
     path("crc-admin/pub", publish_pages, name="publish_pages"),
     path("crc-documents/", include(wagtaildocs_urls)),
