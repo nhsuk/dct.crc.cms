@@ -1,4 +1,5 @@
 from io import StringIO
+from logging import getLogger
 import sys
 
 from django.shortcuts import render
@@ -18,6 +19,8 @@ from campaignresourcecentre.notifications.dataclasses import ContactUsData
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 
 from .forms import ContactUsForm
+
+logger = getLogger(__name__)
 
 
 @require_http_methods(["GET"])
@@ -104,7 +107,17 @@ def search_orphans(request):
     if not request.user.is_superuser:
         raise PermissionDenied
     with StringIO() as responseFile:
-        call_command("searchorphans", stdout=responseFile, stderr=responseFile)
+        delete_param = request.GET.get("delete")
+        delete = delete_param and delete_param.lower().startswith("y")
+        urls = request.GET.get("urls")
+        logger.info("Search orphan request with delete=%s and urls=%s", delete, urls)
+        call_command(
+            "searchorphans",
+            stdout=responseFile,
+            stderr=responseFile,
+            delete=delete,
+            urls=urls,
+        )
         responseFile.seek(0)
         response = HttpResponse(responseFile.read())
         response.headers["Content-Type"] = "text/plain"
