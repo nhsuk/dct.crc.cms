@@ -206,7 +206,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Verify list of campaigns listed in campaigns tab and have H3
 
   @CRCV3-021_1
-  Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
+  Scenario Outline: open CRCV3 site and Automate filter by Newest topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
       Examples:
@@ -216,7 +216,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 
 
   @CRCV3-021_2
-  Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
+  Scenario Outline: open CRCV3 site and Automate filter by oldest topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
       Examples:
