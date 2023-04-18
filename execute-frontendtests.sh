@@ -14,6 +14,13 @@
 # REPO_USERNAME: Username for the Docker repository with the Front End test image
 # REPO_PASSWORD: Password "
 # IMAGE_TAG: Tag for required version of the Front End test image
+# PARALLEL - number of parallel runs to execute (default 1)
+# SCENARIOS - how to run scenarios (sequential/parallel, default sequential)
+
+echo "### IMAGE_TAG: ${IMAGE_TAG:=1.1.1}"
+echo "### PARALLEL: ${PARALLEL:=1}"
+echo "### SCENARIOS: ${SCENARIOS:=sequential}"
+echo "### TIMEOUT: ${TIMEOUT:=300}s"
 
 # Can't have empty value for TAGS as pipeline parameter so change "all" to "" here
 TAGS=$([ "$TAGS" = "all" ] && echo "" || echo "$TAGS")
@@ -48,6 +55,9 @@ docker run \
   --network host \
   --env BASE_URL \
   --env TAGS \
+  --env PARALLEL=$PARALLEL \
+  --env SCENARIOS=$SCENARIOS \
+  --env TIMEOUT=$TIMEOUT \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \
   dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
