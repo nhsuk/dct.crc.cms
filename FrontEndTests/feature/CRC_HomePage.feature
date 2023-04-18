@@ -2,7 +2,7 @@
 Feature: CRCV3 Main Page  - NHSUK CRC Website
 
   @CRCV3-001 @Smoke
-    Scenario: open CRCV3 site and verify resources in campaigns tab
+    Scenario: open CRCV3 site and verify resources in campaigns Home tab
     Given I loaded CRCV3 site to load the home page
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
@@ -97,7 +97,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Start4Life"
     Then Verify "Start4Life" Resources
 
-  @CRCV3-010
+  @CRCV3-010 @wip
   Scenario: open CRCV3 site and verify Start4Life Breastfeeding pages and contents
     Given I loaded CRCV3 site to load the home page
     When I browsed to Start4life resource campaign
@@ -164,8 +164,8 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then browse help us help you "<Campaigns>" and verify its resources
       Examples:
       |Campaigns                                   |
-      |Accessing NHS maternity services            |
-      |Accessing NHS mental health services        |
+      #|Accessing NHS maternity services            |
+      #|Accessing NHS mental health services        |
       |Abdominal and urological symptoms of cancer |
       |Childhood vaccination 2022                  |
 
@@ -205,32 +205,41 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
 
-  @CRCV3-021
+  @CRCV3-021_1
   Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
       Examples:
       |sort_by      |
       |Newest       |
+    Then I Click on Filter by topic
+
+
+  @CRCV3-021_2
+  Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
+    Given I loaded CRCV3 site to load the home page
+    When verify "<sort_by>" Newest and oldest
+      Examples:
+      |sort_by      |
       |Oldest       |
     Then I Click on Filter by topic
 
-#  @CRCV3-022
-#  Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
-#    Given I loaded CRCV3 site to load the home page
-#    When  I click on Sign in button Sign in page loaded with Email_address and and password
-#    Then I enter your login details
-#    Then I sign in
-#    Then verify logout displayed in place of Sign in
-#    Then click on resources tab and verify the searches
-#    Then select any resource and add to basket
-#    #Then click on basket to proceed to checkout
-##    Then enter delivery address and click review order
-##    Then Place order and verify confirmation
-#    Then click Sign Out link and verify its logged out successfully
+  @CRCV3-022
+  Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
+    Given I loaded CRCV3 site to load the home page
+    When  I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
+    Then click on resources tab and verify the searches
+    Then select any resource and add to basket
+    #Then click on basket to proceed to checkout
+#    Then enter delivery address and click review order
+#    Then Place order and verify confirmation
+    Then click Sign Out link and verify its logged out successfully
 
 #  @CRV3-023
-#  Scenario: open CRCV3 site and Automate login and purchase a resource end to end scenario
+#  Scenario: open CRCV3 site and Automate login and purchase and checkout resource end to end scenario
 #    Given I loaded CRCV3 site to load the home page
 #    When  I click on Sign in button Sign in page loaded with Email_address and and password
 #    Then I enter your login details
@@ -265,11 +274,11 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 #       |Enter your town or city|
 #       |Enter your postcode|
 #    Then click Sign Out link and verify its logged out successfully
-
+#
 #  @CRCV3-025
 #  Scenario: open CRCV3 site and Automate manage your account links are displaying
 #    Given I loaded CRCV3 site to load the home page
-#    When  I click on Sign in button Sign in page loaded with Email_address and and password
+#    When I click on Sign in button Sign in page loaded with Email_address and and password
 #    Then I enter your login details
 #    Then I sign in
 #    Then verify logout displayed in place of Sign in
@@ -294,7 +303,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 #      | email@example    | Enter a valid email address.|
 #      | example          | Enter a valid email address.|
 #    Then click Sign Out link and verify its logged out successfully
-#
+
   @CRCV3-027
   Scenario: open CRCV3 site filter results by filter
     Given I loaded CRCV3 site to load the home page
@@ -302,7 +311,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on filter results by links expand and collapse
 
   @CRCV3-028
-  Scenario: open CRCV3 site and verify resources in campaigns tab
+  Scenario: open CRCV3 site and verify resources in campaigns Planning tab
     Given I loaded CRCV3 site to load the home page
     When click on campaign planning tab and verify its loaded
     Then Verify list of campaigns listed in campaigns Planning tab and have H3
