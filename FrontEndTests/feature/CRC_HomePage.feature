@@ -205,13 +205,22 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
     Then Verify list of campaigns listed in campaigns tab and have H3
 
-  @CRCV3-021
+  @CRCV3-021_1
   Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
       Examples:
       |sort_by      |
       |Newest       |
+    Then I Click on Filter by topic
+
+
+  @CRCV3-021_2
+  Scenario Outline: open CRCV3 site and Automate filter by topic for Campaigns
+    Given I loaded CRCV3 site to load the home page
+    When verify "<sort_by>" Newest and oldest
+      Examples:
+      |sort_by      |
       |Oldest       |
     Then I Click on Filter by topic
 
