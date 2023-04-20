@@ -4,9 +4,11 @@ from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
 from pages.CRCV3_Main_Page import CRCV3MainPage
 
+# from common.common_test_methods import create_list_from_feature_table_column
+
 
 @Step("I loaded CRCV3 site to load the home page")
-def load_tobacco_landing_page(context):
+def load_CRCV3_landing_page(context):
     context.landing_page = CRCV3MainPage(context.browser, context.logger)
     context.landing_page.interact.open_url(context.url)
     cookie_banner_displayed = context.landing_page.is_cookie_banner_displayed()
@@ -21,11 +23,15 @@ def load_tobacco_landing_page(context):
         sleep(5)
         print("CRCV3 Now is success")
 
+    # Open CRCV3 home and verify all the labels and the links are displayed and working.
+
 
 @Step("I click on PHE link to check whether its loading the home page")
 def CRCV3_PHE_Link(context):
     context.CRCV3_home = CRCV3MainPage(context.browser, context.logger)
     context.CRCV3_home.Click_PHE_Link()
+    # context.Tobacco_page.select_country()
+    # context.Tobacco_page.click_get_support_button()
 
 
 @Step(
@@ -40,20 +46,32 @@ def CRCV3_Mainpage_labels(context):
 def CRCV3_Campaigns_list_h3(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     Campaigns_list = context.support_page.CRCV3_Campaigns_list_h3()
+    # i = int
+    # i = 0
     for list in Campaigns_list:
         h3 = list.split("\n")[0]
         print(h3)
+        # url = context.get_url(h3)
         context.support_page.click_h3(h3)
+        # i= i+1
+        # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
 
 
 @Step("Verify list of campaigns listed in campaigns Planning tab and have H3")
 def CRCV3_Campaigns_Planning_list_h3(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     Campaigns_list = context.support_page.CRCV3_Campaigns_Planning_list_h3()
+    # i = int
+    # i = 0
     for list in Campaigns_list:
         h3 = list.split("\n")[0]
         print(h3)
+        # url = context.get_url(h3)
         context.support_page.click_h3(h3)
+        # i= i+1
+        # assert_that(context.find_element_by_xpath('.//*[contains(@class,"h3")]'), equal_to(True), "header is available")
+
+    # Verify message prompts for get support when no country selected
 
 
 @Step(
@@ -68,6 +86,7 @@ def Sign_in_link(context):
 def Login_fields(context, email, password):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.sign_up_for_email_form(email, password)
+    # context.support_page.CRCV3_SignIn()
 
 
 @Step("I enter your login details")
@@ -146,11 +165,21 @@ def forgot_password_validation(context):
             f"error link as not as expected: {error}",
         )
 
+    # @CRCV3-007 - open CRCV3 site and verify Home tab and its links
+
 
 @Step("I Click click on Home page tab")
 def Home_Tab(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.HomeTab()
+
+
+# @Step("Verify Covid advices resources links and Coronavirus campaigns and resources button working")
+# def Home_Tab(context):
+#     #context.support_page = CRCV3MainPage(context.browser, context.logger)
+#     #context.support_page.Covid_19_links()
+
+# @CRCV3-008 - open CRCV3 site and verify Latest Updated links are loaded to respective pages
 
 
 @Step("I click on Latest updates links")
@@ -159,12 +188,17 @@ def Latest_Updates_links(context):
     Latest_updates = create_list_from_feature_table_column(context, "links")
     for links in Latest_updates:
         context.support_page.Latest_Updates_links(links)
+        # Close_window(context, 'back')
+        # context.driver.back()
+    # context.support_page.How_to_guides()
 
 
 @Step("Verify how to guide page loaded successfully")
 def How_to_guide(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.How_to_guides()
+
+    # @CRCV3-009 - open CRCV3 site and verify Start4Life Campaigns pages and contents
 
 
 @Step("I browsed to Start4life resource campaign")
@@ -176,6 +210,7 @@ def Start4Life_link(context):
 @Step('Verify Campaign details for "{link}"')
 def Related_website(context, link):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
+    # Link = create_list_from_feature_table_column(context, 'link')
     context.support_page.Campaign_details(link)
 
 
@@ -209,6 +244,12 @@ def Start4Life_Breastfeeding(context):
 def Help_us_help_you(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.Help_us_help_you()
+
+
+# @Step("browse help us help you campaigns")
+# def help_us_help_you_campaigns(context):
+#     context.support_Page = CRCV3MainPage(context.browser, context.logger)
+#     context.support_page.Help_us_help_you_Campaigns()
 
 
 @Step('browse help us help you "{Campaigns}" and verify its resources')
@@ -338,6 +379,7 @@ def sort_by(context, sort_by):
 @Step("I Click on Filter by topic")
 def Filter_by_topic(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
+    # context.support_page.campaigns_tab_click()
     filter_by_topics_list = context.support_page.return_filter_by_topics_list()
     for list in filter_by_topics_list:
         context.support_page.verify_campaigns_page(list)
@@ -358,7 +400,7 @@ def select_resource(context):
 @Step("click on basket to proceed to checkout")
 def proceed_to_checkout(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
-    context.support_page.Proceed_checout()
+    context.support_page.Proceed_checkout()
 
 
 @Step("enter delivery address and click review order")
@@ -380,6 +422,7 @@ def resource_validation(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     expected_counts = create_list_from_feature_table_column(context, "count")
     context.support_page.select_resource_add_tab()
+    # context.support_page.select_invalid_resource_count()
     for count in expected_counts:
         context.support_page.select_invalid_resource_count(count)
     sleep(5)
@@ -397,6 +440,14 @@ def address_validation(context):
             equal_to(True),
             f"error link as not as expected: {error}",
         )
+
+
+@Step(
+    "download the resources from order history and verify its downloaded successfully"
+)
+def download_resoiurce(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.download_resource()
 
 
 @Step("click on account tab and verify page loaded")
@@ -498,7 +549,9 @@ def Close_window(context, option):
     elif option == "Apps":
         driver = context.driver
         window_before_title = driver.title
+        # window_before = driver.current_window_handle
         context.driver.close()
         driver.switch_to_window(driver.window_handles[0])
     elif option == "back":
         context.driver.execute_script("window.history.go(-1)")
+        # context.driver.back()

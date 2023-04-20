@@ -205,6 +205,18 @@ class ContactUsForm(forms.Form):
         error_messages={"required": "Enter your message"},
     )
 
+    # This is a hidden form field, only a spammer will fill it in.
+    cat6a = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "class": "govuk-visually-hidden",
+                "aria-hidden": "true",
+                "tabindex": -1,
+            }
+        ),
+        required=False,
+    )
+
     class Meta:
         fields = [
             "first_name",
@@ -219,4 +231,5 @@ class ContactUsForm(forms.Form):
             "engage_audience",
             "product_service",
             "message",
+            "cat6a",
         ]

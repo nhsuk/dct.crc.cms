@@ -11,4 +11,6 @@ steps:
       SECRETS_FILE: $(CSVFile.secureFilePath)
       BASE_URL: https://$(hostUrl)
       IMAGE_TAG: $(imageTag)
+      PARALLEL: 4
+      SCENARIOS: parallel
     displayName: 'Run Frontend tests in Docker container'

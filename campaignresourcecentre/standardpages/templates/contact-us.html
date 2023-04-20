@@ -82,6 +82,10 @@
                             {{ form.last_name }}
                         </div>
 
+                        <div class="govuk-form-group">
+                            {{ form.cat6a }}
+                        </div>
+
                         <div id="job" class="govuk-form-group {% if form.job_title.errors or form.non_field_errors %}govuk-form-group--error{% endif %}" >
                             <label class="govuk-label" for="{{ form.job_title.id_for_label }}">Job function</label>
                             {% if form.job_title.errors %}
