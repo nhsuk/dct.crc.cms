@@ -75,7 +75,7 @@ class AzureSearchRebuilder:
         logger.info("Initiating search rebuild for '%s' index", index)
         self.index = index
 
-    def _extract_result_urls(self, json_result):
+    def _extract_result_urls(self, json_result, result):
         results = json_result["search_content"]["value"]
         for r in results:
             search_object = r["content"]["resource"]
@@ -89,15 +89,15 @@ class AzureSearchRebuilder:
         azure_search = AzureSearchBackend({})
         json_result = azure_search.azure_search("", {}, {}, None, 1000)
         ok = json_result.get("ok")
+        result = {}
         if ok:
             try:
-                result = self._extract_result_urls(json_result)
+                self._extract_result_urls(json_result, result)
                 logger.info(f"Current result URLs: {len (result)}")
             except Exception as e:
                 logger.error("Couldn't interpret search result: %s", e)
                 raise
         else:
-            result = {}
             logger.error(f"Not OK result from retrieving search objects: {json_result}")
         return result
 
