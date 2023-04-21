@@ -108,6 +108,18 @@ def update_index(request):
 
 
 @require_http_methods(["GET"])
+def search_orphans(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    with StringIO() as responseFile:
+        call_command("searchorphans", stdout=responseFile, stderr=responseFile)
+        responseFile.seek(0)
+        response = HttpResponse(responseFile.read())
+        response.headers["Content-Type"] = "text/plain"
+        return response
+
+
+@require_http_methods(["GET"])
 def session_summary(request):
     # Abbreviated to avoid the overhead of running all the context processors
     session = request.session

@@ -3,6 +3,10 @@ import re
 import logging
 import requests
 
+from azure.core.credentials import AzureKeyCredential
+from azure.search.documents import SearchClient
+from azure.search.documents.indexes import SearchIndexClient
+
 from django.conf import settings
 from django.db.models.query import QuerySet
 
@@ -68,12 +72,81 @@ class AzureEmptySearchResults(AzureSearchResults):
 
 class AzureSearchRebuilder:
     def __init__(self, index):
+        logger.info("Initiating search rebuild for '%s' index", index)
         self.index = index
 
+    def retrieve_current_search_objects(self):
+        azure_search = AzureSearchBackend({})
+        json_result = azure_search.azure_search("", {}, {}, None, 1000)
+        ok = json_result.get("ok")
+        result = {}
+        if ok:
+            try:
+                results = json_result["search_content"]["value"]
+                for r in results:
+                    search_object = r["content"]["resource"]
+                    url = search_object["object_url"]
+                    if url in result:
+                        result[url].append(r)
+                    else:
+                        result[url] = [r]
+                logger.info(f"Current result URLs: {len (result)}")
+            except Exception as e:
+                logger.error("Couldn't interpret search result: %s", e)
+                raise
+        else:
+            logger.error(f"Not OK result from retrieving search objects: {json_result}")
+        return result
+
     def start(self):
+        logger.info("Starting search rebuild")
+        self.preexisting_objects = self.retrieve_current_search_objects()
+        logger.info(
+            "URLs of indexed objects at start: %d", len(self.preexisting_objects)
+        )
         return self.index
 
     def finish(self):
+        logger.info("Completed search rebuild")
+        storage = self.index._storage
+        added_urls = set(i[1] for i in storage.added_items)
+        added_items = sorted(list(storage.added_items), key=lambda x: x[1])
+        deleted_items = sorted(list(storage.deleted_items))
+        logger.info("%d search item(s) added", len(added_items))
+        if len(added_items):
+            logger.info("First added is %s, last %s", added_items[0], added_items[-1])
+        logger.info("%d search item(s) deleted", len(deleted_items))
+        if len(deleted_items):
+            logger.info(
+                "First deleted is %s, last %s", deleted_items[0], deleted_items[-1]
+            )
+        postexisting_objects = self.retrieve_current_search_objects()
+        postexisting_urls = set(postexisting_objects.keys())
+        urls = sorted(postexisting_urls)
+        logger.info("%d search item(s) indexed after update", len(urls))
+        if len(urls):
+            logger.info("First indexed is %s, last is %s", urls[0], urls[-1])
+        added_and_deleted_urls = added_urls & storage.deleted_items
+        if added_and_deleted_urls:
+            logger.error("Items added and deleted: %s", added_and_deleted_urls)
+        indexed_and_deleted_urls = postexisting_urls & storage.deleted_items
+        if indexed_and_deleted_urls:
+            logger.error("Items indexed and deleted: %s", indexed_and_deleted_urls)
+        indexed_and_not_added_urls = postexisting_urls - added_urls
+        if indexed_and_not_added_urls:
+            logger.error(
+                "%d item(s) indexed but not added", len(indexed_and_not_added_urls)
+            )
+            self.index._storage.add_json_file(
+                f"orphans_{self.index.name}.json",
+                {url: postexisting_objects[url] for url in indexed_and_not_added_urls},
+            )
+            for i, url in enumerate(sorted(indexed_and_not_added_urls)):
+                logger.error("Orphan index item %d: %s", i + 1, url)
+                entries = len(postexisting_objects[url])
+                if entries > 1:
+                    logger.error("%s instances of url %s in index", entries, url)
+
         return
 
 
@@ -87,6 +160,7 @@ class AzureIndex:
     def __init__(self, storage):
         self._storage = storage
         self.name = storage.index_name
+        logger.info("Initialising Azure index %s", self.name)
 
     def is_indexable(self, item):
         try:
@@ -158,6 +232,7 @@ class AzureIndex:
 
             # Build index json for a Resource item.
             index = {"resource": page.get_az_item()}
+            index["resource"]["id"] = page.id
 
             # Reformat taxonomy terms for azure search.
             page_terms = json.loads(page.taxonomy_json or "{}")
@@ -278,6 +353,7 @@ class AzureSearchBackend(BaseSearchBackend):
         url = self._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
+        logger.info("Searching for %s", url)
         headers = {"Subscription-Key": settings.AZURE_SEARCH["API_KEY"]}
         try:
             response = requests.get(url, headers=headers)
@@ -286,6 +362,13 @@ class AzureSearchBackend(BaseSearchBackend):
                 "ok": response.ok,
                 "code": response.status_code,
             }
+            try:
+                results = json_response["search_content"]["value"]
+                result_urls = [r["content"]["resource"]["object_url"] for r in results]
+            except Exception as e:
+                logger.error("Couldn't interpret search result: %s", e)
+                raise
+            logger.info("%d items returned from search", len(result_urls))
         except Exception as err:
             logger.error("Exception raised - Azure Search Get: %s", err)
             json_response = {"search_content": [], "ok": "failed", "code": 500}
@@ -301,6 +384,7 @@ class AzureSearchBackend(BaseSearchBackend):
         order_by_relevance=True,
         partial_match=False,  # Partial matching in search is deprecated
     ):
+        logger.info("Searching for %s", query)
         if isinstance(query, str):
             query_string = query
         elif not isinstance(query, PlainText):
@@ -328,7 +412,7 @@ class AzureSearchBackend(BaseSearchBackend):
             except Exception as e:
                 logger.error("Couldn't interpret search result: %s", e)
                 raise
-
+            logger.info("%d items returned from search", len(result_urls))
             pages = Page.objects.none()
             for r in result_urls:
                 page_slugs = ["home"] + [slug for slug in r.split("/") if slug]
@@ -349,59 +433,62 @@ class AzureSearchBackend(BaseSearchBackend):
     def delete_search(self, resource):
         fields_queryset = {"object_url": resource.url}
         response = self.azure_search("", fields_queryset, {}, "title asc")
-        search_resource = None
         if response.get("code") == 200 and response["search_content"]:
             if response["search_content"]["value"]:
                 resources = response["search_content"]["value"]
                 if len(resources) == 1:
-                    search_resource = resources[0]
+                    self.delete_search_resource(resources[0])
                 else:
-                    logger.info("Resource not found: {}".format(resource.id))
+                    logger.info("Resource to delete not found - url {}".format(url))
         else:
             logger.error("Invalid response: {}".format(response.get("search_content")))
-        if search_resource:
-            query_string = "api-version={}".format(
-                settings.AZURE_SEARCH["DELETE_API_VERSION"]
-            )
-            url = "{}?{}".format(settings.AZURE_SEARCH["DELETE_API_HOST"], query_string)
-            metadata_storage_path = search_resource.get("metadata_storage_path")
-            delete_json = json.dumps(
-                {
-                    "value": [
-                        {
-                            "@search.action": "delete",
-                            "metadata_storage_path": metadata_storage_path,
-                        }
-                    ]
-                }
-            )
-            headers = {
-                "Subscription-Key": settings.AZURE_SEARCH["API_KEY"],
-                "Content-Type": "application/json",
+
+    def delete_search_resource(self, search_resource):
+        resource_url = search_resource["content"]["resource"]["object_url"]
+        query_string = "api-version={}".format(
+            settings.AZURE_SEARCH["DELETE_API_VERSION"]
+        )
+        url = "{}?{}".format(settings.AZURE_SEARCH["DELETE_API_HOST"], query_string)
+        metadata_storage_path = search_resource.get("metadata_storage_path")
+        delete_json = json.dumps(
+            {
+                "value": [
+                    {
+                        "@search.action": "delete",
+                        "metadata_storage_path": metadata_storage_path,
+                    }
+                ]
             }
-            if settings.AZURE_SEARCH_UPDATE:
-                try:
-                    response = requests.post(url, headers=headers, data=delete_json)
-                    if response.ok:
-                        logger.info(
-                            "Search resource deleted successfully for: {}".format(
-                                resource.id
-                            )
+        )
+        headers = {
+            "Subscription-Key": settings.AZURE_SEARCH["API_KEY"],
+            "Content-Type": "application/json",
+        }
+        if settings.AZURE_SEARCH_UPDATE:
+            try:
+                response = requests.post(url, headers=headers, data=delete_json)
+                if response.ok:
+                    logger.info(
+                        "Search resource deleted successfully for: {}".format(
+                            resource_url
                         )
-                    else:
-                        logger.info(
-                            "Error deleting the search resource: {} -- {}".format(
-                                resource.id, response.content
-                            )
-                        )
-                except Exception as err:
-                    logger.error("Exception raised - Azure Search Delete: %s", err)
-            else:
-                logger.info(
-                    "Search resource deletion noted for {} using {}".format(
-                        resource.id, url
                     )
+                else:
+                    logger.info(
+                        "Error deleting the search resource {} using {}: {}".format(
+                            resource_url, url, response.content
+                        )
+                    )
+            except Exception as err:
+                logger.error(
+                    "Exception raised using %s - Azure Search Delete: %s", url, err
                 )
+        else:
+            logger.info(
+                "Search resource deletion noted for {} using {}".format(
+                    resource_url, url
+                )
+            )
 
     def _create_azure_search_url_and_query(
         self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
@@ -417,7 +504,7 @@ class AzureSearchBackend(BaseSearchBackend):
             sort_query_string = "&$orderby={}{}".format(
                 settings.AZURE_SEARCH["PREFIX"], sort_by
             )
-        top = "" if results_per_page is None else "&$top=" + results_per_page
+        top = "" if results_per_page is None else "&$top=" + str(results_per_page)
         query_string = query_string + filters_query_string + sort_query_string + top
         return "{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string)
 
