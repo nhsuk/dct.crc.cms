@@ -75,26 +75,29 @@ class AzureSearchRebuilder:
         logger.info("Initiating search rebuild for '%s' index", index)
         self.index = index
 
+    def _extract_result_urls(self, json_result):
+        results = json_result["search_content"]["value"]
+        for r in results:
+            search_object = r["content"]["resource"]
+            url = search_object["object_url"]
+            if url in result:
+                result[url].append(r)
+            else:
+                result[url] = [r]
+
     def retrieve_current_search_objects(self):
         azure_search = AzureSearchBackend({})
         json_result = azure_search.azure_search("", {}, {}, None, 1000)
         ok = json_result.get("ok")
-        result = {}
         if ok:
             try:
-                results = json_result["search_content"]["value"]
-                for r in results:
-                    search_object = r["content"]["resource"]
-                    url = search_object["object_url"]
-                    if url in result:
-                        result[url].append(r)
-                    else:
-                        result[url] = [r]
+                result = self._extract_result_urls(json_result)
                 logger.info(f"Current result URLs: {len (result)}")
             except Exception as e:
                 logger.error("Couldn't interpret search result: %s", e)
                 raise
         else:
+            result = {}
             logger.error(f"Not OK result from retrieving search objects: {json_result}")
         return result
 
@@ -366,7 +369,7 @@ class AzureSearchBackend(BaseSearchBackend):
                 results = json_response["search_content"]["value"]
                 result_urls = [r["content"]["resource"]["object_url"] for r in results]
             except Exception as e:
-                logger.error("Couldn't interpret search result: %s", e)
+                logger.error("Couldn't interpret search response: %s", e)
                 raise
             logger.info("%d items returned from search", len(result_urls))
         except Exception as err:
@@ -410,7 +413,7 @@ class AzureSearchBackend(BaseSearchBackend):
                 results = json_result["search_content"]["value"]
                 result_urls = [r["content"]["resource"]["object_url"] for r in results]
             except Exception as e:
-                logger.error("Couldn't interpret search result: %s", e)
+                logger.error("Couldn't interpret CMS search result: %s", e)
                 raise
             logger.info("%d items returned from search", len(result_urls))
             pages = Page.objects.none()
