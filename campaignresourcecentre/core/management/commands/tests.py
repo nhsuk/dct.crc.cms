@@ -1,9 +1,17 @@
 from os import environ
 from io import StringIO
-from django.test import TestCase
+from unittest.mock import MagicMock, patch
+
+from django.test import TestCase, SimpleTestCase
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
+
+from campaignresourcecentre.azurestore.utils import AzureStorage
+from campaignresourcecentre.core.management.commands.searchorphans import (
+    Command as SearchOrphanCommand,
+)
+from campaignresourcecentre.search.azure import AzureSearchBackend
 
 
 class CreateWagtailSuperuserCommandTestCase(TestCase):
@@ -54,3 +62,23 @@ class CreateWagtailSuperuserCommandTestCase(TestCase):
         user_model = get_user_model()
         with self.assertRaises(user_model.DoesNotExist):
             user_model.objects.get(username="testuser")
+
+
+class TestCommandHandle(SimpleTestCase):
+    def setUp(self):
+        self.command = SearchOrphanCommand()
+
+    @patch("campaignresourcecentre.azurestore.utils.AzureStorage")
+    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
+    def test_handle_no_url_re(self, mock_azure_search_backend, mock_azure_storage):
+        pass
+
+    @patch("campaignresourcecentre.azurestore.utils.AzureStorage")
+    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
+    def test_handle_with_url_re(self, mock_azure_search_backend, mock_azure_storage):
+        pass
+
+    @patch("campaignresourcecentre.azurestore.utils.AzureStorage")
+    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
+    def test_handle_exception(self, mock_azure_search_backend, mock_azure_storage):
+        pass
