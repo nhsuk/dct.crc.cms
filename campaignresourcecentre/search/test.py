@@ -1,7 +1,13 @@
 from unittest.mock import MagicMock
 from django.test import TestCase
 
-from .azure import AzureSearchBackend, AzureSearchRebuilder, AzureSearchException
+from .azure import (
+    AzureSearchBackend,
+    AzureSearchRebuilder,
+    AzureSearchException,
+    AzureStorage,
+    AzureIndex,
+)
 
 
 class TestAzureSearchBackend(TestCase):
@@ -44,7 +50,10 @@ class TestAzureSearchBackend(TestCase):
 
 class TestAzureSearchRebuilder(TestCase):
     def setUp(self):
-        self.rebuilder = AzureSearchRebuilder("xxx")  # An index that does not exist
+        self.storage = AzureStorage()
+        self.backend = AzureSearchBackend({})
+        self.index = AzureIndex(self.storage)
+        self.rebuilder = AzureSearchRebuilder(self.index)
 
     def test_retrieve_current_search_objects(self):
         # Can't seem to mock these objects, so just check we can do a search
