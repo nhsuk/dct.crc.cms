@@ -1,6 +1,6 @@
 from os import environ
 from io import StringIO
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch, Mock
 
 from django.test import TestCase, SimpleTestCase
 from django.core.management import call_command
@@ -64,21 +64,14 @@ class CreateWagtailSuperuserCommandTestCase(TestCase):
             user_model.objects.get(username="testuser")
 
 
-class TestCommandHandle(SimpleTestCase):
-    def setUp(self):
-        self.command = SearchOrphanCommand()
-
-    @patch("campaignresourcecentre.azurestore.utils.AzureStorage")
-    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
-    def test_handle_no_url_re(self, mock_azure_search_backend, mock_azure_storage):
-        pass
-
-    @patch("campaignresourcecentre.azurestore.utils.AzureStorage")
-    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
-    def test_handle_with_url_re(self, mock_azure_search_backend, mock_azure_storage):
-        pass
-
-    @patch("campaignresourcecentre.azurestore.utils.AzureStorage")
-    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
-    def test_handle_exception(self, mock_azure_search_backend, mock_azure_storage):
-        pass
+class TestSearchOrphans(SimpleTestCase):
+    def test_search_orphans(self):
+        # Sustained effort failed to find a way to mock Azure Storage to test
+        # the urls and delete paths through searchorpans
+        # This relies on the searchorphans command being able to go through the motions
+        err = StringIO()
+        out = StringIO()
+        call_command("searchorphans", stderr=err, stdout=out)
+        err_message = err.getvalue()
+        out_message = out.getvalue()
+        self.assertTrue(err_message or out_message)

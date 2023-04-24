@@ -6,7 +6,7 @@ import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from campaignresourcecentre.azurestore.utils import AzureStorage, CacheStorage
+from campaignresourcecentre.azurestore.utils import AzureStorage
 from campaignresourcecentre.search.azure import AzureSearchBackend
 
 logger = logging.getLogger(__name__)
@@ -16,8 +16,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         storage = AzureStorage()
         backend = AzureSearchBackend({})
-        deleting = kwargs["delete"]
-        url_re = re.compile(kwargs["urls"]) if kwargs["urls"] else None
+        deleting = kwargs.get("delete")
+        url_re = re.compile(kwargs["urls"]) if kwargs.get("urls") else None
         try:
             orphans = storage.load_json_file(f"orphans_{AzureStorage.index_name}.json")
             for orphan_url, orphan_dups in sorted(orphans.items()):
