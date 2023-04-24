@@ -76,7 +76,8 @@ class AzureSearchRebuilder:
         self.index = index
 
     def _extract_result_urls(self, json_result, result):
-        print("JSON result", type(json_result))
+        print("JSON result type", type(json_result["search_content"]))
+        print("JSON result", json_result["search_content"])
         results = json_result["search_content"]["value"]
         for r in results:
             search_object = r["content"]["resource"]
