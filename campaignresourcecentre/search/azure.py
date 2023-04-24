@@ -79,14 +79,15 @@ class AzureSearchRebuilder:
         search_content = json_result["search_content"]
         try:
             results = search_content.get("value")
-        except TypeError as e:
+        except Exception as e:
             logger.error("Can't get search results: %s", e)
             logger.info("Result value type is %s", type(search_content))
             try:
                 logger.info("Result length: %s", len(search_content))
-                logger.info("First element: %s", search_content[0])
+                # logger.info("First element: %s", search_content[0])
             except Exception as e:
                 logger.error("Inscrutable result: %s", e)
+            return
         for r in results:
             search_object = r["content"]["resource"]
             url = search_object["object_url"]
