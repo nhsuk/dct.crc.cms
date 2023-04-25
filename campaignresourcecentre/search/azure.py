@@ -81,13 +81,7 @@ class AzureSearchRebuilder:
             results = search_content.get("value")
         except Exception as e:
             logger.error("Can't get search results: %s", e)
-            logger.info("Result value type is %s", type(search_content))
-            try:
-                logger.info("Result length: %s", len(search_content))
-                logger.info("First element: %s", search_content[0])
-            except Exception as e:
-                logger.error("Inscrutable result: %s", e)
-            raise
+            results = []
         for r in results:
             search_object = r["content"]["resource"]
             url = search_object["object_url"]
@@ -385,7 +379,7 @@ class AzureSearchBackend(BaseSearchBackend):
             logger.info("%d items returned from search", len(result_urls))
         except Exception as err:
             logger.error("Exception raised - Azure Search Get: %s", err)
-            json_response = {"search_content": [], "ok": "failed", "code": 500}
+            json_response = {"ok": False, "code": 500}
         return json_response
 
     # Implement Wagtail base query class method for use in Wagtail CMS searches
