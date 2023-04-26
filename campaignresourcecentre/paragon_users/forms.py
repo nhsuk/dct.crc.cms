@@ -28,11 +28,23 @@ JOB_CHOICES = (
 
 
 HEALTH_CHOICES = (
-    ("health:other", "Other"),
-    ("health:improvement", "Health Improvement / Public Health"),
-    ("health:gpspecialistnurse", "GP, Specialist, Nurse and HCA"),
     ("health:pharmacy", "Pharmacy"),
+    ("health:nurse", "Nurse"),
     ("health:management", "Practice Management"),
+    ("health:infantfeedingteam", "Infant feeding team"),
+    ("health:childrenscentreteam", "Children's centre team"),
+    ("health:oralhealth", "Oral health"),
+    ("health:improvement", "Health Improvement / Public Health"),
+    ("health:healthvisitor", "Health visitor"),
+    ("health:gp", "GP"),
+    ("health:midwife", "Midwife"),
+    ("health:smokingcessation", "Smoking cessation"),
+    ("health:healthwellbeingcoach", "Health and Wellbeing coach"),
+    ("health:healthcareassistant", "Health Care Assistant"),
+    ("health:socialprescribinglinkworker", "Social Prescribing Link Worker"),
+    ("health:carecoordinator", "Care Coordinator"),
+    ("health:immunisationcoordinator", "Immunisation Co-oridnator"),
+    ("health:other", "Other"),
 )
 
 
