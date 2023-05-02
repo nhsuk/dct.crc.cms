@@ -58,5 +58,5 @@ class TestAzureSearchRebuilder(TestCase):
     def test_retrieve_current_search_objects(self):
         # Can't seem to mock these objects, so just check we can do a search
         self.rebuilder.azure_search = AzureSearchBackend({})
-        result = self.rebuilder.retrieve_current_search_objects()
+        self.rebuilder.retrieve_current_search_objects()
         # Can't validate the result - could be empty, or not
