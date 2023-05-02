@@ -1,9 +1,17 @@
 from os import environ
 from io import StringIO
-from django.test import TestCase
+from unittest.mock import patch, Mock
+
+from django.test import TestCase, SimpleTestCase
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
+
+from campaignresourcecentre.azurestore.utils import AzureStorage
+from campaignresourcecentre.core.management.commands.searchorphans import (
+    Command as SearchOrphanCommand,
+)
+from campaignresourcecentre.search.azure import AzureSearchBackend
 
 
 class CreateWagtailSuperuserCommandTestCase(TestCase):
@@ -54,3 +62,16 @@ class CreateWagtailSuperuserCommandTestCase(TestCase):
         user_model = get_user_model()
         with self.assertRaises(user_model.DoesNotExist):
             user_model.objects.get(username="testuser")
+
+
+class TestSearchOrphans(SimpleTestCase):
+    def test_search_orphans(self):
+        # Sustained effort failed to find a way to mock Azure Storage to test
+        # the urls and delete paths through searchorpans
+        # This relies on the searchorphans command being able to go through the motions
+        err = StringIO()
+        out = StringIO()
+        call_command("searchorphans", stderr=err, stdout=out)
+        err_message = err.getvalue()
+        out_message = out.getvalue()
+        self.assertTrue(err_message or out_message)

@@ -1,7 +1,13 @@
-import json
+from unittest.mock import MagicMock
 from django.test import TestCase
 
-from .azure import AzureSearchBackend
+from .azure import (
+    AzureSearchBackend,
+    AzureSearchRebuilder,
+    AzureSearchException,
+    AzureStorage,
+    AzureIndex,
+)
 
 
 class TestAzureSearchBackend(TestCase):
@@ -40,3 +46,17 @@ class TestAzureSearchBackend(TestCase):
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         self.assertEqual(expected, url)
+
+
+class TestAzureSearchRebuilder(TestCase):
+    def setUp(self):
+        self.storage = AzureStorage()
+        self.backend = AzureSearchBackend({})
+        self.index = AzureIndex(self.storage)
+        self.rebuilder = AzureSearchRebuilder(self.index)
+
+    def test_retrieve_current_search_objects(self):
+        # Can't seem to mock these objects, so just check we can do a search
+        self.rebuilder.azure_search = AzureSearchBackend({})
+        self.rebuilder.retrieve_current_search_objects()
+        # Can't validate the result - could be empty, or not

@@ -38,6 +38,8 @@ django-debug-toolbar = "~3.2"
 redis = "~4.1"
 wagtail-2fa = {git = "https://github.com/labd/wagtail-2fa.git", rev = "f029a7c0838e763ae77ce0d292604bacf8c5833e"}
 setuptools = "65.6.2"
+azure-search-documents = "^11.3.0"
+azure-search = "^1.0.0b2"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
