@@ -32,7 +32,7 @@ HEALTH_CHOICES = (
     ("health:nurse", "Nurse"),
     ("health:management", "Practice Management"),
     ("health:infantfeedingteam", "Infant feeding team"),
-    ("health:childrenscentreteam", "Children's centre team"),
+    ("health:childrenscentreteam", "Childrens centre team"),
     ("health:oralhealth", "Oral health"),
     ("health:improvement", "Health Improvement / Public Health"),
     ("health:healthvisitor", "Health visitor"),
