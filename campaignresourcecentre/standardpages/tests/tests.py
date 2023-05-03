@@ -1,4 +1,6 @@
 from io import StringIO
+import secrets
+import string
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
@@ -74,11 +76,23 @@ class ContactUsViewTests(TestCase):
 user_model = get_user_model()
 
 
+def generate_random_password():  # To satisfy Sonarquvbe security checks
+    password = (
+        "".join(secrets.choice(string.ascii_lowercase) for _ in range(3))
+        + "".join(secrets.choice(string.ascii_uppercase) for _ in range(3))
+        + "".join(secrets.choice(string.digits) for _ in range(3))
+        + "".join(secrets.choice(string.punctuation) for _ in range(3))
+    )
+    return password
+
+
 class SearchOrphansTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.superuser = user_model.objects.create_superuser(
-            username="admin", password="admin123", email="admin@example.com"
+            username="admin",
+            password=generate_random_password(),
+            email="admin@example.com",
         )
 
     def test_search_orphans(self):
@@ -107,7 +121,9 @@ class SearchOrphansTestCase(TestCase):
         # Create a request object with an anonymous user
         request = self.factory.get("/search_orphans/")
         request.user = user_model.objects.create_user(
-            username="anon", password="anon123", email="admin@example.com"
+            username="anon",
+            password=generate_random_password(),
+            email="admin@example.com",
         )
 
         # Call the view function and assert for PermissionDenied exception
