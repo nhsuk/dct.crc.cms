@@ -13,11 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    def _process_orphan_dup(self, orphan_url, orphan, data, deleting):
-        label = f"{data ['objecttype']} {orphan_url}"
+    def _process_orphan_dup(self, label, orphan, deleting):
         if deleting:
             try:
-                backend.delete_search_resource(orphan)
+                self.backend.delete_search_resource(orphan)
                 self.stdout.write(f"{label}{' deleted' if deleting else ''}")
             except Exception as e:
                 self.stdout.write(f"failed to delete {label}: {e}")
@@ -25,17 +24,20 @@ class Command(BaseCommand):
             self.stdout.write(f"{label}")
 
     def handle(self, *args, **kwargs):
-        storage = AzureStorage()
-        backend = AzureSearchBackend({})
+        self.storage = AzureStorage()
+        self.backend = AzureSearchBackend({})
         deleting = kwargs.get("delete")
         url_re = re.compile(kwargs["urls"]) if kwargs.get("urls") else None
         try:
-            orphans = storage.load_json_file(f"orphans_{AzureStorage.index_name}.json")
+            orphans = self.storage.load_json_file(
+                f"orphans_{AzureStorage.index_name}.json"
+            )
             for orphan_url, orphan_dups in sorted(orphans.items()):
                 for orphan in orphan_dups:
                     data = orphan["content"]["resource"]
+                    label = f"{data ['objecttype']} {orphan_url}"
                     if url_re is None or url_re.match(data["object_url"]):
-                        self._process_orphan_dup(orphan_url, orphan, data, deleting)
+                        self._process_orphan_dup(label, orphan, deleting)
         except Exception as e:
             self.stderr.write(f"Couldn't process orphans: {e}")
 
