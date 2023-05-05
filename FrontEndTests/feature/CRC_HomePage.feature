@@ -214,7 +214,6 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       |Newest       |
     Then I Click on Filter by topic
 
-
   @CRCV3-021_2
   Scenario Outline: open CRCV3 site and Automate filter by oldest topic for Campaigns
     Given I loaded CRCV3 site to load the home page
