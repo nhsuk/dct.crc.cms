@@ -1,4 +1,6 @@
-from unittest.mock import MagicMock
+import json
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 
 from .azure import (
@@ -56,7 +58,24 @@ class TestAzureSearchRebuilder(TestCase):
         self.rebuilder = AzureSearchRebuilder(self.index)
 
     def test_retrieve_current_search_objects(self):
-        # Can't seem to mock these objects, so just check we can do a search
+        # Can't seem to mock these objects, so mock the result from the search
         self.rebuilder.azure_search = AzureSearchBackend({})
-        self.rebuilder.retrieve_current_search_objects()
+        mocked_response = MagicMock()
+        mocked_result_value = {
+            "content": {
+                "resource": {
+                    "object_url": "https://example.com/something-to-search-for"
+                }
+            }
+        }
+        mocked_response.content = json.dumps({"value": [mocked_result_value]})
+        with patch("requests.get", return_value=mocked_response):
+            search_objects = self.rebuilder.retrieve_current_search_objects()
         # Can't validate the result - could be empty, or not
+        print("Search objects: %s" % search_objects)
+        self.assertEqual(
+            repr(search_objects),
+            repr(
+                {"https://example.com/something-to-search-for": [mocked_result_value]}
+            ),
+        )
