@@ -71,6 +71,32 @@ MOCKED_CURRENT_SEARCH_OBJECTS = {
 }
 
 
+MOCKED_ORPHANS_RESULT = [
+    (
+        "resource https://example.com/something-to-search-for",
+        {
+            "content": {
+                "resource": {
+                    "object_url": "https://example.com/something-to-search-for",
+                    "objecttype": "resource",
+                }
+            }
+        },
+    ),
+    (
+        "resource https://example.com/something-to-search-for",
+        {
+            "content": {
+                "resource": {
+                    "object_url": "https://example.com/something-to-search-for",
+                    "objecttype": "resource",
+                }
+            }
+        },
+    ),
+]
+
+
 class TestAzureSearchRebuilder(TestCase):
     def setUp(self):
         self.storage = AzureStorage()
@@ -93,7 +119,13 @@ class TestAzureSearchRebuilder(TestCase):
         )
 
     def test_process_orphans(self):
+        results = []
+
         def mocked_process_dup(label, orphan):
-            pass
+            results.append((label, orphan))
 
         process_orphans(MOCKED_CURRENT_SEARCH_OBJECTS, None, mocked_process_dup)
+        self.assertEqual(
+            repr(results),
+            repr(MOCKED_ORPHANS_RESULT),
+        )

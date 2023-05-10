@@ -111,12 +111,12 @@ class SearchOrphansTestCase(TestCase):
 
         # Call the view function
         response = search_orphans(request)
-        responseText = response.content.decode()
+        response_text = response.content.decode()
 
         # Assertions
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "text/plain")
-        self.assertEqual(responseText, response_file.read())
+        self.assertEqual(response_text, response_file.read())
 
     def test_search_orphans_permission_denied(self):
         # Create a request object with an anonymous user
