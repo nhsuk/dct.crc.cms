@@ -11,6 +11,10 @@ from .azure import (
     AzureIndex,
 )
 
+from campaignresourcecentre.core.management.commands.searchorphans import (
+    process_orphans,
+)
+
 
 class TestAzureSearchBackend(TestCase):
     def setUp(self):
@@ -50,6 +54,23 @@ class TestAzureSearchBackend(TestCase):
         self.assertEqual(expected, url)
 
 
+MOCKED_RESULT_VALUE = {
+    "content": {
+        "resource": {
+            "object_url": "https://example.com/something-to-search-for",
+            "objecttype": "resource",
+        }
+    }
+}
+
+MOCKED_CURRENT_SEARCH_OBJECTS = {
+    "https://example.com/something-to-search-for": [
+        MOCKED_RESULT_VALUE,
+        MOCKED_RESULT_VALUE,
+    ]
+}
+
+
 class TestAzureSearchRebuilder(TestCase):
     def setUp(self):
         self.storage = AzureStorage()
@@ -61,21 +82,18 @@ class TestAzureSearchRebuilder(TestCase):
         # Can't seem to mock these objects, so mock the result from the search
         self.rebuilder.azure_search = AzureSearchBackend({})
         mocked_response = MagicMock()
-        mocked_result_value = {
-            "content": {
-                "resource": {
-                    "object_url": "https://example.com/something-to-search-for"
-                }
-            }
-        }
-        mocked_response.content = json.dumps({"value": [mocked_result_value]})
+        mocked_response.content = json.dumps(
+            {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
+        )
         with patch("requests.get", return_value=mocked_response):
             search_objects = self.rebuilder.retrieve_current_search_objects()
-        # Can't validate the result - could be empty, or not
-        print("Search objects: %s" % search_objects)
         self.assertEqual(
             repr(search_objects),
-            repr(
-                {"https://example.com/something-to-search-for": [mocked_result_value]}
-            ),
+            repr(MOCKED_CURRENT_SEARCH_OBJECTS),
         )
+
+    def test_process_orphans(self):
+        def mocked_process_dup(label, orphan):
+            pass
+
+        process_orphans(MOCKED_CURRENT_SEARCH_OBJECTS, None, mocked_process_dup)

@@ -12,6 +12,15 @@ from campaignresourcecentre.search.azure import AzureSearchBackend
 logger = logging.getLogger(__name__)
 
 
+def process_orphans(orphans, url_re, process_dup):
+    for orphan_url, orphan_dups in sorted(orphans.items()):
+        for orphan in orphan_dups:
+            data = orphan["content"]["resource"]
+            label = f"{data ['objecttype']} {orphan_url}"
+            if url_re is None or url_re.match(data["object_url"]):
+                process_dup(label, orphan)
+
+
 class Command(BaseCommand):
     def _process_orphan_dup(self, label, orphan, deleting):
         if deleting:
@@ -32,12 +41,11 @@ class Command(BaseCommand):
             orphans = self.storage.load_json_file(
                 f"orphans_{AzureStorage.index_name}.json"
             )
-            for orphan_url, orphan_dups in sorted(orphans.items()):
-                for orphan in orphan_dups:
-                    data = orphan["content"]["resource"]
-                    label = f"{data ['objecttype']} {orphan_url}"
-                    if url_re is None or url_re.match(data["object_url"]):
-                        self._process_orphan_dup(label, orphan, deleting)
+            process_orphans(
+                orphans,
+                url_re,
+                lambda label, orphan: self._process_orphan_dup(label, orphan, deleting),
+            )
         except Exception as e:
             self.stderr.write(f"Couldn't process orphans: {e}")
 
