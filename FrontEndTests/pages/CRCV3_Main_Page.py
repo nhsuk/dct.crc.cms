@@ -971,6 +971,7 @@ class CRCV3MainPage(BasePage):
     def submit_button(self):
         # assert_that(right_click_link(self, "PHE Partnerships Team"), equal_to("https://staging.campaignresources.phe.gov.uk/resources/password-reset/"), "PHE Partnerdship Team link is not working" )
         self.interact.click_element(self.submit)
+        sleep(10)
 
     def forgot_password_confirm(self):
         assert_that(
