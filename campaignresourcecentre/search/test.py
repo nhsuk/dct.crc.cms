@@ -1,7 +1,19 @@
 import json
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 
-from .azure import AzureSearchBackend
+from .azure import (
+    AzureSearchBackend,
+    AzureSearchRebuilder,
+    AzureSearchException,
+    AzureStorage,
+    AzureIndex,
+)
+
+from campaignresourcecentre.core.management.commands.searchorphans import (
+    process_orphans,
+)
 
 
 class TestAzureSearchBackend(TestCase):
@@ -40,3 +52,81 @@ class TestAzureSearchBackend(TestCase):
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         self.assertEqual(expected, url)
+
+
+DUMMY_URL = "https://example.com/something-to-search-for"
+MOCKED_RESULT_VALUE = {
+    "content": {
+        "resource": {
+            "object_url": DUMMY_URL,
+            "objecttype": "resource",
+        }
+    }
+}
+
+MOCKED_CURRENT_SEARCH_OBJECTS = {
+    DUMMY_URL: [
+        MOCKED_RESULT_VALUE,
+        MOCKED_RESULT_VALUE,
+    ]
+}
+
+
+MOCKED_ORPHANS_RESULT = [
+    (
+        f"resource {DUMMY_URL}",
+        {
+            "content": {
+                "resource": {
+                    "object_url": DUMMY_URL,
+                    "objecttype": "resource",
+                }
+            }
+        },
+    ),
+    (
+        f"resource {DUMMY_URL}",
+        {
+            "content": {
+                "resource": {
+                    "object_url": DUMMY_URL,
+                    "objecttype": "resource",
+                }
+            }
+        },
+    ),
+]
+
+
+class TestAzureSearchRebuilder(TestCase):
+    def setUp(self):
+        self.storage = AzureStorage()
+        self.backend = AzureSearchBackend({})
+        self.index = AzureIndex(self.storage)
+        self.rebuilder = AzureSearchRebuilder(self.index)
+
+    def test_retrieve_current_search_objects(self):
+        # Can't seem to mock these objects, so mock the result from the search
+        self.rebuilder.azure_search = AzureSearchBackend({})
+        mocked_response = MagicMock()
+        mocked_response.content = json.dumps(
+            {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
+        )
+        with patch("requests.get", return_value=mocked_response):
+            search_objects = self.rebuilder.retrieve_current_search_objects()
+        self.assertEqual(
+            repr(search_objects),
+            repr(MOCKED_CURRENT_SEARCH_OBJECTS),
+        )
+
+    def test_process_orphans(self):
+        results = []
+
+        def mocked_process_dup(label, orphan):
+            results.append((label, orphan))
+
+        process_orphans(MOCKED_CURRENT_SEARCH_OBJECTS, None, mocked_process_dup)
+        self.assertEqual(
+            repr(results),
+            repr(MOCKED_ORPHANS_RESULT),
+        )
