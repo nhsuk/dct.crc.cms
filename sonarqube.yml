@@ -56,7 +56,7 @@ jobs:
     #    testResultsFiles: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results/*junit.xml'
     #    testRunTitle: 'Dependency check'
     #    searchFolder: '$(Common.TestResultsDirectory)'
-  - job: run-hosted-OWASP-Dependency-Check
+  - job: run_hosted_OWASP_Dependency_Check
     steps:
     - task: DownloadPipelineArtifact@2
       displayName: Download OWASP artifact
