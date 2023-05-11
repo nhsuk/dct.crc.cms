@@ -63,7 +63,7 @@ jobs:
       inputs:
         buildType: "specific"
         project: "nhsuk.utilities"
-        definition: "[publish]-owasp-dependency-check"
+        definition: "[schedule]-owasp-dependency-check"
         buildVersionToDownload: "latestFromBranch"
         branchName: refs/heads/main
         artifactName: "owasp"
