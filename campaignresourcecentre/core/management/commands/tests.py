@@ -1,9 +1,17 @@
 from os import environ
 from io import StringIO
-from django.test import TestCase
+from unittest.mock import patch, Mock
+
+from django.test import TestCase, SimpleTestCase
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
+
+from campaignresourcecentre.azurestore.utils import AzureStorage
+from campaignresourcecentre.core.management.commands.searchorphans import (
+    Command as SearchOrphanCommand,
+)
+from campaignresourcecentre.search.azure import AzureSearchBackend
 
 
 class CreateWagtailSuperuserCommandTestCase(TestCase):
