@@ -39,22 +39,37 @@ jobs:
         cliProjectName: 'DCT_Campaigns_Resource_Centre'
         cliSources: '.'
         extraProperties: |
-          sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/dependency-check-report.html, campaignresourcecentre/utils/tests/test_models.py, campaignresourcecentre/paragon/tests.py, campaignresourcecentre/notifications/adapters.py, FrontEndTests/**/*.py
+          sonar.exclusions = campaignresourcecentre/**/migrations/*, campaignresourcecentre/dependency-scan-results/*, campaignresourcecentre/utils/tests/test_models.py, campaignresourcecentre/paragon/tests.py, campaignresourcecentre/notifications/adapters.py, FrontEndTests/**/*.py
           sonar.python.coverage.reportPaths = /home/vsts/work/1/s/docker/coverage.xml
-    - task: dependency-check-build-task@6
-      inputs:
-        projectName: 'dct-campaign-resource-centre'
-        reportsDirectory: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results'
-        scanPath: '$(Build.SourcesDirectory)'
-        format: "JUNIT"
-        additionalArguments: --format "HTML"
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/campaignresourcecentre/dependency-scan-results/*junit.xml'
-        testRunTitle: 'Dependency check'
-        searchFolder: '$(Common.TestResultsDirectory)'
     - task: SonarQubeAnalyze@5
+
+  - job: run_hosted_OWASP_Dependency_Check
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Download OWASP artifact
+      inputs:
+        buildType: "specific"
+        project: "nhsuk.utilities"
+        definition: "[schedule]-owasp-dependency-check-update"
+        buildVersionToDownload: "latestFromBranch"
+        branchName: refs/heads/main
+        artifactName: "owasp"
+        targetPath: "$(Pipeline.Workspace)/owasp"
+        allowPartiallySucceededBuilds: true
+    - task: Bash@3
+      displayName: Run OWASP Dependency Check
+      condition: and(succeeded(),eq(variables['DisableOwaspDependencyCheck'],false))
+      inputs:
+        workingDirectory: $(Pipeline.Workspace)/owasp
+        filePath: $(Pipeline.Workspace)/owasp/run_owasp_scanner.sh
+        arguments: '--scan "$(System.DefaultWorkingDirectory)" --failOnCVSS "$(OWASP.Fail.Score)" --project "$(Build.Repository.Name)" --out "$(System.DefaultWorkingDirectory)/dependency-scan-results" --format HTML --format JUNIT --format JSON'
+    - task: PublishTestResults@2
+      displayName: "Publish OWASP dependency check results"
+      condition: and(succeededOrFailed(),eq(variables['DisableOwaspDependencyCheck'],false))
+      inputs:
+        testRunner: JUnit
+        testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml"
+        testRunTitle: "OWASP Dependency check"
 
   - job: SonarQube_review
     dependsOn: SonarQube_analysis
