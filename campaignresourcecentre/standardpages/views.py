@@ -111,11 +111,11 @@ def update_index(request):
 def search_orphans(request):
     if not request.user.is_superuser:
         raise PermissionDenied
-    url_re = request.GET.get("urls_re")
+    urls_re = request.GET.get("urls_re")
     delete = request.GET.get("delete")
     extra_parameters = {}
-    if url_re:
-        extra_parameters["url_re"] = url_re
+    if urls_re:
+        extra_parameters["urls"] = urls_re
     if delete:
         extra_parameters["delete"] = delete.lower().strip().startswith("y")
     with StringIO() as responseFile:
