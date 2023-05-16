@@ -447,7 +447,11 @@ class AzureSearchBackend(BaseSearchBackend):
                 if len(resources) == 1:
                     self.delete_search_resource(resources[0])
                 else:
-                    logger.info("Resource to delete not found - url {}".format(url))
+                    logger.info(
+                        "Resource to delete not found or ambiguous - {}".format(
+                            resources
+                        )
+                    )
         else:
             logger.error("Invalid response: {}".format(response.get("search_content")))
 
