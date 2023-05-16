@@ -111,8 +111,20 @@ def update_index(request):
 def search_orphans(request):
     if not request.user.is_superuser:
         raise PermissionDenied
+    url_re = request.GET.get("urls_re")
+    delete = request.GET.get("delete")
+    extra_parameters = {}
+    if url_re:
+        extra_parameters["url_re"] = url_re
+    if delete:
+        extra_parameters["delete"] = delete.lower().strip().startswith("y")
     with StringIO() as responseFile:
-        call_command("searchorphans", stdout=responseFile, stderr=responseFile)
+        call_command(
+            "searchorphans",
+            stdout=responseFile,
+            stderr=responseFile,
+            **extra_parameters,
+        )
         responseFile.seek(0)
         response = HttpResponse(responseFile.read())
         response.headers["Content-Type"] = "text/plain"
