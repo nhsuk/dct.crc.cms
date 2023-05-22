@@ -43,6 +43,7 @@ from campaignresourcecentre.standardpages.views import (
     cookie_declaration,
     update_index,
     search_orphans,
+    list_index,
 )
 
 
@@ -57,6 +58,7 @@ private_urlpatterns = [
     path("crc-admin/clear_cache/", clear_cache, name="clear_cache"),
     path("crc-admin/update_index/", update_index, name="update_index"),
     path("crc-admin/search_orphans/", search_orphans, name="search_orphans"),
+    path("crc-admin/list_index/", list_index, name="list_index"),
     path("crc-admin/", include(wagtailadmin_urls)),
     path("crc-admin/pub", publish_pages, name="publish_pages"),
     path("crc-documents/", include(wagtaildocs_urls)),
