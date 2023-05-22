@@ -9,7 +9,7 @@ from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
 from campaignresourcecentre.standardpages.forms import ContactUsForm
-from campaignresourcecentre.standardpages.views import search_orphans
+from campaignresourcecentre.standardpages.views import search_orphans, list_index
 
 
 class ContactUsViewTests(TestCase):
@@ -87,6 +87,10 @@ def generate_random_password():  # To satisfy Sonarquvbe security checks
 
 
 class SearchOrphansTestCase(TestCase):
+    command_name = "searchorphans"
+    command_url = "/search_orphans"
+    command_view = search_orphans
+
     def setUp(self):
         self.factory = RequestFactory()
         self.superuser = user_model.objects.create_superuser(
@@ -95,22 +99,22 @@ class SearchOrphansTestCase(TestCase):
             email="admin@example.com",
         )
 
-    def test_search_orphans(self):
+    def test_index_management_command(self):
         # Create a request object with a superuser
-        request = self.factory.get("/search_orphans/")
+        request = self.factory.get(self.command_url)
         request.user = self.superuser
 
         # Set up a StringIO to capture the command output
         response_file = StringIO()
 
         # Call the searchorphans management command
-        call_command("searchorphans", stdout=response_file, stderr=response_file)
+        call_command(self.command_name, stdout=response_file, stderr=response_file)
 
         # Reset the StringIO position to the beginning
         response_file.seek(0)
 
         # Call the view function
-        response = search_orphans(request)
+        response = self.invoke_view(request)
         response_text = response.content.decode()
 
         # Assertions
@@ -120,7 +124,7 @@ class SearchOrphansTestCase(TestCase):
 
     def test_search_orphans_permission_denied(self):
         # Create a request object with an anonymous user
-        request = self.factory.get("/search_orphans/")
+        request = self.factory.get(self.command_url)
         request.user = user_model.objects.create_user(
             username="anon",
             password=generate_random_password(),
@@ -129,4 +133,16 @@ class SearchOrphansTestCase(TestCase):
 
         # Call the view function and assert for PermissionDenied exception
         with self.assertRaises(PermissionDenied):
-            search_orphans(request)
+            self.invoke_view(request)
+
+    def invoke_view(self, request):
+        return search_orphans(request)
+
+
+class ListIndexTestCase(SearchOrphansTestCase):
+    command_name = "listindex"
+    command_url = "/list_index"
+    command_view = list_index
+
+    def invoke_view(self, request):
+        return list_index(request)

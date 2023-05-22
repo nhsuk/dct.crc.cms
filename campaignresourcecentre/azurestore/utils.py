@@ -89,6 +89,10 @@ class AzureStorage:
     def get_taxonomy_terms(self, taxonomy_id):
         pass
 
+    def list_json_files(self):
+        files = self._storage.listdir(self._storage.azure_container)
+        print("Index files", files)
+
     def add_json_file(self, name, data):
         json_file = ContentFile(json.dumps(data, indent=2).encode())
         self._storage.delete(name)
@@ -103,6 +107,7 @@ class AzureStorage:
         page_type = resource_data["resource"]["objecttype"]
         try:
             index_file_name = self._get_azure_filename(page_type, resource_id)
+            resource_data["index_file_name"] = index_file_name
             index_file = ContentFile(json.dumps(resource_data).encode())
             # Remove any existing search resource blob
             self._storage.delete(index_file_name)
