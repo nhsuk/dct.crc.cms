@@ -84,11 +84,12 @@ class AzureSearchRebuilder:
             results = []
         for r in results:
             search_object = r["content"]["resource"]
-            url = search_object["object_url"]
-            if url in result:
-                result[url].append(r)
-            else:
-                result[url] = [r]
+            url = search_object["object_url"] if search_object else None
+            if url:
+                if url in result:
+                    result[url].append(r)
+                else:
+                    result[url] = [r]
 
     def retrieve_current_search_objects(self):
         azure_search = AzureSearchBackend({})
@@ -175,6 +176,7 @@ class AzureIndex:
             return item.search_indexable()
         except AttributeError:
             logger.info(f"'search_indexable' is not defined in {item}")
+            return False
 
     def add_model(self, model):
         pass
@@ -370,13 +372,27 @@ class AzureSearchBackend(BaseSearchBackend):
                 "ok": response.ok,
                 "code": response.status_code,
             }
+            not_interpretable = 0
             try:
                 results = json_response["search_content"]["value"]
-                result_urls = [r["content"]["resource"]["object_url"] for r in results]
+                result_urls = []
+                for r in results:
+                    content = r.get("content")
+                    resource = content.get("resource") if content else None
+                    object_url = resource.get("object_url") if resource else None
+                    if object_url:
+                        result_urls.append(object_url)
+                    else:
+                        not_interpretable += 1
+                        logger.error("--Can't interpret result: %s", r)
             except Exception as e:
                 logger.error("Couldn't interpret search response: %s", e)
                 raise
-            logger.info("%d items returned from search", len(result_urls))
+            logger.info(
+                "%d items returned from search, %d not interpretable",
+                len(result_urls),
+                not_interpretable,
+            )
         except Exception as err:
             logger.error("Exception raised - Azure Search Get: %s", err)
             json_response = {"ok": False, "code": 500}

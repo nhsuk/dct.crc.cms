@@ -310,7 +310,11 @@ class AzureSearchStorage(AzureStorage):
 
     def __init__(self, **settings):
         super().__init__(**settings)
-        logger.info("Using storage domain '%s' for search", self.custom_domain)
+        logger.info(
+            "Using storage container %s in domain %s for search index",
+            self.azure_container,
+            self.custom_domain,
+        )
 
 
 # Based on default_storage in https://github.com/django/django/blob/main/django/core/files/storage.py
