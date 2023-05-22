@@ -99,12 +99,7 @@ def clear_cache(request):
 def update_index(request):
     if not request.user.is_superuser:
         raise PermissionDenied
-    with StringIO() as responseFile:
-        call_command("update_index", stdout=responseFile, stderr=responseFile)
-        responseFile.seek(0)
-        response = HttpResponse(responseFile.read())
-        response.headers["Content-Type"] = "text/plain"
-        return response
+    spawn_command("update_index")
 
 
 def spawn_command(command, params=None):
