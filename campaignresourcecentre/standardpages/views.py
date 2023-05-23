@@ -99,16 +99,25 @@ def clear_cache(request):
 def update_index(request):
     if not request.user.is_superuser:
         raise PermissionDenied
+    return spawn_command("update_index")
+
+
+def spawn_command(command, params=None):
+    params = params or {}
     with StringIO() as responseFile:
-        call_command("update_index", stdout=responseFile, stderr=responseFile)
+        call_command(
+            command,
+            stdout=responseFile,
+            stderr=responseFile,
+            **params,
+        )
         responseFile.seek(0)
         response = HttpResponse(responseFile.read())
         response.headers["Content-Type"] = "text/plain"
         return response
 
 
-@require_http_methods(["GET"])
-def search_orphans(request):
+def _search_management_command(request, command_name):
     if not request.user.is_superuser:
         raise PermissionDenied
     urls_re = request.GET.get("urls_re")
@@ -118,17 +127,17 @@ def search_orphans(request):
         extra_parameters["urls"] = urls_re
     if delete:
         extra_parameters["delete"] = delete.lower().strip().startswith("y")
-    with StringIO() as responseFile:
-        call_command(
-            "searchorphans",
-            stdout=responseFile,
-            stderr=responseFile,
-            **extra_parameters,
-        )
-        responseFile.seek(0)
-        response = HttpResponse(responseFile.read())
-        response.headers["Content-Type"] = "text/plain"
-        return response
+    return spawn_command(command_name, extra_parameters)
+
+
+@require_http_methods(["GET"])
+def search_orphans(request):
+    return _search_management_command(request, "searchorphans")
+
+
+@require_http_methods(["GET"])
+def list_index(request):
+    return _search_management_command(request, "listindex")
 
 
 @require_http_methods(["GET"])
