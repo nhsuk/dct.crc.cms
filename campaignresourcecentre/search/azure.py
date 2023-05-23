@@ -113,6 +113,12 @@ class AzureSearchRebuilder:
         logger.info(
             "URLs of indexed objects at start: %d", len(self.preexisting_objects)
         )
+        if self.preexisting_objects:
+            # Delete them all
+            azure_search = AzureSearchBackend({})
+            for url, search_resources in self.preexisting_objects.items():
+                for search_resource in search_resources:
+                    azure_search.delete_search_resource(search_resource)
         return self.index
 
     def finish(self):
@@ -472,7 +478,10 @@ class AzureSearchBackend(BaseSearchBackend):
             logger.error("Invalid response: {}".format(response.get("search_content")))
 
     def delete_search_resource(self, search_resource):
-        resource_url = search_resource["content"]["resource"]["object_url"]
+        try:
+            resource_url = search_resource["content"]["resource"]["object_url"]
+        except KeyError:
+            resource_url = "unknown URL"
         query_string = "api-version={}".format(
             settings.AZURE_SEARCH["DELETE_API_VERSION"]
         )
