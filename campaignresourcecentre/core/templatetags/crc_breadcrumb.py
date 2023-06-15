@@ -1,7 +1,7 @@
 import logging
 
 from django import template
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 logger = logging.getLogger(__name__)
 

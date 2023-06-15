@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, BadRequest, SuspiciousOperation
 from django.core.signing import BadSignature
-from wagtail.core import hooks
+from wagtail import hooks
 
 from cryptography.fernet import InvalidToken
 

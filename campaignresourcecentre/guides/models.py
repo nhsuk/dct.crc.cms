@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, StreamFieldPanel
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, StreamFieldPanel
+from wagtail.fields import RichTextField, StreamField
 from wagtail.images import get_image_model_string
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
-from wagtail.core.blocks import ChoiceBlock
+from wagtail.blocks import ChoiceBlock
 
 from campaignresourcecentre.campaigns.blocks import CommonBlocks, GuidePageBlocks
 from campaignresourcecentre.utils.models import BasePage

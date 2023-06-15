@@ -8,7 +8,7 @@ from html import unescape
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     InlinePanel,
     MultiFieldPanel,
@@ -17,8 +17,8 @@ from wagtail.admin.edit_handlers import (
     StreamFieldPanel,
     TabbedInterface,
 )
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable
 from wagtail.images import get_image_model_string
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtailreacttaxonomy.edit_handlers import TaxonomyPanel

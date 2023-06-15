@@ -2,7 +2,7 @@ import os
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User, Group
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 
 from campaignresourcecentre.apps import CRCV3Config

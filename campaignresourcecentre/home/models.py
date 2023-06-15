@@ -2,13 +2,13 @@ from django.db import models
 
 from modelcluster.fields import ParentalKey
 
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     InlinePanel,
     StreamFieldPanel,
 )
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.fields import RichTextField, StreamField
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from campaignresourcecentre.campaigns.models import CampaignUpdateBase

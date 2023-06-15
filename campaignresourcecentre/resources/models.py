@@ -8,15 +8,15 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from modelcluster.fields import ParentalKey
 
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     InlinePanel,
     MultiFieldPanel,
     ObjectList,
     TabbedInterface,
 )
-from wagtail.core.fields import RichTextField
-from wagtail.core.models import Orderable
+from wagtail.fields import RichTextField
+from wagtail.models import Orderable
 from wagtail.documents import get_document_model_string
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images import get_image_model_string

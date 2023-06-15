@@ -59,7 +59,7 @@ class CRCV3Config(AppConfig):
         # Patch the page permission tester with our custom tester defined above
         # Modules in Django apps can't be accessed until apps have been loaded
         from django.contrib.auth.models import Group
-        from wagtail.core.models import PagePermissionTester
+        from wagtail.models import PagePermissionTester
 
         def monkey_patch_can_unpublish(self):
             def is_user_in_nhse_editors_group(user):

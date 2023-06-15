@@ -10,7 +10,7 @@ from azure.search.documents.indexes import SearchIndexClient
 from django.conf import settings
 from django.db.models.query import QuerySet
 
-from wagtail.core.models import Page, PageQuerySet
+from wagtail.models import Page, PageQuerySet
 
 from wagtailreacttaxonomy.models import (
     TaxonomyTerms,

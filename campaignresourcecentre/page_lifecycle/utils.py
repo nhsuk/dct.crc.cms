@@ -6,7 +6,7 @@ from typing import Iterable
 from django.conf import settings
 from django.urls import reverse
 
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from campaignresourcecentre.notifications import AbstractNotifications
 
