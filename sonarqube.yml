@@ -87,7 +87,7 @@ jobs:
           git clone https://github.com/Ross-Clark/SQPR.git
 
           pip install PyGithub==1.57
-          pip install python-sonarqube-api==2.0.3
+          pip install git+https://github.com/Ross-Clark/python-sonarqube-api.git@tags/2.0.0
           python3 SQPR/src/sqpr.py -g $(githubToken) -k DCT_Campaigns_Resource_Centre -p $(System.PullRequest.PullRequestNumber) -r nhsuk/dct-campaign-resource-centre -s $(sonarqubeToken) -u https://sonarqube.nhswebsite-staging.nhs.uk
 
         displayName: 'Post PR Review'
