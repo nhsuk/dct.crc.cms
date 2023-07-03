@@ -18,9 +18,7 @@ from wagtail.admin.panels import (
 from wagtail.fields import RichTextField
 from wagtail.models import Orderable
 from wagtail.documents import get_document_model_string
-from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images import get_image_model_string
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 
 from wagtailreacttaxonomy.edit_handlers import TaxonomyPanel
@@ -302,10 +300,10 @@ class ResourceItem(Orderable):
 
     panels = [
         FieldPanel("title"),
-        ImageChooserPanel("image"),
+        FieldPanel("image"),
         FieldPanel("image_alt_text"),
         FieldPanel("can_download"),
-        DocumentChooserPanel("document"),
+        FieldPanel("document"),
         FieldPanel("document_content"),
         FieldPanel("can_order"),
         FieldPanel("sku"),

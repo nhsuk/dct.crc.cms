@@ -1,10 +1,9 @@
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, StreamFieldPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images import get_image_model_string
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.blocks import ChoiceBlock
 
@@ -54,13 +53,13 @@ class GuidePage(BasePage):
         MultiFieldPanel(
             [
                 FieldPanel("summary"),
-                ImageChooserPanel("image"),
+                FieldPanel("image"),
                 FieldPanel("image_alt_text"),
                 FieldPanel("background_colour"),
             ],
             heading="Page Hero",
         ),
-        StreamFieldPanel("body"),
+        FieldPanel("body"),
     ]
 
 
@@ -76,7 +75,7 @@ class GuideHubPage(BasePage):
 
     content_panels = BasePage.content_panels + [
         FieldPanel("introduction"),
-        MultiFieldPanel([StreamFieldPanel("body")], heading="Body"),
+        MultiFieldPanel([FieldPanel("body")], heading="Body"),
     ]
 
     search_fields = BasePage.search_fields + [index.SearchField("introduction")]
