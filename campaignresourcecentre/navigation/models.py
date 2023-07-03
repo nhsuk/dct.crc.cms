@@ -32,20 +32,28 @@ class LinkColumnWithHeader(blocks.StructBlock):
 @register_setting(icon="list-ul")
 class NavigationSettings(BaseSetting, ClusterableModel):
     primary_navigation = StreamField(
-        [("link", LinkBlock())], blank=True, help_text="Main site navigation"
+        [("link", LinkBlock())],
+        blank=True,
+        help_text="Main site navigation",
+        use_json_field=True,
     )
     secondary_navigation = StreamField(
-        [("link", LinkBlock())], blank=True, help_text="Alternative navigation"
+        [("link", LinkBlock())],
+        blank=True,
+        help_text="Alternative navigation",
+        use_json_field=True,
     )
     footer_navigation = StreamField(
         [("column", LinkColumnWithHeader())],
         blank=True,
         help_text="Multiple columns of footer links with optional header.",
+        use_json_field=True,
     )
     footer_links = StreamField(
         [("link", LinkBlock())],
         blank=True,
         help_text="Single list of elements at the base of the page.",
+        use_json_field=True,
     )
 
     panels = [StreamFieldPanel("primary_navigation"), StreamFieldPanel("footer_links")]

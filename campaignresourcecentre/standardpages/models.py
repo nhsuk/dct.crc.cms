@@ -22,8 +22,10 @@ class InformationPage(BasePage):
 
     introduction = models.TextField(blank=True)
 
-    body = StreamField(StoryBlock(required=False), blank=True)
-    section = StreamField(AboutPageSection(required=False), blank=True)
+    body = StreamField(StoryBlock(required=False), blank=True, use_json_field=True)
+    section = StreamField(
+        AboutPageSection(required=False), blank=True, use_json_field=True
+    )
 
     search_fields = BasePage.search_fields + [
         index.SearchField("introduction"),

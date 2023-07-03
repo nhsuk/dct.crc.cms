@@ -217,6 +217,7 @@ class CallToActionSnippet(models.Model):
             required=True,
         ),
         blank=True,
+        use_json_field=True,
     )
 
     panels = [

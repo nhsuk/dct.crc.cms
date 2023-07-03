@@ -54,7 +54,7 @@ class HomePage(BasePage):
         related_name="+",
     )
 
-    body = StreamField((HomePageBlocks(required=False)))
+    body = StreamField(HomePageBlocks(required=False), use_json_field=True)
 
     content_panels = BasePage.content_panels + [
         MultiFieldPanel(
