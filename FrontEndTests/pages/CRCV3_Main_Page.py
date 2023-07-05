@@ -6,7 +6,6 @@ from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
 
-
 from AcceptanceTests.common.common_test_methods import *
 
 
@@ -80,7 +79,9 @@ class CRCV3MainPage(BasePage):
     Betterhealth_related_website_link = PageElement(
         By.XPATH, "//h3[text()='Better Health Every Mind Matters']"
     )
-    Betterhealth_Start4Life_link = PageElement(By.XPATH, "//a[@href='https://www.nhs.uk/start4life']")
+    Betterhealth_Start4Life_link = PageElement(
+        By.XPATH, "//a[@href='https://www.nhs.uk/start4life']"
+    )
     Cervical_Screening_link = PageElement(
         By.XPATH, "//a[@href='https://www.nhs.uk/conditions/cervical-screening/']"
     )
@@ -96,7 +97,9 @@ class CRCV3MainPage(BasePage):
     Betterhealth_related_website_landing = PageElement(
         By.XPATH, "//h1[text()='Better Health Every Mind Matters']"
     )
-    Betterhealth_Start4Life_landing = PageElement(By.XPATH, "//h2[text()='Pregnancy, baby and parenting']")
+    Betterhealth_Start4Life_landing = PageElement(
+        By.XPATH, "//h2[text()='Pregnancy, baby and parenting']"
+    )
     Cervical_Screening_Campaign_landing = PageElement(By.XPATH, "//span[@role='text']")
     # We_Are_Undefeatable_campaign_landing = PageElement(By.XPATH, "")
     related_website_landing = PageElement(
@@ -346,9 +349,7 @@ class CRCV3MainPage(BasePage):
     )
     How_To_Guides_Link = PageElement(By.PARTIAL_LINK_TEXT, "How To Guides")
     Help_us_help_you_link = PageElement(By.LINK_TEXT, "Help Us Help You - Vaccinations")
-    BH_Start4Life_link = PageElement(
-        By.LINK_TEXT, "Better Health Start for Life"
-    )
+    BH_Start4Life_link = PageElement(By.LINK_TEXT, "Better Health Start for Life")
     Help_us_help_you_Landing = PageElement(
         By.XPATH, "//h1[text()='Help Us Help You - Heart Attack and Stroke']"
     )
@@ -1087,8 +1088,13 @@ class CRCV3MainPage(BasePage):
             # self.driver.back()
         elif Link == "Betterhealth_Start4Life":
             self.interact.click_element(self.Betterhealth_Start4Life_link)
-            assert_that(self.interrogate.is_image_visible_by_checking_src(self.Betterhealth_Start4Life_landing),
-                        equal_to(True), "Betterhealth Start4Life page not loaded")
+            assert_that(
+                self.interrogate.is_image_visible_by_checking_src(
+                    self.Betterhealth_Start4Life_landing
+                ),
+                equal_to(True),
+                "Betterhealth Start4Life page not loaded",
+            )
             self.driver.back()
         elif Link == "Cervical_Screening":
             self.interact.click_element(self.Cervical_Screening_link)
