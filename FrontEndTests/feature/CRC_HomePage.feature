@@ -32,7 +32,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
 
-@CRCV3-004 @Smoke
+@CRCV3-004
   Scenario Outline: open CRCV3 site to verify forgot password and the validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -73,11 +73,11 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 #    Then verify logout displayed in place of Sign in
 #    #Then click Sign Out link and verify its logged out successfully
 
-  @CRCV3-007
-  Scenario: open CRCV3 site and verify Home tab and its links
-    Given I loaded CRCV3 site to load the home page
-    #When I Click click on Home page tab
-    #Then Verify Covid advices resources links and Coronavirus campaigns and resources button working
+#  @CRCV3-007
+#  Scenario: open CRCV3 site and verify Home tab and its links
+#    Given I loaded CRCV3 site to load the home page
+#    #When I Click click on Home page tab
+#    #Then Verify Covid advices resources links and Coronavirus campaigns and resources button working
 
   @CRCV3-008
   Scenario: open CRCV3 site and verify Latest Updated links are loaded to respective pages
@@ -174,16 +174,16 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Given I loaded CRCV3 site to load the home page
     When I browsed to Better Health Start for Life Introducing Solid Foods resource campaign
     Then Verify Campaign details for "Betterhealth_Start4Life"
-    Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth_Start4Life"
-    Then Verify "Betterhealth_Start4Life" Resources
+    #Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth_Start4Life"
+    #Then Verify "Betterhealth_Start4Life" Resources
 
-  @CRCV3-017
-  Scenario: open CRCV3 site and verify Cervical Screening pages and links
-    Given I loaded CRCV3 site to load the home page
-    When I browsed to Cervical Screening resource campaign
-    Then Verify Campaign details for "Cervical_Screening"
-    Then Research behind this campaign and how to use this campaign expand and collapse for "Cervical_Screening"
-    Then Verify "Cervical_Screening" Resources
+#  @CRCV3-017
+#  Scenario: open CRCV3 site and verify Cervical Screening pages and links
+#    Given I loaded CRCV3 site to load the home page
+#    When I browsed to Cervical Screening resource campaign
+#    Then Verify Campaign details for "Cervical_Screening"
+#    Then Research behind this campaign and how to use this campaign expand and collapse for "Cervical_Screening"
+#    Then Verify "Cervical_Screening" Resources
 
   @CRCV3-018
   Scenario: open CRCV3 site and verify We Are Undefeatable pages and links

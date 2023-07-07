@@ -6,7 +6,6 @@ from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
 
-
 from AcceptanceTests.common.common_test_methods import *
 
 
@@ -80,7 +79,9 @@ class CRCV3MainPage(BasePage):
     Betterhealth_related_website_link = PageElement(
         By.XPATH, "//h3[text()='Better Health Every Mind Matters']"
     )
-    Betterhealth_Start4Life_link = PageElement(By.LINK_TEXT, "www.nhs.uk/start4life")
+    Betterhealth_Start4Life_link = PageElement(
+        By.XPATH, "//a[@href='https://www.nhs.uk/start4life']"
+    )
     Cervical_Screening_link = PageElement(
         By.XPATH, "//a[@href='https://www.nhs.uk/conditions/cervical-screening/']"
     )
@@ -97,8 +98,7 @@ class CRCV3MainPage(BasePage):
         By.XPATH, "//h1[text()='Better Health Every Mind Matters']"
     )
     Betterhealth_Start4Life_landing = PageElement(
-        By.ID,
-        "trusted-nhs-help-and-advice-during-span-classgreenpregnancyspan-span-classbluebirthspan-and-span-classorangeparenthoodspan",
+        By.XPATH, "//h2[text()='Pregnancy, baby and parenting']"
     )
     Cervical_Screening_Campaign_landing = PageElement(By.XPATH, "//span[@role='text']")
     # We_Are_Undefeatable_campaign_landing = PageElement(By.XPATH, "")
@@ -349,9 +349,7 @@ class CRCV3MainPage(BasePage):
     )
     How_To_Guides_Link = PageElement(By.PARTIAL_LINK_TEXT, "How To Guides")
     Help_us_help_you_link = PageElement(By.LINK_TEXT, "Help Us Help You - Vaccinations")
-    BH_Start4Life_link = PageElement(
-        By.LINK_TEXT, "Better Health Start for Life Introducing Solid Foods"
-    )
+    BH_Start4Life_link = PageElement(By.LINK_TEXT, "Better Health Start for Life")
     Help_us_help_you_Landing = PageElement(
         By.XPATH, "//h1[text()='Help Us Help You - Heart Attack and Stroke']"
     )
