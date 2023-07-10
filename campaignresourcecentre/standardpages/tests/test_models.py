@@ -1,4 +1,4 @@
-from wagtail.tests.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTests
 
 from campaignresourcecentre.home.models import HomePage
 from campaignresourcecentre.standardpages.factories import (

@@ -1,7 +1,7 @@
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from wagtail.admin.edit_handlers import HelpPanel
+from wagtail.admin.panels import HelpPanel
 
 from .utils import get_next_review_duration
 

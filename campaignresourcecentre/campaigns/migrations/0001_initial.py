@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.fields
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -199,20 +199,20 @@ class Migration(migrations.Migration):
                         max_length=255,
                     ),
                 ),
-                ("summary", wagtail.core.fields.RichTextField()),
+                ("summary", wagtail.fields.RichTextField()),
                 ("related_website", models.URLField(blank=True)),
                 (
                     "details",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
                             (
                                 "detail",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
-                                        ("title", wagtail.core.blocks.CharBlock()),
+                                        ("title", wagtail.blocks.CharBlock()),
                                         (
                                             "text",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=["bold", "italic", "link"]
                                             ),
                                         ),

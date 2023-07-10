@@ -33,7 +33,7 @@ INTERNAL_IPS = []
 
 
 # This is only to test Wagtail emails.
-BASE_URL = "http://localhost:8000"
+WAGTAILADMIN_BASE_URL = "http://localhost:8000"
 
 
 # Display sent emails in the console while developing locally.

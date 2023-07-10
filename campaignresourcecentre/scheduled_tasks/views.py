@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 
-from wagtail.core.models import PageRevision
+from wagtail.models import PageRevision
 
 logger = logging.getLogger(__name__)
 

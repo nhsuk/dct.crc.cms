@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.fields
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="homepage",
             name="introduction",
-            field=wagtail.core.fields.RichTextField(default=""),
+            field=wagtail.fields.RichTextField(default=""),
             preserve_default=False,
         ),
         migrations.CreateModel(

@@ -2,11 +2,10 @@ from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, MultiFieldPanel
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.fields import RichTextField, StreamField
 from wagtail.search import index
 from wagtail.images import get_image_model_string
-from wagtail.images.edit_handlers import ImageChooserPanel
 
 from campaignresourcecentre.utils.blocks import StoryBlock
 from campaignresourcecentre.utils.models import BasePage, RelatedPage
@@ -22,8 +21,10 @@ class InformationPage(BasePage):
 
     introduction = models.TextField(blank=True)
 
-    body = StreamField(StoryBlock(required=False), blank=True)
-    section = StreamField(AboutPageSection(required=False), blank=True)
+    body = StreamField(StoryBlock(required=False), blank=True, use_json_field=True)
+    section = StreamField(
+        AboutPageSection(required=False), blank=True, use_json_field=True
+    )
 
     search_fields = BasePage.search_fields + [
         index.SearchField("introduction"),
@@ -32,8 +33,8 @@ class InformationPage(BasePage):
 
     content_panels = BasePage.content_panels + [
         FieldPanel("introduction"),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("section"),
+        FieldPanel("body"),
+        FieldPanel("section"),
     ]
 
 
@@ -63,13 +64,13 @@ class AboutPage(InformationPage):
             [
                 FieldPanel("summary"),
                 FieldPanel("description"),
-                ImageChooserPanel("image"),
+                FieldPanel("image"),
                 FieldPanel("image_alt_text"),
             ],
             heading="Page Hero",
         ),
-        StreamFieldPanel("body"),
-        StreamFieldPanel("section"),
+        FieldPanel("body"),
+        FieldPanel("section"),
     ]
 
 

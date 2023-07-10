@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.fields
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                         max_length=255,
                     ),
                 ),
-                ("description", wagtail.core.fields.RichTextField()),
+                ("description", wagtail.fields.RichTextField()),
                 (
                     "permission_role",
                     models.CharField(

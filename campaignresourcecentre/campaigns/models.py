@@ -8,19 +8,17 @@ from html import unescape
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     InlinePanel,
     MultiFieldPanel,
     ObjectList,
     PageChooserPanel,
-    StreamFieldPanel,
     TabbedInterface,
 )
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable
 from wagtail.images import get_image_model_string
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtailreacttaxonomy.edit_handlers import TaxonomyPanel
 from wagtailreacttaxonomy.models import TaxonomyMixin
 from wagtailreacttaxonomy.models import TaxonomyTerms
@@ -89,7 +87,7 @@ class CampaignHubPage(BasePage):
             ],
             heading="Campaign Updates",
         ),
-        MultiFieldPanel([StreamFieldPanel("body")], heading="Body"),
+        MultiFieldPanel([FieldPanel("body")], heading="Body"),
     ]
 
     promote_panels = promote_panels = [
@@ -278,7 +276,7 @@ class CampaignUpdateBase(LinkFields, Orderable):
     panels = [
         MultiFieldPanel(
             [
-                ImageChooserPanel("image"),
+                FieldPanel("image"),
                 FieldPanel("description"),
                 FieldPanel("image_alt_text"),
                 PageChooserPanel("link_page", CAMPAIGN_PAGE_NAME),
@@ -439,7 +437,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             [
                 FieldPanel("summary"),
                 FieldPanel("description"),
-                ImageChooserPanel("image"),
+                FieldPanel("image"),
                 FieldPanel("image_alt_text"),
             ],
             heading="Page Hero",
@@ -450,12 +448,12 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 FieldPanel("campaign_end_date"),
                 FieldPanel("related_website"),
                 FieldPanel("related_website_text"),
-                StreamFieldPanel("details"),
+                FieldPanel("details"),
             ],
             heading="Campaign Details",
             classname="collapsible",
         ),
-        MultiFieldPanel([StreamFieldPanel("body")], heading="Body"),
+        MultiFieldPanel([FieldPanel("body")], heading="Body"),
     ]
 
     taxonomy_term_panels = [

@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -28,19 +28,19 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "primary_navigation",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         (
                             (
                                 "link",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     (
                                         (
                                             "page",
-                                            wagtail.core.blocks.PageChooserBlock(),
+                                            wagtail.blocks.PageChooserBlock(),
                                         ),
                                         (
                                             "title",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Leave blank to use the page's own title",
                                                 required=False,
                                             ),
@@ -55,19 +55,19 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "secondary_navigation",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         (
                             (
                                 "link",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     (
                                         (
                                             "page",
-                                            wagtail.core.blocks.PageChooserBlock(),
+                                            wagtail.blocks.PageChooserBlock(),
                                         ),
                                         (
                                             "title",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Leave blank to use the page's own title",
                                                 required=False,
                                             ),
@@ -82,31 +82,31 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "footer_navigation",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         (
                             (
                                 "column",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     (
                                         (
                                             "heading",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 required=False,
                                                 help_text="Leave blank if no header required.",
                                             ),
                                         ),
                                         (
                                             "links",
-                                            wagtail.core.blocks.ListBlock(
-                                                wagtail.core.blocks.StructBlock(
+                                            wagtail.blocks.ListBlock(
+                                                wagtail.blocks.StructBlock(
                                                     (
                                                         (
                                                             "page",
-                                                            wagtail.core.blocks.PageChooserBlock(),
+                                                            wagtail.blocks.PageChooserBlock(),
                                                         ),
                                                         (
                                                             "title",
-                                                            wagtail.core.blocks.CharBlock(
+                                                            wagtail.blocks.CharBlock(
                                                                 help_text="Leave blank to use the page's own title",
                                                                 required=False,
                                                             ),
@@ -125,19 +125,19 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "footer_links",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         (
                             (
                                 "link",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     (
                                         (
                                             "page",
-                                            wagtail.core.blocks.PageChooserBlock(),
+                                            wagtail.blocks.PageChooserBlock(),
                                         ),
                                         (
                                             "title",
-                                            wagtail.core.blocks.CharBlock(
+                                            wagtail.blocks.CharBlock(
                                                 help_text="Leave blank to use the page's own title",
                                                 required=False,
                                             ),

@@ -12,7 +12,7 @@ from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.db.models import Model
 
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 from wagtail.documents import get_document_model
 from wagtailreacttaxonomy.models import TaxonomyTerms
 

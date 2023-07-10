@@ -2,9 +2,9 @@ from datetime import date
 
 from django.db import models
 
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 from .edit_handlers import NextReviewHelpPanel
 from .forms import PageLifecycleForm

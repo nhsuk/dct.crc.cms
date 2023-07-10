@@ -1,18 +1,16 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.decorators import method_decorator
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     PageChooserPanel,
-    StreamFieldPanel,
 )
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.core import blocks
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable, Page
+from wagtail import blocks
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable, Page
 from wagtail.images import get_image_model_string
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.models import register_snippet
 
 from campaignresourcecentre.utils.cache import get_default_cache_control_decorator
@@ -137,7 +135,7 @@ class SocialFields(models.Model):
 
     promote_panels = [
         MultiFieldPanel(
-            [ImageChooserPanel("social_image"), FieldPanel("social_text")],
+            [FieldPanel("social_image"), FieldPanel("social_text")],
             "Social networks",
         )
     ]
@@ -171,7 +169,7 @@ class ListingFields(models.Model):
     promote_panels = [
         MultiFieldPanel(
             [
-                ImageChooserPanel("listing_image"),
+                FieldPanel("listing_image"),
                 FieldPanel("listing_title"),
                 FieldPanel("listing_summary"),
             ],
@@ -217,12 +215,13 @@ class CallToActionSnippet(models.Model):
             required=True,
         ),
         blank=True,
+        use_json_field=True,
     )
 
     panels = [
         FieldPanel("title"),
         FieldPanel("summary"),
-        StreamFieldPanel("link"),
+        FieldPanel("link"),
     ]
 
     def get_link_text(self):

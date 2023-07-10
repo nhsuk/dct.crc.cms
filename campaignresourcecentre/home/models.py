@@ -2,20 +2,17 @@ from django.db import models
 
 from modelcluster.fields import ParentalKey
 
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     InlinePanel,
-    StreamFieldPanel,
 )
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.fields import RichTextField, StreamField
 
 from campaignresourcecentre.campaigns.models import CampaignUpdateBase
 from campaignresourcecentre.utils.models import BasePage
 
 from campaignresourcecentre.campaigns.blocks import HomePageBlocks
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images import get_image_model_string
 
 
@@ -54,13 +51,13 @@ class HomePage(BasePage):
         related_name="+",
     )
 
-    body = StreamField((HomePageBlocks(required=False)))
+    body = StreamField(HomePageBlocks(required=False), use_json_field=True)
 
     content_panels = BasePage.content_panels + [
         MultiFieldPanel(
             [
                 FieldPanel("introduction"),
-                ImageChooserPanel("hero_image"),
+                FieldPanel("hero_image"),
                 FieldPanel("hero_align"),
             ],
             heading="Introduction",
@@ -75,8 +72,8 @@ class HomePage(BasePage):
             ],
             heading="Campaign Updates",
         ),
-        SnippetChooserPanel("call_to_action"),
-        StreamFieldPanel("body"),
+        FieldPanel("call_to_action"),
+        FieldPanel("body"),
     ]
 
     def get_campaign_updates(self):

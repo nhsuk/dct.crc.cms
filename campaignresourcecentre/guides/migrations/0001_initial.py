@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -50,21 +50,21 @@ class Migration(migrations.Migration):
                 ("introduction", models.TextField(blank=True)),
                 (
                     "body",
-                    wagtail.core.fields.StreamField(
+                    wagtail.fields.StreamField(
                         [
-                            ("paragraph", wagtail.core.blocks.RichTextBlock()),
+                            ("paragraph", wagtail.blocks.RichTextBlock()),
                             (
                                 "left_image_with_text",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
                                         (
                                             "image",
                                             wagtail.images.blocks.ImageChooserBlock(),
                                         ),
-                                        ("title", wagtail.core.blocks.CharBlock()),
+                                        ("title", wagtail.blocks.CharBlock()),
                                         (
                                             "text",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=["bold", "italic"]
                                             ),
                                         ),
@@ -73,34 +73,34 @@ class Migration(migrations.Migration):
                             ),
                             (
                                 "accordion",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
-                                        ("title", wagtail.core.blocks.CharBlock()),
+                                        ("title", wagtail.blocks.CharBlock()),
                                         (
                                             "text",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=["bold", "italic", "link"]
                                             ),
                                         ),
                                         (
                                             "show_numbering",
-                                            wagtail.core.blocks.BooleanBlock(
+                                            wagtail.blocks.BooleanBlock(
                                                 help_text="Controls whether to show numbers next to the accordion items.",
                                                 required=False,
                                             ),
                                         ),
                                         (
                                             "items",
-                                            wagtail.core.blocks.ListBlock(
-                                                wagtail.core.blocks.StructBlock(
+                                            wagtail.blocks.ListBlock(
+                                                wagtail.blocks.StructBlock(
                                                     [
                                                         (
                                                             "title",
-                                                            wagtail.core.blocks.CharBlock(),
+                                                            wagtail.blocks.CharBlock(),
                                                         ),
                                                         (
                                                             "text",
-                                                            wagtail.core.blocks.TextBlock(),
+                                                            wagtail.blocks.TextBlock(),
                                                         ),
                                                     ],
                                                     icon="pilcrow",
@@ -112,18 +112,18 @@ class Migration(migrations.Migration):
                             ),
                             (
                                 "text_with_image_stack",
-                                wagtail.core.blocks.StructBlock(
+                                wagtail.blocks.StructBlock(
                                     [
-                                        ("title", wagtail.core.blocks.CharBlock()),
+                                        ("title", wagtail.blocks.CharBlock()),
                                         (
                                             "text",
-                                            wagtail.core.blocks.RichTextBlock(
+                                            wagtail.blocks.RichTextBlock(
                                                 features=["bold", "italic", "link"]
                                             ),
                                         ),
                                         (
                                             "images",
-                                            wagtail.core.blocks.ListBlock(
+                                            wagtail.blocks.ListBlock(
                                                 wagtail.images.blocks.ImageChooserBlock()
                                             ),
                                         ),
