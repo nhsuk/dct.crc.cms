@@ -129,7 +129,7 @@ services:
       driver: none
 
   redis:
-    image: redis:3.0
+    image: arm64v8/redis:3.0
     expose:
       - 6379
     logging:
