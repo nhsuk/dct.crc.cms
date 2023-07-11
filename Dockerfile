@@ -78,7 +78,7 @@ COPY --chown=campaignresourcecentre ./manage.py  ./docker-entrypoint.sh ./initia
 # will be served by the WSGI server.
 # Note the static folder is owned by the current user i.e. root and so collectstatic
 # cannot be run within fab.sh (unlike migrate or createsuperuser)
-RUN SECRET_KEY=none python manage.py collectstatic --noinput --clear
+RUN SECRET_KEY=none python3 manage.py collectstatic --noinput --clear
 
 # Load shortcuts
 COPY ./docker/bashrc.sh /home/campaignresourcecentre/.bashrc
