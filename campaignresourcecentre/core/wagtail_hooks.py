@@ -14,5 +14,5 @@ from django.templatetags.static import static
 def insert_global_admin_css():
     return format_html(
         '<link rel="stylesheet" type="text/css" href="{}">',
-        static("admin.css"),
+        static("admin/css/admin.css"),
     )
