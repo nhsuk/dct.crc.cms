@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from campaignresourcecentre.azurestore.utils import AzureStorage
-from campaignresourcecentre.search.azure import AzureSearchBackend
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.storage = AzureStorage()
-        self.backend = AzureSearchBackend({})
         deleting = kwargs.get("delete")
         try:
             url_re = re.compile(kwargs["urls"]) if kwargs.get("urls") else None

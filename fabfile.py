@@ -50,11 +50,6 @@ def build(c):
     """
     group = subprocess.check_output(["id", "-gn"], encoding="utf-8").strip()
     local("mkdir -p media database_dumps campaignresourcecentre/static_compiled")
-    local(
-        "chown -R $USER:{} media database_dumps campaignresourcecentre/static_compiled".format(
-            group
-        )
-    )
     local("chmod -R 775 media database_dumps campaignresourcecentre/static_compiled")
     if FRONTEND == "local":
         local("docker-compose up -d --build web")
