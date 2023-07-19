@@ -1,6 +1,6 @@
 from datetime import date
 from logging import getLogger
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 import json
 
 from django.conf import settings
@@ -323,6 +323,9 @@ def logout(request):
     except Exception as e:
         logger.error("Exception flushing session: %s", e)
     if request.META.get("HTTP_REFERER") is not None:
+        # Redirect user if order is placed and they log out
+        if urlparse(request.META.get("HTTP_REFERER")).path == "/orders/place/":
+            return redirect("/")
         return redirect(request.META.get("HTTP_REFERER"))
     else:
         return redirect("/")
