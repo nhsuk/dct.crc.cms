@@ -140,7 +140,7 @@ class SearchOrphansTestCase(TestCase):
 
 
 class ListIndexTestCase(SearchOrphansTestCase):
-    command_name = "listindex"
+    command_name = "managefiles"
     command_url = "/list_index"
     command_view = list_index
 

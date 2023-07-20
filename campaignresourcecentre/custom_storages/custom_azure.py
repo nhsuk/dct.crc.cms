@@ -191,9 +191,10 @@ class AzureBlobFile(IOBase):
                 if self.headers:
                     self.blob_client.set_http_headers(ContentSettings(self.headers))
                 logger.info(
-                    "Blob %s written as %d block(s)",
+                    "Blob %s written as %d block(s) with headers %s",
                     self.blob_name,
                     len(self.block_list),
+                    self.headers,
                 )
             if self.destroy_on_close:
                 logger.info("Deleting temporary blob %s", self.blob_name)

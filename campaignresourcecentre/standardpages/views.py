@@ -122,11 +122,17 @@ def _search_management_command(request, command_name):
         raise PermissionDenied
     urls_re = request.GET.get("urls_re")
     delete = request.GET.get("delete")
-    extra_parameters = {}
+    storage = request.GET.get("storage", "search")
+    patch_properties = request.GET.get("patch_properties")
+    extra_parameters = {"storage": storage}
     if urls_re:
         extra_parameters["urls"] = urls_re
     if delete:
         extra_parameters["delete"] = delete.lower().strip().startswith("y")
+    if patch_properties:
+        extra_parameters["patch-properties"] = (
+            patch_properties.lower().strip().startswith("y")
+        )
     return spawn_command(command_name, extra_parameters)
 
 
@@ -137,7 +143,7 @@ def search_orphans(request):
 
 @require_http_methods(["GET"])
 def list_index(request):
-    return _search_management_command(request, "listindex")
+    return _search_management_command(request, "managefiles")
 
 
 @require_http_methods(["GET"])
