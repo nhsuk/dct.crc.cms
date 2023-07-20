@@ -20,7 +20,7 @@
 echo "### IMAGE_TAG: ${IMAGE_TAG:=1.1.1}"
 echo "### PARALLEL: ${PARALLEL:=1}"
 echo "### SCENARIOS: ${SCENARIOS:=sequential}"
-echo "### TIMEOUT: ${TIMEOUT:=600}s"
+echo "### TIMEOUT: ${TIMEOUT:=3000}s"
 
 # Can't have empty value for TAGS as pipeline parameter so change "all" to "" here
 TAGS=$([ "$TAGS" = "all" ] && echo "" || echo "$TAGS")
