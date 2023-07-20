@@ -32,17 +32,18 @@ class Command(BaseCommand):
                 self.stdout.write(f"{filepath}")
         else:
             self.stdout.write(f"{filepath}")
-            blob_client = self.client.get_blob_client(filepath[1:])
-            blob_properties = blob_client.get_blob_properties()
-            settings = blob_properties["content_settings"]
-            content_type = settings.get("content_type")
-            if content_type:
-                if content_type.startswith("{"):
-                    self.stdout.write("Bad content type: %s" % content_type)
+            if self.client:
+                blob_client = self.client.get_blob_client(filepath[1:])
+                blob_properties = blob_client.get_blob_properties()
+                settings = blob_properties["content_settings"]
+                content_type = settings.get("content_type")
+                if content_type:
+                    if content_type.startswith("{"):
+                        self.stdout.write("Bad content type: %s" % content_type)
+                    else:
+                        self.stdout.write("Content type: %s" % content_type)
                 else:
-                    self.stdout.write("Content type: %s" % content_type)
-            else:
-                self.stdout.write("Missing content type: %s", filepath)
+                    self.stdout.write("Missing content type: %s", filepath)
 
     def handle(self, *args, **kwargs):
         if kwargs["storage"] == "search":
@@ -51,8 +52,9 @@ class Command(BaseCommand):
         else:
             self.folder = "documents"
             self.storage = default_storage
-            # Azure storage specific code
-        self.client = self.storage.client
+        # Azure storage specific code - file storage is used in tests
+        # which has no client attribute
+        self.client = getattr(self.storage, "client", None)
         deleting = kwargs.get("delete")
         patching = kwargs.get("patching")
         try:
