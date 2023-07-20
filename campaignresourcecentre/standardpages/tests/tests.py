@@ -9,7 +9,7 @@ from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
 from campaignresourcecentre.standardpages.forms import ContactUsForm
-from campaignresourcecentre.standardpages.views import search_orphans, list_index
+from campaignresourcecentre.standardpages.views import search_orphans, manage_files
 
 
 class ContactUsViewTests(TestCase):
@@ -141,8 +141,8 @@ class SearchOrphansTestCase(TestCase):
 
 class ListIndexTestCase(SearchOrphansTestCase):
     command_name = "managefiles"
-    command_url = "/list_index"
-    command_view = list_index
+    command_url = "/manage_files"
+    command_view = manage_files
 
     def invoke_view(self, request):
-        return list_index(request)
+        return manage_files(request)
