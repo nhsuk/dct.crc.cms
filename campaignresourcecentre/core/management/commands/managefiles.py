@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand
 
+from azure.storage.blob import ContentSettings
+
 from campaignresourcecentre.azurestore.utils import AzureStorage
 
 logger = logging.getLogger(__name__)
@@ -40,6 +42,24 @@ class Command(BaseCommand):
                 if content_type:
                     if content_type.startswith("{"):
                         self.stdout.write("Bad content type: %s" % content_type)
+                        jsonized_content_type = content_type.replace("'", '"').replace(
+                            "None", "null"
+                        )
+                        self.stdout.write("JSONized as %s" % jsonized_content_type)
+                        if patching:
+                            faulty = {
+                                name: value
+                                for name, value in json.loads(
+                                    jsonized_content_type
+                                ).items()
+                                if value is not None
+                            }
+                            blob_client.set_http_headers(
+                                content_settings=ContentSettings(**faulty)
+                            )
+                            self.stdout.write(
+                                "Content type headers rewritten as %s" % faulty
+                            )
                     else:
                         self.stdout.write("Content type: %s" % content_type)
                 else:
@@ -56,7 +76,7 @@ class Command(BaseCommand):
         # which has no client attribute
         self.client = getattr(self.storage, "client", None)
         deleting = kwargs.get("delete")
-        patching = kwargs.get("patching")
+        patching = kwargs.get("patch")
         try:
             url_re = re.compile(kwargs["urls"]) if kwargs.get("urls") else None
             _, filenames = self.storage.listdir("/%s" % self.folder)

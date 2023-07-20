@@ -189,7 +189,15 @@ class AzureBlobFile(IOBase):
                 self.blob_client.commit_block_list(self.block_list)
                 # Rather curiously, write blob headers after the blob itself
                 if self.headers:
-                    self.blob_client.set_http_headers(ContentSettings(self.headers))
+                    self.blob_client.set_http_headers(
+                        ContentSettings(
+                            **{
+                                name: value
+                                for name, value in self.headers.items()
+                                if value is not None
+                            }
+                        )
+                    )
                 logger.info(
                     "Blob %s written as %d block(s) with headers %s",
                     self.blob_name,
