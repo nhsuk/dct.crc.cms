@@ -43,12 +43,12 @@ docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
 
 for i in {1, 6}
 do
-  curl --output /dev/null --silent --head --fail --max-time 10 ${BASE_URL} && break
+  curl --output /dev/null -k --head --fail --max-time 10 ${BASE_URL} && break
   printf 'Failed to access $BASE_URL, trying again in 10 seconds...'
   sleep 10
 done
 # Confirm site now running or fail
-curl --output /dev/null --silent --head --fail --max-time 10 ${BASE_URL} || exit 1
+curl --output /dev/null -k --head --fail --max-time 10 ${BASE_URL} || exit 1
 
 # get Docker to use host network so it can access localhost:8000 with no fuss
 docker run \
