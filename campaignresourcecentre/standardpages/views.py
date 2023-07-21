@@ -122,21 +122,17 @@ def _search_management_command(request, command_name):
         raise PermissionDenied
     urls_re = request.GET.get("urls_re")
     delete = request.GET.get("delete")
-    patch_properties = request.GET.get("patch_properties")
+    patch = request.GET.get("patch")
     extra_parameters = {}
-    if command_name == "manage_files":
-        storage = request.GET.get(
-            "storage", "search" if command_name == "manage_files" else None
-        )
+    if command_name == "managefiles":
+        storage = request.GET.get("storage", "search")
         extra_parameters["storage"] = storage
     if urls_re:
         extra_parameters["urls"] = urls_re
     if delete:
         extra_parameters["delete"] = delete.lower().strip().startswith("y")
-    if patch_properties:
-        extra_parameters["patch-properties"] = (
-            patch_properties.lower().strip().startswith("y")
-        )
+    if patch:
+        extra_parameters["patch"] = patch.lower().strip().startswith("y")
     return spawn_command(command_name, extra_parameters)
 
 
