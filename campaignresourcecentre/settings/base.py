@@ -129,6 +129,7 @@ MIDDLEWARE = [
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "campaignresourcecentre.core.middleware.crccachingmiddleware.CRCFetchFromCacheMiddleware",
     # above line replaces django.middleware.cache.FetchFromCacheMiddleware,
+    "campaignresourcecentre.core.middleware.customerrormiddleware.Custom405Middleware",
 ]
 
 ROOT_URLCONF = "campaignresourcecentre.urls"

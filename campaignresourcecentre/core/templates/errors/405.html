@@ -3,7 +3,7 @@
 
 {% block title %}{{ settings.utils.SystemMessagesSettings.title_404 }}{% endblock %}
 
-{% block body_class %}template-404{% endblock %}
+{% block body_class %}template-405{% endblock %}
 
 {% block breadcrumbs %}
     <nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
@@ -22,16 +22,15 @@
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-width-container govuk-!-padding-bottom-7">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+<div class="govuk-width-container govuk-!-padding-bottom-7">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
                 <div class="error-content">
-                    <h1 class="govuk-heading-xl">{{ settings.utils.SystemMessagesSettings.title_404 }}</h1>
-                    {{ settings.utils.SystemMessagesSettings.body_404|richtext }}
+                    <h1 class="govuk-heading-xl">Something went wrong</h1>
+                    <p>Sorry, you may be trying to access a page which is no longer available.</p>
                 </div>
             </div>
         </div>
     </div>
 {% endblock %}
-
 
