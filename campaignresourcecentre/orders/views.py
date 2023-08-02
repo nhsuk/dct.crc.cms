@@ -90,7 +90,7 @@ def place_order(request):
 
     # Front-end shouldn't ever route to this entry with an empty basket
     if len(items) == 0:
-        return bad_request(request, "Incomplete address")
+        return redirect("/orders/summary")
     with transaction.atomic():
         try:
             osn = OrderSequenceNumber.objects.get(date=datetime.date.today())
