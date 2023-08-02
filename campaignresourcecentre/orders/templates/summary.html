@@ -28,11 +28,13 @@
             </div>
         </div>
 
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h2>Resources</h2>
+        {% if items %}
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h2>Resources</h2>
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         <div class="govuk-grid-row resources">
             {% if items %}
@@ -75,6 +77,10 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% else %}
+                <div class="govuk-grid-column-two-thirds">
+                    <p>Your basket is currently empty. Try checking your <a href="/account/orders/">order history</a></p>
+                </div>
             {% endif %}
         </div>
 
@@ -105,7 +111,7 @@
                     </dl>
                 {% endif %}
 
-                <p><a href="/orders/address/edit">Edit address</a></p>
+                <p>{% if items %}<a href="/orders/address/edit">Edit address</a>{% endif %}</p>
                 <form id="place_order" action="/orders/place/" method="POST" aria-label="Place order">
                     {% csrf_token %}
                     <fieldset class="govuk-fieldset">
