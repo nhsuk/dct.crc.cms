@@ -202,7 +202,7 @@ stages:
       environmentName: 'staging'
       namespace: 'dct-crc-v3-ns'
       tag: '$(sourceBranchName)'
-      hostUrl: 'staging.campaignresources.phe.gov.uk'
+      hostUrl: 'staging.campaignresources.dhsc.gov.uk'
       hostUrlCertSecretName: 'stag.campaignresources-tls-cert'
       appName: 'crc-v3'
       devEnv: 'stag'
