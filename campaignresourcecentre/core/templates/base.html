@@ -39,9 +39,9 @@
 
         <script src="{% get_django_setting "COOKIE_CONSENT_CAMPAIGNS" %}" defer></script>
 
-        <script>{{ request.path|add_adobe_analytics }}</script>
+        <script type="application/javascript">{{ request.path|add_adobe_analytics }}</script>
 
-        <script src="{% get_django_setting "ADOBE_TRACKING_URL" %}" data-cookieconsent="statistics" async></script>
+        <script src="{% get_django_setting "ADOBE_TRACKING_URL" %}" data-cookieconsent="statistics"  type="text/plain" async></script>
 
         <noscript>
             <style>
