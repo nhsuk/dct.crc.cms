@@ -18,9 +18,9 @@ def adobe_analytics(page_url):
 
     def get_page_name(url_list):
         if url_list[0] == "":
-            return "nhs:phe:home"
+            return "nhs:phe:campaigns:home"
         paths = ":".join(url_list)
-        return "nhs:phe:%s" % paths
+        return "nhs:phe:campaigns:%s" % paths
 
     def get_categories(url_list):
         primary_category = url_list[0]
