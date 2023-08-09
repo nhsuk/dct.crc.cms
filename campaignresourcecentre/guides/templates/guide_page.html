@@ -1,8 +1,9 @@
 {% extends "base_page.html" %}
+{% load wagtailcore_tags wagtailimages_tags chunks_tags json_lookup %}
 {% load wagtailcore_tags %}
 {% load wagtailcore_tags wagtailimages_tags %}
-
 {% load page_tags %}
+{% load get_django_setting %}
 
 {% block parent_page_title %}
     {% get_parent as parent_title %}
@@ -53,5 +54,15 @@
                 {% include_block block %}
             {%endif%}
         {% endfor %}
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds govuk-!-padding-top-5">
+                    {% if page.last_published_at %}
+                        <p><strong>Last updated:</strong> {{ page.last_published_at|date:"j F Y" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     {% endblock %}
 {% endblock %}
+
