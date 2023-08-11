@@ -19,7 +19,7 @@ from wagtail.admin.panels import (
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable
 from wagtail.images import get_image_model_string
-from wagtailreacttaxonomy.edit_handlers import TaxonomyPanel
+from wagtailreacttaxonomy.panels import TaxonomyPanel
 from wagtailreacttaxonomy.models import TaxonomyMixin
 from wagtailreacttaxonomy.models import TaxonomyTerms
 

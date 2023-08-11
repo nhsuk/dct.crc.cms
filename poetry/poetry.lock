@@ -2792,9 +2792,9 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/angloc/wagtail-reacttaxonomy"
-reference = "d3373a84cb0c4d0fd121ba2b64325de85fc5829b"
-resolved_reference = "d3373a84cb0c4d0fd121ba2b64325de85fc5829b"
+url = "https://github.com/nhsuk/wagtail-reacttaxonomy"
+reference = "0.00.02"
+resolved_reference = "ccade11ea9bdff22c3b11896e1bcc0374881cc21"
 
 [[package]]
 name = "watchdog"
@@ -3043,4 +3043,4 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "74679e44d55a15895f4a25ec20c1d8b28d3000c844620017a260247a9ffcd1b4"
+content-hash = "11b30bce367b70399b380fd7f77e329f3c15f2d5c8fc9dd0fd059e7b03bd79ea"
