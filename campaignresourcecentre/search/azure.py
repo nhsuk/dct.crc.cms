@@ -374,13 +374,22 @@ class AzureSearchBackend(BaseSearchBackend):
         try:
             response = requests.get(url, headers=headers)
             json_response = {
-                "search_content": json.loads(response.content),
                 "ok": response.ok,
                 "code": response.status_code,
+                "search_content": {"value": []},
             }
+            if not response.ok:
+                logger.error(
+                    f"Failed search response ({response.status_code}): {response.content}"
+                )
+                return json_response
+            json_response["search_content"] = search_content = json.loads(
+                response.content
+            )
+
             not_interpretable = 0
             try:
-                results = json_response["search_content"]["value"]
+                results = search_content["value"]
                 result_urls = []
                 for r in results:
                     content = r.get("content")

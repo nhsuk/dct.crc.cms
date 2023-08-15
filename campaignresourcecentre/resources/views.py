@@ -47,16 +47,7 @@ def _search(request):
     response = search.azure_search(
         search_value, fields_queryset, facets_queryset, sort_by, results_per_page
     )
-
-    resources = []
-    if response["search_content"] and response["search_content"].get("value"):
-        resources = response["search_content"]["value"]
-    elif response["search_content"]:
-        logger.info(
-            f"Azure Search Issue:\
-            {response.get('search_content').get('Message')}"
-        )
-
+    resources = response.get("search_content").get("value")
     search_results = [
         {
             "title": resource["content"]["resource"].get("title"),
