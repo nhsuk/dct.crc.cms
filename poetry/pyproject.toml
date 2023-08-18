@@ -23,8 +23,8 @@ wagtail-accessibility = "~0.2"
 coverage = "^5.4"
 wagtail-factories = "^2.0.1"
 freezegun = "^1.1.0"
-django-gov-notify = {git = "https://github.com/angloc/django-gov-notify", rev = "4f10e8ed7537eb6ba094c8fe8c6dc0ac9ef7344d"}
 wagtail-reacttaxonomy = {git = "https://github.com/nhsuk/wagtail-reacttaxonomy", tag = "0.00.02"}
+django-gov-notify = {git = "https://github.com/angloc/django-gov-notify", rev = "4f10e8ed7537eb6ba094c8fe8c6dc0ac9ef7344d"}
 azure-storage-blob = "^12.0"
 azure-storage-file = "^2.1"
 azure-storage-common = "^2.1"
