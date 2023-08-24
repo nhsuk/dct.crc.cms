@@ -21,12 +21,8 @@
             domain to prevent search engines crawling admin domains.
             This ignores ports for simplicity.
         {% endcomment %}
-        {% if SEO_NOINDEX or request.get_host != current_site.hostname %}
-            <meta name="robots" content="noindex">
-        {%else%}
-            <link rel="canonical" href="{{ CANONICAL_PATH }}" />
-        {% endif %}
-
+        <link rel="canonical" href="{{ CANONICAL_PATH }}" />
+        
         {% block meta_tags %}{% endblock %}
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
