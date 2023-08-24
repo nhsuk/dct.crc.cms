@@ -26,6 +26,12 @@ class InformationPage(BasePage):
         AboutPageSection(required=False), blank=True, use_json_field=True
     )
 
+    no_index_toggle = models.BooleanField(
+        "no index toggle",
+        default=False,
+        help_text="Exclude file from being indexed by Google",
+    )
+
     search_fields = BasePage.search_fields + [
         index.SearchField("introduction"),
         index.SearchField("body"),
@@ -35,6 +41,10 @@ class InformationPage(BasePage):
         FieldPanel("introduction"),
         FieldPanel("body"),
         FieldPanel("section"),
+    ]
+
+    promote_panels = BasePage.promote_panels + [
+        FieldPanel("no_index_toggle"),
     ]
 
 
