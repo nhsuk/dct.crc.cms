@@ -393,18 +393,35 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return resources_list
 
     def get_az_item(self):
-        return {
-            "objecttype": self.objecttype(),
-            "object_url": f"{self.url}",
-            "title": self.title,
-            "description": self.description,
-            "summary": self.summary,
-            "taxonomy_json": self.taxonomy_json,
-            "last_published_at": datetime.timestamp(self.last_published_at),
-            "image_url": self.image and self.image.get_rendition("width-400").url,
-            "image_alt": self.image and self.image_alt_text,
-            "code": self.slug,
-        }
+        try:
+            return {
+                "objecttype": self.objecttype(),
+                "object_url": f"{self.url}",
+                "title": self.title,
+                "description": self.description,
+                "summary": self.summary,
+                "taxonomy_json": self.taxonomy_json,
+                "last_published_at": datetime.timestamp(self.last_published_at),
+                "image_url": self.image and self.image.get_rendition("width-400").url,
+                "image_alt": self.image and self.image_alt_text,
+                "code": self.slug,
+            }
+        except TypeError as err:
+            logger.error(err)
+            if self.last_published_at == None:
+                self.last_published_at = datetime.now()
+            return {
+                "objecttype": self.objecttype(),
+                "object_url": f"{self.url}",
+                "title": self.title,
+                "description": self.description,
+                "summary": self.summary,
+                "taxonomy_json": self.taxonomy_json,
+                "last_published_at": datetime.timestamp(self.last_published_at),
+                "image_url": self.image and self.image.get_rendition("width-400").url,
+                "image_alt": self.image and self.image_alt_text,
+                "code": self.slug,
+            }
 
     def get_context(self, request, *args, **kwargs):
         """Adds data to the template context for display on the page."""
