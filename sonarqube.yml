@@ -71,23 +71,23 @@ jobs:
         testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml"
         testRunTitle: "OWASP Dependency check"
 
-  - job: SonarQube_review
-    dependsOn: SonarQube_analysis
-    condition: eq(variables['Build.Reason'], 'PullRequest')
-    steps: 
-
-      - task: AzureKeyVault@1
-        inputs:
-          azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
-          KeyVaultName: 'dct-crc-v3-vlt-int-uks'
-          SecretsFilter: '*'
-          RunAsPreJob: false
-
-      - bash: |
-          git clone https://github.com/Ross-Clark/SQPR.git
-
-          pip install PyGithub==1.57
-          pip install python-sonarqube-api==2.0.3
-          python3 SQPR/src/sqpr.py -g $(githubToken) -k DCT_Campaigns_Resource_Centre -p $(System.PullRequest.PullRequestNumber) -r nhsuk/dct-campaign-resource-centre -s $(sonarqubeToken) -u https://sonarqube.nhswebsite-staging.nhs.uk
-
-        displayName: 'Post PR Review'
+#  - job: SonarQube_review
+#    dependsOn: SonarQube_analysis
+#    condition: eq(variables['Build.Reason'], 'PullRequest')
+#    steps: 
+#
+#      - task: AzureKeyVault@1
+#        inputs:
+#          azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
+#          KeyVaultName: 'dct-crc-v3-vlt-int-uks'
+#          SecretsFilter: '*'
+#          RunAsPreJob: false
+#
+#      - bash: |
+#          git clone https://github.com/Ross-Clark/SQPR.git
+#
+#          pip install PyGithub==1.57
+#          pip install python-sonarqube-api==2.0.3
+#          python3 SQPR/src/sqpr.py -g $(githubToken) -k DCT_Campaigns_Resource_Centre -p $(System.PullRequest.PullRequestNumber) -r nhsuk/dct-campaign-resource-centre -s $(sonarqubeToken) -u https://sonarqube.nhswebsite-staging.nhs.uk
+#
+#        displayName: 'Post PR Review'

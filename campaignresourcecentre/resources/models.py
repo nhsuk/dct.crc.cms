@@ -21,7 +21,7 @@ from wagtail.documents import get_document_model_string
 from wagtail.images import get_image_model_string
 from wagtail.search import index
 
-from wagtailreacttaxonomy.edit_handlers import TaxonomyPanel
+from wagtailreacttaxonomy.panels import TaxonomyPanel
 from wagtailreacttaxonomy.models import TaxonomyMixin
 
 import campaignresourcecentre
