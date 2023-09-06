@@ -347,6 +347,7 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     FILE_UPLOAD_HANDLERS.append(
         "campaignresourcecentre.custom_storages.custom_azure.AzureBlobUploadHandler"
     )
+    AZURE_URL_EXPIRATION_SECS = 1860
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
