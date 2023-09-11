@@ -7,7 +7,7 @@ authors = ["Torchbox <hello@torchbox.com>"]
 [tool.poetry.dependencies]
 python = "~3.10"
 django = "~4.0.8"
-wagtail = "~3.0.3"
+wagtail = "~4.0.0"
 psycopg2 = "~2.8"
 gunicorn = {version = "~20.1", optional = true}
 wagtail-django-recaptcha = "1.0"
