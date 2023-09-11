@@ -16,49 +16,37 @@
     {% if facets_queryset|filters_added %}
         <div class="taxonomy-tags">
             <div class="taxonomy-tags__group">
-                    {% for taxonomy in taxonomies %}
-                        {% if facets_queryset|taxonomies_get:taxonomy.code %}
-                            {% if taxonomy.code == 'TOPIC' %}
-                                <div class="taxonomy-tags__parent">Topic</div>
-                                {% for child in taxonomy.children %}
-                                    {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
-                                        <button class="taxonomy-tags__child" class="taxonomy-tags__remove" value="{{child.code}}-input" parent="{{taxonomy.code}}" id="{{child.code}}-input" onclick="return unCheckSubmitForm(this)">
-                                            <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
-                                            <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
-                                        </button>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}    
-                        {% endif %}
-                    {% endfor %}
-                    <br />                        
-                    <div class="taxonomy-tags__parent" id="taxonomy-tags__in">In</div>
-                    {% for taxonomy in taxonomies %}
-                        {% if facets_queryset|taxonomies_get:taxonomy.code %}
-                            {% if not taxonomy.code == 'TOPIC' %}
-                                {% for child in taxonomy.children %}
-                                    {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
-                                    <!--
-                                    <div value="{{child.code}}-input" parent="{{taxonomy.code}}" class="taxonomy-tags__child" onclick="unCheckSubmitForm(this)">
-                                        <input name="{{taxonomy.code}}" id="{{child.code}}-checkbox" type="checkbox" value="{{child.code}}" checked>
-                                        <label for="{{child.code}}-checkbox" class="taxonomy-tags__child-label">
-                                            <span class="sr-only">Remove </span>{{child.label}}
-                                        </label>
-                                    </div>
-                                    -->
-                                    <button class="taxonomy-tags__child" class="taxonomy-tags__remove" value="{{child.code}}-input" id="{{child.code}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
+                {% for taxonomy in taxonomies %}
+                    {% if facets_queryset|taxonomies_get:taxonomy.code %}
+                        {% if taxonomy.code == 'TOPIC' %}
+                            <div class="taxonomy-tags__parent">Topic</div>
+                            {% for child in taxonomy.children %}
+                                {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
+                                    <button class="taxonomy-tags__child" value="{{child.code}}-input" parent="{{taxonomy.code}}" id="{{child.code}}-input" onclick="return unCheckSubmitForm(this)">
                                         <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
                                         <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
                                     </button>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}    
+                    {% endif %}
+                {% endfor %}
+                <br />                        
+                <div class="taxonomy-tags__parent" id="taxonomy-tags__in">In</div>
+                {% for taxonomy in taxonomies %}
+                    {% if facets_queryset|taxonomies_get:taxonomy.code %}
+                        {% if not taxonomy.code == 'TOPIC' %}
+                            {% for child in taxonomy.children %}
+                                {% if facets_queryset|taxonomies_get:taxonomy.code|code_includes:child.code %}
+                                <button class="taxonomy-tags__child" value="{{child.code}}-input" id="{{child.code|cut:" "}}-input" parent="{{taxonomy.code}}" onclick="return unCheckSubmitForm(this)">
+                                    <strong aria-hidden="true" class="taxonomy-tags__remove">✕</strong>
+                                    <span class="sr-only">Remove </span><span class="taxonomy-tags__child-label">{{child.label}}</span>
+                                </button>
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
-                    {% endfor %}
-                    <!--
-                    <button id="taxonomy-tags-reset" type="submit" class="govuk-button no-js">Update</button>
-                </form>
-                -->
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     {% endif %}
@@ -88,8 +76,8 @@
                                     <div class="image">
                                         <img src="{{ resource.image_url }}" alt="{{ resource.image_alt }}"/>
                                     </div>
-
                                 {% endif %}
+
                                 <div class="nhsuk-card__content">
                                     <h3 class="nhsuk-card__heading govuk-!-font-size-19">
                                         <a class="nhsuk-card__link" href="{{ resource.url }}">

@@ -116,6 +116,25 @@
         let sortBy = "newest";
 
         /**
+         * Make the whole card clickable.
+         * Add an event listener to the card outer container.
+         * This is to avoid adding an event listener to each card.
+         */
+         function cardClickable() {
+            const searchResult = document.querySelector('.nhsuk-card-group');
+            if(searchResult) {
+                searchResult.addEventListener('click', function (event) {
+                // Check if the clicked element is a card or element within a card.
+                const card = event.target.closest('.nhsuk-card--clickable');
+                    if (card && card.querySelector('a')) {
+                        // Get the URL from the card's link and navigate to the URL.
+                        window.location.href = card.querySelector('a').href;
+                    }
+                });
+            }
+        }
+
+        /**
          * Gets the URL from the topic link.
          * Splits the URL and query if there is a topic.
          * Gets the topic if there is one.
@@ -147,6 +166,7 @@
                     if(this.status == 200) {
                         const campaigns = document.getElementById("campaigns");
                         campaigns.outerHTML = this.responseText;
+                        cardClickable();
                     }
                 }
             }
@@ -183,6 +203,7 @@
                     if(this.status == 200) {
                         const topics = document.getElementById("campaigns");
                         topics.outerHTML = this.responseText;
+                        cardClickable();
                     }
                 }
             }

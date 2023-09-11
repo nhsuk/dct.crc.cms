@@ -150,6 +150,27 @@
         // Initialise next focusable item for the filters.
         let next;
 
+
+        /**
+         * Make the whole card clickable.
+         * Add an event listener to the card outer container.
+         * This is to avoid adding an event listener to each card.
+         */
+        function cardClickable() {
+            const searchResult = document.querySelector('.nhsuk-card-group');
+            if(searchResult) {
+                searchResult.addEventListener('click', function (event) {
+                    console.log('ran');
+                // Check if the clicked element is a card or element within a card.
+                const card = event.target.closest('.nhsuk-card--clickable');
+                    if (card && card.querySelector('a')) {
+                        // Get the URL from the card's link and navigate to the URL.
+                        window.location.href = card.querySelector('a').href;
+                    }
+                });
+            }
+        }
+
         /**
          * Get the search filters value from the form.
          * Create a query string from the search filters value.
@@ -185,13 +206,13 @@
                 // Create a new XMLHttp request and refresh the search results.
                 const xhttp_sf = new XMLHttpRequest();
                 // Set up event listener for when this runs to select the next focusable filter or select list.
-                //xhttp_sf.addEventListener('load', set_focus());
                 xhttp_sf.onreadystatechange = function() {
                     if (this.readyState == 4){
                         if(this.status == 200) {
                             const searchForm = document.getElementById("search-result");
                             searchForm.outerHTML = this.responseText;
                             set_focus();
+                            cardClickable();
                         }
                     }
                 }
@@ -214,7 +235,8 @@
          * If there is no next filter, set the value to be the select list.
          */
         function unCheckSubmitForm(elem) {
-            const checkbox = document.getElementById(elem.getAttribute("value").toLowerCase());
+            // Select the corresponding checkbox if there is one.
+            const checkbox = document.getElementById(elem.getAttribute("value").replaceAll(' ', '-').toLowerCase());
             // Check if the selected filter is a topic.
             if(document.activeElement.getAttribute("parent") === "TOPIC") {
                 // Check if the next filter has an attribute of value, save the value if so, otherwise save the select list id.
@@ -289,13 +311,14 @@
                         const topics = document.getElementById("search-result");
                         topics.outerHTML = this.responseText;
                         document.getElementById('sortby').focus();
+                        cardClickable();
                     }
                 }
             }
             xhttp_sort.open("GET", "/render_search/?" + sortQueryString);
             xhttp_sort.send();
             // Update the URL in the browser window to match the search.
-            window.history.pushState({}, '', '?' +  sortQueryString);
+            window.history.pushState({}, '', '?' +  sortQueryString); 
             return sortBy;
         }
 
@@ -341,6 +364,7 @@
                     if(this.status == 200) {
                         const searchForm = document.getElementById("search-result");
                         searchForm.outerHTML = this.responseText;
+                        cardClickable();
                     }
                 }
             }
