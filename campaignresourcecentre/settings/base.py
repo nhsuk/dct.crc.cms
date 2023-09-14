@@ -331,8 +331,12 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     SEARCH_STORAGE_CLASS = (
         "campaignresourcecentre.custom_storages.custom_azure.AzureSearchStorage"
     )
+    DOC_STORAGE_CLASS = (
+        "campaignresourcecentre.custom_storages.custom_azure.AzureDocStorage"
+    )
     AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
     AZURE_ACCOUNT_KEY = env["AZURE_ACCOUNT_KEY"]
+    AZURE_DOC_CONTAINER = env["AZURE_DOC_CONTAINER"]
     AZURE_SEARCH_CONTAINER = env["AZURE_SEARCH_CONTAINER"]
     AZURE_SEARCH_ACCESS_KEY = env["AZURE_SEARCH_ACCESS_KEY"]
     AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
@@ -351,6 +355,7 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
+    DOC_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
     AZURE_SEARCH_UPDATE = False
     FILE_UPLOAD_HANDLERS.append(
         "django.core.files.uploadhandler.TemporaryFileUploadHandler"
