@@ -79,7 +79,23 @@ class AzureMediaStorage(AzureStorage):
 
 
 class AzureDocStorage(AzureMediaStorage):
+    account_name = getattr(settings, "AZURE_ACCOUNT_NAME", None)
+    account_key = getattr(settings, "AZURE_ACCOUNT_KEY", None)
     azure_container = getattr(settings, "AZURE_DOC_CONTAINER", None)
+    external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
+    expiry_seconds = getattr(settings, "AZURE_DOC_EXPIREY_SECONDS", 7200)
+    custom_domain = None
+
+    def __init__(self, **settings):
+        super().__init__(**settings)
+        logger.info("Using storage domain '%s' for Docs", self.custom_domain)
+
+    def url(self, name, expire=expiry_seconds, parameters=None):
+        initial_url = super().url(name, expire, parameters)
+        components = list(urlparse(initial_url))
+        components[1] = self.external_domain
+        new_url = urlunparse(components)
+        return new_url
 
 
 # Class to present a Python file interface to an Azure blob.
@@ -313,32 +329,6 @@ class AzureUploadedFile(UploadedFile):
             "Uploaded file %s: %s, %d byte(s), %s", name, content_type, size, charset
         )
         super().__init__(file, name, content_type, size, charset, content_type_extra)
-
-
-class AzureDocStorage(AzureStorage):
-    account_name = getattr(settings, "AZURE_ACCOUNT_NAME", None)
-    account_key = getattr(settings, "AZURE_ACCOUNT_KEY", None)
-    azure_container = getattr(settings, "AZURE_DOC_CONTAINER", None)
-    external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
-    custom_domain = None
-
-    def save(self, name, content, max_length=None):
-        logger.info(
-            "Saving %s in container %s of account %s"
-            % (name, __class__.azure_container, __class__.account_name)
-        )
-        return super().save(name, content, max_length)
-
-    def __init__(self, **settings):
-        super().__init__(**settings)
-        logger.info("Using storage domain '%s' for Docs", self.custom_domain)
-
-    def url(self, name, expire=7200, parameters=None):
-        initial_url = super().url(name, expire, parameters)
-        components = list(urlparse(initial_url))
-        components[1] = self.external_domain
-        new_url = urlunparse(components)
-        return new_url
 
 
 class AzureSearchStorage(AzureStorage):
