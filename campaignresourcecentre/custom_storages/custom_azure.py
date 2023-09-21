@@ -83,7 +83,7 @@ class AzureDocStorage(AzureMediaStorage):
     account_key = getattr(settings, "AZURE_ACCOUNT_KEY", None)
     azure_container = getattr(settings, "AZURE_DOC_CONTAINER", None)
     external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
-    expiry_seconds = getattr(settings, "AZURE_DOC_EXPIREY_SECONDS", 7200)
+    expiry_seconds = getattr(settings, "AZURE_DOC_EXPIRY_SECONDS", 7200)
     custom_domain = None
 
     def __init__(self, **settings):
