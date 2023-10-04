@@ -58,7 +58,7 @@ def summary(request):
 @paragon_user_logged_in
 def delivery_address(request):
     user_token = request.session.get("ParagonUser")
-    no_items = len(request.session.get("BASKET"))
+    basket = Basket(request.session)
     if request.method == "POST":
         f = DeliveryAddressForm(request.POST)
         paragon_client = Client()
@@ -77,9 +77,14 @@ def delivery_address(request):
     else:
         delivery_address = request.session.get("DELIVERY_ADDRESS")
         f = DeliveryAddressForm(delivery_address)
-        # Redirect the user if there are no items in the basket
-        if no_items == 0:
+        # Redirect the user if there are no items in the basket or a None quantity item
+        number_of_items = len(basket.contents)
+        if number_of_items == 0:
             return redirect("/account/orders/")
+        if basket.has_errors:
+            items = basket.get_all_items().items()
+            return redirect("/baskets/view_basket")
+
     return render(request, "delivery_address.html", {"form": f})
 
 

@@ -26,7 +26,7 @@ class Basket:
         bad_quantity = not quantity_text.isdigit()
         if not bad_quantity:
             quantity = int(quantity_text)
-            bad_quantity = quantity < 1 or quantity is None
+            bad_quantity = quantity < 1
             if not bad_quantity:
                 max_quantity = item["max_quantity"]
                 if quantity <= max_quantity:
