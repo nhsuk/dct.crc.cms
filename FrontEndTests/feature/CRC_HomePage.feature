@@ -32,7 +32,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
 
-@CRCV3-004
+  @CRCV3-004
   Scenario Outline: open CRCV3 site to verify forgot password and the validation
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password

@@ -80,7 +80,7 @@ class CRCV3MainPage(BasePage):
         By.XPATH, "//h3[text()='Better Health Every Mind Matters']"
     )
     Betterhealth_Start4Life_link = PageElement(
-        By.XPATH, "//a[@href='https://www.nhs.uk/start4life']"
+        By.XPATH, "//a[@href='https://www.nhs.uk/start-for-life/']"
     )
     Cervical_Screening_link = PageElement(
         By.XPATH, "//a[@href='https://www.nhs.uk/conditions/cervical-screening/']"
