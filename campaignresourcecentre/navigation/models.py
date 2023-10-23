@@ -1,6 +1,6 @@
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel
-from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail import blocks
 from wagtail.fields import StreamField
 
@@ -30,7 +30,7 @@ class LinkColumnWithHeader(blocks.StructBlock):
 
 
 @register_setting(icon="list-ul")
-class NavigationSettings(BaseSetting, ClusterableModel):
+class NavigationSettings(BaseSiteSetting, ClusterableModel):
     primary_navigation = StreamField(
         [("link", LinkBlock())],
         blank=True,
