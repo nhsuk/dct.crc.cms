@@ -32,6 +32,6 @@ pipx upgrade black
 pre-commit install
 
 if ! [ -f .env ]; then
-    echo ".env file does not exists. Creating new ..."
+    echo ".env file does not exist. Creating new ..."
     cp .env.example .env
 fi
