@@ -30,3 +30,8 @@ pipx upgrade black
 
 # Install pre-commit hooks
 pre-commit install
+
+if ! [ -f .env ]; then
+    echo ".env file does not exist. Creating new ..."
+    cp .env.example .env
+fi
