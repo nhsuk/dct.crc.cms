@@ -135,10 +135,10 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | The only special characters you can use in this field are a hyphen (-) and an apostrophe (')                                  |
       | Select your job function                                                                                                      |
       | The only special characters you can use in this field are a hyphen (-) and an apostrophe (')                                  |
-      | Postcode '%$%$^%^%' not recognised                                                                                                         |
+      | Postcode '%$%$^%^%' not recognised                                                                                            |
       | Enter a valid email address.                                                                                                  |
       | Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol |
-      #| Please accept the terms and conditions                                                                                        |
+
 
   @CRCV3-013
   Scenario: open CRCV3 site and verify Change4Life Campaigns pages and links
@@ -237,71 +237,71 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 #    Then Place order and verify confirmation
     Then click Sign Out link and verify its logged out successfully
 
-#  @CRV3-023
-#  Scenario: open CRCV3 site and Automate login and purchase and checkout resource end to end scenario
-#    Given I loaded CRCV3 site to load the home page
-#    When  I click on Sign in button Sign in page loaded with Email_address and and password
-#    Then I enter your login details
-#    Then I sign in
-#    Then verify logout displayed in place of Sign in
-##    Then click on resources tab and verify the searches
-##    Then select any resource and add to basket
-##    Then click on basket to proceed to checkout
-##    Then enter delivery address and click review order
-##    Then Place order and verify confirmation
-##    Then click on account tab and verify page loaded
-##    Then download the resources from order history and verify its downloaded successfully
-#    Then click Sign Out link and verify its logged out successfully
-
-#  @CRCV3-024
-#  Scenario: open CRCV3 site and Automate Validations check for invalid entry during purchase resources.
-#    Given I loaded CRCV3 site to load the home page
-#    When  I click on Sign in button Sign in page loaded with Email_address and and password
-#    Then I enter your login details
-#    Then I sign in
-#    Then verify logout displayed in place of Sign in
+  @CRV3-023
+  Scenario: open CRCV3 site and Automate login and purchase and checkout resource end to end scenario
+    Given I loaded CRCV3 site to load the home page
+    When  I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
 #    Then click on resources tab and verify the searches
-#    Then select any resource and change the count less than 1 and more than 10
-#      | count |
-#      | 0     |
-#      | 11    |
+#    Then select any resource and add to basket
 #    Then click on basket to proceed to checkout
-#    Then verify empty and invalid delivery address and click review order Error_lists
-#       |Error_lists|
-#       |Enter your full name|
-#       |Enter your address line 1|
-#       |Enter your town or city|
-#       |Enter your postcode|
-#    Then click Sign Out link and verify its logged out successfully
-#
-#  @CRCV3-025
-#  Scenario: open CRCV3 site and Automate manage your account links are displaying
-#    Given I loaded CRCV3 site to load the home page
-#    When I click on Sign in button Sign in page loaded with Email_address and and password
-#    Then I enter your login details
-#    Then I sign in
-#    Then verify logout displayed in place of Sign in
+#    Then enter delivery address and click review order
+#    Then Place order and verify confirmation
 #    Then click on account tab and verify page loaded
-#    Then verify all Manage your account links are working and loading the details
-#
-#  @CRCV3-026
-#  Scenario: open CRCV3 site and reset password
-#    Given I loaded CRCV3 site to load the home page
-#    When I click on Sign in button Sign in page loaded with Email_address and and password
-#    Then I enter your login details
-#    Then I sign in
-#    Then click on account tab and verify page loaded
-#    Then click on reset password link and verify the page loaded successfully
-#    Then verify the Empty_email address validation
-#      |Empty_email|
-#      |Enter your email address|
-#    Then I enter Email address field with invalid_email and click submit button then verify invalid_email_error
-#      | invalid_email    | invalid_email_error         |
-#      | example.com      | Enter a valid email address.|
-#      | #@%^%#$@#$@#.com | Enter a valid email address.|
-#      | email@example    | Enter a valid email address.|
-#      | example          | Enter a valid email address.|
-#    Then click Sign Out link and verify its logged out successfully
+#    Then download the resources from order history and verify its downloaded successfully
+    Then click Sign Out link and verify its logged out successfully
+
+  @CRCV3-024
+  Scenario: open CRCV3 site and Automate Validations check for invalid entry during purchase resources.
+    Given I loaded CRCV3 site to load the home page
+    When  I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
+    Then click on resources tab and verify the searches
+    Then select any resource and change the count less than 1 and more than 10
+      | count |
+      | 0     |
+      | 11    |
+    Then click on basket to proceed to checkout
+    Then verify empty and invalid delivery address and click review order Error_lists
+       |Error_lists|
+       |Enter your full name|
+       |Enter your address line 1|
+       |Enter your town or city|
+       |Enter your postcode|
+    Then click Sign Out link and verify its logged out successfully
+
+  @CRCV3-025
+  Scenario: open CRCV3 site and Automate manage your account links are displaying
+    Given I loaded CRCV3 site to load the home page
+    When I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
+    Then click on account tab and verify page loaded
+    Then verify all Manage your account links are working and loading the details
+
+  @CRCV3-026
+  Scenario: open CRCV3 site and reset password
+    Given I loaded CRCV3 site to load the home page
+    When I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then click on account tab and verify page loaded
+    Then click on reset password link and verify the page loaded successfully
+    Then verify the Empty_email address validation
+      |Empty_email|
+      |Enter your email address|
+    Then I enter Email address field with invalid_email and click submit button then verify invalid_email_error
+      | invalid_email    | invalid_email_error         |
+      | example.com      | Enter a valid email address.|
+      | #@%^%#$@#$@#.com | Enter a valid email address.|
+      | email@example    | Enter a valid email address.|
+      | example          | Enter a valid email address.|
+    Then click Sign Out link and verify its logged out successfully
 
   @CRCV3-027
   Scenario: open CRCV3 site filter results by filter
