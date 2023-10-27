@@ -30,8 +30,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then I sign in
     Then verify logout displayed in place of Sign in
     Then click Sign Out link and verify its logged out successfully
-    #Then verify logout displayed in place of Sign in
-    #Then click Sign Out link and verify its logged out successfully
+
 
   @CRCV3-004
   Scenario Outline: open CRCV3 site to verify forgot password and the validation
@@ -61,24 +60,6 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | email                     |
       | test-crc-101@nhs.net     |
     Then verify forgot password confirmation message
-
-#  @CRCV3-006 @wip
-#  Scenario Outline: open CRCV3 site and register a user with all fields entered correctly
-#    Given I loaded CRCV3 site to load the home page
-#    When I click on Register link where register page loaded with all fields displayed
-#    Then I enter Register details of "<FirstName>" "<LastName>" "<Org_Name>" "<Postcode>" "<Email>" "<Password>"
-#    #Then I Register
-#     Examples:
-#      | FirstName   | LastName      | Org_Name      | Postcode      | Email          | Password     |
-#      | Jim         | Smith         | NHS Digital   | SL109LH       | qie1@qie15.com | aDmin_c_11!  |
-#    Then verify logout displayed in place of Sign in
-#    #Then click Sign Out link and verify its logged out successfully
-
-#  @CRCV3-007
-#  Scenario: open CRCV3 site and verify Home tab and its links
-#    Given I loaded CRCV3 site to load the home page
-#    #When I Click click on Home page tab
-#    #Then Verify Covid advices resources links and Coronavirus campaigns and resources button working
 
   @CRCV3-008
   Scenario: open CRCV3 site and verify Latest Updated links are loaded to respective pages
@@ -148,14 +129,6 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then Research behind this campaign and how to use this campaign expand and collapse for "Change4Life"
     Then Verify "Change4Life" Resources
 
-#  @CRCV3-014 @wip
-#  Scenario: open CRCV3 site and verify BetterHealth Campaigns pages and links
-#    Given I loaded CRCV3 site to load the home page
-#    When I browsed to Betterhealth resource campaign
-#    Then Verify Campaign details for "Betterhealth"
-#    Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth"
-#    Then Verify "Betterhealth" Resources
-
   @CRCV3-015
   Scenario Outline: open CRCV3 site and verify help us Help you Campaigns pages and links
     Given I loaded CRCV3 site to load the home page
@@ -168,22 +141,6 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       #|Accessing NHS mental health services        |
       |Abdominal and urological symptoms of cancer |
       |Childhood vaccination 2022                  |
-
-#  @CRCV3-016
-#  Scenario: open CRCV3 site and verify Better Health Start for Life Introducing Solid Foods pages and links
-#    Given I loaded CRCV3 site to load the home page
-#    When I browsed to Better Health Start for Life Introducing Solid Foods resource campaign
-#    Then Verify Campaign details for "Betterhealth_Start4Life"
-    #Then Research behind this campaign and how to use this campaign expand and collapse for "Betterhealth_Start4Life"
-    #Then Verify "Betterhealth_Start4Life" Resources
-
-#  @CRCV3-017 @removed
-#  Scenario: open CRCV3 site and verify Cervical Screening pages and links
-#    Given I loaded CRCV3 site to load the home page
-#    When I browsed to Cervical Screening resource campaign
-#    Then Verify Campaign details for "Cervical_Screening"
-#    Then Research behind this campaign and how to use this campaign expand and collapse for "Cervical_Screening"
-#    Then Verify "Cervical_Screening" Resources
 
   @CRCV3-018
   Scenario: open CRCV3 site and verify We Are Undefeatable pages and links
@@ -232,9 +189,6 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify logout displayed in place of Sign in
     Then click on resources tab and verify the searches
     Then select any resource and add to basket
-    #Then click on basket to proceed to checkout
-#    Then enter delivery address and click review order
-#    Then Place order and verify confirmation
     Then click Sign Out link and verify its logged out successfully
 
   @CRV3-023
@@ -244,13 +198,6 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then I enter your login details
     Then I sign in
     Then verify logout displayed in place of Sign in
-#    Then click on resources tab and verify the searches
-#    Then select any resource and add to basket
-#    Then click on basket to proceed to checkout
-#    Then enter delivery address and click review order
-#    Then Place order and verify confirmation
-#    Then click on account tab and verify page loaded
-#    Then download the resources from order history and verify its downloaded successfully
     Then click Sign Out link and verify its logged out successfully
 
   @CRCV3-024
