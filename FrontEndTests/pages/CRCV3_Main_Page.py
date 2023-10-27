@@ -6,7 +6,7 @@ from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
 
-from AcceptanceTests.common.common_test_methods import *
+from common.common_test_methods import *
 
 
 class CRCV3MainPage(BasePage):
