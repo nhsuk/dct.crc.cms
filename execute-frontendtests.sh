@@ -38,6 +38,8 @@ cd $WORK/work
 echo "### Running docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
 docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_USERNAME)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
 docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
+printf  'Docker Pull of ${IMAGE_TAG} completed'
+
 
 # Wait for the BASE_URL to be available or timeout after one minute
 
