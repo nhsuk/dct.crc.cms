@@ -47,8 +47,10 @@ do
   printf 'Failed to access $BASE_URL, trying again in 10 seconds...'
   sleep 10
 done
+printf  '${BASE_URL} seems to be responding - confirm'
 # Confirm site now running or fail
 curl --output /dev/null --silent --head --fail --max-time 10 ${BASE_URL} || exit 1
+printf  '${BASE_URL} responded. Running tests now'
 
 # get Docker to use host network so it can access localhost:8000 with no fuss
 docker run \
