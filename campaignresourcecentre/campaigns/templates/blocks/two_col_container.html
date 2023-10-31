@@ -1,5 +1,6 @@
 {% load wagtailimages_tags %}
 {% load wagtailcore_tags %}
+{% load wagtailimages_tags %}
 
 
 <div class="crc-container {% if toggle_column %}crc-align-right{% endif %}{% for block in left_column %}{% if forloop.first %}{% if block.block_type == 'image' %}crc-left-column__image{% endif %}{% endif %}{% endfor %}">

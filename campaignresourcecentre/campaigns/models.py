@@ -73,9 +73,7 @@ class CampaignHubPage(BasePage):
         help_text="set background colour for the section",
     )
 
-    body = StreamField(
-        CampaignsPageBlocks(required=False), blank=True, use_json_field=True
-    )
+    body = StreamField(CampaignsPageBlocks(required=False), blank=True)
 
     content_panels = BasePage.content_panels + [
         FieldPanel("introduction"),
@@ -337,13 +335,9 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         "URLs. If an internal page is chosen and this field is blank the page "
         "title will be shown",
     )
-    details = StreamField(
-        CampaignDetailsBlock(required=False), blank=True, use_json_field=True
-    )
+    details = StreamField(CampaignDetailsBlock(required=False), blank=True)
     topics = ParentalManyToManyField(Topic, blank=True)
-    body = StreamField(
-        CampaignsPageBlocks(required=False), blank=True, use_json_field=True
-    )
+    body = StreamField(CampaignsPageBlocks(required=False), blank=True)
 
     def search_indexable(self):
         return CampaignHubPage.objects.all()[0].id == self.get_parent().id
