@@ -1,0 +1,21 @@
+steps:
+
+# Since this is a deployment stage, we need to checkout the code. Non-deployment stages do this by default
+- checkout: self
+# Don't download pipeline artifacts
+- download: none
+
+- task: HelmDeploy@0
+  displayName: 'helm deploy'
+  inputs:
+    connectionType: 'Kubernetes Service Connection'
+    kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
+    namespace: '${{ parameters.namespace }}'
+    releaseName: 'crc-v3-${{parameters.environment}}'
+    command: upgrade
+    chartType: FilePath
+    chartPath: helm
+    chartName: 'crc-v3-${{parameters.environment}}'
+    arguments: --reuse-values
+
+# kill db connection

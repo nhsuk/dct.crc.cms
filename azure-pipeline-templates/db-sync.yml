@@ -1,0 +1,246 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+trigger: none
+
+parameters:
+  - name: deployToProd
+    type: boolean
+    default: false
+
+resources:
+  - repo: self
+
+stages:
+  - stage: CopyFromProdDB
+    displayName: "Copy from Production Database"
+    condition: eq('${{ parameters.deployToProd }}', 'false')
+    jobs:
+      - job: DBCopy
+        steps:
+          - template: templates/db-sync-download.yaml
+            parameters:
+              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-prod-uks"
+              StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+              BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+              BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
+
+  # PROD DOWNLOAD THE DB DUMP (STAG UKS)
+  - stage: DownloadProdBackUp
+    displayName: "Download Production Database Backup"
+    condition: eq('${{ parameters.deployToProd }}', true)
+    jobs:
+      - job: DbDownload
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                export STORE_NAME="digitalcampaignsstorage"
+                export CONTAINER_NAME="crc-v3-backups"
+                export FOLDER="db"
+
+                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
+                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
+                && export SAS_TOKEN=$( az storage container generate-sas \
+                    --account-name $STORE_NAME \
+                    --name $CONTAINER_NAME \
+                    --start $NOW \
+                    --expiry $EXPIRY \
+                    --permissions acdlrw \
+                    --output tsv )
+
+                $(Agent.ToolsDirectory)/azcopy/azcopy copy \
+                    "https://${STORE_NAME}.blob.core.windows.net/${CONTAINER_NAME}/$(DataDumpFile)?${SAS_TOKEN}" \
+                    $(Build.SourcesDirectory)/db-dump.dump --recursive
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "$(Build.SourcesDirectory)/db-dump.dump"
+              ArtifactName: "db.dump"
+              publishLocation: 'Container'
+
+  - stage: CopyToReviewDB
+    displayName: "Copy to Review Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-rev-uks"
+              DBName: crcv3review
+              Server: campaigns-cms-psql-dev-uks
+              ResourceGroup: nhsuk-dct-rg-dev-uks
+
+  - stage: CopyToIntegrationDB
+    displayName: "Copy to Integration Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-int-uks"
+              DBName: crcv3int
+              Server: campaigns-cms-psql-dev-uks
+              ResourceGroup: nhsuk-dct-rg-dev-uks
+
+#  - stage: CopyToStagingDB
+#    displayName: "Copy to Staging Database"
+#    dependsOn:
+#      - CopyFromProdDB
+#    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+#    jobs:
+#      - job: DBPaste
+#        steps:
+#          - template: templates/db-sync-upload.yaml
+#            parameters:
+#              azureVaultSubscription: "dct-staging-vault-uks-dct.campaign-resource-centre-v3"
+#              azureStorageSubscription: "dct-cms-postgres-rg-stag-uksouth.campaign-resource-centre-v3"
+#              VaultId: "dct-crc-v3-vlt-stag-uks"
+#              DBName: crcv3stag
+#              Server: campaigns-cms-psql-stag-uks
+#              ResourceGroup: dct-cms-postgres-rg-stag-uksouth
+
+#  - stage: RedeployAppToReview
+#    displayName: "Redeploy App to Review"
+#    dependsOn:
+#      - CopyToReviewDB
+#    jobs:
+#      - deployment: Deployment
+#        environment: "development"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/redeploy.yaml
+#                  parameters:
+#                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3"
+#                    environment: "review" # This needs sorting out so there is a approval in the env in azure (and so project admins can edit the env)
+#                    namespace: "dct-crc-v3-review-$(Build.SourceBranchName)-ns"
+#
+#  - stage: RedeployAppToIntegration
+#    displayName: "Redeploy App to Integration"
+#    dependsOn:
+#      - CopyToIntegrationDB
+#    jobs:
+#      - deployment: Deployment
+#        environment: "development"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/redeploy.yaml
+#                  parameters:
+#                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3"
+#                    environment: "integration" # This needs sorting out so there is a approval in the env in azure (and so project admins can edit the env)
+#                    namespace: "dct-crc-v3-ns"
+#
+#  - stage: RedeployAppToStaging
+#    displayName: "Redeploy App to Staging"
+#    dependsOn:
+#      - CopyToStagingDB
+#    jobs:
+#      - deployment: Deployment
+#        environment: "staging"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/redeploy.yaml
+#                  parameters:
+#                    kubernetesServiceConnection: "helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3"
+#                    environment: "staging"  # This needs sorting out so there is a approval in the env in azure (and so project admins can edit the env)
+#                    namespace: "dct-crc-v3-ns"
+#
+#  # PROD UKS COPY TO DB
+#  - stage: CopyToProdUkSouthDB
+#    displayName: "Copy to Prod UKS Database"
+#    dependsOn:
+#      - DownloadProdBackUp
+#    condition: and(in(dependencies.DownloadProdBackUp.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+#    jobs:
+#      - deployment: Deployment
+#        environment: "production"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/db-sync-upload.yaml
+#                  parameters:
+#                    azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3" 
+#                    VaultId: "dct-crc-v3-vlt-prod-uks"
+#                    DBName: $(ProdDbName)
+#                    Server: campaigns-cms-psql-prod-uks # assumed
+#                    ResourceGroup: nhsuk-dct-rg-prod-uks
+#
+#  # PROD RE-DEPLOY THE APP UKS
+#  - stage: RedeployAppToProdUkSouth
+#    displayName: "Redeploy App to Prod UKS"
+#    dependsOn:
+#      - CopyToProdUkSouthDB
+#    condition: and(in(dependencies.CopyToProdUkSouthDB.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+#    jobs:
+#      - deployment: Deployment
+#        environment: "production"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/redeploy.yaml
+#                  parameters:
+#                    kubernetesServiceConnection: "helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3"
+#                    environment: "production"
+#                    namespace: dct-crc-v3-ns"
+#
+#  # PROD UKW COPY TO DB
+#  - stage: CopyToProdUkWestDB
+#    displayName: "Copy to Prod UKW Database"
+#    dependsOn:
+#      - DownloadProdBackUp
+#    condition: and(in(dependencies.DownloadProdBackUp.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+#    jobs:
+#      - deployment: Deployment
+#        environment: "production"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/db-sync-upload.yaml
+#                  parameters:
+#                    azureSubscription: "dct-dr-vault-ukw-dct.campaign-resource-centre-v3" 
+#                    VaultId: "dct-crc-v3-vlt-dr-ukw"
+#                    DBName: $(ProdDbName)
+#                    Server: campaigns-cms-psql-prod-ukw # assumed
+#                    ResourceGroup: nhsuk-dct-rg-prod-uks # correct based on above (uks/ukw mix)
+#
+#  # PROD RE-DEPLOY THE APP UKW
+#  - stage: RedeployAppToProdUkWest
+#    displayName: "Redeploy App to Prod UKW"
+#    dependsOn:
+#      - CopyToProdUkWestDB
+#    condition: and(in(dependencies.CopyToProdUkWestDB.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+#    jobs:
+#      - deployment: Deployment
+#        environment: "production"
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - template: templates/redeploy.yaml
+#                  parameters:
+#                    kubernetesServiceConnection: "helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3"
+#                    environment: "production"
+#                    namespace: "dct-crc-v3-ns"
