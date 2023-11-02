@@ -1,0 +1,241 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+trigger: none
+
+parameters:
+  - name: deployToProd
+    type: boolean
+    default: false
+
+resources:
+  - repo: self
+
+stages:
+  - stage: CopyFromProdDB
+    displayName: "Copy from Production Database"
+    condition: eq('${{ parameters.deployToProd }}', 'false')
+    jobs:
+      - job: DBCopy
+        steps:
+          - template: templates/db-sync-download.yaml
+            parameters:
+              azureSubscription: "nhsuk-cms-dev-rg-connection"
+              VaultId: "nhsuk-cms-kv-prodread"
+              
+  # PROD DOWNLOAD THE DB DUMP (STAG UKS)
+  - stage: DownloadProdBackUp
+    displayName: "Download Production Database Backup"
+    condition: eq('${{ parameters.deployToProd }}', true)
+    jobs:
+      - job: DbDownload
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'nhsuk-cms-dev-rg-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                azcopy copy \
+                'https://nhsukcmsdbdump.blob.core.windows.net/database-dump/$(DataDumpFile)?sp=r&st=2022-08-16T10:54:12Z&se=2026-07-01T18:54:12Z&spr=https&sv=2021-06-08&sr=c&sig=ccWcQbmMZTKQFaJH2iZJ8y9aLKPGdTWnCkAgxAt7Mlo%3D' \
+                $(Build.SourcesDirectory)/db-dump.dump --recursive
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "$(Build.SourcesDirectory)/db-dump.dump"
+              ArtifactName: "db.dump"
+              publishLocation: 'Container'
+
+  - stage: CopyToReviewDB
+    displayName: "Copy to Review Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureSubscription: "nhsuk-cms-dev-rg-connection"
+              VaultId: "nhsuk-cms-kv-dev-uks"
+              DBName: nhsuk-cms-review-$(Build.SourceBranchName)
+              Server: nhsuk-cms-psql-dev-uks
+              ResourceGroup: nhsuk-cms-rg-dev-uks
+
+  - stage: CopyToIntegrationDB
+    displayName: "Copy to Integration Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureSubscription: "nhsuk-cms-dev-rg-connection"
+              VaultId: "nhsuk-cms-kv-dev-uks"
+              DBName: nhsuk-cms
+              Server: nhsuk-cms-psql-dev-uks
+              ResourceGroup: nhsuk-cms-rg-dev-uks
+
+  - stage: CopyToStagingDB
+    displayName: "Copy to Staging Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureSubscription: "nhsuk-cms-staging-rg-connection"
+              VaultId: "nhsuk-cms-kv-stag-uks"
+              DBName: nhsuk-cms
+              Server: nhsuk-cms-psql-stag-uks
+              ResourceGroup: nhsuk-cms-rg-stag-uks
+
+  - stage: CopyToDraftsDB
+    displayName: "Copy to Drafts Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureSubscription: 'nhsuk-cms-staging-rg-connection'
+              VaultId: 'nhsuk-cms-kv-drafts-uks'
+              DBName: nhsuk-cms-drafts
+              Server: nhsuk-cms-psql-stag-uks
+              ResourceGroup: nhsuk-cms-rg-stag-uks
+
+  - stage: RedeployAppToReview
+    displayName: "Redeploy App to Review"
+    dependsOn:
+      - CopyToReviewDB
+    jobs:
+      - deployment: Deployment
+        environment: "dev"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/redeploy.yaml
+                  parameters:
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-nhsuk.nhsuk-cms"
+                    environment: "review"
+                    namespace: "nhsuk-cms-review-$(Build.SourceBranchName)-ns"
+
+  - stage: RedeployAppToIntegration
+    displayName: "Redeploy App to Integration"
+    dependsOn:
+      - CopyToIntegrationDB
+    jobs:
+      - deployment: Deployment
+        environment: "dev"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/redeploy.yaml
+                  parameters:
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-nhsuk.nhsuk-cms"
+                    environment: "integration"
+                    namespace: "nhsuk-cms-ns"
+
+  - stage: RedeployAppToStaging
+    displayName: "Redeploy App to Staging"
+    dependsOn:
+      - CopyToStagingDB
+    jobs:
+      - deployment: Deployment
+        environment: "stag"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/redeploy.yaml
+                  parameters:
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-stag-uksouth-nhsuk.nhsuk-cms"
+                    environment: "staging"
+                    namespace: "nhsuk-cms-ns"
+
+  # PROD UKS COPY TO DB
+  - stage: CopyToProdUkSouthDB
+    displayName: "Copy to Prod UKS Database"
+    dependsOn:
+      - DownloadProdBackUp
+    condition: and(in(dependencies.DownloadProdBackUp.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+    jobs:
+      - deployment: Deployment
+        environment: "prod"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/db-sync-upload.yaml
+                  parameters:
+                    azureSubscription: "nhsuk-cms-prod-rg-connection"
+                    VaultId: "nhsuk-cms-kv-prod-uks"
+                    DBName: $(ProdDbName)
+                    Server: nhsuk-cms-psql-prod-uks
+                    ResourceGroup: nhsuk-cms-rg-prod-uks
+
+  # PROD RE-DEPLOY THE APP UKS
+  - stage: RedeployAppToProdUkSouth
+    displayName: "Redeploy App to Prod UKS"
+    dependsOn:
+      - CopyToProdUkSouthDB
+    condition: and(in(dependencies.CopyToProdUkSouthDB.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+    jobs:
+      - deployment: Deployment
+        environment: "prod"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/redeploy.yaml
+                  parameters:
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-prod-uksouth-nhsuk.nhsuk-cms"
+                    environment: "production"
+                    namespace: "nhsuk-cms-ns"
+
+  # PROD UKW COPY TO DB
+  - stage: CopyToProdUkWestDB
+    displayName: "Copy to Prod UKW Database"
+    dependsOn:
+      - DownloadProdBackUp
+    condition: and(in(dependencies.DownloadProdBackUp.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+    jobs:
+      - deployment: Deployment
+        environment: "prod"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/db-sync-upload.yaml
+                  parameters:
+                    azureSubscription: "nhsuk-cms-prod-rg-connection"
+                    VaultId: "nhsuk-cms-kv-prod-uks"
+                    DBName: $(ProdDbName)
+                    Server: nhsuk-cms-psql-prod-ukw
+                    ResourceGroup: nhsuk-cms-rg-prod-uks
+
+  # PROD RE-DEPLOY THE APP UKW
+  - stage: RedeployAppToProdUkWest
+    displayName: "Redeploy App to Prod UKW"
+    dependsOn:
+      - CopyToProdUkWestDB
+    condition: and(in(dependencies.CopyToProdUkWestDB.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
+    jobs:
+      - deployment: Deployment
+        environment: "prod"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/redeploy.yaml
+                  parameters:
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-prod-ukwest-nhsuk.nhsuk-cms"
+                    environment: "production"
+                    namespace: "nhsuk-cms-ns"
