@@ -2,20 +2,8 @@
 
 ## Technical documentation
 
-This project contains technical documentation written in Markdown in the `/docs` folder. This covers:
-
-- continuous integration
-- deployment
-- git branching
-- project conventions
-
-You can view it using `mkdocs` by running:
-
-```bash
-mkdocs serve
-```
-
-The documentation will be available at: http://localhost:8001/
+This project's technical documentation is written in Confluence here:
+https://digitaltools.phe.org.uk/confluence/display/CRC/Dev+CRC+V3
 
 # Setting up a local build
 
