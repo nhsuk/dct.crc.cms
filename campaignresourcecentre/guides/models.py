@@ -41,7 +41,7 @@ class GuidePage(BasePage):
         help_text="Leave blank if the image is purely decorative. Most images on CRC will not require alt text.",
     )
 
-    body = StreamField(GuidePageBlocks())
+    body = StreamField(GuidePageBlocks(), use_json_field=True)
 
     search_fields = BasePage.search_fields + [
         index.SearchField("introduction"),
@@ -71,7 +71,7 @@ class GuideHubPage(BasePage):
 
     introduction = models.TextField(blank=True)
 
-    body = StreamField(CommonBlocks(required=False), blank=True)
+    body = StreamField(CommonBlocks(required=False), blank=True, use_json_field=True)
 
     content_panels = BasePage.content_panels + [
         FieldPanel("introduction"),

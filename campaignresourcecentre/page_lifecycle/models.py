@@ -3,7 +3,7 @@ from datetime import date
 from django.db import models
 
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
-from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail.models import Page
 
 from .edit_handlers import NextReviewHelpPanel
@@ -41,7 +41,7 @@ class PageLifecyclePage(PageLifecycleMixin, Page):
 
 
 @register_setting
-class PageLifecycleSettings(BaseSetting):
+class PageLifecycleSettings(BaseSiteSetting):
     """Page lifecycle settings surfaced in the Wagtail admin."""
 
     notification_email = models.EmailField(
