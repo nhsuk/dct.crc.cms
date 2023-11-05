@@ -4,7 +4,7 @@ steps:
   inputs:
     azureSubscription: ${{parameters.azureSubscription}}
     KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBName, DBHost, DBUser, BlobStorageContainerNameDbDump, BlobStorageKeyDbDump, BlobStorageNameDbDump
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
 
 - bash: |
     date=`date "+%d-%m-%Y_%H:%M:%S"`;
@@ -41,9 +41,9 @@ steps:
 
       # Save a copy to azure blob storage
       az storage blob upload \
-        --account-name $(BlobStorageNameDbDump) \
-        --account-key $(BlobStorageKeyDbDump) \
-        --container-name $(BlobStorageContainerNameDbDump) \
+        --account-name $(parameters.StorageAccountNameDbDump) \
+        --account-key $(parameters.BlobStorageKeyDbDump) \
+        --container-name $(parameters.BlobStorageContainerNameDbDump) \
         --file db-dump-$(currentDatestamp.Datestamp).dump \
         --name db-dump-$(currentDatestamp.Datestamp).dump
 

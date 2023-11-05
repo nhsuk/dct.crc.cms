@@ -20,9 +20,12 @@ stages:
         steps:
           - template: templates/db-sync-download.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-dev-rg-connection"
-              VaultId: "nhsuk-cms-kv-prodread"
-              
+              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-prod-uks"
+              StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+              BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+              BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
+
   # PROD DOWNLOAD THE DB DUMP (STAG UKS)
   - stage: DownloadProdBackUp
     displayName: "Download Production Database Backup"
@@ -90,22 +93,6 @@ stages:
               azureSubscription: "nhsuk-cms-staging-rg-connection"
               VaultId: "nhsuk-cms-kv-stag-uks"
               DBName: nhsuk-cms
-              Server: nhsuk-cms-psql-stag-uks
-              ResourceGroup: nhsuk-cms-rg-stag-uks
-
-  - stage: CopyToDraftsDB
-    displayName: "Copy to Drafts Database"
-    dependsOn:
-      - CopyFromProdDB
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
-    jobs:
-      - job: DBPaste
-        steps:
-          - template: templates/db-sync-upload.yaml
-            parameters:
-              azureSubscription: 'nhsuk-cms-staging-rg-connection'
-              VaultId: 'nhsuk-cms-kv-drafts-uks'
-              DBName: nhsuk-cms-drafts
               Server: nhsuk-cms-psql-stag-uks
               ResourceGroup: nhsuk-cms-rg-stag-uks
 
