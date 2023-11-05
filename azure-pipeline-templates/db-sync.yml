@@ -35,13 +35,28 @@ stages:
         steps:
           - task: AzureCLI@2
             inputs:
-              azureSubscription: 'nhsuk-cms-dev-rg-connection'
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                azcopy copy \
-                'https://nhsukcmsdbdump.blob.core.windows.net/database-dump/$(DataDumpFile)?sp=r&st=2022-08-16T10:54:12Z&se=2026-07-01T18:54:12Z&spr=https&sv=2021-06-08&sr=c&sig=ccWcQbmMZTKQFaJH2iZJ8y9aLKPGdTWnCkAgxAt7Mlo%3D' \
-                $(Build.SourcesDirectory)/db-dump.dump --recursive
+                export STORE_NAME="digitalcampaignsstorage"
+                export CONTAINER_NAME="crc-v3-backups"
+                export FOLDER="db"
+
+                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
+                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
+                && export SAS_TOKEN=$( az storage container generate-sas \
+                    --account-name $STORE_NAME \
+                    --name $CONTAINER_NAME \
+                    --start $NOW \
+                    --expiry $EXPIRY \
+                    --permissions acdlrw \
+                    --output tsv )
+
+                $(Agent.ToolsDirectory)/azcopy/azcopy copy \
+                    "https://${STORE_NAME}.blob.core.windows.net/${CONTAINER_NAME}/$(DataDumpFile)?${SAS_TOKEN}" \
+                    $(Build.SourcesDirectory)/db-dump.dump --recursive
+
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: "$(Build.SourcesDirectory)/db-dump.dump"
