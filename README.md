@@ -1,5 +1,164 @@
 # Campaign Resource Centre Wagtail site
 
+## Introduction
+
+The campaign resource centre (CRC) is a government site responsible for providing resources associated with various NHS digital campaigns as well as "how to guides" to assist users planning their own marketing campaigns.
+
+The live site can be found here:  
+https://campaignresources.dhsc.gov.uk/
+
+Online documentation for CRC can be accessed on Confluence (using your nhs.net email address) and a couple of helpful links are provided below.
+
+Current version 'homepage':  
+https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3
+
+Development related documentation:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Dev+CRC+V3
+
+## Table of Contents
+
+<!-- vim-markdown-toc GitLab -->
+
+* [Architecture](#architecture)
+* [Running the project](#running-the-site)
+* [Testing](#testing)
+* [Versioning](#versioning)
+* [Development processes](#development-processes)
+* [Pipelines](#pipelines)
+
+<!-- vim-markdown-toc -->
+
+## Architecture
+
+CRC operates using three servers:
+1. Web application server:  
+    * Python/ Django/ Wagtail
+    * Most of this repo is devoted to this
+2. Redis server:  
+    * Used for caching
+3. Database server (Postgres):  
+    * Stores most of the persistent application data
+
+The remaining persistent data fall into two categories:
+1. File resources
+    * Images, pdfs, videos, zip archives
+    * Uploaded by content editors
+2. Index entries
+    * Each page or resource created needs an index entry which is a small JSON document
+   used by the Azure search indexer
+
+For further details, diagrams and external dependencies see the designated pages in Confluence:
+
+https://digitaltools.phe.org.uk/confluence/display/CRC/Development+vs+Production+Architecture
+
+#### Diagrams:
+https://digitaltools.phe.org.uk/confluence/display/CRC/Technical+Architecture+Diagram  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Monitoring  
+https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3+sequence+diagrams  
+https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3+user+flow  
+
+#### External Dependencies: 
+https://digitaltools.phe.org.uk/confluence/display/CRC/Discovery+docs+-+Torchbox  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Wagtail+deployment  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Parkhouse+documentation+-+Solution+overview  
+
+## Running the project (several modes if applicable - maybe just walkthrough a single recommended approach and link to others)
+
+The recommended approach is to use **VSCode** and its **Dev Containers extension**. A devcontainer is a docker image encapsulating all the development requirements for a project. It overcomes the problems encountered when maintaining different applications and versions thereof on the same development machine.
+
+### Pre-reqs
+
+- Docker Desktop:
+  - This now contains both the Docker Engine and docker-compose
+  - See https://docs.docker.com/desktop/ for documentation and download links
+- Visual Studio Code:
+  - The IDE needed for development of this project
+  - See https://code.visualstudio.com/docs for documentation and download links
+- Dev Containers extension for VSCode:
+  - Needed to run a docker container to be used for development
+  - See https://code.visualstudio.com/docs/devcontainers/containers for documentation
+
+### Configuration
+
+When running locally you need file called .env
+
+This file is excluded from git and won't be included in your cloned repo because it will contain secrets. Instead, you should obtain your .env securely from a colleague.
+
+Further details of some of the environment variables set within the .env file can be found here in Confluence:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Environment+Variables+-+the+.env+file
+
+### Running the project
+
+#### Dev Container Setup:
+
+First, ensure you have Docker Desktop running and the Dev Containers extension installed in VSCode.
+
+If you already have the project open in VSCode then you can run the `'Dev Containers: Open Folder in Container...'` command from the bar at the top of the screen.
+
+If not, then when you do open the project folder in VSCode, it will detect the .devcontainer directory and start trying to run this same command automatically for you.
+
+This creates and runs (or attaches to if already created) a Docker container that will be visible in your Docker Desktop app. Building the dev container for the first time will take several minutes.
+
+Continue your setup and later development in a terminal window (or windows) you can open in the running devcontainer using the VSCode Terminal menu. Your host folder where you checked out the CRC repository is mounted into the default folder of the dev container terminal sessions.
+
+To read further on using Dev Containers with CRC see the following Confluence page:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Developing+CRCv3+with+a+devcontainer
+
+#### Local Database sync 
+
+To have the locally running website populated with pages and resources (like those you see in the live site) you will need to run the sync-db command (you can proceed without this step and you will see a very basic, empty form of the website).
+
+This command takes the environment you want to sync with as its only argument, the choices being "staging", "integration" or "review".
+
+To run this command, in the terminal made available by VSCode, enter the following command:
+
+`fab sync-db <environment>`
+
+For more details on syncing your local database see the following Confluence page:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Local+Database+Sync
+
+#### Boot up the website for the first time
+
+Starting a local build can be done by running:
+
+```bash
+fab build
+fab start
+fab sh
+```
+
+Then within the SSH session:
+
+```bash
+dj migrate
+dj createsuperuser OR dj preparetestdata
+djrun
+```
+
+preparetestdata creates a superuser username wagtail password wagtail and creates a rudimentary CRC site with the CRC taxonomy terms installed.
+
+The site should now be available on the host machine at: http://127.0.0.1:8000/
+
+#### Front-end tooling
+
+After starting the containers as above and running `djrun`, in a new terminal session run `fab npm start`. This will start the frontend container and the site will be available on port :3000 using browsersync, e.g. `localhost:3000`.
+
+## Testing (if applicable)
+### Several running modes - or just one recommended approach
+#### Pre-reqs (with links to setup guides/downloads for these)
+#### Configuration (just link to Confluence if too complex)
+#### Running the tests
+
+?? Versioning (just links to common Confluence page)
+
+?? Build pipelines (just links to ADO)
+
+?? Release process (possibly just links to specific/common Confluence page)
+
+## Integrate (just link to Confluence if too complex)
+
+# OLD:
+
 ## Technical documentation
 
 This project's technical documentation is written in Confluence here:
@@ -58,102 +217,6 @@ pip3 install fabric
 ```
 
 You can manage different python versions by setting up `pyenv`: https://realpython.com/intro-to-pyenv/
-
-## Application architecture
-
-The CRC application may be run both on a local development machine or in the Azure cloud.
-
-In both instances there are three servers:
-1. web application server: Python/ Django/ Wagtail, most of this repo is devoted to this
-1. redis server: Used for caching
-1. database server (Postgres): Stores most of the persistent application data
-
-The remaining persistent data fall into two categories:
-1. file resources. (images, pdfs, videos, zip archives) uploaded by content editors
-1. index entries. Each page or resource created needs an index entry which is a small JSON document
-   used by the Azure search indexer.
-
-The servers and resources are disposed quite differently locally and in the cloud.
-
-The behaviour of the application is conditioned by its environment variables. The environment similarly is managed differently locally and in the cloud. Be very careful with adding or removing
-environment variables as each one will require entries in several specification files
-as described below.
-
-The web server runs as a Docker container constructed using ./Dockerfile both locally and in the cloud.
-
-The application uses two external web servers via APIs:
-1. Parkhouse/Paragon API manages all information relating to end-users (content editors are Django/Wagtail users). There is a mock of this API which can be used for testing purposes. Usually we test with a non-production instance of the API which is shared by ALL non-production instances of CRC-V3.
-1. Government notification API which is used to send emails to end-users. This is mocked in all CRC-V3 instances except private beta and production.
-
-### Build modes
-
-There are two build modes for Django set by the environment variable BUILD_ENV:
-* dev
-* production
-dev is used for local builds, and production for cloud builds.
-These influence Django settings (found in ./campaignresourcecentre/settings). Settings used are a combination of base.py extended by either dev.py or prod.py.
-For local builds these in turn may be extended by a file local.py (which is named in .gitignore because it should not be committed to the repo).
-
-### Local build structure
-
-The local build is made by docker-compose using the specification in ./docker-compose.yml which orchestrates three Docker containers:
-1. Redis
-1. PostgreSQL
-1. CRCv3
-1. Front-end debugging tools
-Media storage is in a folder /media, and index storage in a folder /index
-
-The Docker Compose specification mounts several of your local files and folders
-into corresponding folders on the web container, including the media and index folders
-and the application source files. This means that live changes to these files in either
-the local machine or in the container are shared.
-
-Any environment variable required at run time must be set up in ./docker-compose.yml, either hard-coded or copying from your local shell environment.
-The copying occurs at the time you run "docker-compose up" either explicitly or implicitly with "fab start".
-
-### Azure cloud build structure
-
-In the cloud CRCv3 has the following architecture.
-
-The servers are orchestrated by Kubernetes. Each review branch, the integration build, the staging build and production build has its own cluster of servers with an externally visible endpoint.
-
-1. web: one or more docker containers within the cluster (autoscales with load)
-2. redis: a single docker container within the cluster
-3. database: provided externally by an Azure Postgres SQL instance. All integration builds share
-   the same server instance and database.
-
-Storage is provided by two separate Azure storage containers, one for media and one for index files, each with identity and access keys
-determined by environment variables.
-
-Integration and review builds share the same Azure containers, staging, performance testing and production builds each have their own pair of containers.
-
-A cloud build is made by executing an Azure pipeline. Typically is in executed automatically by commits in the Azure repository, but it may be run standalone if you need to change some parameters.
-
-The pipeline is specified in ./aks-deployment-pipeline.yml and it provides contextual information for each of the deployments that may be built:
-* review branch
-* integration
-* staging
-* production
-* disaster recovery
-
-Environment variables must each be treated appropriately in ./aks-deployment-pipeline.yml and in the .aks/deploy.yml template used in that file. There are several sources for environment variable values in cloud builds:
-* hard-coded in the specifications (and therefore stored in the repo)
-* extracted from the secrets vault (each deployment has its own secrets vault)
-* pipeline parameters
-* pipeline variables
-
-"Appropriately" here means an environment symbol value must be one of:
-* hard-coded for a specific environment
-  (e.g. DEBUG is hard-coded False in production builds)
-* hard-coded identically in all environments
-  (e.g. the same local cluster redis credentials are used in each deployment)
-* retrieved from the secrets vault identically for all or several environments,
-  i.e. the same key has the same value in several different vaults
-* retrieved from the secrets vault with a value that is unique to the deployment
-
-Beware that symbol values are copied more than once in the build process via intermediary names which must be chosen for each new symbol.
-
-When a new environment variable is added, consideration should be given to whether it should be secret, i.e. it would be a security risk if it were disclosed. If a secret then it will require an entry in each secrets vault before it is used in a cloud deployment.
 
 ## Running the local build for the first time
 
@@ -222,8 +285,7 @@ fab npm install
 When running locally with Docker Compose you need to provide values for the secrets and other settings to be used
 by your local containers. Docker Compose reads these from a hidden file called .env that is excluded from Git.
 
-The .env file that you use will contain secrets, so you should obtain your .env securely from
-a colleague.
+The .env file that you use will contain secrets, so you should obtain your .env securely from a colleague.
 
 The following symbols are of particular importance if you are running locally.
 
