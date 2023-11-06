@@ -11,9 +11,9 @@ steps:
     connectionType: 'Kubernetes Service Connection'
     kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
     namespace: '${{ parameters.namespace }}'
-    releaseName: 'nhsuk-cms-${{parameters.environment}}'
+    releaseName: 'crc-v3-${{parameters.environment}}'
     command: upgrade
     chartType: FilePath
     chartPath: helm
-    chartName: 'nhsuk-cms-${{parameters.environment}}'
+    chartName: 'crc-v3-${{parameters.environment}}'
     arguments: --reuse-values

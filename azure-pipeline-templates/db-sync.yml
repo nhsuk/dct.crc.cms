@@ -73,11 +73,11 @@ stages:
         steps:
           - template: templates/db-sync-upload.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-dev-rg-connection"
-              VaultId: "nhsuk-cms-kv-dev-uks"
-              DBName: nhsuk-cms-review-$(Build.SourceBranchName)
-              Server: nhsuk-cms-psql-dev-uks
-              ResourceGroup: nhsuk-cms-rg-dev-uks
+              azureSubscription: "nhsuk-cms-dev-rg-connection" ###
+              VaultId: "nhsuk-cms-kv-dev-uks" ###
+              DBName: nhsuk-cms-review-$(Build.SourceBranchName) ###
+              Server: nhsuk-cms-psql-dev-uks ###
+              ResourceGroup: nhsuk-cms-rg-dev-uks ###
 
   - stage: CopyToIntegrationDB
     displayName: "Copy to Integration Database"
@@ -89,11 +89,11 @@ stages:
         steps:
           - template: templates/db-sync-upload.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-dev-rg-connection"
-              VaultId: "nhsuk-cms-kv-dev-uks"
-              DBName: nhsuk-cms
-              Server: nhsuk-cms-psql-dev-uks
-              ResourceGroup: nhsuk-cms-rg-dev-uks
+              azureSubscription: "nhsuk-cms-dev-rg-connection" ###
+              VaultId: "nhsuk-cms-kv-dev-uks" ###
+              DBName: nhsuk-cms ###
+              Server: nhsuk-cms-psql-dev-uks ###
+              ResourceGroup: nhsuk-cms-rg-dev-uks ###
 
   - stage: CopyToStagingDB
     displayName: "Copy to Staging Database"
@@ -105,11 +105,11 @@ stages:
         steps:
           - template: templates/db-sync-upload.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-staging-rg-connection"
-              VaultId: "nhsuk-cms-kv-stag-uks"
-              DBName: nhsuk-cms
-              Server: nhsuk-cms-psql-stag-uks
-              ResourceGroup: nhsuk-cms-rg-stag-uks
+              azureSubscription: "nhsuk-cms-staging-rg-connection" ###
+              VaultId: "nhsuk-cms-kv-stag-uks" ###
+              DBName: nhsuk-cms ###
+              Server: nhsuk-cms-psql-stag-uks ###
+              ResourceGroup: nhsuk-cms-rg-stag-uks ###
 
   - stage: RedeployAppToReview
     displayName: "Redeploy App to Review"
@@ -124,9 +124,9 @@ stages:
               steps:
                 - template: templates/redeploy.yaml
                   parameters:
-                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-nhsuk.nhsuk-cms"
-                    environment: "review"
-                    namespace: "nhsuk-cms-review-$(Build.SourceBranchName)-ns"
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3"
+                    environment: "review" # This needs sorting out so there is a approval in the env in azure (and so project admins can edit the env)
+                    namespace: "dct-crc-v3-review-$(Build.SourceBranchName)-ns"
 
   - stage: RedeployAppToIntegration
     displayName: "Redeploy App to Integration"
@@ -141,9 +141,9 @@ stages:
               steps:
                 - template: templates/redeploy.yaml
                   parameters:
-                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-nhsuk.nhsuk-cms"
-                    environment: "integration"
-                    namespace: "nhsuk-cms-ns"
+                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3"
+                    environment: "integration" # This needs sorting out so there is a approval in the env in azure (and so project admins can edit the env)
+                    namespace: "dct-crc-v3-ns"
 
   - stage: RedeployAppToStaging
     displayName: "Redeploy App to Staging"
@@ -158,9 +158,9 @@ stages:
               steps:
                 - template: templates/redeploy.yaml
                   parameters:
-                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-stag-uksouth-nhsuk.nhsuk-cms"
-                    environment: "staging"
-                    namespace: "nhsuk-cms-ns"
+                    kubernetesServiceConnection: "helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3"
+                    environment: "staging"  # This needs sorting out so there is a approval in the env in azure (and so project admins can edit the env)
+                    namespace: "dct-crc-v3-ns"
 
   # PROD UKS COPY TO DB
   - stage: CopyToProdUkSouthDB
@@ -177,11 +177,11 @@ stages:
               steps:
                 - template: templates/db-sync-upload.yaml
                   parameters:
-                    azureSubscription: "nhsuk-cms-prod-rg-connection"
-                    VaultId: "nhsuk-cms-kv-prod-uks"
+                    azureSubscription: "nhsuk-cms-prod-rg-connection" ###
+                    VaultId: "nhsuk-cms-kv-prod-uks" ###
                     DBName: $(ProdDbName)
-                    Server: nhsuk-cms-psql-prod-uks
-                    ResourceGroup: nhsuk-cms-rg-prod-uks
+                    Server: nhsuk-cms-psql-prod-uks ###
+                    ResourceGroup: nhsuk-cms-rg-prod-uks ###
 
   # PROD RE-DEPLOY THE APP UKS
   - stage: RedeployAppToProdUkSouth
@@ -198,9 +198,9 @@ stages:
               steps:
                 - template: templates/redeploy.yaml
                   parameters:
-                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-prod-uksouth-nhsuk.nhsuk-cms"
+                    kubernetesServiceConnection: "helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3"
                     environment: "production"
-                    namespace: "nhsuk-cms-ns"
+                    namespace: dct-crc-v3-ns"
 
   # PROD UKW COPY TO DB
   - stage: CopyToProdUkWestDB
@@ -217,11 +217,11 @@ stages:
               steps:
                 - template: templates/db-sync-upload.yaml
                   parameters:
-                    azureSubscription: "nhsuk-cms-prod-rg-connection"
-                    VaultId: "nhsuk-cms-kv-prod-uks"
+                    azureSubscription: "nhsuk-cms-prod-rg-connection" ###
+                    VaultId: "nhsuk-cms-kv-prod-uks" ###
                     DBName: $(ProdDbName)
-                    Server: nhsuk-cms-psql-prod-ukw
-                    ResourceGroup: nhsuk-cms-rg-prod-uks
+                    Server: nhsuk-cms-psql-prod-ukw ###
+                    ResourceGroup: nhsuk-cms-rg-prod-uks ###
 
   # PROD RE-DEPLOY THE APP UKW
   - stage: RedeployAppToProdUkWest
@@ -238,6 +238,6 @@ stages:
               steps:
                 - template: templates/redeploy.yaml
                   parameters:
-                    kubernetesServiceConnection: "helm-nhsuk-platforms-aks-prod-ukwest-nhsuk.nhsuk-cms"
+                    kubernetesServiceConnection: "helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3"
                     environment: "production"
-                    namespace: "nhsuk-cms-ns"
+                    namespace: "dct-crc-v3-ns"
