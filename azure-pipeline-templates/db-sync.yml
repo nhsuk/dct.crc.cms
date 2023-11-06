@@ -73,11 +73,11 @@ stages:
         steps:
           - template: templates/db-sync-upload.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-dev-rg-connection" ###
-              VaultId: "nhsuk-cms-kv-dev-uks" ###
-              DBName: nhsuk-cms-review-$(Build.SourceBranchName) ###
-              Server: nhsuk-cms-psql-dev-uks ###
-              ResourceGroup: nhsuk-cms-rg-dev-uks ###
+              azureSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-rev-uks"
+              DBName: crcv3review
+              Server: campaigns-cms-psql-dev-uks
+              ResourceGroup: nhsuk-dct-rg-dev-uks
 
   - stage: CopyToIntegrationDB
     displayName: "Copy to Integration Database"
@@ -89,11 +89,11 @@ stages:
         steps:
           - template: templates/db-sync-upload.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-dev-rg-connection" ###
-              VaultId: "nhsuk-cms-kv-dev-uks" ###
-              DBName: nhsuk-cms ###
-              Server: nhsuk-cms-psql-dev-uks ###
-              ResourceGroup: nhsuk-cms-rg-dev-uks ###
+              azureSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-int-uks"
+              DBName: crcv3int
+              Server: campaigns-cms-psql-dev-uks
+              ResourceGroup: nhsuk-dct-rg-dev-uks
 
   - stage: CopyToStagingDB
     displayName: "Copy to Staging Database"
@@ -105,11 +105,11 @@ stages:
         steps:
           - template: templates/db-sync-upload.yaml
             parameters:
-              azureSubscription: "nhsuk-cms-staging-rg-connection" ###
-              VaultId: "nhsuk-cms-kv-stag-uks" ###
-              DBName: nhsuk-cms ###
-              Server: nhsuk-cms-psql-stag-uks ###
-              ResourceGroup: nhsuk-cms-rg-stag-uks ###
+              azureSubscription: "dct-staging-vault-uks-dct.campaign-resource-centre-v3" 
+              VaultId: "dct-crc-v3-vlt-stag-uks"
+              DBName: crcv3stag
+              Server: campaigns-cms-psql-stag-uks
+              ResourceGroup: dct-cms-postgres-rg-stag-uksouth
 
   - stage: RedeployAppToReview
     displayName: "Redeploy App to Review"
@@ -177,11 +177,11 @@ stages:
               steps:
                 - template: templates/db-sync-upload.yaml
                   parameters:
-                    azureSubscription: "nhsuk-cms-prod-rg-connection" ###
-                    VaultId: "nhsuk-cms-kv-prod-uks" ###
+                    azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3" 
+                    VaultId: "dct-crc-v3-vlt-prod-uks"
                     DBName: $(ProdDbName)
-                    Server: nhsuk-cms-psql-prod-uks ###
-                    ResourceGroup: nhsuk-cms-rg-prod-uks ###
+                    Server: campaigns-cms-psql-prod-uks # assumed
+                    ResourceGroup: nhsuk-dct-rg-prod-uks
 
   # PROD RE-DEPLOY THE APP UKS
   - stage: RedeployAppToProdUkSouth
@@ -217,11 +217,11 @@ stages:
               steps:
                 - template: templates/db-sync-upload.yaml
                   parameters:
-                    azureSubscription: "nhsuk-cms-prod-rg-connection" ###
-                    VaultId: "nhsuk-cms-kv-prod-uks" ###
+                    azureSubscription: "dct-dr-vault-ukw-dct.campaign-resource-centre-v3" 
+                    VaultId: "dct-crc-v3-vlt-dr-ukw"
                     DBName: $(ProdDbName)
-                    Server: nhsuk-cms-psql-prod-ukw ###
-                    ResourceGroup: nhsuk-cms-rg-prod-uks ###
+                    Server: campaigns-cms-psql-prod-ukw # assumed
+                    ResourceGroup: nhsuk-dct-rg-prod-uks # correct based on above (uks/ukw mix)
 
   # PROD RE-DEPLOY THE APP UKW
   - stage: RedeployAppToProdUkWest
