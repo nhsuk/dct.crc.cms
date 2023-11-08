@@ -42,7 +42,7 @@ steps:
       # Save a copy to azure blob storage
       az storage blob upload \
         --account-name ${{parameters.StorageAccountNameDbDump}} \
-        --account-key ${{parameters.BlobStorageKeyDbDum)}} \
+        --account-key ${{parameters.BlobStorageKeyDbDump}} \
         --container-name ${{parameters.BlobStorageContainerNameDbDump}} \
         --file db-dump-$(currentDatestamp.Datestamp).dump \
         --name db-dump-$(currentDatestamp.Datestamp).dump
