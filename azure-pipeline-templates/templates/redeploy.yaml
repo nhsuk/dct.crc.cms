@@ -17,3 +17,5 @@ steps:
     chartPath: helm
     chartName: 'crc-v3-${{parameters.environment}}'
     arguments: --reuse-values
+
+# kill db connection
