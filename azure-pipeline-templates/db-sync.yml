@@ -76,7 +76,7 @@ stages:
     displayName: "Copy to Review Database"
     dependsOn:
       - CopyFromProdDB
-    condition: and(succeeded(), eq('${{ parameters.deployToReview }}', true), eg('${{ parameters.deployToProd }}', 'false'))
+    condition: and(succeeded(), eq('${{ parameters.deployToReview }}', true), eq('${{ parameters.deployToProd }}', 'false'))
     jobs:
       - job: DBPaste
         steps:
@@ -93,7 +93,7 @@ stages:
     displayName: "Copy to Integration Database"
     dependsOn:
       - CopyFromProdDB
-    condition: and(succeeded(), eq('${{ parameters.deployToIntegration }}', true), eg('${{ parameters.deployToProd }}', 'false'))
+    condition: and(succeeded(), eq('${{ parameters.deployToIntegration }}', true), eq('${{ parameters.deployToProd }}', 'false'))
     jobs:
       - job: DBPaste
         steps:
@@ -110,7 +110,7 @@ stages:
 #    displayName: "Copy to Staging Database"
 #    dependsOn:
 #      - CopyFromProdDB
-#    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eg('${{ parameters.deployToProd }}', 'false'))
+#    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eq('${{ parameters.deployToProd }}', 'false'))
 #    jobs:
 #      - job: DBPaste
 #        steps:
