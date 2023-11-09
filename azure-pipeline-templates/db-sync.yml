@@ -7,6 +7,15 @@ parameters:
   - name: deployToProd
     type: boolean
     default: false
+  - name: deployToReview
+    type: boolean
+    default: false
+  - name: deployToIntegration
+    type: boolean
+    default: false
+  - name: deployToStaging
+    type: boolean
+    default: false
 
 resources:
   - repo: self
@@ -67,7 +76,7 @@ stages:
     displayName: "Copy to Review Database"
     dependsOn:
       - CopyFromProdDB
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'))
+    condition: and(succeeded(), eq('${{ parameters.deployToReview }}', true), eg('${{ parameters.deployToProd }}', 'false'))
     jobs:
       - job: DBPaste
         steps:
@@ -84,7 +93,7 @@ stages:
     displayName: "Copy to Integration Database"
     dependsOn:
       - CopyFromProdDB
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), eq('${{ parameters.deployToIntegration }}', true), eg('${{ parameters.deployToProd }}', 'false'))
     jobs:
       - job: DBPaste
         steps:
@@ -101,7 +110,7 @@ stages:
 #    displayName: "Copy to Staging Database"
 #    dependsOn:
 #      - CopyFromProdDB
-#    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+#    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eg('${{ parameters.deployToProd }}', 'false'))
 #    jobs:
 #      - job: DBPaste
 #        steps:
