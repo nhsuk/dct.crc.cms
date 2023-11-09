@@ -35,42 +35,42 @@ stages:
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
 
-  # PROD DOWNLOAD THE DB DUMP (STAG UKS)
-  - stage: DownloadProdBackUp
-    displayName: "Download Production Database Backup"
-    condition: eq('${{ parameters.deployToProd }}', true)
-    jobs:
-      - job: DbDownload
-        steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                export STORE_NAME="digitalcampaignsstorage"
-                export CONTAINER_NAME="crc-v3-backups"
-                export FOLDER="db"
-
-                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
-                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
-                && export SAS_TOKEN=$( az storage container generate-sas \
-                    --account-name $STORE_NAME \
-                    --name $CONTAINER_NAME \
-                    --start $NOW \
-                    --expiry $EXPIRY \
-                    --permissions acdlrw \
-                    --output tsv )
-
-                $(Agent.ToolsDirectory)/azcopy/azcopy copy \
-                    "https://${STORE_NAME}.blob.core.windows.net/${CONTAINER_NAME}/$(DataDumpFile)?${SAS_TOKEN}" \
-                    $(Build.SourcesDirectory)/db-dump.dump --recursive
-
-          - task: PublishBuildArtifacts@1
-            inputs:
-              PathtoPublish: "$(Build.SourcesDirectory)/db-dump.dump"
-              ArtifactName: "db.dump"
-              publishLocation: 'Container'
+  # PROD DOWNLOAD THE DB DUMP (STAG UKS) - used as a part of prod retore
+#  - stage: DownloadProdBackUp
+#    displayName: "Download Production Database Backup"
+#    condition: eq('${{ parameters.deployToProd }}', true)
+#    jobs:
+#      - job: DbDownload
+#        steps:
+#          - task: AzureCLI@2
+#            inputs:
+#              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+#              scriptType: 'bash'
+#              scriptLocation: 'inlineScript'
+#              inlineScript: |
+#                export STORE_NAME="digitalcampaignsstorage"
+#                export CONTAINER_NAME="crc-v3-backups"
+#                export FOLDER="db"
+#
+#                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
+#                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
+#                && export SAS_TOKEN=$( az storage container generate-sas \
+#                    --account-name $STORE_NAME \
+#                    --name $CONTAINER_NAME \
+#                    --start $NOW \
+#                    --expiry $EXPIRY \
+#                    --permissions acdlrw \
+#                    --output tsv )
+#
+#                $(Agent.ToolsDirectory)/azcopy/azcopy copy \
+#                    "https://${STORE_NAME}.blob.core.windows.net/${CONTAINER_NAME}/$(DataDumpFile)?${SAS_TOKEN}" \
+#                    $(Build.SourcesDirectory)/db-dump.dump --recursive
+#
+#          - task: PublishBuildArtifacts@1
+#            inputs:
+#              PathtoPublish: "$(Build.SourcesDirectory)/db-dump.dump"
+#              ArtifactName: "db.dump"
+#              publishLocation: 'Container'
 
   - stage: CopyToReviewDB
     displayName: "Copy to Review Database"
@@ -106,7 +106,8 @@ stages:
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks
 
-#  - stage: CopyToStagingDB
+#  # STAG UKS COPY TO DB
+#  - stage: CopyToStagingDB 
 #    displayName: "Copy to Staging Database"
 #    dependsOn:
 #      - CopyFromProdDB
