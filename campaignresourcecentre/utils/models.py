@@ -6,7 +6,7 @@ from wagtail.admin.panels import (
     MultiFieldPanel,
     PageChooserPanel,
 )
-from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
@@ -252,7 +252,7 @@ class CallToActionSnippet(models.Model):
 
 
 @register_setting
-class SocialMediaSettings(BaseSetting):
+class SocialMediaSettings(BaseSiteSetting):
     twitter_handle = models.CharField(
         max_length=255,
         blank=True,
@@ -275,7 +275,7 @@ class SocialMediaSettings(BaseSetting):
 
 
 @register_setting
-class SystemMessagesSettings(BaseSetting):
+class SystemMessagesSettings(BaseSiteSetting):
     class Meta:
         verbose_name = "system messages"
 
@@ -314,7 +314,7 @@ BasePage._meta.get_field("search_description").verbose_name = SEARCH_DESCRIPTION
 
 
 @register_setting(icon="view")
-class Tracking(BaseSetting):
+class Tracking(BaseSiteSetting):
     google_tag_manager_id = models.CharField(
         max_length=255, blank="True", help_text="Your Google Tag Manager ID"
     )
