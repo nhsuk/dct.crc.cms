@@ -1,177 +1,123 @@
 # Campaign Resource Centre Wagtail site
 
-## Technical documentation
+## Introduction
 
-This project contains technical documentation written in Markdown in the `/docs` folder. This covers:
+The campaign resource centre (CRC) is a government site responsible for providing resources associated with various NHS digital campaigns as well as "how to guides" to assist users planning their own marketing campaigns.
 
-- continuous integration
-- deployment
-- git branching
-- project conventions
+The live site can be found here:  
+https://campaignresources.dhsc.gov.uk/
 
-You can view it using `mkdocs` by running:
+Online documentation for CRC can be accessed on Confluence (using your nhs.net email address) and a couple of helpful links are provided below.
 
-```bash
-mkdocs serve
-```
+Current version 'homepage':  
+https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3
 
-The documentation will be available at: http://localhost:8001/
+Development related documentation:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Dev+CRC+V3
 
-# Setting up a local build
+## Table of Contents
 
-This repository includes a `docker-compose` configuration for running the project in local Docker containers,
-and a fabfile for provisioning and managing this.
+<!-- vim-markdown-toc GitLab -->
 
-## Using VSCode and a devcontainer (recommended)
+* [Architecture](#architecture)
+* [Running the project](#running-the-project)
+* [Front-end testing](#front-end-testing)
+* [Performance testing](#performance-testing)
+* [Versioning](#versioning)
+* [Development branches](#development-branches)
+* [Build pipelines](#build-pipelines)
+* [Release process](#release-process)
 
-This requires only an install of VSCode, Docker Desktop and the Remote Container extension in VSCode
+<!-- vim-markdown-toc -->
 
-Your clone of the CRcv3 repository will contain a .devcontainer folder. VS Code will notice this on opening the folder and offer you the option to
-open the folder in a dev container. Take this option.
+## Architecture
 
-Building the dev container for the first time will take several minutes. Once it has been created it will automatically be restarted without rebuilding when you open the folder with VS Code. The container will have its own database which persists until you rebuild the devcontainer.
-
-Continue your development in a terminal window (or windows) you can open in the running devcontainer using the VSCode Terminal menu. Your host folder where you checked out the CRC repository is mounted into the default folder of the dev container terminal sessions.
-
-You will likely want to start by cloning the database of an existing CRC deployment, e.g. with `fab sync-db staging`. This requires the Azure CLI (which is
-pre-installed in the container) to be upgraded with extra functionality. You will be advised how to do this by the Azure messages. You may need to use the device code mode of login as the temporary server run up by Azure CLI for the login does not have its port exported from the container to localhost where the browser dialogue occurs.
-
-The dev container has the same pre-commit git hooks as used in the build pipeline, you should see them invoked *if you make the git commit in a terminal window* (VS Code runs git in the host machine so git won't find anything installed in a dev container).
-The Python tools poetry and black are also available to use in terminal windows, as are the Docker and Kubectl CLIs, as well as the CRCv3 custom Fabric commands.
-
-Points to note
-
-1. gitleaks is installed using a binary build which assumes an x64 architecture for the host machine. The devcontainer will require some adaptation to be usable
-in both x64 and e.g. ARM hosts, for this and likely other reasons.
-
-2. You can run other git functionality in VS Code, a dev container window, or a host window. It's just commits that require to run the hooks.
-
-## Old school
-
-### Dependencies
-
-The following are required to run the local environment. The minimum versions specified are confirmed to be working:
-if you have older versions already installed they _may_ work, but are not guaranteed to do so.
-
-- [Docker](https://www.docker.com/), version 19.0.0 or up
-  - [Docker Desktop for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) installer
-  - [Docker Engine for Linux](https://hub.docker.com/search?q=&type=edition&offering=community&sort=updated_at&order=desc&operating_system=linux) installers
-- [Docker Compose](https://docs.docker.com/compose/), version 1.24.0 or up
-  - [Install instructions](https://docs.docker.com/compose/install/) (Linux-only: Compose is already installed for Mac users as part of Docker Desktop.)
-- [Fabric](https://www.fabfile.org/), version 2.4.0 or up
-  - [Install instructions](https://www.fabfile.org/installing.html)
-- Python, version 3.6.9 or up
-
-Note that on Mac OS, if you have an older version of fabric installed, you may need to uninstall the old one and then install the new version with pip3:
-
-```bash
-pip uninstall fabric
-pip3 install fabric
-```
-
-You can manage different python versions by setting up `pyenv`: https://realpython.com/intro-to-pyenv/
-
-## Application architecture
-
-The CRC application may be run both on a local development machine or in the Azure cloud.
-
-In both instances there are three servers:
-1. web application server: Python/ Django/ Wagtail, most of this repo is devoted to this
-1. redis server: Used for caching
-1. database server (Postgres): Stores most of the persistent application data
+CRC operates using three servers:
+1. Web application server:  
+    * Python/ Django/ Wagtail
+    * Most of this repo is devoted to this
+2. Redis server:  
+    * Used for caching
+3. Database server (Postgres):  
+    * Stores most of the persistent application data
 
 The remaining persistent data fall into two categories:
-1. file resources. (images, pdfs, videos, zip archives) uploaded by content editors
-1. index entries. Each page or resource created needs an index entry which is a small JSON document
-   used by the Azure search indexer.
+1. File resources
+    * Images, pdfs, videos, zip archives
+    * Uploaded by content editors
+2. Index entries
+    * Each page or resource created needs an index entry which is a small JSON document
+   used by the Azure search indexer
 
-The servers and resources are disposed quite differently locally and in the cloud.
+For further details, diagrams and external dependencies see the designated pages in Confluence:
 
-The behaviour of the application is conditioned by its environment variables. The environment similarly is managed differently locally and in the cloud. Be very careful with adding or removing
-environment variables as each one will require entries in several specification files
-as described below.
+https://digitaltools.phe.org.uk/confluence/display/CRC/Development+vs+Production+Architecture
 
-The web server runs as a Docker container constructed using ./Dockerfile both locally and in the cloud.
+#### Diagrams:
+https://digitaltools.phe.org.uk/confluence/display/CRC/Technical+Architecture+Diagram  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Monitoring  
+https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3+sequence+diagrams  
+https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3+user+flow  
 
-The application uses two external web servers via APIs:
-1. Parkhouse/Paragon API manages all information relating to end-users (content editors are Django/Wagtail users). There is a mock of this API which can be used for testing purposes. Usually we test with a non-production instance of the API which is shared by ALL non-production instances of CRC-V3.
-1. Government notification API which is used to send emails to end-users. This is mocked in all CRC-V3 instances except private beta and production.
+#### External Dependencies: 
+https://digitaltools.phe.org.uk/confluence/display/CRC/Discovery+docs+-+Torchbox  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Wagtail+deployment  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Parkhouse+documentation+-+Solution+overview  
 
-### Build modes
+## Running the project
 
-There are two build modes for Django set by the environment variable BUILD_ENV:
-* dev
-* production
-dev is used for local builds, and production for cloud builds.
-These influence Django settings (found in ./campaignresourcecentre/settings). Settings used are a combination of base.py extended by either dev.py or prod.py.
-For local builds these in turn may be extended by a file local.py (which is named in .gitignore because it should not be committed to the repo).
+The recommended approach is to use **VSCode** and its **Dev Containers extension**. A devcontainer is a docker image encapsulating all the development requirements for a project. It overcomes the problems encountered when maintaining different applications and versions thereof on the same development machine.
 
-### Local build structure
+### Pre-reqs
 
-The local build is made by docker-compose using the specification in ./docker-compose.yml which orchestrates three Docker containers:
-1. Redis
-1. PostgreSQL
-1. CRCv3
-1. Front-end debugging tools
-Media storage is in a folder /media, and index storage in a folder /index
+- Docker Desktop:
+  - This now contains both the Docker Engine and docker-compose
+  - See https://docs.docker.com/desktop/ for documentation and download links
+- Visual Studio Code:
+  - The IDE needed for development of this project
+  - See https://code.visualstudio.com/docs for documentation and download links
+- Dev Containers extension for VSCode:
+  - Needed to run a docker container to be used for development
+  - See https://code.visualstudio.com/docs/devcontainers/containers for documentation
 
-The Docker Compose specification mounts several of your local files and folders
-into corresponding folders on the web container, including the media and index folders
-and the application source files. This means that live changes to these files in either
-the local machine or in the container are shared.
+### Configuration
 
-Any environment variable required at run time must be set up in ./docker-compose.yml, either hard-coded or copying from your local shell environment.
-The copying occurs at the time you run "docker-compose up" either explicitly or implicitly with "fab start".
+When running locally you need file called .env
 
-### Azure cloud build structure
+This file is excluded from git and won't be included in your cloned repo because it will contain secrets. Instead, you should obtain your .env securely from a colleague.
 
-In the cloud CRCv3 has the following architecture.
+Further details of some of the environment variables set within the .env file can be found here in Confluence:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Environment+Variables+-+the+.env+file
 
-The servers are orchestrated by Kubernetes. Each review branch, the integration build, the staging build and production build has its own cluster of servers with an externally visible endpoint.
+### Dev Container setup:
 
-1. web: one or more docker containers within the cluster (autoscales with load)
-2. redis: a single docker container within the cluster
-3. database: provided externally by an Azure Postgres SQL instance. All integration builds share
-   the same server instance and database.
+First, ensure you have Docker Desktop running and the Dev Containers extension installed in VSCode.
 
-Storage is provided by two separate Azure storage containers, one for media and one for index files, each with identity and access keys
-determined by environment variables.
+If you already have the project open in VSCode then you can run the `'Dev Containers: Open Folder in Container...'` command from the bar (command palette) at the top of the screen.
 
-Integration and review builds share the same Azure containers, staging, performance testing and production builds each have their own pair of containers.
+If not, then when you do open the project folder in VSCode, it will detect the .devcontainer directory and start trying to run this same command automatically for you.
 
-A cloud build is made by executing an Azure pipeline. Typically is in executed automatically by commits in the Azure repository, but it may be run standalone if you need to change some parameters.
+This creates and runs (or attaches to if already created) a Docker container that will be visible in your Docker Desktop app. Building the dev container for the first time will take several minutes.
 
-The pipeline is specified in ./aks-deployment-pipeline.yml and it provides contextual information for each of the deployments that may be built:
-* review branch
-* integration
-* staging
-* production
-* disaster recovery
+Continue your setup and later development in a terminal window (or windows) you can open in the running devcontainer using the VSCode Terminal menu. Your host folder where you checked out the CRC repository is mounted into the default folder of the dev container terminal sessions.
 
-Environment variables must each be treated appropriately in ./aks-deployment-pipeline.yml and in the .aks/deploy.yml template used in that file. There are several sources for environment variable values in cloud builds:
-* hard-coded in the specifications (and therefore stored in the repo)
-* extracted from the secrets vault (each deployment has its own secrets vault)
-* pipeline parameters
-* pipeline variables
+To read further on using Dev Containers with CRC see the following Confluence page:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Developing+CRCv3+with+a+devcontainer
 
-"Appropriately" here means an environment symbol value must be one of:
-* hard-coded for a specific environment
-  (e.g. DEBUG is hard-coded False in production builds)
-* hard-coded identically in all environments
-  (e.g. the same local cluster redis credentials are used in each deployment)
-* retrieved from the secrets vault identically for all or several environments,
-  i.e. the same key has the same value in several different vaults
-* retrieved from the secrets vault with a value that is unique to the deployment
+### Local database sync 
 
-Beware that symbol values are copied more than once in the build process via intermediary names which must be chosen for each new symbol.
+To have the locally running website populated with pages and resources (like those you see in the live site) you will need to run the sync-db command (you can proceed without this step and you will see a very basic, empty form of the website).
 
-When a new environment variable is added, consideration should be given to whether it should be secret, i.e. it would be a security risk if it were disclosed. If a secret then it will require an entry in each secrets vault before it is used in a cloud deployment.
+This command takes the environment you want to sync with as its only argument, the choices being "staging", "integration" or "review".
 
-## Running the local build for the first time
+To run this command, in the terminal made available by VSCode, enter the following command:
 
-If you are using Docker Desktop, ensure the Resources:File Sharing settings allow the cloned directory to be mounted in the web container (avoiding `mounting` OCI runtime failures at the end of the build step).
+`fab sync-db <environment>`
 
-Before starting your build ensure that your .env file sets up appropriate values for the environment of your build. More specifics in a separate section below.
+For more details on syncing your local database see the following Confluence page:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Local+Database+Sync
+
+### Boot up the website for the first time
 
 Starting a local build can be done by running:
 
@@ -185,255 +131,58 @@ Then within the SSH session:
 
 ```bash
 dj migrate
-dj createsuperuser or dj preparetestdata
+dj createsuperuser OR dj preparetestdata
 djrun
-
 ```
 
 preparetestdata creates a superuser username wagtail password wagtail and creates a rudimentary CRC site with the CRC taxonomy terms installed.
 
-Alternatively, you may clone an existing deployment of CRC and test against its full content.
-```
-T.b.a.
-```
+The site should now be available on the host machine at: http://127.0.0.1:8000/
 
-Whichever method you use the site should now be available on the host machine at: http://127.0.0.1:8000/
+### Front-end tooling
 
-### Frontend tooling
+After starting the containers as above and running `djrun`, in a new terminal session run `fab npm start`. This will start the frontend container and the site will be available on port :3000 using browsersync, e.g. `localhost:3000`.
 
-There are 2 ways to run the frontend tooling:
+## Front-end testing
 
-#### With the frontend docker container (default)
+Containers are also used for running front-end tests locally since they too have complex dependencies. The tests are all defined in the FrontEndTests folder and get built into a docker image called "acceptancetests" that is stored in the "dctimages.azurecr.io" docker image repository. The version of the tests being run is dictated by the Image Tag the test container is using so make sure you are providing the up to date tag. The construction of the image is detailed here in  a separate GitHub repository:  
+<https://github.com/nhsuk/dct-frontend-testing-framework>
 
-After starting the containers as above and running `djrun`, in a new
-terminal session run `fab npm start`. This will start the frontend container and the site will
-be available on port :3000 using browsersync. E.G `localhost:3000`.
+### Configuration
 
-#### Locally
+Configuration related to testing focusses on accessing and specifying the aforementioned "acceptancetests" docker image:
 
-To run the FE tooling locally. Create a `.env` file in the project root (see .env.example) and add `FRONTEND=local`.
-Running `fab start` will now run the frontend container and you can start npm locally instead
+* REPO_USERNAME and REPO_PASSWORD:  
+credentials used to access the "dctimages.azurecr.io" docker image repository.  
 
-There are a number of other commands to help with development using the fabric script. To see them all, run:
+* SECRETS_FILE:  
+CSV file containing details of registered users of the CRC site (your email address, your CRC password).  
 
-```bash
-fab -l
-```
+* IMAGE_TAG:  
+The version of the "acceptancetests" build to use (e.g. 1.1.1) - leave empty to run "latest".
 
-## Front-end assets
+* TAGS:  
+Used to determine which subset of tests to run (e.g. "@Smoke") - leave empty to run all tests. 
 
-Frontend npm packages can be installed locally with npm, then added to the frontend container with fabric like so:
+### In the build pipeline
 
-```bash
-npm install promise
-fab npm install
-```
+The "smoke" tests are automatically run within this build pipeline whenever a review branch is created or modified:  
+https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?definitionId=1071&_a=summary
 
-## Environment symbols
+From here you can click "Edit", then "Variables" and provide REPO_USERNAME REPO_PASSWORD and IMAGE_TAG (named FRONTEND_TEST_CONTAINER_IMAGE_TAG in the pipeline variables). The other variable secrets file and tags are specified within the pipeline itself.
 
-When running locally with Docker Compose you need to provide values for the secrets and other settings to be used
-by your local containers. Docker Compose reads these from a hidden file called .env that is excluded from Git.
+The results for the front end tests run in the build pipeline can be found in the "Deploy" stage or the "Deploy Review" job under the "Run Frontend tests in Docker container" task.
 
-The .env file that you use will contain secrets, so you should obtain your .env securely from
-a colleague.
+### Testing locally
 
-The following symbols are of particular importance if you are running locally.
+To run the front end tests locally you need to provide the same environment variables in a test_env.sh file.
 
-### AZURE_CONTAINER
+This file is excluded from git and won't be included in your cloned repo because it will contain secrets. Instead, you should obtain the test_env.sh file securely from a colleague.
 
-If this setting is missing, blank or has the value "none" then media and index entries are stored in the local folders ./media and ./index (mapped into the web container and used by it).
-
-If AZURE_CONTAINER is set that both triggers the use of Azure storage for these files, and provides the name of the Azure container within an Azure account.
-
-Be aware that if you use an AZURE_CONTAINER you will need to specify valid Azure account credentials in other symbols and that if you use the same container as another deployment then files that your Wagtail instance creates, modifies or deletes will be shared with the other deployment, but its Wagtail database will have no knowledge of this. This is often not a problem because Wagtail adds a cache-busting suffix to file names and URLs but there remains a problem of potential conflicts especially over deletes.
-
-### AZURE_SEARCH_UPDATE
-
-This setting defaults to True. Presently it is only used when deleting pages or resources, and causes the index entry to be deleted immediately from the search index, as well as its JSON file being deleted from the index folder. When running locally it is wise to set it False especially if you are testing deleting in a cloned database, because the search index entry will be deleted affecting all users of that index.
-
-### Pipeline parameter symbols
-
-These may be used on an ad hoc basis to vary the operation of the CRCV3 web instance that will be built and deployed.
-* DEBUG - Django debug mode (true/y/false/n), default False
-* TAGS - Tag or tags to select front-end tests to be run in the build. Defaults to 'Smoke' for smoke tests only
-* PARAGON_MOCK - Mock the Paragon API (true/y/false/n) default False
-* NOTIFY_DEBUG - Mock the government notification API (true/y/false/n)
-default True except in production
-* WEB_WORKERS - Number of concurrent Django processes per pod to handle requests default 5
-* GUNICORN_CMD_ARGS - Optional parameters to pass to Gunicorn server
-
-When DEBUG is false Django is run with the Gunicorn server, when true with the Django runserver server.
-Non-debug mode requires a setting for WEB_WORKERS.
-
-## Installing new or updated python packages
-
-Python packages are managed using the poetry installer. This is controlled by the file
-poetry/pyproject.toml that lists the required packages and specifies minimal or exact versions
-for each.
-
-The accompanying file poetry/poetry.lock, if it exists, specifies the precise versions of both the
-required packages and all their dependencies and is used instead of pyproject.toml. If it does not exist, then poetry creates it from the specification in pyproject.toml as its first action.
-
-To add a new package, or upgrade an existing one:
-
-First add an entry for the package in poetry/pyproject.toml
-   [as described here](https://python-poetry.org/docs/basic-usage/#specifying-dependencies)
-   or modify the existing entry if upgrading.
-
-Then, there are two ways to proceed.
-
-If you wish to bring *all* the project dependencies up to date (which will necessitate a full regression test):
-1. make any required additions of new packages to poetry/pyproject.toml
-1. run poetry update
-
-This will rewrite the lock file with all packages up-to-date.
-
-If you wish to update just *one* package and its dependencies, there is a rather tricky method:
-(other approaches may be superior):
-1. make your changes to poetry/pyproject.toml
-1. identify a package in the pyproject.toml that is already up to date (let's call it xxx)
-1. run `poetry update xxx`
-
-This will rewrite the poetry.lock with minimal changes. If there is no package that is already up-to-date, it may
-be time to review all the dependencies anyway.
-
-## Versioning
-
-[Semantic Versioning](https://semver.org/) is used for release management for this project. 
-
-Git tag format for versions is `<Major>.<Minor>.<Patch>`
-
-Format: eg:`01.00.00`
-
-Main integration branch is `main`
-
-## Developing features
-
-- Branch of from `main` to start working on a new feature:
-
-```
-git checkout -b feature/<feature-name>
-```
-
-- Publish your feature:
-
-```
-git push -u origin feature/<feature-name>
-```
-
-- Create a merge request on Azure Dev. You can do so using Web UI by loggin into https://dev.azure.com/nhsuk/_git/dct.oneyou-cms/pullrequests.
-
-- Once approved by your peer merge. Either merge it from web UI or rebase your branch into main from dev environment:
-
-```
-git checkout main
-```
-
-```
-git pull
-```
-
-```
-git merge feature/<feature-name>
-git push
-```
-
-- Close the PR and delete the feature branch.
-
-During a release if any features are merged into main branch, minor number in the version should be incremented.
-
-### Endpoints
-
-Each CRCv3 deployment has its own subdomain with a front-end server providing HTTPS and request throttling. 
-
-### Rebuilds
-
-If you require your deployment to have non-default pipeline parameters as seen above, then the pipeline may be executed on an ad-hoc basis and the values may be changed on the submission form.
-
-### Bug fixes
-
-- Branch of from main using `fix` prefix
-
-```
-git checkout -b fix/<fix-name>
-```
-
-- Publish your fix:
-
-```
-git push -u origin fix/<fix-name>
-```
-
-- Create a merge request on Azure Dev. You can do so using Web UI by loggin into https://dev.azure.com/nhsuk/_git/dct.oneyou-cms/pullrequests.
-
-- Once approved by your peer merge. Either merge it from web UI or rebase your branch into main from dev environment:
-
-```
-git checkout master
-```
-
-```
-git pull
-```
-
-```
-git merge fix/<feature-name>
-git push
-```
-
-- Close the PR and delete the fix branch.
-
-During a release if `main` only contains fixes, patch number should be incremented in the version. If there are any features merged in minor should be incremented instead.
-
-These are used for tracking status of and deploying to the related environments.
-
-### Review branch
-
-Review branch is used if developers needs to review the feature/fix change on cloud deployed instance. In this case create review branch using `review/` prefix.
-
-- Branch of from main using `review/` prefix
-
-```
-git checkout -b review/<fix-name>
-```
-
-- Publish your fix:
-
-```
-git push -u origin review/<fix-name>
-```
-
-- This will trigger the pipeline and deploy the application to aks cluster. Use `https://crc-v3-review-<fix-name>.nhswebsite-dev.nhs.uk` url to access the cloud deployed instance of the application.
-
-## Front end tests
-
-Front end tests are all defined in a folder 'FrontEndTests'. They rely on a complicated software configuration including headless versions of Firefox and Chrome. To avoid installing all this locally the tests are embodied in a Docker container which is used in the build pipeline and can also be
-used to run the front end tests on a local build. The container is stored in the Campaigns docker repository. The construction of the container is detailed in a separate GitHub repository <https://github.com/nhsuk/dct-frontend-testing-framework>. Successive versions of the container will be semantically tagged, e.g. 1.0.0 and the version used by CRCv3 is specified in the build pipeline variable FRONTEND_TEST_CONTAINER_IMAGE.
-
-### Front end tests in the build pipeline
-
-The tests defined as "Smoke" tests are automatically run whenever a review branch is pushed up. To enable this two pipeline variables are set up with the Docker repository user name and password. These will only need to be changed if the repository changes. To review them, first edit the pipeline:
-
-![edit_pipeline](./assets/pipelineedit.png)
-
-Then access the pipeline variables:
-
-![pipeline_variables](./assets/pipelinevariables.png)
-
-and change if ever required. The FRONTEND_TEST_CONTAINER_IMAGE_TAG is configured similarly.
-
-### Running front end tests locally
-
-These remarks assume that your local development environment is a dev container.
-
-To run the front end tests locally you need to set up the same environment symbols that are used to run the front end tests in the build pipeline.
-
-In the same way that your local .env file provides secrets that come from vaults in the CRC deployments, you should have a test_env.sh file that you execute before running front end tests in a local environment. 
-Additionally, just as the front end tests require a SECRETS_FILE from the CRCv3 Azure devops project library, you should have a local file
-crcv3-1-user.csv with a username and password for the front end tests to use. All three files (.env, test_env.sh and crcv3-1-user.csv) are
-excluded from source code control by the .gitignore file.
+You will also need to create the CSV secrets file and provide its path as the SECRETS_FILE value, e.g. $PWD/user-details.csv
 
 An example test_env.sh:
+
 ```
 export BASE_URL=http://localhost:8000
 export REPO_USERNAME=**************
@@ -442,34 +191,72 @@ export REPO_PASSWORD=************************************
 export SECRETS_FILE=$PWD/crcv3-1-user.csv
 export IMAGE_TAG=1.0.0
 ```
+
 To run the tests, first get your local CRC instance running in a terminal window:
-```
+
+```bash
 fab start
 fab sh
 djrun
 ```
+
 then start a second terminal window to run the tests:
-```
+
+```bash
 . ./test_env.sh
 ./execute-frontendtests.sh
 ```
 
-## Performance test
+## Performance testing
 
-- Download jmeter tool from https://jmeter.apache.org/download_jmeter.cgi and install.
-- Sample jmx script is added under jmeter folder.
-- Start the jmeter application with interface.
-- Load the jmx file and check the values for 'Number of threads(users)', 'Ramp-up period' and 'Duration' i.e currently set to 100, 10 and 60 respectively.
-- Click run button and view the results on by clicking on either 'View Results Tree' or 'Summary Report'.
+Performance testing was required at the start of the project to demonstrate the suitability of the design but it still remains a good idea to aim to have it run monthly to ensure the high performance of the project is maintained. 
 
-Ref:
-![plot](./jmeter/sample-jmeter.png)
+### In a pipeline
 
+Performance testing can be run from within a pipeline found here:  
+https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?definitionId=1074&_a=summary
 
-## Paragon users
+For more information, see this page in Confluence:  
+https://digitaltools.phe.org.uk/confluence/display/CRC/Performance+testing+framework
 
-Paragon users can be viewed and managed via the Wagtail admin "Paragon users" view.
+### Testing locally
 
-To access this, users must have admin level access or be in a group with either the "Can view Paragon users and change access level" or "Can view Paragon users and change all details" permission enabled.
+* Download jmeter tool from https://jmeter.apache.org/download_jmeter.cgi and install.
+* Sample jmx script is added under PerformaceTests folder.
+* Start the jmeter application with interface.
+* Load the jmx file and check the values for 'Number of threads(users)', 'Ramp-up period' and 'Duration' i.e currently set to 100, 10 and 60 respectively.
+* Click run button and view the results on by clicking on either 'View Results Tree' or 'Summary Report'.
 
-In order for the "Paragon users" view to display the most recently registered users, the number of Paragon users must be stored. The Paragon API does not provide a direct method to access this value so it must be deduced from search results. A management command `update_num_users` has been created to fetch and cache the number of users. This management command should be run periodically - every few minutes or so.
+## Versioning
+
+Versioning methods would ideally be standardised and consistent across projects. The common page detailing versioning methods is here in Confluence:  
+https://digitaltools.phe.org.uk/confluence/display/DTB/Versioning+Standards
+
+## Development branches
+
+Branching would ideally be standardised and consistent across projets. The common page detailing the use of branches for development is here in Confluence:  
+https://digitaltools.phe.org.uk/confluence/display/DTB/Development+branching
+
+## Build pipelines
+
+All of the build pipelines for this project can be found here:  
+https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?view=folders
+
+The main pipeline for building and deploying a CRC instance is here:
+https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?definitionId=1071
+
+This pipeline allows the specifying of the following variables when run manually:
+* DEBUG - Django debug mode (true/y/false/n), default False
+* TAGS - Tag or tags to select front-end tests to be run in the build. Defaults to 'Smoke' for smoke tests only
+* PARAGON_MOCK - Mock the Paragon API (true/y/false/n) default False
+* NOTIFY_DEBUG - Mock the government notification API (true/y/false/n)
+default True except in production
+* WEB_WORKERS - Number of concurrent Django processes per pod to handle requests default 5
+* GUNICORN_CMD_ARGS - Optional parameters to pass to Gunicorn server
+
+When DEBUG is false Django is run with the Gunicorn server, when true with the Django runserver server. Non-debug mode requires a setting for WEB_WORKERS.
+
+## Release process
+
+The release process would ideally be standardised and consistent across projects. The common page detailing the release process is here in Confluence:  
+https://digitaltools.phe.org.uk/confluence/display/DTB/7.+Release+Process

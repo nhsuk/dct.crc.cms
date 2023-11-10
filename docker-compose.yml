@@ -64,16 +64,13 @@ services:
     command: tail -f /dev/null # do nothing forever - exec commands elsewhere
     ports:
       - 8000:8000 # runserver
-      - 8001:8001 # mkdocs serve
       - 4000:4000 # debugger
     volumes:
       - ./README.md:/app/README.md:delegated,ro
-      - ./docs:/app/docs:delegated,ro
       - ./manage.py:/app/manage.py:delegated,ro
       - ./gunicorn-config.py:/app/gunicorn-config.py:delegated,ro
       - ./campaignresourcecentre:/app/campaignresourcecentre:delegated,rw
       - ./media:/app/media:delegated,rw
-      - ./mkdocs.yml:/app/mkdocs.yml:delegated,ro
       - ./poetry:/app/poetry:delegated,rw
       - ./public:/app/public:delegated,ro
       - ./setup.cfg:/app/setup.cfg:delegated,ro
