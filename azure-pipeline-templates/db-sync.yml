@@ -106,23 +106,23 @@ stages:
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks
 
-#  # STAG UKS COPY TO DB
-#  - stage: CopyToStagingDB 
-#    displayName: "Copy to Staging Database"
-#    dependsOn:
-#      - CopyFromProdDB
-#    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eq('${{ parameters.deployToProd }}', 'false'))
-#    jobs:
-#      - job: DBPaste
-#        steps:
-#          - template: templates/db-sync-upload.yaml
-#            parameters:
-#              azureVaultSubscription: "dct-staging-vault-uks-dct.campaign-resource-centre-v3"
-#              azureStorageSubscription: "dct-cms-postgres-rg-stag-uksouth.campaign-resource-centre-v3"
-#              VaultId: "dct-crc-v3-vlt-stag-uks"
-#              DBName: crcv3stag
-#              Server: campaigns-cms-psql-stag-uks
-#              ResourceGroup: dct-cms-postgres-rg-stag-uksouth
+  # STAG UKS COPY TO DB
+  - stage: CopyToStagingDB 
+    displayName: "Copy to Staging Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eq('${{ parameters.deployToProd }}', 'false'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureVaultSubscription: "dct-staging-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "dct-cms-postgres-rg-stag"
+              VaultId: "dct-crc-v3-vlt-stag-uks"
+              DBName: crcv3stag
+              Server: campaigns-cms-psql-stag-uks
+              ResourceGroup: dct-cms-postgres-rg-stag-uksouth
 
 #
 #  # PROD UKS COPY TO DB
@@ -140,7 +140,8 @@ stages:
 #              steps:
 #                - template: templates/db-sync-upload.yaml
 #                  parameters:
-#                    azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3" 
+#                    azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+#                    azureStorageSubscription: "nhsuk-dct-rg-prod"
 #                    VaultId: "dct-crc-v3-vlt-prod-uks"
 #                    DBName: $(ProdDbName)
 #                    Server: campaigns-cms-psql-prod-uks # assumed
@@ -161,7 +162,8 @@ stages:
 #              steps:
 #                - template: templates/db-sync-upload.yaml
 #                  parameters:
-#                    azureSubscription: "dct-dr-vault-ukw-dct.campaign-resource-centre-v3" 
+#                    azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+#                    azureStorageSubscription: "nhsuk-dct-rg-prod"
 #                    VaultId: "dct-crc-v3-vlt-dr-ukw"
 #                    DBName: $(ProdDbName)
 #                    Server: campaigns-cms-psql-prod-ukw # assumed
