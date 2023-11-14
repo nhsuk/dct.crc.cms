@@ -34,7 +34,7 @@
     /**
      * Ensure the error list is in view if the page is refreshed
      */
-    window.addEventListener('beforeunload', (event) => {
+    window.addEventListener('unload', (event) => {
         event.preventDefault();
         errorFocus();
     });
