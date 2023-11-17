@@ -17,15 +17,15 @@ stages:
         steps:
           - task: AzureCLI@2
             name: QueryProd
-            displayName: 'Query container content from nhsukcmsproduks/nhsuk-cms'
+            displayName: 'Query container content from prod'
             inputs:
-              azureSubscription: "nhsuk-cms-prod-rg-connection"
+              azureSubscription: "campaigns-apps-rg-prod"
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
                 IFS=$'\n'
-                fs="nhsukcmsproduks"
-                container="nhsuk-cms"
+                fs="campaignsstrgproduks"
+                container="campaign-resouce-centre-v3-prod"
                 az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
                 if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
                   echo "First 20 lines from 'az storage blob list' command:"
@@ -34,7 +34,7 @@ stages:
                 # Expected output from 'az storage blob list' is json
                 PROD_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
                 unset IFS
-                echo "Found ${#PROD_BLOB_ARRAY[@]} blobs in nhsukcmsproduks nhsuk-cms container"
+                echo "Found ${#PROD_BLOB_ARRAY[@]} blobs in campaignsstrgproduks campaign-resouce-centre-v3-prod container"
                 printf "%s\n" "${PROD_BLOB_ARRAY[@]}" > "./prod_blobs.txt"
           - task: PublishPipelineArtifact@1
             inputs:
@@ -42,15 +42,15 @@ stages:
               artifactName: 'prod_blobs'
           - task: AzureCLI@2
             name: QueryStaging
-            displayName: 'Query container content from nhsukcmsstaguks/nhsuk-cms'
+            displayName: 'Query container content from staging'
             inputs:
-              azureSubscription: "nhsuk-cms-staging-rg-connection"
+              azureSubscription: "campaigns-apps-rg-stag"
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
                 IFS=$'\n'
-                fs="nhsukcmsstaguks"
-                container="nhsuk-cms"
+                fs="campaignsstrgstaguks"
+                container="campaign-resource-centre-v3-staging"
                 az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
                 if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
                   echo "First 20 lines from 'az storage blob list' command:"
@@ -59,7 +59,7 @@ stages:
                 # Expected output from 'az storage blob list' is json
                 STAGING_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
                 unset IFS
-                echo "Found ${#STAGING_BLOB_ARRAY[@]} blobs in nhsukcmsstaguks nhsuk-cms container"
+                echo "Found ${#STAGING_BLOB_ARRAY[@]} blobs in campaignsstrgstaguks campaign-resource-centre-v3-staging container"
                 printf "%s\n" "${STAGING_BLOB_ARRAY[@]}" > "./staging_blobs.txt"
           - task: PublishPipelineArtifact@1
             inputs:
@@ -67,15 +67,15 @@ stages:
               artifactName: 'staging_blobs'
           - task: AzureCLI@2
             name: QueryDev
-            displayName: 'Query container content from nhsukcmsdevuks/dev'
+            displayName: 'Query container content from dev'
             inputs:
-              azureSubscription: 'nhsuk-cms-dev-rg-connection'
+              azureSubscription: 'campaigns-apps-rg-dev-uks.campaign-resource-centre-v3'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
                 IFS=$'\n'
-                fs="nhsukcmsdevuks"
-                container="dev"
+                fs="campaignsstrgintuks"
+                container="campaign-resouce-centre-v3-integration"
                 az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
                 if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
                   echo "First 20 lines from 'az storage blob list' command:"
@@ -84,7 +84,7 @@ stages:
                 # Expected output from 'az storage blob list' is json
                 DEV_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
                 unset IFS
-                echo "Found ${#DEV_BLOB_ARRAY[@]} blobs in nhsukcmsdevuks dev container"
+                echo "Found ${#DEV_BLOB_ARRAY[@]} blobs in campaignsstrgintuks campaign-resouce-centre-v3-integration container"
                 printf "%s\n" "${DEV_BLOB_ARRAY[@]}" > "./dev_blobs.txt"
           - task: PublishPipelineArtifact@1
             inputs:
@@ -108,11 +108,11 @@ stages:
               path: ./
           - task: Bash@3
             name: CompareStaging
-            displayName: 'Compare container content from nhsukcmsproduks/nhsuk-cms vs nhsukcmsstaguks/nhsuk-cms'
+            displayName: 'Compare container content from prod vs stag'
             inputs:
               targetType: 'inline'
               script: |
-                echo "Comparing blobs in [Storage Account/Container]: [nhsukcmsproduks/nhsuk-cms] vs [nhsukcmsstaguks/nhsuk-cms]:"
+                echo "Comparing blobs in prod vs stag:"
                 PROD_BLOB_ARRAY=( $(cat "./prod_blobs.txt") )
                 STAGING_BLOB_ARRAY=( $(cat "./staging_blobs.txt") )
                 PROD_STAGING_UNION=(${PROD_BLOB_ARRAY[@]} ${STAGING_BLOB_ARRAY[@]})
@@ -121,7 +121,7 @@ stages:
                 PROD_STAGING_DIFF_UNION=(${PROD_STAGING_DIFF[@]} ${PROD_BLOB_ARRAY[@]})
                 PROD_OWNED_DIFF=($((sort | uniq -d) <<< "${PROD_STAGING_DIFF_UNION[*]}"))
                 unset IFS
-                echo "Found ${#PROD_STAGING_DIFF[@]} unique blob(s); ${#PROD_OWNED_DIFF[@]} unique blob(s) come from [nhsukcmsproduks/nhsuk-cms]"
+                echo "Found ${#PROD_STAGING_DIFF[@]} unique blob(s); ${#PROD_OWNED_DIFF[@]} unique blob(s) come from prod"
                 printf "%s\n" "${PROD_OWNED_DIFF[@]}" > "./prod_staging_blob_diff.txt"
           - task: PublishPipelineArtifact@1
             inputs:
@@ -129,11 +129,11 @@ stages:
               artifactName: 'prod_staging_blob_diff'
           - task: Bash@3
             name: CompareDev
-            displayName: 'Compare container content from nhsukcmsproduks/nhsuk-cms vs nhsukcmsdevuks/dev'
+            displayName: 'Compare container content from prod vs dev'
             inputs:
               targetType: 'inline'
               script: |
-                echo "Comparing blobs in [Storage Account/Container]: [nhsukcmsproduks/nhsuk-cms] vs [nhsukcmsdevuks/dev]:"
+                echo "Comparing blobs in  prod vs dev:"
                 PROD_BLOB_ARRAY=( $(cat "./prod_blobs.txt") )
                 DEV_BLOB_ARRAY=( $(cat "./dev_blobs.txt") )
                 PROD_DEV_UNION=(${PROD_BLOB_ARRAY[@]} ${DEV_BLOB_ARRAY[@]})
@@ -142,7 +142,7 @@ stages:
                 PROD_DEV_DIFF_UNION=(${PROD_DEV_DIFF[@]} ${PROD_BLOB_ARRAY[@]})
                 PROD_OWNED_DIFF=($((sort | uniq -d) <<< "${PROD_DEV_DIFF_UNION[*]}"))
                 unset IFS
-                echo "Found ${#PROD_DEV_DIFF[@]} unique blob(s); ${#PROD_OWNED_DIFF[@]} unique blob(s) come from [nhsukcmsproduks/nhsuk-cms]"
+                echo "Found ${#PROD_DEV_DIFF[@]} unique blob(s); ${#PROD_OWNED_DIFF[@]} unique blob(s) come from prod"
                 printf "%s\n" "${PROD_OWNED_DIFF[@]}" > "./prod_dev_blob_diff.txt"
           - task: PublishPipelineArtifact@1
             inputs:
@@ -161,25 +161,27 @@ stages:
               artifact: 'prod_dev_blob_diff'
               path: ./
           - task: AzureCLI@2
-            displayName: 'Copy container content from nhsukcmsproduks nhsuk-cms to nhsukcmsstaguks nhsuk-cms'
+            displayName: 'Copy container content from prod to staging'
             inputs:
-              azureSubscription: "nhsuk-cms-staging-rg-connection"
+              azureSubscription: "campaigns-apps-rg-stag"
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                echo "Copying missing blobs from [nhsukcmsproduks/nhsuk-cms] -> [nhsukcmsstaguks/nhsuk-cms]..."
-                # SAS token generated for the nhsukcmsproduks/nhsuk-cms container with [Read,List] permissions
+                echo "Copying missing blobs from prod -> staging..."
+                # SAS token generated for the campaignsstrgproduks/campaign-resouce-centre-v3-prod container with [Read,List] permissions 
+                #TODO refactor to be a command
                 sas_token="sp=rl&st=2022-10-19T13:04:30Z&se=2024-10-19T21:04:30Z&spr=https&sv=2021-06-08&sr=c&sig=0ZV6UbmYAyiysnzM2u5yJAgPra4JAFuCOvOupleXeCg%3D"
                 PROD_STAGING_DIFF=( $(cat "./prod_staging_blob_diff.txt") )
                 for blob_path in "${PROD_STAGING_DIFF[@]}"
                 do
-                  echo "Copying [$blob_path] from nhsukcmsproduks to nhsukcmsstaguks..."
-                  az storage blob copy start --source-account-name nhsukcmsproduks \
+                  echo "Copying [$blob_path] from prod to stag..."
+                  #TODO refactor to be a command
+                  az storage blob copy start --source-account-name campaignsstrgproduks \
                                              --source-sas $sas_token \
-                                             --source-container nhsuk-cms \
+                                             --source-container campaign-resouce-centre-v3-prod \
                                              --source-blob $blob_path \
-                                             --account-name nhsukcmsstaguks \
-                                             --destination-container nhsuk-cms \
+                                             --account-name campaignsstrgstaguks \
+                                             --destination-container campaign-resouce-centre-v3-stag \
                                              --destination-blob $blob_path \
                                              --only-show-errors
                   if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
@@ -188,25 +190,27 @@ stages:
                   fi
                 done
           - task: AzureCLI@2
-            displayName: 'Copy container content from nhsukcmsproduks nhsuk-cms to nhsukcmsdevuks dev'
+            displayName: 'Copy container content from prod to dev'
             inputs:
-              azureSubscription: "nhsuk-cms-dev-rg-connection"
+              azureSubscription: "campaigns-apps-rg-dev-uks.campaign-resource-centre-v3"
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                echo "Copying missing blobs from [nhsukcmsproduks/nhsuk-cms] -> [nhsukcmsdevuks/dev]..."
-                # SAS token generated for the nhsukcmsproduks/nhsuk-cms container with [Read,List] permissions
+                #TODO refactor to be a command
+                echo "Copying missing blobs from prod -> dev..."
+                # SAS token generated for the campaignsstrgproduks/campaign-resouce-centre-v3-prod container with [Read,List] permissions
+                #TODO refactor to be a command
                 sas_token="sp=rl&st=2022-10-19T13:04:30Z&se=2024-10-19T21:04:30Z&spr=https&sv=2021-06-08&sr=c&sig=0ZV6UbmYAyiysnzM2u5yJAgPra4JAFuCOvOupleXeCg%3D"
                 PROD_DEV_DIFF=( $(cat "./prod_dev_blob_diff.txt") )
                 for blob_path in "${PROD_DEV_DIFF[@]}"
                 do
-                  echo "Copying [$blob_path] from nhsukcmsproduks to nhsukcmsdevuks..."
-                  az storage blob copy start --source-account-name nhsukcmsproduks \
+                  echo "Copying [$blob_path] from prod to dev..."
+                  az storage blob copy start --source-account-name campaignsstrgproduks \
                                              --source-sas $sas_token \
-                                             --source-container nhsuk-cms \
+                                             --source-container campaign-resouce-centre-v3-prod \
                                              --source-blob $blob_path \
-                                             --account-name nhsukcmsdevuks \
-                                             --destination-container dev \
+                                             --account-name campaignsstrgintuks \
+                                             --destination-container campaign-resouce-centre-v3-integration \
                                              --destination-blob $blob_path \
                                              --only-show-errors
                   if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
