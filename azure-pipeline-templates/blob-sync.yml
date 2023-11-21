@@ -168,14 +168,20 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 echo "Copying missing blobs from prod -> staging..."
-                # SAS token generated for the campaignsstrgproduks/campaign-resouce-centre-v3-prod container with [Read,List] permissions 
-                #TODO refactor to be a command
-                sas_token="sp=rl&st=2022-10-19T13:04:30Z&se=2024-10-19T21:04:30Z&spr=https&sv=2021-06-08&sr=c&sig=0ZV6UbmYAyiysnzM2u5yJAgPra4JAFuCOvOupleXeCg%3D"
+                # SAS token generated for the prod container
+                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
+                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
+                SAS_TOKEN=$( az storage container generate-sas \
+                    --account-name campaignsstrgproduks \
+                    --name campaign-resouce-centre-v3-prod \
+                    --start $NOW \
+                    --expiry $EXPIRY \
+                    --permissions acdlrw \
+                    --output tsv )
                 PROD_STAGING_DIFF=( $(cat "./prod_staging_blob_diff.txt") )
                 for blob_path in "${PROD_STAGING_DIFF[@]}"
                 do
                   echo "Copying [$blob_path] from prod to stag..."
-                  #TODO refactor to be a command
                   az storage blob copy start --source-account-name campaignsstrgproduks \
                                              --source-sas $sas_token \
                                              --source-container campaign-resouce-centre-v3-prod \
@@ -196,17 +202,23 @@ stages:
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                #TODO refactor to be a command
                 echo "Copying missing blobs from prod -> dev..."
-                # SAS token generated for the campaignsstrgproduks/campaign-resouce-centre-v3-prod container with [Read,List] permissions
-                #TODO refactor to be a command
-                sas_token="sp=rl&st=2022-10-19T13:04:30Z&se=2024-10-19T21:04:30Z&spr=https&sv=2021-06-08&sr=c&sig=0ZV6UbmYAyiysnzM2u5yJAgPra4JAFuCOvOupleXeCg%3D"
+                # SAS token generated for the container
+                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
+                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
+                SAS_TOKEN=$( az storage container generate-sas \
+                    --account-name campaignsstrgproduks \
+                    --name campaign-resouce-centre-v3-prod \
+                    --start $NOW \
+                    --expiry $EXPIRY \
+                    --permissions acdlrw \
+                    --output tsv )
                 PROD_DEV_DIFF=( $(cat "./prod_dev_blob_diff.txt") )
                 for blob_path in "${PROD_DEV_DIFF[@]}"
                 do
                   echo "Copying [$blob_path] from prod to dev..."
                   az storage blob copy start --source-account-name campaignsstrgproduks \
-                                             --source-sas $sas_token \
+                                             --source-sas $SAS_TOKEN \
                                              --source-container campaign-resouce-centre-v3-prod \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
