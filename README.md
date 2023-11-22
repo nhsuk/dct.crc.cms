@@ -82,7 +82,11 @@ The recommended approach is to use **VSCode** and its **Dev Containers extension
 
 ### Configuration
 
-When running locally you need file called .env
+CRCv3 uses .env files to store local configuration settings. 
+
+```
+./.env
+```
 
 This file is excluded from git and won't be included in your cloned repo because it will contain secrets. Instead, you should obtain your .env securely from a colleague.
 
