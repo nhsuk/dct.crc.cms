@@ -157,6 +157,12 @@ stages:
         dependsOn:
           - DiscoverContentGaps
         steps:
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
+              SecretsFilter: 'storageAccountKey'
+              RunAsPreJob: false
           - task: DownloadPipelineArtifact@2
             inputs:
               artifact: 'prod_staging_blob_diff'
@@ -176,6 +182,7 @@ stages:
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
                 SAS_TOKEN=$( az storage container generate-sas \
                     --account-name campaignscrcv3produks \
+                    --account-key $(storageAccountKey) \
                     --name campaign-resouce-centre-v3-production \
                     --start $NOW \
                     --expiry $EXPIRY \
@@ -209,6 +216,7 @@ stages:
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
                 SAS_TOKEN=$( az storage container generate-sas \
                     --account-name campaignscrcv3produks \
+                    --account-key $(storageAccountKey) \
                     --name campaign-resouce-centre-v3-production \
                     --start $NOW \
                     --expiry $EXPIRY \
