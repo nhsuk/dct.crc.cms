@@ -33,7 +33,7 @@ stages:
                 IFS=$'\n'
                 fs="campaignsstrgproduks"
                 container="campaign-resouce-centre-v3-prod"
-                az_results=($(az storage blob list --account-key $(storageAccountKey) --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
+                az_results=($(az storage blob list --account-key $storageAccountKey --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
                 if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
                   echo "First 20 lines from 'az storage blob list' command:"
                   echo "${az_results[@]:0:19}"
