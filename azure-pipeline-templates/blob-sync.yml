@@ -39,7 +39,7 @@ stages:
                 # Expected output from 'az storage blob list' is json
                 PROD_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
                 unset IFS
-                echo "Found ${#PROD_BLOB_ARRAY[@]} blobs in campaignsstrgproduks campaign-resouce-centre-v3-prod container"
+                echo "Found ${#PROD_BLOB_ARRAY[@]} blobs in campaignscrcv3produks campaign-resouce-centre-v3-production container"
                 printf "%s\n" "${PROD_BLOB_ARRAY[@]}" > "./prod_blobs.txt"
           - task: PublishPipelineArtifact@1
             inputs:
@@ -165,19 +165,17 @@ stages:
             inputs:
               artifact: 'prod_dev_blob_diff'
               path: ./
-          - task: AzureCLI@2
+          - task: Bash@3
             displayName: 'Copy container content from prod to staging'
             inputs:
-              azureSubscription: "campaigns-apps-rg-stag"
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
+              targetType: 'inlineScript'
+              script: |
                 echo "Copying missing blobs from prod -> staging..."
                 # SAS token generated for the prod container
                 NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
                 SAS_TOKEN=$( az storage container generate-sas \
-                    --account-name campaignsstrgproduks \
+                    --account-name campaignscrcv3produks \
                     --name campaign-resouce-centre-v3-production \
                     --start $NOW \
                     --expiry $EXPIRY \
@@ -187,7 +185,7 @@ stages:
                 for blob_path in "${PROD_STAGING_DIFF[@]}"
                 do
                   echo "Copying [$blob_path] from prod to stag..."
-                  az storage blob copy start --source-account-name campaignsstrgproduks \
+                  az storage blob copy start --source-account-name campaignscrcv3produks \
                                              --source-sas $sas_token \
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
@@ -200,19 +198,17 @@ stages:
                     break
                   fi
                 done
-          - task: AzureCLI@2
+          - task: Bash@3
             displayName: 'Copy container content from prod to dev'
             inputs:
-              azureSubscription: "campaigns-apps-rg-dev-uks.campaign-resource-centre-v3"
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
+              targetType: 'inlineScript'
+              script: |
                 echo "Copying missing blobs from prod -> dev..."
                 # SAS token generated for the container
                 NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
                 SAS_TOKEN=$( az storage container generate-sas \
-                    --account-name campaignsstrgproduks \
+                    --account-name campaignscrcv3produks \
                     --name campaign-resouce-centre-v3-production \
                     --start $NOW \
                     --expiry $EXPIRY \
@@ -222,7 +218,7 @@ stages:
                 for blob_path in "${PROD_DEV_DIFF[@]}"
                 do
                   echo "Copying [$blob_path] from prod to dev..."
-                  az storage blob copy start --source-account-name campaignsstrgproduks \
+                  az storage blob copy start --source-account-name campaignscrcv3produks \
                                              --source-sas $SAS_TOKEN \
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
