@@ -180,7 +180,7 @@ stages:
                 # SAS token generated for the prod container
                 NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
-                SAS_TOKEN=$( az storage container generate-sas \
+                sas_token=$( az storage container generate-sas \
                     --account-name campaignscrcv3produks \
                     --account-key $(storageAccountKey) \
                     --name campaign-resouce-centre-v3-production \
@@ -214,7 +214,7 @@ stages:
                 # SAS token generated for the container
                 NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
-                SAS_TOKEN=$( az storage container generate-sas \
+                sas_token=$( az storage container generate-sas \
                     --account-name campaignscrcv3produks \
                     --account-key $(storageAccountKey) \
                     --name campaign-resouce-centre-v3-production \
@@ -227,7 +227,7 @@ stages:
                 do
                   echo "Copying [$blob_path] from prod to dev..."
                   az storage blob copy start --source-account-name campaignscrcv3produks \
-                                             --source-sas $SAS_TOKEN \
+                                             --source-sas $sas_token \
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
