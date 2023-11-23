@@ -16,12 +16,6 @@ stages:
     jobs:
       - job: QueryContainerContent
         steps:
-          - task: AzureKeyVault@2
-            inputs:
-              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
-              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
-              SecretsFilter: 'storageAccountKey'
-              RunAsPreJob: true
           - task: AzureCLI@2
             name: QueryProd
             displayName: 'Query container content from prod'
@@ -32,8 +26,8 @@ stages:
               inlineScript: |
                 IFS=$'\n'
                 fs="campaignsstrgproduks"
-                container="campaign-resouce-centre-v3-prod"
-                az_results=($(az storage blob list --account-key $storageAccountKey --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
+                container="campaign-resouce-centre-v3-production"
+                az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
                 if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
                   echo "First 20 lines from 'az storage blob list' command:"
                   echo "${az_results[@]:0:19}"
@@ -180,7 +174,7 @@ stages:
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
                 SAS_TOKEN=$( az storage container generate-sas \
                     --account-name campaignsstrgproduks \
-                    --name campaign-resouce-centre-v3-prod \
+                    --name campaign-resouce-centre-v3-production \
                     --start $NOW \
                     --expiry $EXPIRY \
                     --permissions acdlrw \
@@ -191,7 +185,7 @@ stages:
                   echo "Copying [$blob_path] from prod to stag..."
                   az storage blob copy start --source-account-name campaignsstrgproduks \
                                              --source-sas $sas_token \
-                                             --source-container campaign-resouce-centre-v3-prod \
+                                             --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
                                              --destination-container campaign-resouce-centre-v3-stag \
@@ -215,7 +209,7 @@ stages:
                 EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
                 SAS_TOKEN=$( az storage container generate-sas \
                     --account-name campaignsstrgproduks \
-                    --name campaign-resouce-centre-v3-prod \
+                    --name campaign-resouce-centre-v3-production \
                     --start $NOW \
                     --expiry $EXPIRY \
                     --permissions acdlrw \
@@ -226,7 +220,7 @@ stages:
                   echo "Copying [$blob_path] from prod to dev..."
                   az storage blob copy start --source-account-name campaignsstrgproduks \
                                              --source-sas $SAS_TOKEN \
-                                             --source-container campaign-resouce-centre-v3-prod \
+                                             --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
                                              --destination-container campaign-resouce-centre-v3-integration \
