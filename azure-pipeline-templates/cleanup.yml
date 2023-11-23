@@ -13,6 +13,7 @@ trigger:
 steps:
 - checkout: self
   persistCredentials: true
+  fetchDepth: 0
 
 - task: AzureCLI@2
   inputs:
