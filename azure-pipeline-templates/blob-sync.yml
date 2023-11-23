@@ -1,5 +1,7 @@
 # Helpful resources:
 # az storage blob: https://learn.microsoft.com/en-us/cli/azure/storage/blob?view=azure-cli-latest
+# az storage container: https://learn.microsoft.com/en-us/cli/azure/storage/container?view=azure-cli-latest
+# az 
 
 pool:
   vmImage: "ubuntu-latest"
@@ -15,6 +17,12 @@ stages:
     jobs:
       - job: QueryContainerContent
         steps:
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
+              SecretsFilter: 'storageAccountKey'
+              RunAsPreJob: true
           - task: AzureCLI@2
             name: QueryProd
             displayName: 'Query container content from prod'
@@ -26,7 +34,7 @@ stages:
                 IFS=$'\n'
                 fs="campaignsstrgproduks"
                 container="campaign-resouce-centre-v3-prod"
-                az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
+                az_results=($(az storage blob list --account-name $fs --account-key $storageAccountKey --container-name $container --num-results 50000 --only-show-errors))
                 if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
                   echo "First 20 lines from 'az storage blob list' command:"
                   echo "${az_results[@]:0:19}"
