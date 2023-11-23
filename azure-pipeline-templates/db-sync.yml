@@ -35,43 +35,6 @@ stages:
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
 
-  # PROD DOWNLOAD THE DB DUMP (STAG UKS) - used as a part of prod retore
-#  - stage: DownloadProdBackUp
-#    displayName: "Download Production Database Backup"
-#    condition: eq('${{ parameters.deployToProd }}', true)
-#    jobs:
-#      - job: DbDownload
-#        steps:
-#          - task: AzureCLI@2
-#            inputs:
-#              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
-#              scriptType: 'bash'
-#              scriptLocation: 'inlineScript'
-#              inlineScript: |
-#                export STORE_NAME="digitalcampaignsstorage"
-#                export CONTAINER_NAME="crc-v3-backups"
-#                export FOLDER="db"
-#
-#                NOW=`date +"%Y-%m-%dT%H:%M:00Z"` \
-#                EXPIRY=`date -d "$NOW + 1 day" +"%Y-%m-%dT%H:%M:00Z"` \
-#                && export SAS_TOKEN=$( az storage container generate-sas \
-#                    --account-name $STORE_NAME \
-#                    --name $CONTAINER_NAME \
-#                    --start $NOW \
-#                    --expiry $EXPIRY \
-#                    --permissions acdlrw \
-#                    --output tsv )
-#
-#                $(Agent.ToolsDirectory)/azcopy/azcopy copy \
-#                    "https://${STORE_NAME}.blob.core.windows.net/${CONTAINER_NAME}/$(DataDumpFile)?${SAS_TOKEN}" \
-#                    $(Build.SourcesDirectory)/db-dump.dump --recursive
-#
-#          - task: PublishBuildArtifacts@1
-#            inputs:
-#              PathtoPublish: "$(Build.SourcesDirectory)/db-dump.dump"
-#              ArtifactName: "db.dump"
-#              publishLocation: 'Container'
-
   - stage: CopyToReviewDB
     displayName: "Copy to Review Database"
     dependsOn:
@@ -123,48 +86,3 @@ stages:
               DBName: crcv3stag
               Server: campaigns-cms-psql-stag-uks
               ResourceGroup: dct-cms-postgres-rg-stag-uksouth
-
-#
-#  # PROD UKS COPY TO DB
-#  - stage: CopyToProdUkSouthDB
-#    displayName: "Copy to Prod UKS Database"
-#    dependsOn:
-#      - DownloadProdBackUp
-#    condition: and(in(dependencies.DownloadProdBackUp.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
-#    jobs:
-#      - deployment: Deployment
-#        environment: "production"
-#        strategy:
-#          runOnce:
-#            deploy:
-#              steps:
-#                - template: templates/db-sync-upload.yaml
-#                  parameters:
-#                    azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-#                    azureStorageSubscription: "nhsuk-dct-rg-prod"
-#                    VaultId: "dct-crc-v3-vlt-prod-uks"
-#                    DBName: $(ProdDbName)
-#                    Server: campaigns-cms-psql-prod-uks # assumed
-#                    ResourceGroup: nhsuk-dct-rg-prod-uks
-#
-#  # PROD UKW COPY TO DB
-#  - stage: CopyToProdUkWestDB
-#    displayName: "Copy to Prod UKW Database"
-#    dependsOn:
-#      - DownloadProdBackUp
-#    condition: and(in(dependencies.DownloadProdBackUp.result, 'Succeeded'), eq('${{ parameters.deployToProd }}', 'true'))
-#    jobs:
-#      - deployment: Deployment
-#        environment: "production"
-#        strategy:
-#          runOnce:
-#            deploy:
-#              steps:
-#                - template: templates/db-sync-upload.yaml
-#                  parameters:
-#                    azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-#                    azureStorageSubscription: "nhsuk-dct-rg-prod"
-#                    VaultId: "dct-crc-v3-vlt-dr-ukw"
-#                    DBName: $(ProdDbName)
-#                    Server: campaigns-cms-psql-prod-ukw # assumed
-#                    ResourceGroup: nhsuk-dct-rg-prod-uks # correct based on above (uks/ukw mix)
