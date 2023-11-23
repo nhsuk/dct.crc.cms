@@ -16,11 +16,12 @@ stages:
     jobs:
       - job: QueryContainerContent
         steps:
-          - task: AzureVault@1
+          - task: AzureKeyVault@2
             inputs:
-              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              KeyVaultName: "dct-crc-v3-vlt-prod-uks"
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
               SecretsFilter: 'storageAccountKey'
+              RunAsPreJob: false
           - task: Bash@3
             name: QueryProd
             displayName: 'Query container content from prod'
