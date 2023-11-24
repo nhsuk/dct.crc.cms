@@ -168,7 +168,7 @@ stages:
           - task: Bash@3
             displayName: 'Copy container content from prod to staging'
             env:
-              storageAccountKey: $(stagKey)
+              destinationStorageAccountKey: $(stagKey)
             inputs:
               targetType: 'inlineScript'
               script: |
@@ -182,7 +182,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
-                                             --account-key $(storageAccountKey) \
+                                             --account-key $(destinationStorageAccountKey) \
                                              --destination-container campaign-resouce-centre-v3-stag \
                                              --destination-blob $blob_path \
                                              --only-show-errors
@@ -194,7 +194,7 @@ stages:
           - task: Bash@3
             displayName: 'Copy container content from prod to dev'
             env:
-              storageAccountKey: $(devKey)
+              destinationStorageAccountKey: $(devKey)
             inputs:
               targetType: 'inlineScript'
               script: |
@@ -208,7 +208,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
-                                             --account-key $(storageAccountKey) \
+                                             --account-key $(destinationStorageAccountKey) \
                                              --destination-container campaign-resouce-centre-v3-integration \
                                              --destination-blob $blob_path \
                                              --only-show-errors
