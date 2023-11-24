@@ -1,0 +1,8 @@
+steps:
+- task: Bash@3
+  displayName: 'Run indexer for search service'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # using the azure service search api, run the indexer for in a parameterised way
+      az rest --method post --uri "https://${{searchService}}.search.windows.net/indexers/${{indexerName}}/run?api-version=2020-06-30" --headers api-key=${{searchServiceAdminApiKey}}
