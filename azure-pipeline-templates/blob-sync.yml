@@ -171,6 +171,23 @@ stages:
             inputs:
               artifact: 'prod_dev_blob_diff'
               path: ./
+          - task: AzureCLI@2
+            displayName: 'Create sas token for dev'
+            inputs:
+              azureSubscription: "campaigns-apps-rg-dev-uks.campaign-resource-centre-v3"
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Creating sas token for dev..."
+                sas_token=az storage container generate-sas --account-name campaignsstrgstaguks \
+                                                  --name campaign-resouce-centre-v3-stag \
+                                                  --permissions dlrw \
+                                                  --expiry 2021-12-31T00:00Z \
+                                                  --https-only \
+                                                  --output tsv \
+                                                  --full-uri
+                # allow sas token to be used in the next step
+                echo "##vso[task.setvariable variable=sasToken;isOutput=true]$sas_token"
           - task: Bash@3
             displayName: 'Copy container content from prod to staging'
             inputs:
@@ -186,6 +203,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
+                                             --sas-token $(sasToken) \
                                              --destination-container campaign-resouce-centre-v3-stag \
                                              --destination-blob $blob_path \
                                              --only-show-errors
@@ -194,6 +212,23 @@ stages:
                     break
                   fi
                 done
+          - task: AzureCLI@2
+            displayName: 'Create sas token for stag'
+            inputs:
+              azureSubscription: "campaigns-apps-rg-stag"
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                echo "Creating sas token for dev..."
+                sas_token=az storage container generate-sas --account-name campaignsstrgintuks \
+                                                  --name campaign-resouce-centre-v3-integration \
+                                                  --permissions dlrw \
+                                                  --expiry 2021-12-31T00:00Z \
+                                                  --https-only \
+                                                  --output tsv \
+                                                  --full-uri
+                # allow sas token to be used in the next step
+                echo "##vso[task.setvariable variable=sasToken;isOutput=true]$sas_token"
           - task: Bash@3
             displayName: 'Copy container content from prod to dev'
             inputs:
@@ -209,6 +244,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
+                                             --sas-token $(sasToken) \
                                              --destination-container campaign-resouce-centre-v3-integration \
                                              --destination-blob $blob_path \
                                              --only-show-errors
