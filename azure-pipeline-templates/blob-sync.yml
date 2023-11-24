@@ -185,7 +185,7 @@ stages:
                   echo "Copying [$blob_path] from prod to stag..."
                   az storage blob copy start --source-account-name campaignscrcv3produks \
                                              --source-account-key $(storageAccountKey) \
-                                             --source-container campaign-resouce-centre-v3-production \
+                                             --source-container campaign-resource-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
                                              --account-key $destinationStorageAccountKey \
@@ -211,7 +211,7 @@ stages:
                   echo "Copying [$blob_path] from prod to dev..."
                   az storage blob copy start --source-account-name campaignscrcv3produks \
                                              --source-account-key $(storageAccountKey) \
-                                             --source-container campaign-resouce-centre-v3-production \
+                                             --source-container campaign-resource-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
                                              --account-key $destinationStorageAccountKey \
