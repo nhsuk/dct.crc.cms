@@ -157,12 +157,6 @@ stages:
         dependsOn:
           - DiscoverContentGaps
         steps:
-          - task: AzureKeyVault@2
-            inputs:
-              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
-              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
-              SecretsFilter: 'storageAccountKey'
-              RunAsPreJob: True
           - task: DownloadPipelineArtifact@2
             inputs:
               artifact: 'prod_staging_blob_diff'
@@ -171,25 +165,10 @@ stages:
             inputs:
               artifact: 'prod_dev_blob_diff'
               path: ./
-          - task: AzureCLI@2
-            displayName: 'Create sas token for dev'
-            inputs:
-              azureSubscription: "campaigns-apps-rg-dev-uks.campaign-resource-centre-v3"
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                echo "Creating sas token for dev..."
-                end=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
-                sas_token=$(az storage container generate-sas --account-name campaignsstrgstaguks \
-                                                  --name campaign-resouce-centre-v3-stag \
-                                                  --permissions dlrw \
-                                                  --expiry $end \
-                                                  --https-only \
-                                                  --output tsv )
-                # allow sas token to be used in the next step
-                echo "##vso[task.setvariable variable=sasToken;isOutput=true]$sas_token"
           - task: Bash@3
             displayName: 'Copy container content from prod to staging'
+            env:
+              storageAccountKey: $(stagKey)
             inputs:
               targetType: 'inlineScript'
               script: |
@@ -203,7 +182,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
-                                             --sas-token $(sasToken) \
+                                             --account-key $(storageAccountKey) \
                                              --destination-container campaign-resouce-centre-v3-stag \
                                              --destination-blob $blob_path \
                                              --only-show-errors
@@ -212,25 +191,10 @@ stages:
                     break
                   fi
                 done
-          - task: AzureCLI@2
-            displayName: 'Create sas token for stag'
-            inputs:
-              azureSubscription: "campaigns-apps-rg-stag"
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                echo "Creating sas token for dev..."
-                end=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
-                sas_token=$(az storage container generate-sas --account-name campaignsstrgintuks \
-                                                  --name campaign-resouce-centre-v3-integration \
-                                                  --permissions dlrw \
-                                                  --expiry $end \
-                                                  --https-only \
-                                                  --output tsv )
-                # allow sas token to be used in the next step
-                echo "##vso[task.setvariable variable=sasToken;isOutput=true]$sas_token"
           - task: Bash@3
             displayName: 'Copy container content from prod to dev'
+            env:
+              storageAccountKey: $(devKey)
             inputs:
               targetType: 'inlineScript'
               script: |
@@ -244,7 +208,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
-                                             --sas-token $(sasToken) \
+                                             --account-key $(storageAccountKey) \
                                              --destination-container campaign-resouce-centre-v3-integration \
                                              --destination-blob $blob_path \
                                              --only-show-errors
