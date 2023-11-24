@@ -189,7 +189,7 @@ stages:
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
                                              --account-key $destinationStorageAccountKey \
-                                             --destination-container campaign-resouce-centre-v3-stag \
+                                             --destination-container campaign-resouce-centre-v3-staging \
                                              --destination-blob $blob_path \
                                              --only-show-errors
                   if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
