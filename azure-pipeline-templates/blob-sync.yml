@@ -179,13 +179,13 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 echo "Creating sas token for dev..."
-                sas_token=az storage container generate-sas --account-name campaignsstrgstaguks \
+                sas_token=$(az storage container generate-sas --account-name campaignsstrgstaguks \
                                                   --name campaign-resouce-centre-v3-stag \
                                                   --permissions dlrw \
                                                   --expiry 2021-12-31T00:00Z \
                                                   --https-only \
                                                   --output tsv \
-                                                  --full-uri
+                                                  --full-uri)
                 # allow sas token to be used in the next step
                 echo "##vso[task.setvariable variable=sasToken;isOutput=true]$sas_token"
           - task: Bash@3
@@ -220,13 +220,13 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 echo "Creating sas token for dev..."
-                sas_token=az storage container generate-sas --account-name campaignsstrgintuks \
+                sas_token=$(az storage container generate-sas --account-name campaignsstrgintuks \
                                                   --name campaign-resouce-centre-v3-integration \
                                                   --permissions dlrw \
                                                   --expiry 2021-12-31T00:00Z \
                                                   --https-only \
                                                   --output tsv \
-                                                  --full-uri
+                                                  --full-uri)
                 # allow sas token to be used in the next step
                 echo "##vso[task.setvariable variable=sasToken;isOutput=true]$sas_token"
           - task: Bash@3
