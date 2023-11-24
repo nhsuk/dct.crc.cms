@@ -188,7 +188,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgstaguks \
-                                             --account-key $(destinationStorageAccountKey) \
+                                             --account-key $destinationStorageAccountKey \
                                              --destination-container campaign-resouce-centre-v3-stag \
                                              --destination-blob $blob_path \
                                              --only-show-errors
@@ -214,7 +214,7 @@ stages:
                                              --source-container campaign-resouce-centre-v3-production \
                                              --source-blob $blob_path \
                                              --account-name campaignsstrgintuks \
-                                             --account-key $(destinationStorageAccountKey) \
+                                             --account-key $destinationStorageAccountKey \
                                              --destination-container campaign-resouce-centre-v3-integration \
                                              --destination-blob $blob_path \
                                              --only-show-errors
