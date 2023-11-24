@@ -21,27 +21,27 @@ jobs:
     condition: eq('${{ parameters.dev }}', true)
     steps:
     - template: templates/index.yaml
-            parameters:
-              searchServiceAdminApiKey: $(searchServiceAdminApiKeyDev)
-              indexerName: "campaignscrcv3-1-0-b-dev"
-              searchService: "campaigns-search-dev-uks"
+      parameters:
+        searchServiceAdminApiKey: $(searchServiceAdminApiKeyDev)
+        indexerName: "campaignscrcv3-1-0-b-dev"
+        searchService: "campaigns-search-dev-uks"
 
   - job: IndexStaging
     displayName: 'Index staging'
     condition: eq('${{ parameters.staging }}', 'true')
     steps:
     - template: templates/index.yaml
-            parameters:
-              searchServiceAdminApiKey: $(searchServiceAdminApiKeyStag)
-              indexerName: "campaignscrcv3-1-0-b-stag"
-              searchService: "campaigns-search-stag-uks"
+      parameters:
+        searchServiceAdminApiKey: $(searchServiceAdminApiKeyStag)
+        indexerName: "campaignscrcv3-1-0-b-stag"
+        searchService: "campaigns-search-stag-uks"
 
-    - job: IndexProduction
-      displayName: 'Index Production'
-      condition: eq('${{ parameters.Production }}', 'true')
-      steps:
-      - template: templates/index.yaml
-              parameters:
-                searchServiceAdminApiKey: $(searchServiceAdminApiKeyProd)
-                indexerName: "campaignscrcv3-1-0-b-prod"
-                searchService: "campaigns-search-prod-uks"
+  - job: IndexProduction
+    displayName: 'Index Production'
+    condition: eq('${{ parameters.Production }}', 'true')
+    steps:
+    - template: templates/index.yaml
+      parameters:
+        searchServiceAdminApiKey: $(searchServiceAdminApiKeyProd)
+        indexerName: "campaignscrcv3-1-0-b-prod"
+        searchService: "campaigns-search-prod-uks"
