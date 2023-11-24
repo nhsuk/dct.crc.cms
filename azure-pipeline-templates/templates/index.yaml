@@ -5,4 +5,4 @@ steps:
     targetType: 'inline'
     script: |
       # using the azure service search api, run the indexer for in a parameterised way
-      az rest --method post --uri "https://${{searchService}}.search.windows.net/indexers/${{indexerName}}/run?api-version=2020-06-30" --headers api-key=${{searchServiceAdminApiKey}}
+      az rest --method post --uri "https://${{parameters.searchService}}.search.windows.net/indexers/${{parameters.indexerName}}/run?api-version=2020-06-30" --headers api-key=${{parameters.searchServiceAdminApiKey}}
