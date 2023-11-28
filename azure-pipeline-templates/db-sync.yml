@@ -3,6 +3,11 @@ pool:
 
 trigger: none
 
+# daily midnight backup midnight - this will not run any of the syncing jobs, only the backup 
+schedules:
+- cron: '0 0 * * *'
+  displayName: Daily midnight build
+
 parameters:
   - name: deployToProd
     type: boolean
