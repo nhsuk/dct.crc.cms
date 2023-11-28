@@ -1,0 +1,225 @@
+# Helpful resources:
+# az storage blob: https://learn.microsoft.com/en-us/cli/azure/storage/blob?view=azure-cli-latest
+# az storage container: https://learn.microsoft.com/en-us/cli/azure/storage/container?view=azure-cli-latest
+
+pool:
+  vmImage: "ubuntu-latest"
+
+trigger: none
+
+resources:
+  - repo: self
+
+stages:
+  - stage: PersistFileStorageToNonProd
+    displayName: "Persist File Storage From Prod To Non-Prod"
+    jobs:
+      - job: QueryContainerContent
+        steps:
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
+              SecretsFilter: 'storageAccountKey'
+              RunAsPreJob: false
+          - task: Bash@3
+            name: QueryProd
+            displayName: 'Query container content from prod'
+            inputs:
+              targetType: 'inlineScript'
+              script: |
+                IFS=$'\n'
+                fs="campaignscrcv3produks"
+                container="campaign-resource-centre-v3-production"
+                az_results=($(az storage blob list --account-key $(storageAccountKey) --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
+                if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
+                  echo "First 20 lines from 'az storage blob list' command:"
+                  echo "${az_results[@]:0:19}"
+                fi
+                # Expected output from 'az storage blob list' is json
+                PROD_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
+                unset IFS
+                echo "Found ${#PROD_BLOB_ARRAY[@]} blobs in campaignscrcv3produks campaign-resouce-centre-v3-production container"
+                printf "%s\n" "${PROD_BLOB_ARRAY[@]}" > "./prod_blobs.txt"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: ./prod_blobs.txt
+              artifactName: 'prod_blobs'
+          - task: AzureCLI@2
+            name: QueryStaging
+            displayName: 'Query container content from staging'
+            inputs:
+              azureSubscription: "campaigns-apps-rg-stag"
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                IFS=$'\n'
+                fs="campaignsstrgstaguks"
+                container="campaign-resource-centre-v3-staging"
+                az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
+                if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
+                  echo "First 20 lines from 'az storage blob list' command:"
+                  echo "${az_results[@]:0:19}"
+                fi
+                # Expected output from 'az storage blob list' is json
+                STAGING_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
+                unset IFS
+                echo "Found ${#STAGING_BLOB_ARRAY[@]} blobs in campaignsstrgstaguks campaign-resource-centre-v3-staging container"
+                printf "%s\n" "${STAGING_BLOB_ARRAY[@]}" > "./staging_blobs.txt"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: ./staging_blobs.txt
+              artifactName: 'staging_blobs'
+          - task: AzureCLI@2
+            name: QueryDev
+            displayName: 'Query container content from dev'
+            inputs:
+              azureSubscription: 'campaigns-apps-rg-dev-uks.campaign-resource-centre-v3'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                IFS=$'\n'
+                fs="campaignsstrgintuks"
+                container="campaign-resouce-centre-v3-integration"
+                az_results=($(az storage blob list --account-name $fs --container-name $container --num-results 50000 --only-show-errors))
+                if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
+                  echo "First 20 lines from 'az storage blob list' command:"
+                  echo "${az_results[@]:0:19}"
+                fi
+                # Expected output from 'az storage blob list' is json
+                DEV_BLOB_ARRAY=($(( grep "\"name\":" | awk '{print $2}' | tr -d '"' | sed 's/,$//' ) <<< "${az_results[*]}"))
+                unset IFS
+                echo "Found ${#DEV_BLOB_ARRAY[@]} blobs in campaignsstrgintuks campaign-resouce-centre-v3-integration container"
+                printf "%s\n" "${DEV_BLOB_ARRAY[@]}" > "./dev_blobs.txt"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: ./dev_blobs.txt
+              artifactName: 'dev_blobs'
+      - job: DiscoverContentGaps
+        dependsOn:
+          - QueryContainerContent
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'prod_blobs'
+              path: ./
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'staging_blobs'
+              path: ./
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'dev_blobs'
+              path: ./
+          - task: Bash@3
+            name: CompareStaging
+            displayName: 'Compare container content from prod vs stag'
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "Comparing blobs in prod vs stag:"
+                PROD_BLOB_ARRAY=( $(cat "./prod_blobs.txt") )
+                STAGING_BLOB_ARRAY=( $(cat "./staging_blobs.txt") )
+                PROD_STAGING_UNION=(${PROD_BLOB_ARRAY[@]} ${STAGING_BLOB_ARRAY[@]})
+                IFS=$'\n'
+                PROD_STAGING_DIFF=($((sort | uniq -u) <<< "${PROD_STAGING_UNION[*]}"))
+                PROD_STAGING_DIFF_UNION=(${PROD_STAGING_DIFF[@]} ${PROD_BLOB_ARRAY[@]})
+                PROD_OWNED_DIFF=($((sort | uniq -d) <<< "${PROD_STAGING_DIFF_UNION[*]}"))
+                unset IFS
+                echo "Found ${#PROD_STAGING_DIFF[@]} unique blob(s); ${#PROD_OWNED_DIFF[@]} unique blob(s) come from prod"
+                printf "%s\n" "${PROD_OWNED_DIFF[@]}" > "./prod_staging_blob_diff.txt"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: $(System.DefaultWorkingDirectory)/prod_staging_blob_diff.txt
+              artifactName: 'prod_staging_blob_diff'
+          - task: Bash@3
+            name: CompareDev
+            displayName: 'Compare container content from prod vs dev'
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "Comparing blobs in  prod vs dev:"
+                PROD_BLOB_ARRAY=( $(cat "./prod_blobs.txt") )
+                DEV_BLOB_ARRAY=( $(cat "./dev_blobs.txt") )
+                PROD_DEV_UNION=(${PROD_BLOB_ARRAY[@]} ${DEV_BLOB_ARRAY[@]})
+                IFS=$'\n'
+                PROD_DEV_DIFF=($((sort | uniq -u) <<< "${PROD_DEV_UNION[*]}"))
+                PROD_DEV_DIFF_UNION=(${PROD_DEV_DIFF[@]} ${PROD_BLOB_ARRAY[@]})
+                PROD_OWNED_DIFF=($((sort | uniq -d) <<< "${PROD_DEV_DIFF_UNION[*]}"))
+                unset IFS
+                echo "Found ${#PROD_DEV_DIFF[@]} unique blob(s); ${#PROD_OWNED_DIFF[@]} unique blob(s) come from prod"
+                printf "%s\n" "${PROD_OWNED_DIFF[@]}" > "./prod_dev_blob_diff.txt"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: ./prod_dev_blob_diff.txt
+              artifactName: 'prod_dev_blob_diff'
+      - job: CopyContainerContent
+        dependsOn:
+          - DiscoverContentGaps
+        steps:
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
+              KeyVaultName: 'dct-crc-v3-vlt-prod-uks'
+              SecretsFilter: 'storageAccountKey'
+              RunAsPreJob: false
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'prod_staging_blob_diff'
+              path: ./
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'prod_dev_blob_diff'
+              path: ./
+          - task: Bash@3
+            displayName: 'Copy container content from prod to staging'
+            env:
+              destinationStorageAccountKey: $(stagKey)
+            inputs:
+              targetType: 'inlineScript'
+              script: |
+                echo "Copying missing blobs from prod -> staging..."
+                PROD_STAGING_DIFF=( $(cat "./prod_staging_blob_diff.txt") )
+                for blob_path in "${PROD_STAGING_DIFF[@]}"
+                do
+                  echo "Copying [$blob_path] from prod to stag..."
+                  az storage blob copy start --source-account-name campaignscrcv3produks \
+                                             --source-account-key $(storageAccountKey) \
+                                             --source-container campaign-resource-centre-v3-production \
+                                             --source-blob $blob_path \
+                                             --account-name campaignsstrgstaguks \
+                                             --account-key $destinationStorageAccountKey \
+                                             --destination-container campaign-resource-centre-v3-staging \
+                                             --destination-blob $blob_path \
+                                             --only-show-errors
+                  if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
+                    echo "DEBUG Mode: Finish after one copy"
+                    break
+                  fi
+                done
+          - task: Bash@3
+            displayName: 'Copy container content from prod to dev'
+            env:
+              destinationStorageAccountKey: $(devKey)
+            inputs:
+              targetType: 'inlineScript'
+              script: |
+                echo "Copying missing blobs from prod -> dev..."
+                PROD_DEV_DIFF=( $(cat "./prod_dev_blob_diff.txt") )
+                for blob_path in "${PROD_DEV_DIFF[@]}"
+                do
+                  echo "Copying [$blob_path] from prod to dev..."
+                  az storage blob copy start --source-account-name campaignscrcv3produks \
+                                             --source-account-key $(storageAccountKey) \
+                                             --source-container campaign-resource-centre-v3-production \
+                                             --source-blob $blob_path \
+                                             --account-name campaignsstrgintuks \
+                                             --account-key $destinationStorageAccountKey \
+                                             --destination-container campaign-resouce-centre-v3-integration \
+                                             --destination-blob $blob_path \
+                                             --only-show-errors
+                  if [[ "$(System.Debug 2> /dev/null)" == "True" ]]; then
+                    echo "DEBUG Mode: Finish after one copy"
+                    break
+                  fi
+                done

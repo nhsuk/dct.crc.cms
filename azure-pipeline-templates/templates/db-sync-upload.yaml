@@ -1,0 +1,59 @@
+steps:
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
+  inputs:
+    azureSubscription: ${{parameters.azureVaultSubscription}}
+    KeyVaultName: ${{parameters.VaultId}}
+    SecretsFilter: DBPass, DBHost, DBUser
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: 'db.dump'
+    path: $(Build.SourcesDirectory)
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/db-dump.dump:/db.dump \
+      postgres:11 \
+      psql -d "${{parameters.DBName}}" \
+      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '${{parameters.DBName}}' AND pid <> pg_backend_pid();"
+  displayName: 'End connections to target database'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az postgres db create \
+      --name "${{parameters.DBName}}" \
+      --resource-group "${{parameters.ResourceGroup}}" \
+      --server-name "${{parameters.Server}}"
+  displayName: 'Delete and recreate target database'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/db-dump.dump:/db.dump \
+      postgres:11 \
+      pg_restore --no-acl --no-owner -d "${{parameters.DBName}}" db.dump
+  displayName: 'Copy to target database'

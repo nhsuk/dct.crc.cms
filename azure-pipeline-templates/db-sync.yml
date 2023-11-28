@@ -1,0 +1,96 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+trigger: none
+
+# daily midnight backup midnight - this will not run any of the syncing jobs, only the backup 
+schedules:
+- cron: '0 0 * * *'
+  displayName: Daily midnight build
+  branches:
+    include: 
+    - main
+
+parameters:
+  - name: deployToProd
+    type: boolean
+    default: false
+  - name: deployToReview
+    type: boolean
+    default: false
+  - name: deployToIntegration
+    type: boolean
+    default: false
+  - name: deployToStaging
+    type: boolean
+    default: false
+
+resources:
+  - repo: self
+
+stages:
+  - stage: CopyFromProdDB
+    displayName: "Copy from Production Database"
+    condition: eq('${{ parameters.deployToProd }}', 'false')
+    jobs:
+      - job: DBCopy
+        steps:
+          - template: templates/db-sync-download.yaml
+            parameters:
+              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-prod-uks"
+              StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+              BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+              BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
+
+  - stage: CopyToReviewDB
+    displayName: "Copy to Review Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), eq('${{ parameters.deployToReview }}', true), eq('${{ parameters.deployToProd }}', 'false'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-rev-uks"
+              DBName: crcv3review
+              Server: campaigns-cms-psql-dev-uks
+              ResourceGroup: nhsuk-dct-rg-dev-uks
+
+  - stage: CopyToIntegrationDB
+    displayName: "Copy to Integration Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), eq('${{ parameters.deployToIntegration }}', true), eq('${{ parameters.deployToProd }}', 'false'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-int-uks"
+              DBName: crcv3int
+              Server: campaigns-cms-psql-dev-uks
+              ResourceGroup: nhsuk-dct-rg-dev-uks
+
+  # STAG UKS COPY TO DB
+  - stage: CopyToStagingDB 
+    displayName: "Copy to Staging Database"
+    dependsOn:
+      - CopyFromProdDB
+    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eq('${{ parameters.deployToProd }}', 'false'))
+    jobs:
+      - job: DBPaste
+        steps:
+          - template: templates/db-sync-upload.yaml
+            parameters:
+              azureVaultSubscription: "dct-staging-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "dct-cms-postgres-rg-stag"
+              VaultId: "dct-crc-v3-vlt-stag-uks"
+              DBName: crcv3stag
+              Server: campaigns-cms-psql-stag-uks
+              ResourceGroup: dct-cms-postgres-rg-stag-uksouth
