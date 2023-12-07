@@ -92,23 +92,23 @@ def index(request):
     else:
         form = SearchForm(placeholder=_("Email, first name & last name"))
 
-    if is_searching:
-        page_num = 1
-        users_per_page = None
-        num_pages = 1
-        offset = 0
-    else:
-        try:
-            page_num = int(request.GET.get("p", 1))
-        except ValueError:
-            page_num = 1
+    users_per_page = 20
 
-        # Fetch current number of users from cache
-        paragon_cache_values = ParagonCacheValues.load()
-        num_users = paragon_cache_values.num_users
-        users_per_page = 20
-        num_pages = ceil(num_users / users_per_page)
-        offset = num_users - (page_num * users_per_page)
+    try:
+        page_num = int(request.GET.get("p", 1))
+    except ValueError:
+        page_num = 1
+
+    # Fetch current number of users from cache
+    # num_users = 0;
+
+    # if not is_searching:
+
+    #     paragon_cache_values = ParagonCacheValues.load()
+    #     num_users = paragon_cache_values.num_users
+
+    # num_pages = ceil(num_users / users_per_page)
+    offset = page_num * users_per_page
 
     try:
         response = paragon_client.search_users(
@@ -121,6 +121,9 @@ def index(request):
         users = []
         if PCE.args[0] != "No records match the criteria":
             paragon_error = True
+
+    #  Added this hack since we cant get access to the total number of users from DCX api.
+    num_pages = page_num + 1 if len(users) >= users_per_page else page_num
 
     # Wrap users list to provide pagination attributes
     users = UsersWrapper(users, num_pages, page_num)

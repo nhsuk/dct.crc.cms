@@ -1,6 +1,7 @@
 {% load i18n wagtailadmin_tags %}
 {% if users %}
-    {% if is_searching %}
+    {# RE:CV-1178 disabling this until we get total users back from DCX api #}
+    {% if is_searching and False %}
         <h2 role="alert">
             {% blocktrans count counter=users|length %}
                 There is {{ counter }} match
