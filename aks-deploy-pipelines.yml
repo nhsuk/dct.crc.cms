@@ -139,7 +139,8 @@ stages:
         $namespace = "$(namespace)"
         $lower = $namespace.ToLower()
         $formattedNamespace = $lower -replace '[^a-zA-Z0-9-``.]', ''
-        Write-Host "##vso[task.setvariable variable=namespace;]$formattedNamespace"
+        Write-Host $formattedNamespace
+        Write-Host "##vso[task.setvariable variable=formattedNamespace;]$formattedNamespace"
       displayName: Format deployment namespace variable
     - template: azure-pipeline-templates/deploy.yml
       parameters:
