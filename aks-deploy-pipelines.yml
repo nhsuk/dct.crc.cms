@@ -135,13 +135,6 @@ stages:
       tags: ${{ parameters.tags }}
       imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     steps:
-    - powershell: |
-        $namespace = "$(namespace)"
-        $lower = $namespace.ToLower()
-        $formattedNamespace = $lower -replace '[^a-zA-Z0-9-``.]', ''
-        Write-Host $formattedNamespace
-        Write-Host "##vso[task.setvariable variable=formattedNamespace;]$formattedNamespace"
-      displayName: Format deployment namespace variable
     - template: azure-pipeline-templates/deploy.yml
       parameters:
         azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'

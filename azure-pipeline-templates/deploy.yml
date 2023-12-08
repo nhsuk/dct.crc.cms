@@ -1,4 +1,11 @@
 steps:
+  - powershell: |
+      $namespace = "$(namespace)"
+      $lower = $namespace.ToLower()
+      $formattedNamespace = $lower -replace '[^a-zA-Z0-9-``.]', ''
+      Write-Host $formattedNamespace
+      Write-Host "##vso[task.setvariable variable=namespace;]$formattedNamespace"
+    displayName: Format deployment namespace variable
   - task: AzureKeyVault@1
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}
