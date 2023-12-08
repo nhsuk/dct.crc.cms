@@ -41,7 +41,7 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
-logger = getLogger()
+logger = getLogger(__name__)
 
 
 def parse_error(error):
@@ -141,6 +141,7 @@ def signup(request):
                     logger.error("Failed to create account: %s" % (response,))
                     return HttpResponseServerError()
             except ParagonClientError as PCE:
+                logger.error("Failed to create account: %s" % (json.dumps(PCE.args)))
                 for error in PCE.args:
                     this_parse_error = parse_error(error)
                     f.add_error(this_parse_error[0], this_parse_error[1])
@@ -201,8 +202,8 @@ def verification(request):
         try:
             unsigned_token = unsign(request.GET.get("q"), max_age=86400)
         except Exception as e:
-            logging.error("Failed to unsign token: %s" % (e,))
-            return HTTPResponseBadRequest()
+            logger.error("Failed to unsign token: %s" % (e,))
+            return HttpResponseBadRequest()
         todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
         # set user parameters
         client = Client()
@@ -302,10 +303,10 @@ def login(request):
                     else:
                         logger.error("Couldn't set test cookie")
                         return HttpResponseServerError()
-                    return redirect("/")
             except ParagonClientTimeout:
                 return HttpResponseServerError()
             except ParagonClientError as PCE:
+                logger.error("Failed to log user in: %s" % (json.dumps(PCE.args)))
                 for error in PCE.args:
                     this_parse_error = parse_error(error)
                     if this_parse_error[0] is None:

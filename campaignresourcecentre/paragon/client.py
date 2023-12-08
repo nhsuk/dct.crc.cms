@@ -12,7 +12,7 @@ from .data_classes import (
     CreateOrder,
     MockParagonResponse,  # For performance testing
 )
-from .exceptions import ParagonClientError
+from .exceptions import ParagonClientError, ParagonClientTimeout
 
 logger = logging.getLogger(__name__)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = ":ECDH+AES256:DH+AES256:!DH"
