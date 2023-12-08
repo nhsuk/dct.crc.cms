@@ -1,20 +1,4 @@
 steps:
-  - powershell: |
-      $namespace = "$(namespace)"
-      $formattedNamespace = $namespace.ToLower() -replace '[^a-zA-Z0-9-``.]', ''
-      Write-Host $formattedNamespace
-      Write-Host "##vso[task.setvariable variable=namespace;]$formattedNamespace"
-
-      $tag = "$(tag)"
-      $formattedTag = $tag.ToLower() -replace '[^a-zA-Z0-9-``.]', ''
-      Write-Host $formattedTag
-      Write-Host "##vso[task.setvariable variable=tag;]$formattedTag"
-
-      $hostUrl = "$(hostUrl)"
-      $formattedHostUrl = $hostUrl.ToLower() -replace '[^a-zA-Z0-9-``.]', ''
-      Write-Host $formattedHostUrl
-      Write-Host "##vso[task.setvariable variable=hostUrl;]$formattedHostUrl"
-    displayName: Format deployment variables
   - task: AzureKeyVault@1
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}

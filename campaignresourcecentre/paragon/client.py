@@ -48,6 +48,16 @@ class Client:
         elapsed = (finish_time - start_time).total_seconds()
         logger.info("Paragon client %s call took %0.3fs", self.call_method, elapsed)
         if failed:
+            logger.error(
+                json.dumps(
+                    {
+                        "error": "Paragon client timeout exceeded",
+                        "endpoint": self.call_method,
+                        "elapsed": elapsed,
+                        "timeoutLimit": settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
+                    }
+                )
+            )
             raise ParagonClientTimeout
 
     # Revised call - delegates to either mock or real API
@@ -94,6 +104,17 @@ class Client:
             self._call()
 
     def raise_exception(self):
+        logger.error(
+            json.dumps(
+                {
+                    "error": "Paragon client request unsuccessful",
+                    "endpoint": self.call_method,
+                    "response": json.loads(self.response.content),
+                    "status": self.response.status_code,
+                    "elapsed": self.response.elapsed.total_seconds(),
+                }
+            )
+        )
         raise ParagonClientError(json.loads(self.response.content))
 
     def create_account(
