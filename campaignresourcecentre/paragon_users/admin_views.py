@@ -93,11 +93,10 @@ def index(request):
         form = SearchForm(placeholder=_("Email, first name & last name"))
 
     users_per_page = 20
+    page_num = 1
 
-    try:
+    if request.GET.get("p"):
         page_num = int(request.GET.get("p", 1))
-    except ValueError:
-        page_num = 1
 
     # Fetch current number of users from cache
     # num_users = 0;
