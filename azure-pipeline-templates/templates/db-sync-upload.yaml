@@ -39,7 +39,8 @@ steps:
       az postgres db delete \
       --name "${{parameters.DBName}}" \
       --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}"
+      --server-name "${{parameters.Server}}" \
+      --yes
   displayName: 'Delete target database'
 
 - task: AzureCLI@2
