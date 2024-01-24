@@ -22,6 +22,9 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
+
+      echo $(git branch -la)
+
       set -e # fail script if any sub commands fail
 
       # Authenticate with dev cluster to fetch all namespaces
