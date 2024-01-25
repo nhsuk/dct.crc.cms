@@ -35,7 +35,7 @@ instana = "1.38.0 "
 django-cprofile-middleware = "1.0.5"
 django-debug-toolbar = "~3.2"
 redis = "~4.1"
-wagtail-2fa = {git = "https://github.com/labd/wagtail-2fa.git", rev = "f029a7c0838e763ae77ce0d292604bacf8c5833e"}
+wagtail-2fa = "^1.6.9"
 setuptools = "65.6.2"
 azure-search-documents = "^11.3.0"
 azure-search = "^1.0.0b2"
