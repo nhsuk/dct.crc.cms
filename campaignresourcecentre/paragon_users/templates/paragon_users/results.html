@@ -15,11 +15,7 @@
 
     {% include "wagtailadmin/shared/pagination_nav.html" with items=users linkurl="paragon_users:index" %}
 {% else %}
-    {% if paragon_error %}
-        <h2 role="alert">{% blocktrans %}Error fetching users from Paragon{% endblocktrans %}</h2>
-    {% elif is_searching %}
-        <h2 role="alert">{% blocktrans %}Sorry, no users match "<em>{{ query_string }}</em>"{% endblocktrans %}</h2>
-    {% else %}
-        <h2 role="alert">{% blocktrans %}No users returned{% endblocktrans %}</h2>
-    {% endif %}
+        {% if error_message %}
+            <h2 role="alert">{{error_message}}</h2>
+        {% endif %}
 {% endif %}

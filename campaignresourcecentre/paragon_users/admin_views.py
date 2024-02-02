@@ -14,7 +14,7 @@ from wagtail.admin.forms.search import SearchForm
 
 from campaignresourcecentre.paragon.client import Client
 from campaignresourcecentre.paragon.data_classes import user_from_dict
-from campaignresourcecentre.paragon.exceptions import ParagonClientError
+from campaignresourcecentre.paragon.exceptions import ParagonClientError, ParagonClientTimeout
 from campaignresourcecentre.paragon.models import ParagonCacheValues
 
 from .forms import UserAdminForm, AdminPasswordSetForm
@@ -79,7 +79,7 @@ class UsersWrapper:
 def index(request):
     search_string = ""
     is_searching = False
-    paragon_error = False
+    error_message = ""
 
     paragon_client = Client()
 
@@ -116,10 +116,15 @@ def index(request):
         users = [user_from_dict(user_dict) for user_dict in response["content"]]
         users.sort(key=lambda user: user.created_at, reverse=True)
 
+    except ParagonClientTimeout as PCT:
+        users=[]
+        error_message = "Timeout encountered during user search."
     except ParagonClientError as PCE:
         users = []
-        if PCE.args[0] != "No records match the criteria":
-            paragon_error = True
+        if PCE.args[0] == "No records match the criteria":
+            error_message = format("Sorry, no users match <em>%s</em>", search_string)
+        else:
+            error_message = "Error fetching users from Paragon"
 
     #  Added this hack since we cant get access to the total number of users from DCX api.
     num_pages = page_num + 1 if len(users) >= users_per_page else page_num
@@ -136,7 +141,7 @@ def index(request):
                 "users": users,
                 "is_searching": is_searching,
                 "query_string": search_string,
-                "paragon_error": paragon_error,
+                "error_message": error_message
             },
         )
     else:
@@ -148,7 +153,7 @@ def index(request):
                 "users": users,
                 "is_searching": is_searching,
                 "query_string": search_string,
-                "paragon_error": paragon_error,
+                "error_message": error_message
             },
         )
 

@@ -33,6 +33,7 @@ class Client:
     # Original/production call to Paragon
     def _call(self):
         start_time = datetime.now()
+        is_timeout = False
         try:
             self.response = requests.post(
                 "{0}{1}".format(settings.PARAGON_API_ENDPOINT, self.call_method),
@@ -40,14 +41,15 @@ class Client:
                 json=self.data,
                 timeout=settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
             )
-            failed = False
         except requests.Timeout:
             logger.error("Paragon client timed out on %s call", self.call_method)
-            failed = True
+            is_timeout = True
         finish_time = datetime.now()
         elapsed = (finish_time - start_time).total_seconds()
+        
         logger.info("Paragon client %s call took %0.3fs", self.call_method, elapsed)
-        if failed:
+
+        if is_timeout:
             logger.error(
                 json.dumps(
                     {
@@ -166,6 +168,7 @@ class Client:
 
     def search_users(self, string, limit=20, offset=0):
         self.call_method = "/Search"
+
         self.data.update(
             {
                 "EmailAddress": string,
@@ -176,7 +179,13 @@ class Client:
                 "Offset": offset,
             }
         )
-        self.call()
+        try:
+            self.call()
+        except ParagonClientTimeout as e:
+            logger.error("Paragon /Search timed out on query=\"%s\"", string)
+            raise e
+
+
         if self.response.status_code == 200:
             return {
                 "status": "ok",
