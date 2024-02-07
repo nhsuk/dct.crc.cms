@@ -17,7 +17,7 @@
 
                 timeout = setTimeout(() => {
                     const searchValue = e.target.value;
-                    if(searchValue.length > 2) {
+                    if(searchValue.length >= 2) {
                         page = 1;
                         fetchData();
                     }

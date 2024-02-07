@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 import logging
 import requests
+import uuid
 
 from django.conf import settings
 from .data_classes import (
@@ -29,10 +30,22 @@ class Client:
         # self.may_mock = settings.PARAGON_MOCK is not None and\
         #    settings.PARAGON_MOCK.lower ().startswith ("t")
         self.may_mock = settings.PARAGON_MOCK
+        self.log_uuid = str(uuid.uuid4())
 
     # Original/production call to Paragon
     def _call(self):
         start_time = datetime.now()
+        is_timeout_error = False
+
+        logger.info(
+            json.dumps(
+                {
+                    "message": "Starting Paragon client call",
+                    "correlation_id": self.log_uuid,
+                }
+            )
+        )
+
         try:
             self.response = requests.post(
                 "{0}{1}".format(settings.PARAGON_API_ENDPOINT, self.call_method),
@@ -40,25 +53,31 @@ class Client:
                 json=self.data,
                 timeout=settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
             )
-            failed = False
         except requests.Timeout:
-            logger.error("Paragon client timed out on %s call", self.call_method)
-            failed = True
-        finish_time = datetime.now()
-        elapsed = (finish_time - start_time).total_seconds()
-        logger.info("Paragon client %s call took %0.3fs", self.call_method, elapsed)
-        if failed:
             logger.error(
                 json.dumps(
                     {
-                        "error": "Paragon client timeout exceeded",
+                        "message": "Paragon client timeout exceeded",
+                        "type": "ParagonClientTimeout",
                         "endpoint": self.call_method,
-                        "elapsed": elapsed,
+                        "elapsed": (datetime.now() - start_time).total_seconds(),
                         "timeoutLimit": settings.PARAGON_LOGIN_TIMEOUT_SECONDS,
+                        "correlation_id": self.log_uuid,
                     }
                 )
             )
             raise ParagonClientTimeout
+
+        elapsed = (datetime.now() - start_time).total_seconds()
+        logger.info(
+            json.dumps(
+                {
+                    "message": "Paragon client %s call took %0.3fs"
+                    % (self.call_method, elapsed),
+                    "correlation_id": self.log_uuid,
+                }
+            )
+        )
 
     # Revised call - delegates to either mock or real API
     def call(self):

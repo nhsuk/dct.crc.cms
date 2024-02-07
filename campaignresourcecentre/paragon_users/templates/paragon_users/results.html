@@ -1,4 +1,9 @@
 {% load i18n wagtailadmin_tags %}
+
+{% if error_message %}
+    <h2 role="alert" class="w-text-critical-100">{{ error_message }}</h2>
+{% endif %}
+
 {% if users %}
     {# RE:CV-1178 disabling this until we get total users back from DCX api #}
     {% if is_searching and False %}
@@ -14,12 +19,4 @@
     {% include "paragon_users/list.html" %}
 
     {% include "wagtailadmin/shared/pagination_nav.html" with items=users linkurl="paragon_users:index" %}
-{% else %}
-    {% if paragon_error %}
-        <h2 role="alert">{% blocktrans %}Error fetching users from Paragon{% endblocktrans %}</h2>
-    {% elif is_searching %}
-        <h2 role="alert">{% blocktrans %}Sorry, no users match "<em>{{ query_string }}</em>"{% endblocktrans %}</h2>
-    {% else %}
-        <h2 role="alert">{% blocktrans %}No users returned{% endblocktrans %}</h2>
-    {% endif %}
 {% endif %}
