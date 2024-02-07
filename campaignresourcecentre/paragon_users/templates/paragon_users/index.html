@@ -1,23 +1,66 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n %}
+{% load i18n wagtailadmin_tags %}
 {% block titletag %}CRC Users{% endblock %}
 {% block extra_js %}
     {{ block.super }}
     <script>
-        window.headerSearch = {
-            url: "{% url 'paragon_users:index' %}",
-            termInput: "#id_q",
-            targetOutput: "#user-results"
+        let timeout = null;
+        let page = parseInt("{{ page }}")
+        let limit = parseInt("{{ limit }}")
+
+        $(document).ready(function() {
+            fetchData();
+
+            $('#header-search').html($("#user-search-bar"));
+            $('#user-search-bar .search-input').on('input',(e) => {
+                clearTimeout(timeout);
+
+                timeout = setTimeout(() => {
+                    const searchValue = e.target.value;
+                    if(searchValue.length > 2) {
+                        page = 1;
+                        fetchData();
+                    }
+                }, 500);
+            });
+        });
+
+        function fetchData() {
+            const data = {
+                p:page ,
+                limit: limit,
+                q: $('#user-search-bar .search-input').val(),
+            }
+
+            $.ajax("{% url 'paragon_users:search_users' %}", {
+                type: 'GET',
+                data,
+                success: function(response) {
+                    $('#user-results').html(response);
+                },
+                error: function() {
+                    document.dispatchEvent(
+                        new CustomEvent('w-messages:add', {
+                            detail: { text: 'Error occurred, fetching users from api.', type: 'error' },
+                        }),
+                    );
+                },
+                beforeSend: () => $('#main-content').addClass('loading'),
+                complete: () => $('#main-content').removeClass('loading'), 
+            })
         }
     </script>
 {% endblock %}
 
 {% block content %}
-    {% include "wagtailadmin/shared/header.html" with title="CRC Users" icon="user" search_url="paragon_users:index" %}
+    {% include "wagtailadmin/shared/header.html" with title="CRC Users" icon="user" search="<div id='header-search'></div>" %}
 
-    <div class="nice-padding">
-        <div id="user-results" class="users">
-            {% include "paragon_users/results.html" %}
+    <div class="loading-mask" id="main-content">
+        <div class="nice-padding">
+            <div id="user-search-bar" class="col search-form">
+                <input type="text" placeholder="Email, first name & last name"" value="{{ query }}" class="search-input">
+            </div>
+            <div id="user-results" class="users"></div>
         </div>
     </div>
 {% endblock %}

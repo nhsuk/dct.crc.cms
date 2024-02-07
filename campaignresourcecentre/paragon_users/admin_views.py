@@ -77,6 +77,18 @@ class UsersWrapper:
 )
 @require_http_methods(["GET"])
 def index(request):
+    return TemplateResponse(
+        request,
+        "paragon_users/index.html",
+        {
+            "query": request.GET.get("q", ""),
+            "limit": request.GET.get("limit", 20),
+            "page": request.GET.get("p", 1),
+        },
+    )
+
+
+def search_users(request):
     search_string = ""
     is_searching = False
     paragon_error = False
@@ -92,7 +104,7 @@ def index(request):
     else:
         form = SearchForm(placeholder=_("Email, first name & last name"))
 
-    users_per_page = 20
+    users_per_page = int(request.GET.get("limit", 20))
     page_num = 1
 
     if request.GET.get("p"):
@@ -127,30 +139,16 @@ def index(request):
     # Wrap users list to provide pagination attributes
     users = UsersWrapper(users, num_pages, page_num)
 
-    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
-    if is_ajax:
-        return TemplateResponse(
-            request,
-            "paragon_users/results.html",
-            {
-                "users": users,
-                "is_searching": is_searching,
-                "query_string": search_string,
-                "paragon_error": paragon_error,
-            },
-        )
-    else:
-        return TemplateResponse(
-            request,
-            "paragon_users/index.html",
-            {
-                "search_form": form,
-                "users": users,
-                "is_searching": is_searching,
-                "query_string": search_string,
-                "paragon_error": paragon_error,
-            },
-        )
+    return TemplateResponse(
+        request,
+        "paragon_users/results.html",
+        {
+            "users": users,
+            "is_searching": is_searching,
+            "query_string": search_string,
+            "paragon_error": paragon_error,
+        },
+    )
 
 
 @any_permission_required(
