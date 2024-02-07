@@ -35,7 +35,6 @@ class Client:
     # Original/production call to Paragon
     def _call(self):
         start_time = datetime.now()
-        is_timeout_error = False
 
         logger.info(
             json.dumps(
