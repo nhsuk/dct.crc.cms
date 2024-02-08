@@ -16,11 +16,8 @@
                 clearTimeout(timeout);
 
                 timeout = setTimeout(() => {
-                    const searchValue = e.target.value;
-                    if(searchValue.length >= 2) {
-                        page = 1;
-                        fetchData();
-                    }
+                    page = 1;
+                    fetchData();
                 }, 500);
             });
         });
@@ -32,11 +29,19 @@
                 q: $('#user-search-bar .search-input').val(),
             }
 
+            if(data.q && data.q.length < 2) {
+                return;
+            }
+
             $.ajax("{% url 'paragon_users:search_users' %}", {
                 type: 'GET',
                 data,
                 success: function(response) {
                     $('#user-results').html(response);
+
+                    const url = new URL(window.location.href);
+                    url.search = new URLSearchParams(data);
+                    window.history.pushState({}, '', url);
                 },
                 error: function() {
                     document.dispatchEvent(
