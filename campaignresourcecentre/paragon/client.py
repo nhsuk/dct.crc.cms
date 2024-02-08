@@ -39,7 +39,7 @@ class Client:
         logger.info(
             json.dumps(
                 {
-                    "message": "Starting Paragon client call",
+                    "message": "Starting Paragon client call %s" % self.call_method,
                     "correlation_id": self.log_uuid,
                 }
             )
