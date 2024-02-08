@@ -135,9 +135,9 @@ def search_users(request):
     except ParagonClientError as PCE:
         users = []
         if PCE.args[0] != "No records match the criteria":
-            error_message = "Error: No users found for search: " + search_string
-        else:
             error_message = "Error: Fetching data from api failed"
+        else:
+            error_message = "Error: No users found for search: " + search_string
 
     #  Added this hack since we cant get access to the total number of users from DCX api.
     num_pages = page_num + 1 if len(users) >= users_per_page else page_num
