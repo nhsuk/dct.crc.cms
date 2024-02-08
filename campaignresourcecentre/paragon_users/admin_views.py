@@ -14,7 +14,10 @@ from wagtail.admin.forms.search import SearchForm
 
 from campaignresourcecentre.paragon.client import Client
 from campaignresourcecentre.paragon.data_classes import user_from_dict
-from campaignresourcecentre.paragon.exceptions import ParagonClientError
+from campaignresourcecentre.paragon.exceptions import (
+    ParagonClientError,
+    ParagonClientTimeout,
+)
 from campaignresourcecentre.paragon.models import ParagonCacheValues
 
 from .forms import UserAdminForm, AdminPasswordSetForm
@@ -77,9 +80,20 @@ class UsersWrapper:
 )
 @require_http_methods(["GET"])
 def index(request):
+    return TemplateResponse(
+        request,
+        "paragon_users/index.html",
+        {
+            "query": request.GET.get("q", ""),
+            "limit": request.GET.get("limit", 20),
+            "page": request.GET.get("p", 1),
+        },
+    )
+
+
+def search_users(request):
     search_string = ""
-    is_searching = False
-    paragon_error = False
+    error_message = ""
 
     paragon_client = Client()
 
@@ -87,12 +101,10 @@ def index(request):
         form = SearchForm(request.GET, placeholder=_("Email, first name & last name"))
         if form.is_valid():
             search_string = form.cleaned_data["q"]
-            is_searching = True
-
     else:
         form = SearchForm(placeholder=_("Email, first name & last name"))
 
-    users_per_page = 20
+    users_per_page = int(request.GET.get("limit", 20))
     page_num = 1
 
     if request.GET.get("p"):
@@ -116,10 +128,16 @@ def index(request):
         users = [user_from_dict(user_dict) for user_dict in response["content"]]
         users.sort(key=lambda user: user.created_at, reverse=True)
 
+    except ParagonClientTimeout:
+        users = []
+        error_message = "The request to the service took too long to respond."
+
     except ParagonClientError as PCE:
         users = []
         if PCE.args[0] != "No records match the criteria":
-            paragon_error = True
+            error_message = "Error: Fetching data from api failed"
+        else:
+            error_message = "Error: No users found for search: " + search_string
 
     #  Added this hack since we cant get access to the total number of users from DCX api.
     num_pages = page_num + 1 if len(users) >= users_per_page else page_num
@@ -127,30 +145,15 @@ def index(request):
     # Wrap users list to provide pagination attributes
     users = UsersWrapper(users, num_pages, page_num)
 
-    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
-    if is_ajax:
-        return TemplateResponse(
-            request,
-            "paragon_users/results.html",
-            {
-                "users": users,
-                "is_searching": is_searching,
-                "query_string": search_string,
-                "paragon_error": paragon_error,
-            },
-        )
-    else:
-        return TemplateResponse(
-            request,
-            "paragon_users/index.html",
-            {
-                "search_form": form,
-                "users": users,
-                "is_searching": is_searching,
-                "query_string": search_string,
-                "paragon_error": paragon_error,
-            },
-        )
+    return TemplateResponse(
+        request,
+        "paragon_users/results.html",
+        {
+            "users": users,
+            "query_string": search_string,
+            "error_message": error_message,
+        },
+    )
 
 
 @any_permission_required(
