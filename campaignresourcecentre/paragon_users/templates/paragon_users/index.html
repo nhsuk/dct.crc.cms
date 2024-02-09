@@ -14,10 +14,21 @@
             $('#header-search').html($("#user-search-bar"));
             $('#user-search-bar .search-input').on('input',(e) => {
                 clearTimeout(timeout);
+                const search = e.target.value;
+
+                if(search && search.length < 2) {
+                    $('.search-input-error').text("Search term must be at least 2 characters");
+                } else {
+                    $('.search-input-error').text("");
+                }
 
                 timeout = setTimeout(() => {
                     page = 1;
-                    fetchData();
+                    if(search && search.length > 1) {
+                        fetchData();
+                    } else {
+                        $('#user-results').html('');
+                    }
                 }, 500);
             });
         });
@@ -27,10 +38,6 @@
                 p:page ,
                 limit: limit,
                 q: $('#user-search-bar .search-input').val(),
-            }
-
-            if(data.q && data.q.length < 2) {
-                return;
             }
 
             $.ajax("{% url 'paragon_users:search_users' %}", {
@@ -64,6 +71,7 @@
         <div class="nice-padding">
             <div id="user-search-bar" class="col search-form">
                 <input type="text" placeholder="Email, first name & last name"" value="{{ query }}" class="search-input">
+                <div class="w-text-critical-100 search-input-error"></div>
             </div>
             <div id="user-results" class="users"></div>
         </div>
