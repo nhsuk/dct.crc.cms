@@ -5,6 +5,7 @@
     {{ block.super }}
     <script>
         let timeout = null;
+        let currentRequest = null;
         let page = parseInt("{{ page }}")
         let limit = parseInt("{{ limit }}")
 
@@ -18,17 +19,14 @@
 
                 if(search && search.length < 2) {
                     $('.search-input-error').text("Search term must be at least 2 characters");
+                    return;
                 } else {
                     $('.search-input-error').text("");
                 }
 
                 timeout = setTimeout(() => {
                     page = 1;
-                    if(search && search.length > 1) {
-                        fetchData();
-                    } else {
-                        $('#user-results').html('');
-                    }
+                    fetchData();
                 }, 500);
             });
         });
@@ -40,7 +38,9 @@
                 q: $('#user-search-bar .search-input').val(),
             }
 
-            $.ajax("{% url 'paragon_users:search_users' %}", {
+            currentRequest && currentRequest.readyState != 4 && currentRequest.abort(); // clear previous request
+
+            currentRequest = $.ajax("{% url 'paragon_users:search_users' %}", {
                 type: 'GET',
                 data,
                 success: function(response) {
@@ -50,7 +50,9 @@
                     url.search = new URLSearchParams(data);
                     window.history.pushState({}, '', url);
                 },
-                error: function() {
+                error: function(xhr, ajaxOptions, thrownError) {
+                    if (thrownError == 'abort' || thrownError == 'undefined') return;
+
                     document.dispatchEvent(
                         new CustomEvent('w-messages:add', {
                             detail: { text: 'Error occurred, fetching users from api.', type: 'error' },
