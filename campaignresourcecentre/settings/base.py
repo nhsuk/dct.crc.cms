@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     "campaignresourcecentre.users",
     "campaignresourcecentre.utils",
     "wagtailnhsukfrontend",
-    "wagtail.contrib.modeladmin",
+    "wagtail-modeladmin",
     "wagtail.contrib.settings",
     "wagtail.contrib.search_promotions",
     "wagtail.contrib.forms",
