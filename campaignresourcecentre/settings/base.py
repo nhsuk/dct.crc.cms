@@ -326,10 +326,10 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     INSTALLED_APPS = INSTALLED_APPS + ["storages"]
 
     DEFAULT_FILE_STORAGE = (
-        "campaignresourcecentre.custom_storages.custom_azure.AzureMediaStorage"
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage"
     )
     SEARCH_STORAGE_CLASS = (
-        "campaignresourcecentre.custom_storages.custom_azure.AzureSearchStorage"
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureSearchStorage"
     )
     AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
     AZURE_ACCOUNT_KEY = env["AZURE_ACCOUNT_KEY"]
@@ -345,7 +345,7 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     AZURE_CONNECTION_TIMEOUT_SECS = 60
     # When using Azure storage, we use a custom uploader that streams directly to an Azure blob
     FILE_UPLOAD_HANDLERS.append(
-        "campaignresourcecentre.custom_storages.custom_azure.AzureBlobUploadHandler"
+        "campaignresourcecentre.custom_storages.custom_azure_uploader.AzureBlobUploadHandler"
     )
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
