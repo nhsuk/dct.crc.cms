@@ -50,9 +50,9 @@ class AzureMediaStorageFile(AzureStorageFile):
             self.block_list = []
             self.size = 0
 
-    # def _get_file(self):
-    #     logger.info("get AzureMediaStorageFile from %s", self._blob)
-    #     return super()._get_file(self)
+    def _get_file(self):
+        logger.info("get AzureMediaStorageFile from %s", self._blob)
+        return super()._get_file(self)
 
     def delete(self):
         logger.info("deleting AzureMediaStorageFile from %s", self.blob_name)

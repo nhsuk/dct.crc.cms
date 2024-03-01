@@ -13,6 +13,8 @@ from campaignresourcecentre.custom_storages.custom_azure_file import (
 logger = logging.getLogger(__name__)
 
 
+# Based on default_storage in https://github.com/django/django/blob/main/django/core/files/storage.py
+# Storage instance is only really instantiated after all settings are configured and in a request context
 class AzureMediaStorage(AzureStorage):
     account_name = getattr(settings, "AZURE_ACCOUNT_NAME", None)
     account_key = getattr(settings, "AZURE_ACCOUNT_KEY", None)
@@ -27,27 +29,14 @@ class AzureMediaStorage(AzureStorage):
         new_blob_name,
         content,
     ):
-        logger.info(
-            "Saving %s in container %s of account %s",
-            new_blob_name,
-            __class__.azure_container,
-            __class__.account_name,
-        )
         cleaned_name = clean_name(new_blob_name)
         new_blob_name = self._get_valid_path(new_blob_name)
         params = self._get_content_settings_parameters(new_blob_name, content)
         temp_blob_client = self.client.get_blob_client(temp_blob_name)
         new_blob_client = self.client.get_blob_client(new_blob_name)
 
-        # Copy the blob to the new name
         temp_url = temp_blob_client.url
-
-        logger.info(
-            "Copying temporary blob %s to blob %s", temp_blob_name, new_blob_name
-        )
         new_blob_client.start_copy_from_url(temp_url)
-
-        logger.info("Setting headers of blob %s to %s", new_blob_name, params)
         if params:
             new_blob_client.set_http_headers(
                 ContentSettings(
@@ -58,13 +47,14 @@ class AzureMediaStorage(AzureStorage):
                     }
                 )
             )
-
-        # Delete the original blob
-        logger.info("Deleting temporary blob %s", temp_blob_name)
         temp_blob_client.delete_blob()
-        logger.info("Blob %s renamed to %s", temp_blob_name, new_blob_name)
 
-        logger.info("File %s saved as %s", new_blob_name, cleaned_name)
+        logger.info(
+            "Blob %s renamed to %s with headers %s",
+            temp_blob_name,
+            new_blob_name,
+            params,
+        )
         return cleaned_name
 
     def save(self, name, content, max_length=None):
@@ -73,7 +63,6 @@ class AzureMediaStorage(AzureStorage):
         a proper File object or any Python file-like object, ready to be read
         from the beginning.
         """
-        logger.info(f"save: name={name}, content")
         # Get the proper name for the file, as it will actually be saved.
         if name is None:
             name = content.name
@@ -88,43 +77,29 @@ class AzureMediaStorage(AzureStorage):
         temp_blob_name = name[len("documents/") :]
         if self.exists(temp_blob_name):
             logger.info(
-                f"_move_temp_blob: temp_blob_name={temp_blob_name}, new_blob_name={available_name}, content"
+                "Saving %s in container %s of account %s using temp blob %s",
+                available_name,
+                __class__.azure_container,
+                __class__.account_name,
+                temp_blob_name,
             )
             return self._move_temp_blob(temp_blob_name, available_name, content)
 
         if not hasattr(content, "chunks"):
             content = File(content, available_name)
 
-        logger.info(f"_save: name={available_name}, content")
+        logger.info(
+            "Saving %s in container %s of account %s using direct upload",
+            available_name,
+            __class__.azure_container,
+            __class__.account_name,
+            temp_blob_name,
+        )
         return self._save(available_name, content)
 
     def __init__(self, **settings):
         super().__init__(**settings)
         logger.info("Using storage domain '%s' for media", self.custom_domain)
-
-    def find_newest_blob_starting_with(self, name_prefix=""):
-        """Return all files for a given path"""
-        if name_prefix:
-            name_prefix = self._get_valid_path(name_prefix)
-
-        # XXX make generator, add start, end
-        blobs_with_prefix = [
-            blob for blob in self.client.list_blobs(name_starts_with=name_prefix)
-        ]
-        logger.info(
-            f"blobs with prefix '{name_prefix}': {', '.join(map(lambda blob: blob.name, blobs_with_prefix))}"
-        )
-
-        if blobs_with_prefix:
-            newest_blob = sorted(
-                blobs_with_prefix, key=lambda blob: blob.last_modified, reverse=True
-            )[0]
-            logger.info(
-                f"newest blob is '{newest_blob.name}', lastModified: '{newest_blob.last_modified}'"
-            )
-            return newest_blob
-        else:
-            return None
 
     def url(self, name, expire=None, parameters=None):
         initial_url = super().url(name, expire, parameters)
@@ -141,7 +116,6 @@ class AzureMediaStorage(AzureStorage):
         return self._normalize_name(clean_name(name))
 
 
-# As per https://docs.djangoproject.com/en/4.1/ref/files/uploads/
 class AzureSearchStorage(AzureStorage):
     account_name = getattr(settings, "AZURE_SEARCH_STORAGE_ACCOUNT_NAME", None)
     account_key = getattr(settings, "AZURE_SEARCH_ACCESS_KEY", None)
@@ -155,10 +129,6 @@ class AzureSearchStorage(AzureStorage):
             self.azure_container,
             self.custom_domain,
         )
-
-
-# Based on default_storage in https://github.com/django/django/blob/main/django/core/files/storage.py
-# Storage instance is only really instantiated after all settings are configured and in a request context
 
 
 class SearchStorage(LazyObject):

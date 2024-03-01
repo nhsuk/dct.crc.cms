@@ -15,6 +15,7 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
+# As per https://docs.djangoproject.com/en/4.1/ref/files/uploads/
 class AzureUploadedFile(UploadedFile):
     def __init__(
         self,
@@ -35,6 +36,7 @@ class AzureUploadedFile(UploadedFile):
         )
 
 
+# As per https://docs.djangoproject.com/en/4.1/ref/files/uploads/
 class AzureBlobUploadHandler(FileUploadHandler):
     chunk_size = int(
         settings.FILE_UPLOAD_MAX_MEMORY_SIZE / 2
@@ -88,10 +90,9 @@ class AzureBlobUploadHandler(FileUploadHandler):
         blob_client = self.storage.client.get_blob_client(self.blob_name)
         temp_url = blob_client.url
 
-        # Handler must return a file object. However if this is a local system file
-        # whether temporary or otherwise, in a K8S context it will be in memory
-        # Therefore we have to return a file object that will read directly
-        # from Azure storage
+        # Handler must return an UploadedFile object. To avoid having to download the blob
+        # from Azure storage again to provide its content to an "UploadedFile", we have
+        # created our own subclass that takes content which just references the blob.
         upload_metadata_dict = {
             "temp_url": temp_url,
             "size": file_size,
@@ -111,14 +112,9 @@ class AzureBlobUploadHandler(FileUploadHandler):
         # This method is called by Django uploader at the wrong time. At the point
         # it is called the file has been uploaded from the client into the temporary blob,
         # but not yet saved as a document, so the temporary blob cannot yet be deleted.
-        # Hence we need a 'burn this after reading' mode for the temporary blob, akin
-        # to the Python temporary file that is used for file-based uploads.
-        # This is implemented by the destroy_on_close property in AzureBlobFile
 
         # Worse still, if there are several upload handlers, this method gets called
         # even if new_file was not, so it may not even have the information it needs.
-        logger.info("All current uploads complete")
-
         if hasattr(self, "blob_name"):
             logger.info(
                 "Upload nominally complete for %s, using blob %s",

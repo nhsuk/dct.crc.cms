@@ -70,21 +70,6 @@ class TestAzureBlobFile(unittest.TestCase):
         self.blob_output_file.write(bytearray(4194304))
         self.assertEqual(self.blob_output_file.position, 4194304 + len(TEST_CONTENT))
 
-    # def test_write_with_invalid_offset(self):
-    #     with self.assertRaises(NotImplementedError):
-    #         self.blob_output_file.seek(1, whence=1)
-
-    # def test_seek(self):
-    #     self.blob_input_file.seek(6)
-    #     self.assertEqual(self.blob_input_file.position, 6)
-    #     self.blob_input_file.seek(5, whence=1)
-    #     self.assertEqual(self.blob_input_file.position, 11)
-
-    # def test_close_with_destroy_on_close(self):
-    #     self.temporary_blob_file.delete = MagicMock()
-    #     self.temporary_blob_file.close()
-    #     assert self.temporary_blob_file.delete.call_count == 1
-
     def test_close_with_wb_mode(self):
         with patch(
             "campaignresourcecentre.custom_storages.custom_azure_file.AzureMediaStorageFile.delete"
