@@ -7,7 +7,7 @@ authors = ["Torchbox <hello@torchbox.com>"]
 [tool.poetry.dependencies]
 python = "~3.10"
 django = "~4.1"
-wagtail = "~5.0.0"
+wagtail = "~5.2"
 psycopg2 = "~2.8"
 gunicorn = {version = "~20.1", optional = true}
 wagtail-django-recaptcha = "1.0"
@@ -39,6 +39,7 @@ wagtail-2fa = "^1.6.9"
 setuptools = "65.6.2"
 azure-search-documents = "^11.3.0"
 azure-search = "^1.0.0b2"
+wagtail-modeladmin = "^2.0.0"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
