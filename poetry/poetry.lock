@@ -2675,7 +2675,7 @@ develop = false
 type = "git"
 url = "https://github.com/nhsuk/wagtail-reacttaxonomy"
 reference = "wagtail4"
-resolved_reference = "a786f779ca5262803a7b7c145b5d5a729700a9da"
+resolved_reference = "84aea27ebf27958ce53819243cbce464ef0178af"
 
 [[package]]
 name = "webencodings"
