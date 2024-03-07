@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.files.base import ContentFile
 
-from campaignresourcecentre.custom_storages.custom_azure_storage import search_storage
+from campaignresourcecentre.custom_storages.custom_azure import search_storage
 
 logger = logging.getLogger(__name__)
 
