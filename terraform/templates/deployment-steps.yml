@@ -1,0 +1,66 @@
+parameters:
+  artifactPath:           '' # working directory
+  environment:            '' # env name for secret retrieval from Vault
+  azureSubscription:      '' # the service connection in the pipeline
+  resourceGroup:          '' # name of the resource group which contains the TF resources
+  tfStorageAccount:       '' # name of the storage account which stores the TF state
+  keyVaultResourceGroup:  '' # name of the resource group which contains the key vault
+  keyVaultName:           '' # name of the key vault containing the pubToken secret
+  publishEndpoint:        '' # url of the endpoint for publishing scheduled pages
+  alertingWebhook:        '' # webhook url for campaigns monitoring slack channel
+  apply:                  '' # if 'true' applies the TF plan
+
+steps:
+
+  - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+    displayName: 'Install latest Terraform'
+    inputs:
+      terraformVersion: latest
+
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+    displayName: 'terraform init'
+    inputs:
+      command: init
+      workingDirectory: ${{ parameters.artifactPath }}
+      backendType: azurerm
+      backendServiceArm: ${{ parameters.azureSubscription }}
+      backendAzureRmResourceGroupName: ${{ parameters.resourceGroup }}
+      backendAzureRmStorageAccountName: ${{ parameters.tfStorageAccount }}
+      backendAzureRmContainerName: tfstate
+      backendAzureRmKey: terraform.tfstate
+
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+    displayName: 'terraform validate'
+    inputs:
+      workingDirectory: ${{ parameters.artifactPath }}
+
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+    displayName: 'terraform plan'
+    inputs:
+      command: plan
+      workingDirectory: ${{ parameters.artifactPath }}
+      environmentServiceName: ${{ parameters.azureSubscription }}
+      commandOptions: >
+        -var resource_group=${{ parameters.resourceGroup }}
+        -var environment=${{ parameters.environment }}
+        -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+        -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
+        -var key_vault_name=${{ parameters.keyVaultName }}
+        -var publish_endpoint=${{ parameters.publishEndpoint }}
+      #  -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}'
+
+  - ${{ if eq(parameters.apply, 'true') }}:
+      - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+        displayName: 'terraform apply'
+        inputs:
+          command: apply
+          workingDirectory: ${{ parameters.artifactPath }}
+          environmentServiceName: ${{ parameters.azureSubscription }}
+          commandOptions: >
+            -var resource_group=${{ parameters.resourceGroup }}
+            -var environment=${{ parameters.environment }}
+            -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+            -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
+            -var key_vault_name=${{ parameters.keyVaultName }}
+            -var publish_endpoint=${{ parameters.publishEndpoint }}
+          #  -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}'
