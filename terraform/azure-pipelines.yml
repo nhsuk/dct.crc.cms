@@ -7,7 +7,7 @@ trigger:
     - 'review/*'
     - 'refs/tags/*'
     - 'main'
-  path:
+  paths:
     include:
     - 'terraform'
 
