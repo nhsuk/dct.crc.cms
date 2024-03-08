@@ -67,7 +67,7 @@ resource "azapi_resource" "publisher_la" {
       "parameters" : {
         "$connections" : {
           "value" : {
-            azapi_resource.keyvault_con.name : {
+            "${azapi_resource.keyvault_con.name}" : {
               "connectionId" : azapi_resource.keyvault_con.id,
               "connectionName" : azapi_resource.keyvault_con.name,
               "connectionProperties" : {
