@@ -13,13 +13,9 @@ resource "azapi_resource" "keyvault_con" {
         }
       ],
       "customParameterValues" : {},
-      "parameterValues" : {
-        "name" : "oauthMI",
-        "values" : {
-          "vaultName" : {
-            "value" : "${data.azurerm_managed_api.kv.name}"
-          }
-        }
+      "parameterValueType" : "Alternative",
+      "alternativeParameterValues" : {
+        "vaultName" : data.azurerm_managed_api.kv.name
       },
       "api" : {
         "name" : data.azurerm_managed_api.kv.name,

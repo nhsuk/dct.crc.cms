@@ -39,7 +39,7 @@ resource "azapi_resource" "publisher_la" {
             "inputs" : {
               "host" : {
                 "connection" : {
-                  "name" : "{@parameters('$connections')['keyvault']['connectionId']}"
+                  "name" : "{@parameters('$connections')['${azapi_resource.keyvault_con.name}']['connectionId']}"
                 }
               },
               "method" : "get",
@@ -58,7 +58,7 @@ resource "azapi_resource" "publisher_la" {
                 "Authorization" : "Bearer @{body('Get_publishing_token')?['value']}"
               },
               "method" : "GET",
-              "uri" : "${var.publishing_endpoint}"
+              "uri" : var.publishing_endpoint
             }
           }
         },
@@ -67,15 +67,15 @@ resource "azapi_resource" "publisher_la" {
       "parameters" : {
         "$connections" : {
           "value" : {
-            "keyvault" : {
-              "connectionId" : "${azapi_resource.keyvault_con.id}",
-              "connectionName" : "${azapi_resource.keyvault_con.name}",
+            azapi_resource.keyvault_con.name : {
+              "connectionId" : azapi_resource.keyvault_con.id,
+              "connectionName" : azapi_resource.keyvault_con.name,
               "connectionProperties" : {
                 "authentication" : {
                   "type" : "ManagedServiceIdentity"
                 }
               },
-              "id" : "${data.azurerm_managed_api.kv.id}"
+              "id" : data.azurerm_managed_api.kv.id
             }
           }
         }
