@@ -71,8 +71,8 @@ resource "azapi_resource" "publisher_la" {
           "$connections" : {
             "value" : {
               "keyvault" : {
-                "connectionId" : "${azapi_resource.kv_connection.id}",
-                "connectionName" : "${azapi_resource.kv_connection.name}",
+                "connectionId" : "${azapi_resource.keyvault_con.id}",
+                "connectionName" : "${azapi_resource.keyvault_con.name}",
                 "connectionProperties" : {
                   "authentication" : {
                     "type" : "ManagedServiceIdentity"

@@ -6,7 +6,7 @@ resource "azurerm_logic_app_workflow" "publish_scheduled_pages_workflow" {
     "$connections": {
       "value": {
         "keyvault": {
-          "connectionId": azapi_resource.kv_connection.id,
+          "connectionId": azapi_resource.keyvault_con.id,
           "connectionName": "keyvault",
           "connectionProperties": {
             "authentication": {
