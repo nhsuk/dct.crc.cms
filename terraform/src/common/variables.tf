@@ -5,7 +5,7 @@ variable "resource_group" {
   description = "dct-crccms resource group"
 }
 
-variable "environment_long_name" {
+variable "environment" {
   description = "Full environment name for tagging purpose."
 }
 
@@ -21,9 +21,8 @@ variable "key_vault_name" {
   description = "Key vault name"
 }
 
-variable "publish_endpoint" {
+variable "publishing_endpoint" {
   description = "Endpoint for requesting publishing of scheduled pages"
-  default = "https://crc-v3-review-schedule.nhswebsite-dev.nhs.uk/crc-admin/pub"
 }
 
 # variable "campaigns_monitoring_webhook" {

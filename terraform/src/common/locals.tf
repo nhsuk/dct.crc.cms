@@ -3,7 +3,7 @@ locals {
     "cost code"       = "P0406/02"
     "created by"      = "Azure Pipeline"
     "created date"    = "07/03/2024"
-    "environment"     = var.environment_long_name
+    "environment"     = var.environment
     "product owner"   = "Jeni Riordan"
     "requested by"    = "Evan Harris"
     "service-product" = "Campaigns CRC CMS"

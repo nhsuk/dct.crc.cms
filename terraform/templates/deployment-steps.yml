@@ -6,7 +6,7 @@ parameters:
   tfStorageAccount:       '' # name of the storage account which stores the TF state
   keyVaultResourceGroup:  '' # name of the resource group which contains the key vault
   keyVaultName:           '' # name of the key vault containing the pubToken secret
-  publishEndpoint:        '' # url of the endpoint for publishing scheduled pages
+  publishingEndpoint:        '' # url of the endpoint for publishing scheduled pages
   alertingWebhook:        '' # webhook url for campaigns monitoring slack channel
   apply:                  '' # if 'true' applies the TF plan
 
@@ -46,7 +46,7 @@ steps:
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
         -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
         -var key_vault_name=${{ parameters.keyVaultName }}
-        -var publish_endpoint=${{ parameters.publishEndpoint }}
+        -var publishing_endpoint=${{ parameters.publishingEndpoint }}
       #  -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}'
 
   - ${{ if eq(parameters.apply, 'true') }}:
@@ -62,5 +62,5 @@ steps:
             -var tfstate_account_name=${{ parameters.tfStorageAccount }}
             -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
             -var key_vault_name=${{ parameters.keyVaultName }}
-            -var publish_endpoint=${{ parameters.publishEndpoint }}
+            -var publishing_endpoint=${{ parameters.publishingEndpoint }}
           #  -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}'
