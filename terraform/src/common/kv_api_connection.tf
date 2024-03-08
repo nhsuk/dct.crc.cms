@@ -1,8 +1,8 @@
 resource "azapi_resource" "kv_connection" {
   type      = "Microsoft.Web/connections@2016-06-01"
-  name      = "key-vault-connection"
-  location  = local.location_long
-  parent_id = var.resource_group
+  name      = replace(data.azurerm_resource_group.rg.name, "-rg-", "-keyvault-con-")
+  location  = data.azurerm_resource_group.rg.location
+  parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
   body = jsonencode({
     "properties" : {
