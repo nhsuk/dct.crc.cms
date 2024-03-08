@@ -4,10 +4,10 @@ resource "azapi_resource" "publisher_la" {
   location  = data.azurerm_resource_group.rg.location
   parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
+  identity {
+    type = "SystemAssigned"
+  }
   body = jsonencode({
-    "identity" : {
-      "type" : "SystemAssigned"
-    }
     "properties" : {
       "state" : "${var.environment == "development" ? "Disabled" : "Enabled"}",
       "definition" : {
