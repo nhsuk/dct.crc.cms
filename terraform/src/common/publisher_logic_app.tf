@@ -7,8 +7,6 @@ resource "azapi_resource" "publisher_la" {
   body = jsonencode({
     "type" : "Microsoft.Logic/workflows",
     "apiVersion" : "2017-07-01",
-    "name" : "${replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")}",
-    "location" : "${data.azurerm_resource_group.rg.location}",
     "identity" : {
       "type" : "SystemAssigned"
     },
