@@ -7,7 +7,9 @@ trigger:
     - 'review/*'
     - 'refs/tags/*'
     - 'main'
-  path: ""
+  path:
+    include:
+    - 'terraform'
 
 variables: 
   - name: ARTIFACT_NAME
