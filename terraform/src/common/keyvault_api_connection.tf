@@ -13,8 +13,6 @@ resource "azapi_resource" "keyvault_con" {
         }
       ],
       "customParameterValues" : {},
-      "createdTime" : "2023-02-27T18:21:05.3652827Z",
-      "changedTime" : "2023-02-27T18:21:05.3652827Z",
       "api" : {
         "name" : data.azurerm_managed_api.kv.name,
         "displayName" : "Azure Key Vault",

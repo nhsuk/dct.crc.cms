@@ -4,14 +4,12 @@ resource "azapi_resource" "publisher_la" {
   location  = data.azurerm_resource_group.rg.location
   parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
+  identity {
+    type = "SystemAssigned"
+  }
   body = jsonencode({
-    "type" : "Microsoft.Logic/workflows",
-    "apiVersion" : "2016-06-01",
-    "identity" : {
-      "type" : "SystemAssigned"
-    },
     "properties" : {
-      "state" : "Disabled",
+      "state" : "${var.environment == "development" ? "Disabled" : "Enabled"}",
       "definition" : {
         "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "contentVersion" : "1.0.0.0",
