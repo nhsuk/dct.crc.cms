@@ -63,8 +63,8 @@ stages:
       - name: PUBLISHING_ENDPOINT
         value: 'https://crc-v3-review-cv-1206-terraform-scheduling.nhswebsite-dev.nhs.uk/crc-admin/pub'
     jobs:
-      - deployment: 'planTerraformDev'
-        displayName: 'Plan Terraform in Review'
+      - deployment: 'terraformDev'
+        displayName: 'Terraform Review'
         condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/')
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
@@ -82,27 +82,6 @@ stages:
                   keyVaultName: ${{ variables.KEY_VAULT_NAME}}
                   publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
                   #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-      - deployment: 'applyTerraformDev'
-        displayName: 'Apply Terraform in Review'
-        dependsOn: planTerraformDev
-        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'))
-        environment: ${{ variables.ENVIRONMENT }}
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - template: ./templates/deployment-steps.yml
-                parameters:
-                  artifactPath: ${{ variables.ARTIFACT_PATH }}
-                  environment: ${{ variables.ENVIRONMENT }}
-                  azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
-                  tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-                  keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-                  publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-                  #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-                  apply: true
 
   # - stage: terraformIntegration
   #   displayName: 'Terraform Integration Env'
@@ -126,8 +105,8 @@ stages:
   #     - name: PUBLISHING_ENDPOINT
   #       value: 'https://crc-v3.nhswebsite-dev.nhs.uk/crc-admin/pub'
   #   jobs:
-  #     - deployment: 'planTerraformInt'
-  #       displayName: 'Plan Terraform in Integration'
+  #     - deployment: 'terraformInt'
+  #       displayName: 'Terraform Integration'
   #       condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   #       environment: ${{ variables.ENVIRONMENT }}
   #       strategy:
@@ -145,27 +124,6 @@ stages:
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
   #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #     - deployment: 'applyTerraformInt'
-  #       displayName: 'Apply Terraform in Integration'
-  #       dependsOn: planTerraformInt
-  #       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - template: ./templates/deployment-steps.yml
-  #               parameters:
-  #                 artifactPath: ${{ variables.ARTIFACT_PATH }}
-  #                 environment: ${{ variables.ENVIRONMENT }}
-  #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-  #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
-  #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #                 apply: true
 
   # - stage: terraformStaging
   #   displayName: 'Terraform Staging Env'
@@ -189,8 +147,8 @@ stages:
   #     - name: PUBLISHING_ENDPOINT
   #       value: 'https://staging.campaignresources.dhsc.gov.uk/crc-admin/pub'
   #   jobs:
-  #     - deployment: 'planTerraformStag'
-  #       displayName: 'Plan Terraform in Staging'
+  #     - deployment: 'terraformStag'
+  #       displayName: 'Terraform Staging'
   #       condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
   #       environment: ${{ variables.ENVIRONMENT }}
   #       strategy:
@@ -208,27 +166,6 @@ stages:
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
   #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #     - deployment: 'applyTerraformStag'
-  #       displayName: 'Apply Terraform in Staging'
-  #       dependsOn: planTerraformStag
-  #       condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - template: ./templates/deployment-steps.yml
-  #               parameters:
-  #                 artifactPath: ${{ variables.ARTIFACT_PATH }}
-  #                 environment: ${{ variables.ENVIRONMENT }}
-  #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-  #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
-  #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #                 apply: true
   
   # - stage: terraformProduction
   #   displayName: 'Terraform Production Env'
@@ -254,8 +191,8 @@ stages:
   #   jobs:
   #     - deployment: approval
   #       environment: ${{ variables.ENVIRONMENT }}
-  #     - deployment: 'planTerraformProd'
-  #       displayName: 'Plan Terraform in Production'
+  #     - deployment: 'terraformProd'
+  #       displayName: 'Terraform Production'
   #       condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
   #       environment: ${{ variables.ENVIRONMENT }}
   #       strategy:
@@ -273,27 +210,6 @@ stages:
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
   #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #     - deployment: 'applyTerraformProd'
-  #       displayName: 'Apply Terraform in Production'
-  #       dependsOn: planTerraformProd
-  #       condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - template: ./templates/deployment-steps.yml
-  #               parameters:
-  #                 artifactPath: ${{ variables.ARTIFACT_PATH }}
-  #                 environment: ${{ variables.ENVIRONMENT }}
-  #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-  #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
-  #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #                 apply: true
 
   # - stage: terraformDR
   #   displayName: 'Terraform DR Env'
@@ -319,8 +235,8 @@ stages:
   #   jobs:
   #     - deployment: approval
   #       environment: ${{ variables.ENVIRONMENT }}
-  #     - deployment: 'planTerraformDr'
-  #       displayName: 'Plan Terraform in DR'
+  #     - deployment: 'terraformDr'
+  #       displayName: 'Terraform DR'
   #       condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
   #       environment: ${{ variables.ENVIRONMENT }}
   #       strategy:
@@ -338,24 +254,3 @@ stages:
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
   #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #     - deployment: 'applyTerraformDr'
-  #       displayName: 'Apply Terraform in DR'
-  #       dependsOn: planTerraformDr
-  #       condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - template: ./templates/deployment-steps.yml
-  #               parameters:
-  #                 artifactPath: ${{ variables.ARTIFACT_PATH }}
-  #                 environment: ${{ variables.ENVIRONMENT }}
-  #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-  #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
-  #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
-  #                 apply: true
