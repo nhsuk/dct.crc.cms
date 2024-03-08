@@ -13,7 +13,7 @@ resource "azapi_resource" "keyvault_con" {
         }
       ],
       "customParameterValues" : {},
-      "parameterValueSet" : {
+      "parameterValues" : {
         "name" : "oauthMI",
         "values" : {
           "vaultName" : {
