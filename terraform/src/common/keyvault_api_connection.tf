@@ -13,6 +13,14 @@ resource "azapi_resource" "keyvault_con" {
         }
       ],
       "customParameterValues" : {},
+      "parameterValueSet" : {
+        "name" : "oauthMI",
+        "values" : {
+          "vaultName" : {
+            "value" : "${data.azurerm_managed_api.kv.name}"
+          }
+        }
+      },
       "api" : {
         "name" : data.azurerm_managed_api.kv.name,
         "displayName" : "Azure Key Vault",
