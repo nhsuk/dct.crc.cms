@@ -1,5 +1,5 @@
 resource "azapi_resource" "publisher_la" {
-  type      = "Microsoft.Logic/workflows@2016-06-01"
+  type      = "Microsoft.Logic/workflows@2019-05-01"
   name      = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   location  = data.azurerm_resource_group.rg.location
   parent_id = data.azurerm_resource_group.rg.id
