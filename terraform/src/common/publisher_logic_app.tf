@@ -5,8 +5,6 @@ resource "azapi_resource" "publisher_la" {
   parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
   body = jsonencode({
-    "type" : "Microsoft.Logic/workflows",
-    "apiVersion" : "2017-07-01",
     "identity" : {
       "type" : "SystemAssigned"
     },
