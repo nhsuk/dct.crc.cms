@@ -105,21 +105,8 @@ def search_users(request):
         form = SearchForm(placeholder=_("Email, first name & last name"))
 
     users_per_page = int(request.GET.get("limit", 20))
-    page_num = 1
-
-    if request.GET.get("p"):
-        page_num = int(request.GET.get("p", 1))
-
-    # Fetch current number of users from cache
-    # num_users = 0;
-
-    # if not is_searching:
-
-    #     paragon_cache_values = ParagonCacheValues.load()
-    #     num_users = paragon_cache_values.num_users
-
-    # num_pages = ceil(num_users / users_per_page)
-    offset = page_num * users_per_page
+    page_num = int(request.GET.get("p", 1))
+    offset = users_per_page - (page_num * users_per_page)
 
     try:
         response = paragon_client.search_users(
