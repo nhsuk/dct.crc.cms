@@ -4,8 +4,8 @@ resource "azurerm_logic_app_action_http" "publish_scheduled_pages_request" {
   method       = "GET"
   uri          = var.publishing_endpoint
   headers      = { Authorization = data.azurerm_key_vault_secret.pubToken.value }
-  run_after {
-    action_name   = azurerm_logic_app_action_custom.publish_scheduled_pages_get_secret.name
-    action_result = "Succeeded"
-  }
+  # run_after {
+  #   action_name   = azurerm_logic_app_action_custom.publish_scheduled_pages_get_secret.name
+  #   action_result = "Succeeded"
+  # }
 }
