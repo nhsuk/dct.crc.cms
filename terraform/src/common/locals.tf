@@ -10,6 +10,7 @@ locals {
     "team"            = "Digital Campaigns"
   }
 
+  scheduler_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   # location_long = split("-", var.resource_group)[4] == "uks" ? "uksouth" : "ukwest"
   # subscription_id = split("/", var.resource_group)[2]
   # api_connection_id = "/subscriptions/${local.subscription_id}/providers/Microsoft.Web/locations/${local.location_long}/managedApis/keyvault"

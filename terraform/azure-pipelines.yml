@@ -18,7 +18,7 @@ variables:
     value: nhsuk-dct-vault-rg
   - name: KEY_VAULT_NAME_PREFIX
     value: dct-crc-v3-vlt
-#  - group: Common
+  - group: Monitoring
 
 stages:
   - stage: Build
@@ -81,7 +81,7 @@ stages:
                   keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
                   keyVaultName: ${{ variables.KEY_VAULT_NAME}}
                   publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-                  #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
+                  alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
 
   # - stage: terraformIntegration
   #   displayName: 'Terraform Integration Env'
@@ -123,7 +123,7 @@ stages:
   #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
+  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
 
   # - stage: terraformStaging
   #   displayName: 'Terraform Staging Env'
@@ -165,7 +165,7 @@ stages:
   #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
+  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
   
   # - stage: terraformProduction
   #   displayName: 'Terraform Production Env'
@@ -209,7 +209,7 @@ stages:
   #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
+  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
 
   # - stage: terraformDR
   #   displayName: 'Terraform DR Env'
@@ -253,4 +253,4 @@ stages:
   #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
   #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
   #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhoook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
+  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}

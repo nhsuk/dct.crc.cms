@@ -25,7 +25,7 @@ variable "publishing_endpoint" {
   description = "Endpoint for requesting publishing of scheduled pages"
 }
 
-# variable "campaigns_monitoring_webhook" {
-#   description = "webhook url for campaigns monitoring slack channel"
-# }
+variable "campaigns_monitoring_webhook" {
+  description = "webhook url for campaigns monitoring slack channel"
+}
 
