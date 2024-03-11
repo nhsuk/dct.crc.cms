@@ -1,4 +1,4 @@
-resource "azapi_resource" "publisher_la" {
+resource "azapi_resource" "scheduler_la" {
   type      = "Microsoft.Logic/workflows@2019-05-01"
   name      = local.scheduler_logic_app_name
   location  = data.azurerm_resource_group.rg.location
@@ -56,7 +56,7 @@ resource "azapi_resource" "publisher_la" {
               ]
             },
             "actions" : {
-              "Send_slack_alert" : {
+              "Send slack alert" : {
                 "inputs" : {
                   "body" : {
                     "blocks" : [
