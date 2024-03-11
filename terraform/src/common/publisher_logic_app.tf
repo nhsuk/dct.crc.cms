@@ -39,7 +39,7 @@ resource "azapi_resource" "publisher_la" {
             "inputs" : {
               "host" : {
                 "connection" : {
-                  "name" : "{@parameters('$connections')['${azapi_resource.keyvault_con.name}']['connectionId']}"
+                  "name" : "{@parameters('$connections')['keyvault']['connectionId']}"
                 }
               },
               "method" : "get",
@@ -67,7 +67,7 @@ resource "azapi_resource" "publisher_la" {
       "parameters" : {
         "$connections" : {
           "value" : {
-            "${azapi_resource.keyvault_con.name}" : {
+            "keyvault" : {
               "connectionId" : azapi_resource.keyvault_con.id,
               "connectionName" : azapi_resource.keyvault_con.name,
               "connectionProperties" : {

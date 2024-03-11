@@ -5,6 +5,7 @@ resource "azapi_resource" "keyvault_con" {
   parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
   body = jsonencode({
+    "kind" : "V1"
     "properties" : {
       "displayName" : var.key_vault_name,
       "statuses" : [
@@ -13,10 +14,6 @@ resource "azapi_resource" "keyvault_con" {
         }
       ],
       "customParameterValues" : {},
-      "parameterValueType" : "Alternative",
-      "alternativeParameterValues" : {
-        "vaultName" : data.azurerm_managed_api.kv.name
-      },
       "api" : {
         "name" : data.azurerm_managed_api.kv.name,
         "displayName" : "Azure Key Vault",
@@ -25,6 +22,15 @@ resource "azapi_resource" "keyvault_con" {
         "brandColor" : "#0079d6",
         "id" : data.azurerm_managed_api.kv.id,
         "type" : "Microsoft.Web/locations/managedApis"
+        "alternativeParameterValues":{},
+        "authenticatedUser": {},
+        "connectionState": "Enabled",
+        "customParameterValues": {},
+        "parameterValueSet":{
+            "name": "managedIdentityAuth",
+            "values": {}
+        },
+        "parameterValueType": "Alternative"
       },
       "testLinks" : [],
     }
