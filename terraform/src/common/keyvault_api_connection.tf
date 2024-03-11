@@ -21,7 +21,7 @@ resource "azapi_resource" "keyvault_con" {
         "id" : data.azurerm_managed_api.kv.id,
       },
       "parameterValues" : {
-        "managedIdentityAuth" : {}
+        "managedIdentityAuth" : ""
       },
       "testLinks" : [],
     }
