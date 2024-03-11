@@ -19,10 +19,7 @@ resource "azapi_resource" "keyvault_con" {
         "iconUri" : "https://connectoricons-prod.azureedge.net/releases/v1.0.1680/1.0.1680.3652/keyvault/icon.png",
         "brandColor" : "#0079d6",
         "id" : data.azurerm_managed_api.kv.id,
-      },
-      "parameterValues" : {
-        "managedIdentityAuth" : ""
-      },
+      }
       "testLinks" : [],
     }
   })
