@@ -7,13 +7,13 @@ resource "azapi_resource" "keyvault_con" {
   body = jsonencode({
     "kind" : "V1"
     "properties" : {
+      "type" : "Microsoft.Web/locations/managedApis"
       "displayName" : var.key_vault_name,
       "statuses" : [
         {
           "status" : "Ready"
         }
       ],
-      "customParameterValues" : {},
       "api" : {
         "name" : data.azurerm_managed_api.kv.name,
         "displayName" : "Azure Key Vault",
@@ -21,17 +21,13 @@ resource "azapi_resource" "keyvault_con" {
         "iconUri" : "https://connectoricons-prod.azureedge.net/releases/v1.0.1680/1.0.1680.3652/keyvault/icon.png",
         "brandColor" : "#0079d6",
         "id" : data.azurerm_managed_api.kv.id,
-        "type" : "Microsoft.Web/locations/managedApis"
-        "alternativeParameterValues":{},
-        "authenticatedUser": {},
-        "connectionState": "Enabled",
-        "customParameterValues": {},
-        "parameterValueSet":{
-            "name": "managedIdentityAuth",
-            "values": {}
-        },
-        "parameterValueType": "Alternative"
       },
+      "parameterValueType" : "Alternative"
+      "connectionState" : "Enabled",
+      "alternativeParameterValues" : {},
+      "authenticatedUser" : {},
+      "customParameterValues" : {},
+      "parameterValueSet" : {},
       "testLinks" : [],
     }
   })
