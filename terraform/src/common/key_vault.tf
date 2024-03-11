@@ -18,5 +18,5 @@ resource "azurerm_key_vault_access_policy" "terraform_sp_access" {
 data "azurerm_key_vault_secret" "pubToken" {
   name         = "pubToken"
   key_vault_id = data.azurerm_key_vault.kv.id
-  depends_on   = []
+  depends_on   = [azurerm_key_vault_access_policy.terraform_sp_access]
 }
