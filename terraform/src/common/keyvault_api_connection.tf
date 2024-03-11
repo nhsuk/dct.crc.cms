@@ -5,7 +5,6 @@ resource "azapi_resource" "keyvault_con" {
   parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
   body = jsonencode({
-    "kind" : "V1"
     "properties" : {
       "type" : "Microsoft.Web/locations/managedApis"
       "displayName" : var.key_vault_name,
@@ -22,12 +21,11 @@ resource "azapi_resource" "keyvault_con" {
         "brandColor" : "#0079d6",
         "id" : data.azurerm_managed_api.kv.id,
       },
-      "parameterValueType" : "Alternative"
       "connectionState" : "Enabled",
-      "alternativeParameterValues" : {},
-      "authenticatedUser" : {},
-      "customParameterValues" : {},
-      "parameterValueSet" : {},
+      "parameterValues" : {
+        "name" : "managedIdentityAuth",
+        "values" : {}
+      },
       "testLinks" : [],
     }
   })
