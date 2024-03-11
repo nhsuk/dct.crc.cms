@@ -69,7 +69,7 @@ resource "azapi_resource" "scheduler_la" {
                       },
                       {
                         "text" : {
-                          "text" : "See error detail: @body('Publish scheduled pages request')",
+                          "text" : "Request failed with status code @{outputs('Publish scheduled pages request')['statusCode']}",
                           "type" : "mrkdwn"
                         },
                         "type" : "section"
