@@ -18,6 +18,7 @@ resource "azurerm_key_vault_access_policy" "terraform_sp_access" {
   secret_permissions = [
     "Get"
   ]
+  depends_on = [azurerm_role_assignment.kv_reader]
 }
 
 data "azurerm_key_vault_secret" "pubToken" {
