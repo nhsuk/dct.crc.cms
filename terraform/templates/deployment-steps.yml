@@ -46,7 +46,7 @@ steps:
         -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
         -var key_vault_name=${{ parameters.keyVaultName }}
         -var publishing_endpoint=${{ parameters.publishingEndpoint }}
-        -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}'
+        -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform apply'
@@ -61,4 +61,4 @@ steps:
         -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
         -var key_vault_name=${{ parameters.keyVaultName }}
         -var publishing_endpoint=${{ parameters.publishingEndpoint }}
-        -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}'
+        -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}
