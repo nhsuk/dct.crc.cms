@@ -14,7 +14,12 @@ resource "azapi_resource" "scheduler_la" {
       "definition" : {
         "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "contentVersion" : "1.0.0.0",
-        "parameters" : {},
+        "parameters" : {
+          "$connections" : {
+            "defaultValue" : {},
+            "type" : "Object"
+          }
+        },
         "triggers" : {
           "Publish scheduled pages trigger" : {
             "evaluatedRecurrence" : {
