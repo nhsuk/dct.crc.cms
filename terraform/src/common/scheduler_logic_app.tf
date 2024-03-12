@@ -33,37 +33,41 @@ resource "azapi_resource" "scheduler_la" {
             "type" : "Recurrence"
           }
         },
-        "actions" : {
-          "Get publishing secret" : {
-            "inputs" : {
-              "host" : {
-                "connection" : {
-                  "name" : "@parameters('$connections')['keyvault']['connectionId']"
-                }
+        "Publish" : {
+          "actions" : {
+            "Get publishing secret" : {
+              "inputs" : {
+                "host" : {
+                  "connection" : {
+                    "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                  }
+                },
+                "method" : "get",
+                "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
               },
-              "method" : "get",
-              "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
+              "runAfter" : {},
+              "type" : "ApiConnection"
+            },
+            "Publish scheduled pages request" : {
+              "inputs" : {
+                "headers" : {
+                  "Authorization" : "Bearer @{body('Get publishing secret')?['value']}"
+                },
+                "method" : "GET",
+                "queries" : {},
+                "uri" : var.publishing_endpoint
+              },
+              "runAfter" : {
+                "Get publishing secret" : [
+                  "Succeeded"
+                ]
+              },
+              "type" : "Http"
             },
             "runAfter" : {},
-            "type" : "ApiConnection"
-          },
-          "Publish scheduled pages request" : {
-            "inputs" : {
-              "headers" : {
-                "Authorization" : "Bearer ${data.azurerm_key_vault_secret.pubToken.value}"
-              },
-              "method" : "GET",
-              "queries" : {},
-              "uri" : var.publishing_endpoint
-            },
-            "runAfter" : {
-              "Get publishing secret" : [
-                "Succeeded"
-              ]
-            },
-            "type" : "Http"
-          },
-          "Condition" : {
+            "type" : "Scope"
+          }
+          "Check" : {
             "type" : "If",
             "expression" : {
               "and" : [
@@ -147,7 +151,7 @@ resource "azapi_resource" "scheduler_la" {
               }
             },
             "runAfter" : {
-              "Publish scheduled pages request" : [
+              "Publish" : [
                 "Failed",
                 "Skipped",
                 "TimedOut",
@@ -163,7 +167,12 @@ resource "azapi_resource" "scheduler_la" {
             "keyvault" : {
               "connectionId" : azapi_resource.keyvault_con.id,
               "connectionName" : azapi_resource.keyvault_con.name,
-              "id" : data.azurerm_managed_api.kv.id
+              "id" : data.azurerm_managed_api.kv.id,
+              "connectionProperties" : {
+                "authentication" : {
+                  "type" : "ManagedServiceIdentity"
+                }
+              }
             }
           }
         }
