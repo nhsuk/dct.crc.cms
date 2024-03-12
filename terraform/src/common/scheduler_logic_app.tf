@@ -163,11 +163,6 @@ resource "azapi_resource" "scheduler_la" {
             "keyvault" : {
               "connectionId" : azapi_resource.keyvault_con.id,
               "connectionName" : azapi_resource.keyvault_con.name,
-              "connectionProperties" : {
-                "authentication" : {
-                  "type" : "ManagedServiceIdentity"
-                }
-              },
               "id" : data.azurerm_managed_api.kv.id
             }
           }
