@@ -4,10 +4,6 @@ parameters:
   azureSubscription:      '' # the service connection in the pipeline
   resourceGroup:          '' # name of the resource group which contains the TF resources
   tfStorageAccount:       '' # name of the storage account which stores the TF state
-  keyVaultResourceGroup:  '' # name of the resource group which contains the key vault
-  keyVaultName:           '' # name of the key vault containing the pubToken secret
-  publishingEndpoint:     '' # url of the endpoint for publishing scheduled pages
-  alertingWebhook:        '' # webhook url for campaigns monitoring slack channel
 
 steps:
 
@@ -43,10 +39,6 @@ steps:
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
-        -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
-        -var key_vault_name=${{ parameters.keyVaultName }}
-        -var publishing_endpoint=${{ parameters.publishingEndpoint }}
-        -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform apply'
@@ -58,7 +50,3 @@ steps:
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
-        -var key_vault_rg=${{ parameters.keyVaultResourceGroup }}
-        -var key_vault_name=${{ parameters.keyVaultName }}
-        -var publishing_endpoint=${{ parameters.publishingEndpoint }}
-        -var campaigns_monitoring_webhook=${{ parameters.alertingWebhook }}

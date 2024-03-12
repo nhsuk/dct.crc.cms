@@ -12,8 +12,15 @@ resource "azapi_resource" "keyvault_con" {
   tags                      = local.common_tags
   body = jsonencode({
     properties = {
-      displayName        = var.key_vault_name
-      parameterValueType = "Alternative",
+      displayName = azurerm_key_vault.kv.name
+      parameterValueSet = {
+        name = "oauthMI"
+        values = {
+          vaultName = {
+            "value" = azurerm_key_vault.kv.name
+          }
+        }
+      }
       api = {
         name        = data.azurerm_managed_api.kv.name
         displayName = "Azure Key Vault"

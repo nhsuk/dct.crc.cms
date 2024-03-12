@@ -36,7 +36,7 @@ resource "azapi_resource" "scheduler_la" {
         "actions" : {
           "Publish" : {
             "actions" : {
-              "Get publishing secret" : {
+              "Get publishing token" : {
                 "inputs" : {
                   "host" : {
                     "connection" : {
@@ -49,17 +49,33 @@ resource "azapi_resource" "scheduler_la" {
                 "runAfter" : {},
                 "type" : "ApiConnection"
               },
+              "Get publishing endpoint" : {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('pubEndpoint')}/value"
+                },
+                "runAfter" : {},
+                "type" : "ApiConnection"
+              },
               "Publish scheduled pages request" : {
                 "inputs" : {
                   "headers" : {
-                    "Authorization" : "Bearer @{body('Get publishing secret')?['value']}"
+                    "Authorization" : "Bearer @{body('Get publishing token')?['value']}"
                   },
                   "method" : "GET",
                   "queries" : {},
-                  "uri" : var.publishing_endpoint
+                  "uri" : "@{body('Get publishing endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get publishing secret" : [
+                  "Get publishing token" : [
+                    "Succeeded"
+                  ],
+                  "Get publishing endpoint" : [
                     "Succeeded"
                   ]
                 },
@@ -84,6 +100,19 @@ resource "azapi_resource" "scheduler_la" {
               ]
             },
             "actions" : {
+              "Get alerting webhook" : {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+                },
+                "runAfter" : {},
+                "type" : "ApiConnection"
+              },
               "Send slack alert" : {
                 "inputs" : {
                   "body" : {
@@ -118,7 +147,7 @@ resource "azapi_resource" "scheduler_la" {
                       },
                       {
                         "text" : {
-                          "text" : "*Publishing Endpoint*\n ${var.publishing_endpoint}",
+                          "text" : "*Publishing Endpoint*\n @{body('Get publishing endpoint')?['value']}",
                           "type" : "mrkdwn"
                         },
                         "type" : "section"
@@ -129,15 +158,19 @@ resource "azapi_resource" "scheduler_la" {
                     "Content-Type" : "application/json"
                   },
                   "method" : "POST",
-                  "uri" : var.campaigns_monitoring_webhook
+                  "uri" : "@{body('Get alerting webhook')?['value']}"
                 },
-                "runAfter" : {},
+                "runAfter" : {
+                  "Get alerting webhook" : [
+                    "Succeeded"
+                  ]
+                },
                 "type" : "Http"
               },
               "Terminate" : {
                 "inputs" : {
                   "runError" : {
-                    "message" : "Publishing request was not accepted"
+                    "message" : "Publishing scheduled pages failed"
                   },
                   "runStatus" : "Failed"
                 },

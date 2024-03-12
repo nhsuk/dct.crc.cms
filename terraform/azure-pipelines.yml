@@ -14,11 +14,6 @@ trigger:
 variables: 
   - name: ARTIFACT_NAME
     value: drop
-  - name: KEY_VAULT_RESOURCE_GROUP_PREFIX
-    value: nhsuk-dct-vault-rg
-  - name: KEY_VAULT_NAME_PREFIX
-    value: dct-crc-v3-vlt
-  - group: Monitoring
 
 stages:
   - stage: Build
@@ -56,12 +51,7 @@ stages:
           location: 'uks'
       - name: ENVIRONMENT
         value: 'development'
-      - name: KEY_VAULT_RESOURCE_GROUP
-        value: $(KEY_VAULT_RESOURCE_GROUP_PREFIX)-dev-uks
-      - name: KEY_VAULT_NAME
-        value: $(KEY_VAULT_NAME_PREFIX)-rev-uks
-      - name: PUBLISHING_ENDPOINT
-        value: 'https://crc-v3-review-cv-1206-terraform-scheduling.nhswebsite-dev.nhs.uk/crc-admin/pub'
+        #value: 'https://crc-v3-review-cv-1206-terraform-scheduling.nhswebsite-dev.nhs.uk/crc-admin/pub'
     jobs:
       - deployment: 'terraformDev'
         displayName: 'Terraform Review'
@@ -78,10 +68,6 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-                  keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-                  publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-                  alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
 
   # - stage: terraformIntegration
   #   displayName: 'Terraform Integration Env'
@@ -98,10 +84,6 @@ stages:
   #         location: 'uks'
   #     - name: ENVIRONMENT
   #       value: 'integration'
-  #     - name: KEY_VAULT_RESOURCE_GROUP
-  #       value: $(KEY_VAULT_RESOURCE_GROUP_PREFIX)-dev-uks
-  #     - name: KEY_VAULT_NAME
-  #       value: $(KEY_VAULT_NAME_PREFIX)-int-uks
   #     - name: PUBLISHING_ENDPOINT
   #       value: 'https://crc-v3.nhswebsite-dev.nhs.uk/crc-admin/pub'
   #   jobs:
@@ -120,10 +102,6 @@ stages:
   #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
   #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
   #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
 
   # - stage: terraformStaging
   #   displayName: 'Terraform Staging Env'
@@ -140,10 +118,6 @@ stages:
   #         location: 'uks'
   #     - name: ENVIRONMENT
   #       value: 'staging'
-  #     - name: KEY_VAULT_RESOURCE_GROUP
-  #       value: $(KEY_VAULT_RESOURCE_GROUP_PREFIX)-stag-uks
-  #     - name: KEY_VAULT_NAME
-  #       value: $(KEY_VAULT_NAME_PREFIX)-stag-uks
   #     - name: PUBLISHING_ENDPOINT
   #       value: 'https://staging.campaignresources.dhsc.gov.uk/crc-admin/pub'
   #   jobs:
@@ -162,10 +136,6 @@ stages:
   #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
   #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
   #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
   
   # - stage: terraformProduction
   #   displayName: 'Terraform Production Env'
@@ -182,10 +152,6 @@ stages:
   #         location: 'uks'
   #     - name: ENVIRONMENT
   #       value: 'production'
-  #     - name: KEY_VAULT_RESOURCE_GROUP
-  #       value: $(KEY_VAULT_RESOURCE_GROUP_PREFIX)-prod-uks
-  #     - name: KEY_VAULT_NAME
-  #       value: $(KEY_VAULT_NAME_PREFIX)-prod-uks
   #     - name: PUBLISHING_ENDPOINT
   #       value: 'https://campaignresources.dhsc.gov.uk/crc-admin/pub'
   #   jobs:
@@ -206,10 +172,6 @@ stages:
   #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
   #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
   #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}
 
   # - stage: terraformDR
   #   displayName: 'Terraform DR Env'
@@ -226,10 +188,6 @@ stages:
   #         location: 'ukw'
   #     - name: ENVIRONMENT
   #       value: 'production'
-  #     - name: KEY_VAULT_RESOURCE_GROUP
-  #       value: $(KEY_VAULT_RESOURCE_GROUP_PREFIX)-dr-ukw
-  #     - name: KEY_VAULT_NAME
-  #       value: $(KEY_VAULT_NAME_PREFIX)-dr-ukw
   #     - name: PUBLISHING_ENDPOINT
   #       value: 'https://campaignresources.dhsc.gov.uk/crc-admin/pub'
   #   jobs:
@@ -250,7 +208,3 @@ stages:
   #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
   #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
   #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-  #                 keyVaultResourceGroup: ${{ variables.KEY_VAULT_RESOURCE_GROUP}}
-  #                 keyVaultName: ${{ variables.KEY_VAULT_NAME}}
-  #                 publishingEndpoint: ${{ variables.PUBLISHING_ENDPOINT}}
-  #                 #alertingWebhook: ${{ variables.CAMPAIGNS_MONITORING_WEBHOOK }}

@@ -1,11 +1,21 @@
 data "azurerm_client_config" "current" {}
 
-data "azurerm_key_vault" "kv" {
-  name                = var.key_vault_name
-  resource_group_name = var.key_vault_rg
-}
+resource "azurerm_key_vault" "kv" {
+  name                        = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
+  location                    = data.azurerm_resource_group.rg.location
+  resource_group_name         = data.azurerm_resource_group.rg.name
+  enabled_for_disk_encryption = true
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = false
 
-data "azurerm_key_vault_secret" "pubToken" {
-  name         = "pubToken"
-  key_vault_id = data.azurerm_key_vault.kv.id
+  sku_name = "standard"
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+    secret_permissions = [
+      "Get", "List"
+    ]
+  }
 }
