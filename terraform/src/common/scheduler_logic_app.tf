@@ -36,19 +36,6 @@ resource "azapi_resource" "scheduler_la" {
         "actions" : {
           "Publish" : {
             "actions" : {
-              "Get publishing token" : {
-                "inputs" : {
-                  "host" : {
-                    "connection" : {
-                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
-                    }
-                  },
-                  "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
-                },
-                "runAfter" : {},
-                "type" : "ApiConnection"
-              },
               "Get publishing endpoint" : {
                 "inputs" : {
                   "host" : {
@@ -62,6 +49,23 @@ resource "azapi_resource" "scheduler_la" {
                 "runAfter" : {},
                 "type" : "ApiConnection"
               },
+              "Get publishing token" : {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
+                },
+                "runAfter" : {
+                  "Get publishing endpoint" : [
+                    "Succeeded"
+                  ]
+                },
+                "type" : "ApiConnection"
+              },
               "Publish scheduled pages request" : {
                 "inputs" : {
                   "headers" : {
@@ -73,9 +77,6 @@ resource "azapi_resource" "scheduler_la" {
                 },
                 "runAfter" : {
                   "Get publishing token" : [
-                    "Succeeded"
-                  ],
-                  "Get publishing endpoint" : [
                     "Succeeded"
                   ]
                 },
