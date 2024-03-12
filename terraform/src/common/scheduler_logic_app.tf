@@ -29,6 +29,19 @@ resource "azapi_resource" "scheduler_la" {
           }
         },
         "actions" : {
+          "Get publishing secret" : {
+            "inputs" : {
+              "host" : {
+                "connection" : {
+                  "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                }
+              },
+              "method" : "get",
+              "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
+            },
+            "runAfter" : {},
+            "type" : "ApiConnection"
+          },
           "Publish scheduled pages request" : {
             "inputs" : {
               "headers" : {
@@ -38,7 +51,11 @@ resource "azapi_resource" "scheduler_la" {
               "queries" : {},
               "uri" : var.publishing_endpoint
             },
-            "runAfter" : {},
+            "runAfter" : {
+              "Get publishing secret" : [
+                "Succeeded"
+              ]
+            },
             "type" : "Http"
           },
           "Condition" : {
@@ -105,6 +122,23 @@ resource "azapi_resource" "scheduler_la" {
                 },
                 "runAfter" : {},
                 "type" : "Http"
+              },
+              "Terminate" : {
+                "inputs" : {
+                  "runError" : {
+                    "message" : "Publishing request was not accepted"
+                  },
+                  "runStatus" : "Failed"
+                },
+                "runAfter" : {
+                  "Send slack alert" : [
+                    "Failed",
+                    "Skipped",
+                    "TimedOut",
+                    "Succeeded"
+                  ]
+                },
+                "type" : "Terminate"
               }
             },
             "runAfter" : {
@@ -115,6 +149,22 @@ resource "azapi_resource" "scheduler_la" {
                 "Succeeded"
               ]
             },
+          }
+        }
+      },
+      "parameters" : {
+        "$connections" : {
+          "value" : {
+            "keyvault" : {
+              "connectionId" : azapi_resource.keyvault_con.id,
+              "connectionName" : azapi_resource.keyvault_con.name,
+              "connectionProperties" : {
+                "authentication" : {
+                  "type" : "ManagedServiceIdentity"
+                }
+              },
+              "id" : data.azurerm_managed_api.kv.id
+            }
           }
         }
       }
