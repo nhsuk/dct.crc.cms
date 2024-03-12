@@ -33,131 +33,133 @@ resource "azapi_resource" "scheduler_la" {
             "type" : "Recurrence"
           }
         },
-        "Publish" : {
-          "actions" : {
-            "Get publishing secret" : {
-              "inputs" : {
-                "host" : {
-                  "connection" : {
-                    "name" : "@parameters('$connections')['keyvault']['connectionId']"
-                  }
-                },
-                "method" : "get",
-                "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
-              },
-              "runAfter" : {},
-              "type" : "ApiConnection"
-            },
-            "Publish scheduled pages request" : {
-              "inputs" : {
-                "headers" : {
-                  "Authorization" : "Bearer @{body('Get publishing secret')?['value']}"
-                },
-                "method" : "GET",
-                "queries" : {},
-                "uri" : var.publishing_endpoint
-              },
-              "runAfter" : {
-                "Get publishing secret" : [
-                  "Succeeded"
-                ]
-              },
-              "type" : "Http"
-            },
-            "runAfter" : {},
-            "type" : "Scope"
-          }
-          "Check" : {
-            "type" : "If",
-            "expression" : {
-              "and" : [
-                {
-                  "not" : {
-                    "equals" : [
-                      "@outputs('Publish scheduled pages request')['statusCode']",
-                      202
-                    ]
-                  }
-                }
-              ]
-            },
+        "actions" : {
+          "Publish" : {
             "actions" : {
-              "Send slack alert" : {
+              "Get publishing secret" : {
                 "inputs" : {
-                  "body" : {
-                    "blocks" : [
-                      {
-                        "text" : {
-                          "text" : "CRCv3 Publishing Of Scheduled Pages Failure",
-                          "type" : "plain_text"
-                        },
-                        "type" : "header"
-                      },
-                      {
-                        "text" : {
-                          "text" : "Request failed with status code @{outputs('Publish scheduled pages request')['statusCode']}",
-                          "type" : "mrkdwn"
-                        },
-                        "type" : "section"
-                      },
-                      {
-                        "text" : {
-                          "text" : "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.scheduler_logic_app_name}/logicApp|${local.scheduler_logic_app_name}>",
-                          "type" : "mrkdwn"
-                        },
-                        "type" : "section"
-                      },
-                      {
-                        "text" : {
-                          "text" : "*Resource Group*\n <https://portal.azure.com/#@nhschoices.net/resource${data.azurerm_resource_group.rg.id}|${data.azurerm_resource_group.rg.name}>",
-                          "type" : "mrkdwn"
-                        },
-                        "type" : "section"
-                      },
-                      {
-                        "text" : {
-                          "text" : "*Publishing Endpoint*\n ${var.publishing_endpoint}",
-                          "type" : "mrkdwn"
-                        },
-                        "type" : "section"
-                      }
-                    ]
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
                   },
-                  "headers" : {
-                    "Content-Type" : "application/json"
-                  },
-                  "method" : "POST",
-                  "uri" : var.campaigns_monitoring_webhook
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
                 },
                 "runAfter" : {},
-                "type" : "Http"
+                "type" : "ApiConnection"
               },
-              "Terminate" : {
+              "Publish scheduled pages request" : {
                 "inputs" : {
-                  "runError" : {
-                    "message" : "Publishing request was not accepted"
+                  "headers" : {
+                    "Authorization" : "Bearer @{body('Get publishing secret')?['value']}"
                   },
-                  "runStatus" : "Failed"
+                  "method" : "GET",
+                  "queries" : {},
+                  "uri" : var.publishing_endpoint
                 },
                 "runAfter" : {
-                  "Send slack alert" : [
-                    "Failed",
-                    "Skipped",
-                    "TimedOut",
+                  "Get publishing secret" : [
                     "Succeeded"
                   ]
                 },
-                "type" : "Terminate"
-              }
-            },
-            "runAfter" : {
-              "Publish" : [
-                "Failed",
-                "Skipped",
-                "TimedOut",
-                "Succeeded"
-              ]
-            },
+                "type" : "Http"
+              },
+              "runAfter" : {},
+              "type" : "Scope"
+            }
+            "Check" : {
+              "type" : "If",
+              "expression" : {
+                "and" : [
+                  {
+                    "not" : {
+                      "equals" : [
+                        "@outputs('Publish scheduled pages request')['statusCode']",
+                        202
+                      ]
+                    }
+                  }
+                ]
+              },
+              "actions" : {
+                "Send slack alert" : {
+                  "inputs" : {
+                    "body" : {
+                      "blocks" : [
+                        {
+                          "text" : {
+                            "text" : "CRCv3 Publishing Of Scheduled Pages Failure",
+                            "type" : "plain_text"
+                          },
+                          "type" : "header"
+                        },
+                        {
+                          "text" : {
+                            "text" : "Request failed with status code @{outputs('Publish scheduled pages request')['statusCode']}",
+                            "type" : "mrkdwn"
+                          },
+                          "type" : "section"
+                        },
+                        {
+                          "text" : {
+                            "text" : "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.scheduler_logic_app_name}/logicApp|${local.scheduler_logic_app_name}>",
+                            "type" : "mrkdwn"
+                          },
+                          "type" : "section"
+                        },
+                        {
+                          "text" : {
+                            "text" : "*Resource Group*\n <https://portal.azure.com/#@nhschoices.net/resource${data.azurerm_resource_group.rg.id}|${data.azurerm_resource_group.rg.name}>",
+                            "type" : "mrkdwn"
+                          },
+                          "type" : "section"
+                        },
+                        {
+                          "text" : {
+                            "text" : "*Publishing Endpoint*\n ${var.publishing_endpoint}",
+                            "type" : "mrkdwn"
+                          },
+                          "type" : "section"
+                        }
+                      ]
+                    },
+                    "headers" : {
+                      "Content-Type" : "application/json"
+                    },
+                    "method" : "POST",
+                    "uri" : var.campaigns_monitoring_webhook
+                  },
+                  "runAfter" : {},
+                  "type" : "Http"
+                },
+                "Terminate" : {
+                  "inputs" : {
+                    "runError" : {
+                      "message" : "Publishing request was not accepted"
+                    },
+                    "runStatus" : "Failed"
+                  },
+                  "runAfter" : {
+                    "Send slack alert" : [
+                      "Failed",
+                      "Skipped",
+                      "TimedOut",
+                      "Succeeded"
+                    ]
+                  },
+                  "type" : "Terminate"
+                }
+              },
+              "runAfter" : {
+                "Publish" : [
+                  "Failed",
+                  "Skipped",
+                  "TimedOut",
+                  "Succeeded"
+                ]
+              },
+            }
           }
         }
       },
