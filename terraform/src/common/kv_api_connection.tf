@@ -12,12 +12,12 @@ resource "azapi_resource" "keyvault_con" {
   tags                      = local.common_tags
   body = jsonencode({
     properties = {
-      displayName = azurerm_key_vault.kv.name
+      displayName = local.key_vault_name
       parameterValueSet = {
         name = "oauthMI"
         values = {
           vaultName = {
-            "value" = azurerm_key_vault.kv.name
+            "value" = local.key_vault_name
           }
         }
       }
