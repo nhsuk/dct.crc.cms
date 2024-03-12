@@ -25,7 +25,7 @@ resource "azapi_resource" "keyvault_con" {
         "brandColor" : "#0079d6",
         "id" : data.azurerm_managed_api.kv.id,
       }
-    }
+    },
     "testLinks" : []
     }
   )
