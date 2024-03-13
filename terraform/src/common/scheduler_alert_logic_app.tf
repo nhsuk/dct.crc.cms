@@ -4,7 +4,7 @@ resource "azapi_resource" "scheduler_alert_la" {
   location               = data.azurerm_resource_group.rg.location
   parent_id              = data.azurerm_resource_group.rg.id
   tags                   = local.common_tags
-  response_export_values = [properties.callback_url]
+  response_export_values = ["properties.callback_url"]
   body = jsonencode({
     "identity" : {
       "type" : "SystemAssigned"
@@ -63,7 +63,7 @@ resource "azapi_resource" "scheduler_alert_la" {
           },
           "Send slack alert" : {
             "inputs" : {
-              "body" : templatefile("${path.module}/templates/slack-alert-body.json.tpl", { rg_name = data.azurerm_resource_group.name, rg_id = data.azurerm_resource_group.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id, pub_url = "@{body('Get publishing endpoint')?['value']}" }),
+              "body" : templatefile("${path.module}/templates/slack-alert-body.json.tpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id, pub_url = "@{body('Get publishing endpoint')?['value']}" }),
               "headers" : {
                 "Content-Type" : "application/json"
               },
