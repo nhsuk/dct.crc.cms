@@ -1,0 +1,104 @@
+resource "azapi_resource" "scheduler_alert_la" {
+  type                   = "Microsoft.Logic/workflows@2019-05-01"
+  name                   = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduleralert-la-")
+  location               = data.azurerm_resource_group.rg.location
+  parent_id              = data.azurerm_resource_group.rg.id
+  tags                   = local.common_tags
+  response_export_values = [properties.callback_url]
+  body = jsonencode({
+    "identity" : {
+      "type" : "SystemAssigned"
+    },
+    "properties" : {
+      "parameters" : {},
+      "state" : "Enabled",
+      "definition" : {
+        "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion" : "1.0.0.0",
+        "parameters" : {
+          "$connections" : {
+            "defaultValue" : {},
+            "type" : "Object"
+          }
+        },
+        "triggers" : {
+          "manual" : {
+            "type" : "Request",
+            "kind" : "Http",
+            "inputs" : {
+              "schema" : templatefile("${path.module}/schema/common-alert-schema.json", {})
+            }
+          }
+        },
+        "actions" : {
+          "Get alerting webhook" : {
+            "inputs" : {
+              "host" : {
+                "connection" : {
+                  "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                }
+              },
+              "method" : "get",
+              "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+            },
+            "runAfter" : {},
+            "type" : "ApiConnection"
+          },
+          "Get publishing endpoint" : {
+            "inputs" : {
+              "host" : {
+                "connection" : {
+                  "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                }
+              },
+              "method" : "get",
+              "path" : "/secrets/@{encodeURIComponent('pubEndpoint')}/value"
+            },
+            "runAfter" : {
+              "Get alerting webhook" : [
+                "Succeeded"
+              ]
+            },
+            "type" : "ApiConnection"
+          },
+          "Send slack alert" : {
+            "inputs" : {
+              "body" : templatefile("${path.module}/templates/slack-alert-body.json.tpl", { rg_name = data.azurerm_resource_group.name, rg_id = data.azurerm_resource_group.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id, pub_url = "@{body('Get publishing endpoint')?['value']}" }),
+              "headers" : {
+                "Content-Type" : "application/json"
+              },
+              "method" : "POST",
+              "uri" : "@{body('Get alerting webhook')?['value']}"
+            },
+            "runAfter" : {
+              "Get publishing endpoint" : [
+                "Failed",
+                "Skipped",
+                "TimedOut",
+                "Succeeded"
+              ]
+            },
+            "type" : "Http"
+          }
+        },
+        "runAfter" : {}
+      },
+      "parameters" : {
+        "$connections" : {
+          "value" : {
+            "keyvault" : {
+              "connectionId" : azapi_resource.keyvault_con.id,
+              "connectionName" : azapi_resource.keyvault_con.name,
+              "id" : data.azurerm_managed_api.kv.id,
+              "connectionProperties" : {
+                "authentication" : {
+                  "type" : "ManagedServiceIdentity"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+}

@@ -16,4 +16,11 @@ resource "azurerm_key_vault" "kv" {
       "Get", "List"
     ]
   }
+  access_policy {
+    tenant_id = azapi_resource.scheduler_alert_la.identity[0].tenant_id
+    object_id = azapi_resource.scheduler_alert_la.identity[0].principal_id
+    secret_permissions = [
+      "Get", "List"
+    ]
+  }
 }
