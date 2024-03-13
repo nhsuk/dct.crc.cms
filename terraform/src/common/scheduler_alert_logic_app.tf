@@ -4,7 +4,7 @@ resource "azapi_resource" "scheduler_alert_la" {
   location               = data.azurerm_resource_group.rg.location
   parent_id              = data.azurerm_resource_group.rg.id
   tags                   = local.common_tags
-  response_export_values = ["properties.callback_url"]
+  response_export_values = ["callback_url"]
   body = jsonencode({
     "identity" : {
       "type" : "SystemAssigned"
