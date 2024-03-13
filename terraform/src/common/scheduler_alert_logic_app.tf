@@ -4,7 +4,7 @@ resource "azapi_resource" "scheduler_alert_la" {
   location               = data.azurerm_resource_group.rg.location
   parent_id              = data.azurerm_resource_group.rg.id
   tags                   = local.common_tags
-  response_export_values = ["callback_url"]
+  response_export_values = ["properties.callback_url"]
   body = jsonencode({
     "identity" : {
       "type" : "SystemAssigned"
@@ -103,12 +103,12 @@ resource "azapi_resource" "scheduler_alert_la" {
   })
 }
 
-data "azapi_resource_action" "scheduler_alert_la_callbackurl" {
-  resource_id = "${azapi_resource.scheduler_alert_la.id}/triggers/manual"
-  action      = "listCallbackUrl"
-  type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
-  depends_on = [
-    azapi_resource.scheduler_alert_la
-  ]
-  response_export_values = ["value"]
-}
+# data "azapi_resource_action" "scheduler_alert_la_callbackurl" {
+#   resource_id = "${azapi_resource.scheduler_alert_la.id}/triggers/manual"
+#   action      = "listCallbackUrl"
+#   type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
+#   depends_on = [
+#     azapi_resource.scheduler_alert_la
+#   ]
+#   response_export_values = ["value"]
+# }
