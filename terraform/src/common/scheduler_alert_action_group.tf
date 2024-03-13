@@ -6,7 +6,7 @@ resource "azurerm_monitor_action_group" "scheduler_alert" {
   logic_app_receiver {
     name                    = "scheduler slack alert"
     resource_id             = azapi_resource.scheduler_alert_la.id
-    callback_url            = azapi_resource_action.scheduler_alert_la_callbackurl.value
+    callback_url            = data.azapi_resource_action.scheduler_alert_la_callbackurl.value
     use_common_alert_schema = true
   }
 }
