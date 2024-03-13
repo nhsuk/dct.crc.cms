@@ -3,7 +3,7 @@ resource "azurerm_monitor_metric_alert" "scheduler_fail_alert" {
   resource_group_name = data.azurerm_resource_group.rg.name
   scopes              = [azapi_resource.scheduler_la.id]
   description         = "Action will be triggered when scheduler logic app run fails"
-  window_size         = "PT30H"
+  window_size         = "PT30M"
   frequency           = "PT15M"
   severity            = 2
 
