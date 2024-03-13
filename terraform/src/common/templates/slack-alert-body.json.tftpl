@@ -30,7 +30,7 @@
         },
         {
             "text" : {
-                "text" : "*Publishing Endpoint*\n @{pub_url}",
+                "text" : "*Publishing Endpoint*\n @{body('Get publishing endpoint')?['value']}",
                 "type" : "mrkdwn"
             },
             "type" : "section"

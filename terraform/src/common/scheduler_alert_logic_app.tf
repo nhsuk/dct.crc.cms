@@ -63,7 +63,7 @@ resource "azapi_resource" "scheduler_alert_la" {
           },
           "Send slack alert" : {
             "inputs" : {
-              "body" : templatefile("${path.module}/templates/slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id, pub_url = "@{body('Get publishing endpoint')?['value']}" }),
+              "body" : templatefile("${path.module}/templates/slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id }),
               "headers" : {
                 "Content-Type" : "application/json"
               },
