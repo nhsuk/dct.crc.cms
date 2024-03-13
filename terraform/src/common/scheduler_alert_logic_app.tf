@@ -80,8 +80,7 @@ resource "azapi_resource" "scheduler_alert_la" {
             },
             "type" : "Http"
           }
-        },
-        "runAfter" : {}
+        }
       },
       "parameters" : {
         "$connections" : {
