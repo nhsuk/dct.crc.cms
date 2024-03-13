@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from wagtail.test.utils import WagtailPageTests
+from django.contrib.auth import get_user_model
 
 from campaignresourcecentre.paragon_users.admin_views import search_users
 from campaignresourcecentre.paragon.client import Client
@@ -11,16 +12,38 @@ from campaignresourcecentre.paragon.exceptions import (
     ParagonClientTimeout,
 )
 from campaignresourcecentre.users.models import User
+from django.contrib.auth import get_user_model
 
 
 class ParagonUsersTestCase(WagtailPageTests):
     def setUp(self):
-        self.login()
+        self.user = get_user_model().objects.create_user(
+            username="test",
+            email="test@example.com",
+            password="password",
+            is_active=True,
+            is_superuser=True,
+        )
+
+        self.standardUser = get_user_model().objects.create_user(
+            username="standard",
+            email="standard@example.com",
+            password="password",
+            is_active=True,
+            is_superuser=False,
+        )
+
+        self.client.login(username="test", password="password")
 
     def test_index_page_loads(self):
         response = self.client.get(reverse("paragon_users:index"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "paragon_users/index.html")
+
+    def test_user_is_redirected_without_permissions(self):
+        self.client.login(username=self.standardUser.username, password="password")
+        response = self.client.get(reverse("paragon_users:index"))
+        self.assertEqual(response.status_code, 302)
 
     def test_search_users_success(self):
         with patch.object(Client, "search_users") as mock_search_users:
