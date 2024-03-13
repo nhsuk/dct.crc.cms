@@ -103,12 +103,12 @@ resource "azapi_resource" "scheduler_alert_la" {
   })
 }
 
-# data "azapi_resource_action" "scheduler_alert_la_callbackurl" {
-#   resource_id = "${azapi_resource.scheduler_alert_la.id}/triggers/manual"
-#   action      = "listCallbackUrl"
-#   type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
-#   depends_on = [
-#     azapi_resource.scheduler_alert_la
-#   ]
-#   response_export_values = ["value"]
-# }
+data "azapi_resource_action" "scheduler_alert_la_callbackurl" {
+  resource_id = "${azapi_resource.scheduler_alert_la.id}/triggers/manual"
+  action      = "listCallbackUrl"
+  type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
+  depends_on = [
+    azapi_resource.scheduler_alert_la
+  ]
+  response_export_values = ["value"]
+}
