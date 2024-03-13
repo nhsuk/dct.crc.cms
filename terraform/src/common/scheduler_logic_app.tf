@@ -108,14 +108,7 @@ resource "azapi_resource" "scheduler_la" {
                   },
                   "runStatus" : "Failed"
                 },
-                "runAfter" : {
-                  "Send slack alert" : [
-                    "Failed",
-                    "Skipped",
-                    "TimedOut",
-                    "Succeeded"
-                  ]
-                },
+                "runAfter" : {},
                 "type" : "Terminate"
               }
             },
