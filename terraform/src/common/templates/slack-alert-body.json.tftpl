@@ -9,7 +9,7 @@
         },
         {
             "text" : {
-                "text" : "@{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'], 'runs/failed'), 'Failed runs', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'])} count @{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'], 'GreaterThanOrEqual'), 'greater than or equal to', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'])} @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['threshold']}",
+                "text" : "@{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'], 'RunsFailed'), 'Failed runs', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'])} count @{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'], 'GreaterThanOrEqual'), 'greater than or equal to', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'])} @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['threshold']}",
                 "type" : "mrkdwn"
             },
             "type" : "section"
