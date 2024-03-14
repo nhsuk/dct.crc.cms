@@ -37,14 +37,8 @@ class ParagonUsersTestCase(WagtailPageTests):
 
     def test_index_page_loads(self):
         response = self.client.get(reverse("paragon_users:index"))
-        print(response)
-        # self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "paragon_users/index.html")
-
-    # def test_user_is_redirected_without_permissions(self):
-    #     self.client.login(username=self.standardUser.username, password="password")
-    #     response = self.client.get(reverse("paragon_users:index"))
-    #     self.assertEqual(response.status_code, 302)
 
     def test_search_users_success(self):
         with patch.object(Client, "search_users") as mock_search_users:
@@ -66,8 +60,6 @@ class ParagonUsersTestCase(WagtailPageTests):
                 reverse("paragon_users:search_users"),
                 {"q": "test", "limit": "20", "p": "1"},
             )
-
-            print(response)
 
             self.assertEqual(response.status_code, 200)
             self.assertTemplateUsed(response, "paragon_users/results.html")
