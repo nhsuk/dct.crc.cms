@@ -25,14 +25,6 @@ class ParagonUsersTestCase(WagtailPageTests):
             is_superuser=True,
         )
 
-        self.standardUser = get_user_model().objects.create_user(
-            username="standard",
-            email="standard@example.com",
-            password="password",
-            is_active=True,
-            is_superuser=False,
-        )
-
         self.client.login(username="test", password="password")
 
     def test_index_page_loads(self):
