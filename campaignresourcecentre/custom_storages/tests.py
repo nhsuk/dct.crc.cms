@@ -2,17 +2,19 @@ import io
 import unittest
 from unittest.mock import MagicMock, patch
 
-from azure.core.exceptions import ResourceNotFoundError
 from azure.storage.blob import BlobProperties
 
 from django.conf import settings
 from django.core.files.storage import default_storage
-
-
-from campaignresourcecentre.custom_storages.custom_azure import (
-    AzureBlobFile,
+from campaignresourcecentre.custom_storages.custom_azure_uploader import (
     AzureBlobUploadHandler,
     AzureUploadedFile,
+)
+from campaignresourcecentre.custom_storages.custom_azure_file import (
+    AzureMediaStorageFile,
+)
+from campaignresourcecentre.custom_storages.custom_azure_storage import (
+    AzureMediaStorage,
 )
 
 
@@ -21,17 +23,19 @@ TEST_CONTENT = b"test_content"
 
 class TestAzureBlobFile(unittest.TestCase):
     def setUp(self):
+        self.storage = MagicMock()
         self.container_client = MagicMock()
         self.blob_client = MagicMock()
         self.container_client.get_blob_client.return_value = self.blob_client
-        self.blob_input_file = AzureBlobFile(
-            self.container_client, "test_blob_in", mode="rb"
+        self.storage.client = self.container_client
+        self.blob_input_file = AzureMediaStorageFile(
+            "test_blob_in", self.storage, mode="rb"
         )
-        self.blob_output_file = AzureBlobFile(
-            self.container_client, "test_blob_out", mode="wb"
+        self.blob_output_file = AzureMediaStorageFile(
+            "test_blob_out", self.storage, mode="wb"
         )
-        self.temporary_blob_file = AzureBlobFile(
-            self.container_client, "test_blob_in", destroy_on_close=True
+        self.temporary_blob_file = AzureMediaStorageFile(
+            "test_blob_in", self.storage, mode="rb"
         )
 
     def test_init(self):
@@ -41,8 +45,6 @@ class TestAzureBlobFile(unittest.TestCase):
         self.assertEqual(self.blob_input_file.container_client, self.container_client)
         self.assertEqual(self.blob_input_file.blob_client, self.blob_client)
         self.assertEqual(self.blob_input_file.position, 0)
-        self.assertFalse(self.blob_input_file.destroy_on_close)
-        self.assertFalse(self.blob_input_file.deleted)
         self.assertFalse(self.blob_input_file.reported_closed)
         self.assertEqual(self.blob_output_file.blob_name, "test_blob_out")
         self.assertEqual(self.blob_output_file.mode, "wb")
@@ -50,8 +52,6 @@ class TestAzureBlobFile(unittest.TestCase):
         self.assertEqual(self.blob_output_file.container_client, self.container_client)
         self.assertEqual(self.blob_output_file.blob_client, self.blob_client)
         self.assertEqual(self.blob_output_file.position, 0)
-        self.assertFalse(self.blob_output_file.destroy_on_close)
-        self.assertFalse(self.blob_output_file.deleted)
         self.assertFalse(self.blob_output_file.reported_closed)
 
     def test_init_with_wb_mode(self):
@@ -62,7 +62,7 @@ class TestAzureBlobFile(unittest.TestCase):
 
     def test_init_with_invalid_mode(self):
         with self.assertRaises(NotImplementedError):
-            AzureBlobFile(self.container_client, "test_blob", mode="invalid")
+            AzureMediaStorageFile("test_blob", self.storage, mode="invalid")
 
     def test_write(self):
         self.blob_output_file.write(TEST_CONTENT)
@@ -70,26 +70,11 @@ class TestAzureBlobFile(unittest.TestCase):
         self.blob_output_file.write(bytearray(4194304))
         self.assertEqual(self.blob_output_file.position, 4194304 + len(TEST_CONTENT))
 
-    def test_write_with_invalid_offset(self):
-        with self.assertRaises(NotImplementedError):
-            self.blob_output_file.seek(1, whence=1)
-
-    def test_seek(self):
-        self.blob_input_file.seek(6)
-        self.assertEqual(self.blob_input_file.position, 6)
-        self.blob_input_file.seek(5, whence=1)
-        self.assertEqual(self.blob_input_file.position, 11)
-
-    def test_close_with_destroy_on_close(self):
-        self.temporary_blob_file.delete = MagicMock()
-        self.temporary_blob_file.close()
-        assert self.temporary_blob_file.delete.call_count == 1
-
     def test_close_with_wb_mode(self):
         with patch(
-            "campaignresourcecentre.custom_storages.custom_azure.AzureBlobFile.delete"
+            "campaignresourcecentre.custom_storages.custom_azure_file.AzureMediaStorageFile.delete"
         ) as delete_mock, patch(
-            "campaignresourcecentre.custom_storages.custom_azure.AzureBlobFile._write_block"
+            "campaignresourcecentre.custom_storages.custom_azure_file.AzureMediaStorageFile._write_block"
         ) as write_block_mock:
             self.blob_output_file.close()
             self.assertTrue(write_block_mock.called)
@@ -97,7 +82,6 @@ class TestAzureBlobFile(unittest.TestCase):
 
     def test_delete_deletes_blob(self):
         self.blob_output_file.delete()
-        assert self.blob_output_file.deleted == True
         assert self.blob_output_file.blob_client.delete_blob.call_count == 1
 
 
@@ -105,6 +89,9 @@ class MockStorage:
     @property
     def client(self):
         return MockClient()
+
+    def get_available_name(self, name):
+        return name
 
 
 class MockClient:
@@ -127,6 +114,10 @@ class MockBlobClient:
     def delete(self):
         # Omitted for mocking
         pass
+
+    @property
+    def url(self):
+        return "test_blob_url"
 
     def commit_block_list(self, block_list):
         # Omitted for mocking
@@ -159,7 +150,7 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
     def test_new_file(self):
         self.assertIsInstance(self.handler.blob_name, str)
         self.assertEqual(self.handler.file_name, self.file_name)
-        self.assertIsInstance(self.handler.blob_file, AzureBlobFile)
+        self.assertIsInstance(self.handler.blob_file, AzureMediaStorageFile)
         self.assertEqual(self.handler.chunks, 0)
 
     def test_receive_data_chunk(self):

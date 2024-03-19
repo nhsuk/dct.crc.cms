@@ -1,0 +1,139 @@
+<mxfile host="Electron" modified="2024-03-05T12:11:59.799Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="28HfmEULEbxCvkQA9lAg" version="23.1.5" type="device">
+  <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
+    <mxGraphModel dx="1306" dy="812" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="w6huuN22jup78vpG4-We-35" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="10" y="10" width="660" height="790" as="geometry" />
+        </mxCell>
+        <mxCell id="dNxyNK7c78bLwvsdeMH5-19" value="Azure Custom Storage" style="swimlane;html=1;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;horizontal=0;startSize=20;horizontalStack=0;direction=east;" parent="1" vertex="1">
+          <mxGeometry x="30" y="150" width="620" height="490" as="geometry" />
+        </mxCell>
+        <mxCell id="dNxyNK7c78bLwvsdeMH5-20" value="AzureBlobUploadHandler" style="swimlane;html=1;startSize=20;horizontal=0;" parent="dNxyNK7c78bLwvsdeMH5-19" vertex="1">
+          <mxGeometry x="20" width="600" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="dNxyNK7c78bLwvsdeMH5-26" value="new_file:&lt;br&gt;Instantiate AzureMediaStorageFile by passing in available blob&#39;s temp name and&lt;br&gt;AzureMediaStorage" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="dNxyNK7c78bLwvsdeMH5-20" vertex="1">
+          <mxGeometry x="60" y="30" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-4" value="receive_data_chunk:&lt;br&gt;write chunk data to&lt;br&gt;AzureMediaStorageFile" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="dNxyNK7c78bLwvsdeMH5-20" vertex="1">
+          <mxGeometry x="240" y="50" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-5" value="file_complete: &lt;br&gt;close AzureMediaStorageFile&lt;br&gt;and return&lt;br&gt;AzureUploadedFile&lt;br&gt;where content is&lt;br&gt;temp blob url" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="dNxyNK7c78bLwvsdeMH5-20" vertex="1">
+          <mxGeometry x="415" y="22.5" width="150" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="dNxyNK7c78bLwvsdeMH5-21" value="AzureMediaStorageFile" style="swimlane;html=1;startSize=20;horizontal=0;" parent="dNxyNK7c78bLwvsdeMH5-19" vertex="1">
+          <mxGeometry x="20" y="160" width="600" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-6" value="__init__:&lt;br&gt;save temp name and extract blob client from AzureMediaStorage" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="dNxyNK7c78bLwvsdeMH5-21" vertex="1">
+          <mxGeometry x="60" y="45" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-7" value="write:&lt;br&gt;write data to block and,&lt;br&gt;if appropriate, stage&lt;br&gt;block with block id" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="dNxyNK7c78bLwvsdeMH5-21" vertex="1">
+          <mxGeometry x="240" y="45" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-8" value="close:&lt;br&gt;write and stage final block with block id,&lt;br&gt;then commit all blocks&lt;br&gt;to temp blob" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="dNxyNK7c78bLwvsdeMH5-21" vertex="1">
+          <mxGeometry x="420" y="35" width="140" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="dNxyNK7c78bLwvsdeMH5-22" value="AzureMediaStorage save:" style="swimlane;html=1;startSize=20;horizontal=0;" parent="dNxyNK7c78bLwvsdeMH5-19" vertex="1">
+          <mxGeometry x="20" y="320" width="600" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-25" value="YES:&lt;br&gt;_move_temp_blob" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="dNxyNK7c78bLwvsdeMH5-22" source="w6huuN22jup78vpG4-We-22" target="w6huuN22jup78vpG4-We-23" edge="1">
+          <mxGeometry x="-0.3333" y="-10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="125" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-26" value="NO:&lt;br&gt;_save:" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="dNxyNK7c78bLwvsdeMH5-22" source="w6huuN22jup78vpG4-We-22" target="w6huuN22jup78vpG4-We-21" edge="1">
+          <mxGeometry x="-0.1077" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="50" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-22" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;&quot;&gt;does&lt;br&gt;temp blob with&lt;br&gt;same name&lt;br&gt;exist?&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" vertex="1">
+          <mxGeometry x="150" y="40" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" source="w6huuN22jup78vpG4-We-23" target="w6huuN22jup78vpG4-We-24" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-23" value="copy temp&lt;br&gt;blob to document blob" style="rounded=0;whiteSpace=wrap;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" vertex="1">
+          <mxGeometry x="330" y="97" width="88" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-24" value="delete temp blob" style="rounded=0;whiteSpace=wrap;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" vertex="1">
+          <mxGeometry x="458" y="109.5" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" source="w6huuN22jup78vpG4-We-30" target="w6huuN22jup78vpG4-We-22" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-30" value="get available blob&lt;br&gt;name" style="rounded=0;whiteSpace=wrap;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" vertex="1">
+          <mxGeometry x="60" y="40" width="60" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-21" value="upload_blob with content provided" style="rounded=0;whiteSpace=wrap;html=1;" parent="dNxyNK7c78bLwvsdeMH5-22" vertex="1">
+          <mxGeometry x="390" y="25" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="dNxyNK7c78bLwvsdeMH5-19" source="dNxyNK7c78bLwvsdeMH5-26" target="w6huuN22jup78vpG4-We-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="dNxyNK7c78bLwvsdeMH5-19" source="w6huuN22jup78vpG4-We-4" target="w6huuN22jup78vpG4-We-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="dNxyNK7c78bLwvsdeMH5-19" source="w6huuN22jup78vpG4-We-5" target="w6huuN22jup78vpG4-We-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-28" value="Pass in name =&lt;br&gt;&quot;documents/{tempBlobName} and&lt;br&gt;content from AzureUploadedFile" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="dNxyNK7c78bLwvsdeMH5-19" source="w6huuN22jup78vpG4-We-8" target="w6huuN22jup78vpG4-We-30" edge="1">
+          <mxGeometry x="0.5789" y="10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="300" />
+              <mxPoint x="110" y="300" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-27" value="Pass in name =&lt;br&gt;&quot;documets/{filename}&quot;&lt;br&gt;and file content" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-1" target="w6huuN22jup78vpG4-We-30" edge="1">
+          <mxGeometry x="0.67" y="-10" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-1" value="Upload file smaller than Block size" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="300" y="660" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-2" target="w6huuN22jup78vpG4-We-9" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-2" value="Upload file larger&lt;br&gt;than Block size" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="300" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-9" target="w6huuN22jup78vpG4-We-10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-9" target="dNxyNK7c78bLwvsdeMH5-26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-9" value="Start upload" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="110" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-10" target="w6huuN22jup78vpG4-We-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-10" target="w6huuN22jup78vpG4-We-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-10" value="Stream data" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="300" y="110" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="w6huuN22jup78vpG4-We-11" target="w6huuN22jup78vpG4-We-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-11" value="Finish upload" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="480" y="110" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="w6huuN22jup78vpG4-We-36" value="&lt;h1 style=&quot;font-size: 16px;&quot;&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Notes:&lt;/font&gt;&lt;/h1&gt;&lt;p style=&quot;font-size: 16px;&quot;&gt;Block size is hard coded as 4MB - this is the default defined in Azure.&lt;br&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;Content passed into AzureMediaStorage is read before entering save method.&lt;/span&gt;&lt;/p&gt;" style="text;html=1;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="30" y="700" width="620" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
