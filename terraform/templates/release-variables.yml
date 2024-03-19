@@ -9,10 +9,3 @@ variables:
   value: dct-crccms-rg-${{ parameters.releaseEnvironment }}
 - name: TF_STORAGE_ACCOUNT
   value: crccmstf${{ parameters.releaseEnvironment }}${{ parameters.location }}
-
-- ${{ if eq(parameters.releaseEnvironment, 'prod') }}:
-  - name: CAMPAIGNS_MONITORING_WEBHOOK
-    value: $(CAMPAIGNS_MONITORING_WEBHOOK) ## from variable group in ADO library
-- ${{ else }}:
-  - name: CAMPAIGNS_MONITORING_WEBHOOK
-    value: $(NONPROD_CAMPAIGNS_MONITORING_WEBHOOK) ## from variable group in ADO library
