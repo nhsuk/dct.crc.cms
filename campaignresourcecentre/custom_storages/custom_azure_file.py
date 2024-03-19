@@ -1,6 +1,8 @@
 # AzureStorageFile and subclasses are used when an uploaded file is needed within Django/Wagtail
 # We use the default rather inefficient implementation for this to avoid coding to support e.g. r and w i/o modes
 # but log usage to monitor whether this should become necessary
+# This class is only used when uploading large files - see conflunce page for details
+# https://digitaltools.phe.org.uk/confluence/display/CRC/Document+Upload+to+Blob+storage
 
 import logging
 from azure.storage.blob import BlobBlock

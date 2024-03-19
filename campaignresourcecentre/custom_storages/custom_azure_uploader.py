@@ -1,4 +1,6 @@
-import logging
+# This class is only used when uploading large files - see conflunce page for details
+# https://digitaltools.phe.org.uk/confluence/display/CRC/Document+Upload+to+Blob+storageimport logging
+
 import json
 from django.core.files.uploadedfile import UploadedFile
 from io import BytesIO
