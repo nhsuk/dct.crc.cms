@@ -19,7 +19,7 @@ def publish_pages(request):
     https://github.com/wagtail/wagtail/blob/9084c196fad5db29aeae9f9c6ab9eca06dd9bd14/wagtail/management/commands/publish_scheduled.py
     """
 
-    pubtoken = "token"  # getattr(settings, "PUBTOKEN", None)
+    pubtoken = getattr(settings, "PUBTOKEN", None)
     try:
         if request.headers.get("Authorization", "") == "Bearer " + pubtoken:
             pages_to_publish = get_pages_to_publish()
