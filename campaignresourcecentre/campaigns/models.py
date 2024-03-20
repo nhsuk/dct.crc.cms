@@ -22,6 +22,9 @@ from wagtail.images import get_image_model_string
 from wagtailreacttaxonomy.panels import TaxonomyPanel
 from wagtailreacttaxonomy.models import TaxonomyMixin
 from wagtailreacttaxonomy.models import TaxonomyTerms
+from wagtail.signals import post_page_move
+from django.dispatch import receiver
+from django.db import transaction
 
 from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
@@ -123,7 +126,7 @@ class CampaignHubPage(BasePage):
         from campaignresourcecentre.search.azure import AzureSearchBackend
 
         topic = request.GET.get("topic")
-        sort = request.GET.get("sort") or "newest"
+        sort = request.GET.get("sort") or "most_relevant"
         search = AzureSearchBackend({})
         search_value = ""
         fields_queryset = {"objecttype": "campaign"}
@@ -136,6 +139,8 @@ class CampaignHubPage(BasePage):
             sort_by = "last_published_at"
         elif sort == "newest":
             sort_by = "last_published_at desc"
+        elif sort == "most_relevant":
+            sort_by = "path asc"
         response = search.azure_search(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
@@ -154,18 +159,14 @@ class CampaignHubPage(BasePage):
                 "image_alt": campaign["content"]["resource"].get("image_alt"),
                 "listing_summary": campaign["content"]["resource"].get("descrition"),
                 "url": campaign["content"]["resource"].get("object_url"),
+                "path": campaign["content"]["resource"].get("path"),
             }
             for campaign in campaigns
         ]
 
     def from_database(self, request):
         # Get the initial queryset of child campaign pages of the hub.
-        campaigns = (
-            CampaignPage.objects.live()
-            .public()
-            .child_of(self)
-            .order_by("-first_published_at")
-        )
+        campaigns = CampaignPage.objects.live().public().child_of(self).order_by("path")
 
         # Apply filtering to the child pages, if applicable.
         topic = request.GET.get("topic")
@@ -206,7 +207,7 @@ class CampaignHubPage(BasePage):
         ]
 
         selected_topic = request.GET.get("topic") or "ALL"
-        sort = request.GET.get("sort") or "newest"
+        sort = request.GET.get("sort") or "most_relevant"
 
         if from_azure_search:
             campaigns = self.from_azure_search(request)
@@ -394,9 +395,24 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     else None,
                     "url": resource.url,
                     "last_published_at": resource.last_published_at,
+                    "path": resource.path,
                 }
             )
         return resources_list
+
+    @receiver(post_page_move)
+    def on_page_moved(sender, instance, **kwargs):
+        siblings = instance.get_siblings(inclusive=True).specific()
+
+        with transaction.atomic():
+            for sibling in siblings:
+                if isinstance(sibling, CampaignPage):
+                    sibling.refresh_from_db(fields=["path"])
+                    sibling.full_clean()
+                    sibling.save(update_fields=["path"])
+                    logger.info(
+                        f"Path for CampaignPage '{sibling}' has been changed to {sibling.path}."
+                    )
 
     def get_az_item(self):
         if self.last_published_at == None:
@@ -412,6 +428,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             "image_url": self.image and self.image.get_rendition("width-400").url,
             "image_alt": self.image and self.image_alt_text,
             "code": self.slug,
+            "path": self.path,
         }
 
     def get_context(self, request, *args, **kwargs):

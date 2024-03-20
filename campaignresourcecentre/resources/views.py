@@ -43,6 +43,8 @@ def _search(request):
         sort_by = "last_published_at"
     elif sort == "newest" or search_query == "":
         sort_by = "last_published_at desc"
+    elif sort == "most_relevant":
+        sort_by = "path asc"
 
     response = search.azure_search(
         search_value, fields_queryset, facets_queryset, sort_by, results_per_page

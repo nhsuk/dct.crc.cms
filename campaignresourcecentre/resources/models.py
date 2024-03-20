@@ -123,6 +123,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "resource_page_id": self.id,
                 "campaign_title": campaign.title,
                 "campaign_url": campaign.url,
+                "path": resource.path,
             }
             for resource in self.resource_items.select_related("image", "document")
         ]
@@ -145,6 +146,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             else None,
             "code": self.slug,
             "permission_role": self.permission_role,
+            "path": self.path,
         }
         if resource_item:
             az_resource["image_url"] = (
@@ -193,6 +195,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     search_fields = BasePage.search_fields + [
         index.SearchField("description"),
         index.SearchField("summary"),
+        index.SearchField("path"),
     ]
 
     content_panels = BasePage.content_panels + [

@@ -35,6 +35,7 @@ class InformationPage(BasePage):
     search_fields = BasePage.search_fields + [
         index.SearchField("introduction"),
         index.SearchField("body"),
+        index.SearchField("path"),
     ]
 
     content_panels = BasePage.content_panels + [

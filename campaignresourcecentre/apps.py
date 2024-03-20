@@ -6,6 +6,9 @@ from django.apps import AppConfig
 from django.conf import settings
 from campaignresourcecentre.notifications.adapters import GovNotifyNotifications
 
+from django.apps import AppConfig
+from wagtail.signals import post_page_move
+
 logger = logging.getLogger(__name__)
 
 
@@ -14,6 +17,10 @@ class CRCV3Config(AppConfig):
     verbose_name = "Campaign Resource Centre V3"
 
     def ready(self):
+        from campaignresourcecentre.campaigns.models import CampaignPage
+
+        post_page_move.connect(CampaignPage.on_page_moved, sender=CampaignPage)
+
         # Avoid showing output once for main thread and again for reloader if in use
         if os.environ.get("RUN_MAIN", "").lower() != "true":
             logger.info("Starting CRC-V3")
