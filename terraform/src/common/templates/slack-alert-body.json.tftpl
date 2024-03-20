@@ -1,0 +1,39 @@
+{
+    "blocks": [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "CRCv3 Publishing of Scheduled Pages - Alert @{triggerBody()?['data']?['essentials']['monitorCondition']}"
+            }
+        },
+        {
+            "text" : {
+                "text" : "@{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'], 'RunsFailed'), 'Failed runs', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'])} count @{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'], 'GreaterThanOrEqual'), 'greater than or equal to', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'])} @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['threshold']}",
+                "type" : "mrkdwn"
+            },
+            "type" : "section"
+        },
+        {
+            "text" : {
+                "text" : "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource${la_id}|${la_name}>",
+                "type" : "mrkdwn"
+            },
+            "type" : "section"
+        },
+        {
+            "text" : {
+                "text" : "*Resource Group*\n <https://portal.azure.com/#@nhschoices.net/resource${rg_id}|${rg_name}>",
+                "type" : "mrkdwn"
+            },
+            "type" : "section"
+        },
+        {
+            "text" : {
+                "text" : "*Publishing Endpoint*\n @{body('Get publishing endpoint')?['value']}",
+                "type" : "mrkdwn"
+            },
+            "type" : "section"
+        }
+    ]
+}
