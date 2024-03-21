@@ -27,7 +27,7 @@ class CRCV3MainPage(BasePage):
     email_id = PageElement(By.ID, "id_email")
     Password = PageElement(By.ID, "id_password")
     Sign_in_button = PageElement(By.XPATH, "//button[text()='Sign in']")
-    Sign_out_lable = PageElement(By.XPATH, "//a[@href='/logout ']")
+    Sign_out_lable = PageElement(By.XPATH, "//a[@href='/logout']")
     Login_error_list = PageElement(
         By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']/li"
     )
@@ -900,8 +900,8 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Sign_in_button)
 
     def verify_logout(self):
-        WebDriverWait(self.driver, 60).until(
-            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
+        WebDriverWait(self.driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout']"))
         )
         # self.wait.until(self.interrogate.get_attribute(self.Sign_out_lable), "Sign out")
         # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable), equal_to(True), "Sign out label is not displayed")
@@ -1514,7 +1514,7 @@ class CRCV3MainPage(BasePage):
 
     def is_Signout_displayed(self):
         Element = WebDriverWait(self.driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout']"))
         )
         # return self.wait.until(self.interrogate.is_element_visible_and_contains_text(self.Sign_out_lable, "Sign Out"), "Sign out is not displayed")
 
