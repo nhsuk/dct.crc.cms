@@ -20,9 +20,9 @@ class CRCV3MainPage(BasePage):
     CRCV_mainpage_label = PageElement(
         By.XPATH, "//h1[text()='Campaign Resource Centre']"
     )
-    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")
+    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest Live Campaigns']")
     S4l_h1 = PageElement(By.TAG_NAME, "h1")
-    Sign_In_link = PageElement(By.LINK_TEXT, "Sign in")
+    Sign_In_link = PageElement(By.PARTIAL_LINK_TEXT, "Sign in")
     Sign_In_label = PageElement(By.XPATH, "//h1[text()[normalize-space()='Sign in']]")
     email_id = PageElement(By.ID, "id_email")
     Password = PageElement(By.ID, "id_password")
@@ -901,12 +901,7 @@ class CRCV3MainPage(BasePage):
 
     def verify_logout(self):
         WebDriverWait(self.driver, 30).until(
-            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Sign out"))
-        )
-        assert_that(
-            self.interrogate.get_attribute(self.Sign_out_link, "href"),
-            ends_with("/logout"),
-            "Sign out link is not present or is incorrect",
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
         )
         # self.wait.until(self.interrogate.get_attribute(self.Sign_out_lable), "Sign out")
         # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable), equal_to(True), "Sign out label is not displayed")
