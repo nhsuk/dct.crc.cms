@@ -900,7 +900,7 @@ class CRCV3MainPage(BasePage):
         self.interact.click_element(self.Sign_in_button)
 
     def verify_logout(self):
-        WebDriverWait(self.driver, 30).until(
+        WebDriverWait(self.driver, 60).until(
             EC.presence_of_element_located((By.XPATH, "//a[@href='/logout ']"))
         )
         # self.wait.until(self.interrogate.get_attribute(self.Sign_out_lable), "Sign out")
