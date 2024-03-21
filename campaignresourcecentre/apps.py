@@ -17,9 +17,6 @@ class CRCV3Config(AppConfig):
     verbose_name = "Campaign Resource Centre V3"
 
     def ready(self):
-        from campaignresourcecentre.campaigns.models import CampaignPage
-
-        post_page_move.connect(CampaignPage.on_page_moved, sender=CampaignPage)
 
         # Avoid showing output once for main thread and again for reloader if in use
         if os.environ.get("RUN_MAIN", "").lower() != "true":

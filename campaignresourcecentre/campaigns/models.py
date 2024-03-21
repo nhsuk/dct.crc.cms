@@ -126,7 +126,7 @@ class CampaignHubPage(BasePage):
         from campaignresourcecentre.search.azure import AzureSearchBackend
 
         topic = request.GET.get("topic")
-        sort = request.GET.get("sort") or "most_relevant"
+        sort = request.GET.get("sort")
         search = AzureSearchBackend({})
         search_value = ""
         fields_queryset = {"objecttype": "campaign"}
@@ -139,8 +139,6 @@ class CampaignHubPage(BasePage):
             sort_by = "last_published_at"
         elif sort == "newest":
             sort_by = "last_published_at desc"
-        elif sort == "most_relevant":
-            sort_by = "path asc"
         response = search.azure_search(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
@@ -170,20 +168,23 @@ class CampaignHubPage(BasePage):
 
         # Apply filtering to the child pages, if applicable.
         topic = request.GET.get("topic")
-        if topic:
-            try:
-                topic = int(topic)
-            except ValueError:
-                # topic should be an int, return nothing if the filter value in
-                # the URL has been tampered with.
-                campaigns = CampaignPage.objects.none()
-            else:
-                campaigns = campaigns.filter(topics=topic)
+        if topic and topic != "ALL":
+            campaigns = [
+                campaign
+                for campaign in campaigns
+                if any(
+                    taxonomy_item.get("code") == topic
+                    for taxonomy_item in json.loads(campaign.taxonomy_json)
+                )
+            ]
+        else:
+            campaigns = list(campaigns)
 
         # Format the campaigns for display in the template
         return [
             {
                 "title": campaign.listing_title or campaign.title,
+                "summary": campaign.summary,
                 "image": campaign.listing_image or campaign.image,
                 "listing_summary": campaign.listing_summary,
                 "url": campaign.url,
@@ -207,9 +208,9 @@ class CampaignHubPage(BasePage):
         ]
 
         selected_topic = request.GET.get("topic") or "ALL"
-        sort = request.GET.get("sort") or "most_relevant"
+        sort = request.GET.get("sort") or "recommended"
 
-        if from_azure_search:
+        if from_azure_search and sort != "recommended":
             campaigns = self.from_azure_search(request)
         else:
             campaigns = self.from_database(request)
@@ -399,20 +400,6 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 }
             )
         return resources_list
-
-    @receiver(post_page_move)
-    def on_page_moved(sender, instance, **kwargs):
-        siblings = instance.get_siblings(inclusive=True).specific()
-
-        with transaction.atomic():
-            for sibling in siblings:
-                if isinstance(sibling, CampaignPage):
-                    sibling.refresh_from_db(fields=["path"])
-                    sibling.full_clean()
-                    sibling.save(update_fields=["path"])
-                    logger.info(
-                        f"Path for CampaignPage '{sibling}' has been changed to {sibling.path}."
-                    )
 
     def get_az_item(self):
         if self.last_published_at == None:
