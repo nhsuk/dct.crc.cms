@@ -22,9 +22,6 @@ from wagtail.images import get_image_model_string
 from wagtailreacttaxonomy.panels import TaxonomyPanel
 from wagtailreacttaxonomy.models import TaxonomyMixin
 from wagtailreacttaxonomy.models import TaxonomyTerms
-from wagtail.signals import post_page_move
-from django.dispatch import receiver
-from django.db import transaction
 
 from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
