@@ -36,11 +36,27 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
+      az postgres db delete \
+      --name "${{parameters.DBName}}" \
+      --resource-group "${{parameters.ResourceGroup}}" \
+      --server-name "${{parameters.Server}}"
+      --yes
+      --debug
+  displayName: 'Delete target database'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
       az postgres db create \
       --name "${{parameters.DBName}}" \
       --resource-group "${{parameters.ResourceGroup}}" \
       --server-name "${{parameters.Server}}"
-  displayName: 'Delete and recreate target database'
+      --debug
+  displayName: 'Recreate target database'
 
 - task: AzureCLI@2
   inputs:
