@@ -78,7 +78,7 @@
                     Sort by
                 </label>
                 <select class="govuk-select" id="sort" name="sort" onchange="submit(this, '{{ page.url }}', '{{ selected_topic }}')">
-                    <option value="most_relevant" {% if sort == 'most_relevant'%}selected{% endif %}>Most Relevant</option>
+                    <option value="recommended" {% if sort == 'recommended'%}selected{% endif %}>Recommended</option>
                     <option value="newest" {% if sort == 'newest'%}selected{% endif %}>Newest</option>
                     <option value="oldest" {% if sort == 'oldest'%}selected{% endif %}>Oldest</option>
                 </select>
@@ -114,7 +114,7 @@
     <script>
         // Initialise default values
         let filterTopic = "ALL";
-        let sortBy = "most_relevant";
+        let sortBy = "recommended";
 
         /**
          * Make the whole card clickable.
