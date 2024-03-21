@@ -901,7 +901,12 @@ class CRCV3MainPage(BasePage):
 
     def verify_logout(self):
         WebDriverWait(self.driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//a[@href='/logout']"))
+            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Sign out"))
+        )
+        assert_that(
+            self.interrogate.get_attribute(self.Sign_out_link, "href"),
+            ends_with("/logout"),
+            "Sign out link is not present or is incorrect",
         )
         # self.wait.until(self.interrogate.get_attribute(self.Sign_out_lable), "Sign out")
         # assert_that(self.interrogate.is_image_visible_by_checking_src(self.Sign_out_lable), equal_to(True), "Sign out label is not displayed")
