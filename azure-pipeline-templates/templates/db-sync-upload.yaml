@@ -39,8 +39,8 @@ steps:
       az postgres db delete \
       --name "${{parameters.DBName}}" \
       --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}"
-      --yes
+      --server-name "${{parameters.Server}}" \
+      --yes \
       --debug
   displayName: 'Delete target database'
 
@@ -54,7 +54,7 @@ steps:
       az postgres db create \
       --name "${{parameters.DBName}}" \
       --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}"
+      --server-name "${{parameters.Server}}" \
       --debug
   displayName: 'Recreate target database'
 
