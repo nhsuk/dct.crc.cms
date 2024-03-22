@@ -14,7 +14,7 @@ def publish_pages(request):
 
     pubtoken = getattr(settings, "PUBTOKEN", None)
     try:
-        if request.headers.get("Authorization", "") == "Bearer token":  # + pubtoken:
+        if request.headers.get("Authorization", "") == "Bearer " + pubtoken:
             logger.info("Start: management command 'publish_scheduled'")
             call_command("publish_scheduled")
             logger.info("End: management command 'publish_scheduled'")
