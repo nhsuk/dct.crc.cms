@@ -165,14 +165,15 @@ class CampaignHubPage(BasePage):
         # Apply filtering to the child pages, if applicable.
         topic = request.GET.get("topic")
         if topic and topic != "ALL":
-            campaigns = [
-                campaign
-                for campaign in campaigns
+            filtered_campaigns = []
+            for campaign in campaigns:
+                taxonomy_items = json.loads(campaign.taxonomy_json)
                 if any(
                     taxonomy_item.get("code") == topic
-                    for taxonomy_item in json.loads(campaign.taxonomy_json)
-                )
-            ]
+                    for taxonomy_item in taxonomy_items
+                ):
+                    filtered_campaigns.append(campaign)
+            campaigns = filtered_campaigns
         else:
             campaigns = list(campaigns)
 
