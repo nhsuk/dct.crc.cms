@@ -167,12 +167,16 @@ class CampaignHubPage(BasePage):
         if topic and topic != "ALL":
             filtered_campaigns = []
             for campaign in campaigns:
-                taxonomy_items = json.loads(campaign.taxonomy_json)
-                if any(
-                    taxonomy_item.get("code") == topic
-                    for taxonomy_item in taxonomy_items
-                ):
-                    filtered_campaigns.append(campaign)
+                if campaign.taxonomy_json:
+                    try:
+                        taxonomy_items = json.loads(campaign.taxonomy_json)
+                        if any(
+                            taxonomy_item.get("code") == topic
+                            for taxonomy_item in taxonomy_items
+                        ):
+                            filtered_campaigns.append(campaign)
+                    except json.JSONDecodeError:
+                        logger.error(f"Invalid JSON for campaign ID {campaign.id}")
             campaigns = filtered_campaigns
         else:
             campaigns = list(campaigns)
