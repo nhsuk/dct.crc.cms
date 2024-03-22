@@ -56,6 +56,7 @@
             Sort by
         </label>
         <select class="govuk-select" id="sortby" name="sort" onchange="submitSortby(this)">
+            <option value="relevant" {% if sort == 'relevant'%}selected{% endif %}>Most relevant</option>
             <option value="newest" {% if sort == 'newest'%}selected{% endif %}>Newest</option>
             <option value="oldest" {% if sort == 'oldest'%}selected{% endif %}>Oldest</option>
         </select>

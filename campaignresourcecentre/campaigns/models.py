@@ -123,7 +123,7 @@ class CampaignHubPage(BasePage):
         from campaignresourcecentre.search.azure import AzureSearchBackend
 
         topic = request.GET.get("topic")
-        sort = request.GET.get("sort")
+        sort = request.GET.get("sort") or "newest"
         search = AzureSearchBackend({})
         search_value = ""
         fields_queryset = {"objecttype": "campaign"}
@@ -154,7 +154,6 @@ class CampaignHubPage(BasePage):
                 "image_alt": campaign["content"]["resource"].get("image_alt"),
                 "listing_summary": campaign["content"]["resource"].get("descrition"),
                 "url": campaign["content"]["resource"].get("object_url"),
-                "path": campaign["content"]["resource"].get("path"),
             }
             for campaign in campaigns
         ]
@@ -393,7 +392,6 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     else None,
                     "url": resource.url,
                     "last_published_at": resource.last_published_at,
-                    "path": resource.path,
                 }
             )
         return resources_list
@@ -412,7 +410,6 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             "image_url": self.image and self.image.get_rendition("width-400").url,
             "image_alt": self.image and self.image_alt_text,
             "code": self.slug,
-            "path": self.path,
         }
 
     def get_context(self, request, *args, **kwargs):
