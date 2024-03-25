@@ -162,24 +162,32 @@ class CampaignHubPage(BasePage):
         # Get the initial queryset of child campaign pages of the hub.
         campaigns = CampaignPage.objects.live().public().child_of(self).order_by("path")
 
+        def get_taxonomy_JSON(campaign):
+            try:
+                return json.loads(campaign.taxonomy_json)
+            except json.JSONDecodeError:
+                logger.error(
+                    f"Invalid JSON/JSON not found for campaign ID {campaign.id}"
+                )
+                return []
+
+        campaign_taxonomy_data = [
+            (campaign, get_taxonomy_JSON(campaign)) for campaign in campaigns
+        ]
+
         # Apply filtering to the child pages, if applicable.
         topic = request.GET.get("topic")
         if topic and topic != "ALL":
-            filtered_campaigns = []
-            for campaign in campaigns:
-                if campaign.taxonomy_json:
-                    try:
-                        taxonomy_items = json.loads(campaign.taxonomy_json)
-                        if any(
-                            taxonomy_item.get("code") == topic
-                            for taxonomy_item in taxonomy_items
-                        ):
-                            filtered_campaigns.append(campaign)
-                    except json.JSONDecodeError:
-                        logger.error(f"Invalid JSON for campaign ID {campaign.id}")
-            campaigns = filtered_campaigns
+            campaigns = [
+                campaign
+                for campaign, taxonomy_json in campaign_taxonomy_data
+                if any(
+                    taxonomy_item.get("code") == topic
+                    for taxonomy_item in taxonomy_json
+                )
+            ]
         else:
-            campaigns = list(campaigns)
+            return campaigns
 
         # Format the campaigns for display in the template
         return [
@@ -392,9 +400,9 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     "description": resource.description,
                     "summary": resource.summary,
                     "image": resource_item.image if resource_item else None,
-                    "image_alt_text": resource_item.image_alt_text
-                    if resource_item
-                    else None,
+                    "image_alt_text": (
+                        resource_item.image_alt_text if resource_item else None
+                    ),
                     "url": resource.url,
                     "last_published_at": resource.last_published_at,
                 }
