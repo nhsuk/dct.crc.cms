@@ -20,9 +20,9 @@ class CRCV3MainPage(BasePage):
     CRCV_mainpage_label = PageElement(
         By.XPATH, "//h1[text()='Campaign Resource Centre']"
     )
-    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")
+    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest Live Campaigns']")
     S4l_h1 = PageElement(By.TAG_NAME, "h1")
-    Sign_In_link = PageElement(By.LINK_TEXT, "Sign in")
+    Sign_In_link = PageElement(By.PARTIAL_LINK_TEXT, "Sign in")
     Sign_In_label = PageElement(By.XPATH, "//h1[text()[normalize-space()='Sign in']]")
     email_id = PageElement(By.ID, "id_email")
     Password = PageElement(By.ID, "id_password")
