@@ -5,10 +5,7 @@ from django.conf import settings
 from django.core.files import File
 from django.core.files.storage import get_storage_class
 from django.utils.functional import LazyObject
-from storages.backends.azure_storage import AzureStorage, clean_name
-from campaignresourcecentre.custom_storages.custom_azure_file import (
-    AzureMediaStorageFile,
-)
+from storages.backends.azure_storage import AzureStorage, AzureStorageFile, clean_name
 
 logger = logging.getLogger(__name__)
 
@@ -68,22 +65,17 @@ class AzureMediaStorage(AzureStorage):
             name = content.name
         available_name = self.get_available_name(name, max_length=max_length)
 
-        if not name.startswith("documents/"):
-            logger.error(
-                f"attempting to save blob to folder other than 'documents' - save will not take place"
-            )
-            return
-
-        temp_blob_name = name[len("documents/") :]
-        if self.exists(temp_blob_name):
-            logger.info(
-                "Saving %s in container %s of account %s using temp blob %s",
-                available_name,
-                __class__.azure_container,
-                __class__.account_name,
-                temp_blob_name,
-            )
-            return self._move_temp_blob(temp_blob_name, available_name, content)
+        if name.startswith("documents/"):
+            temp_blob_name = name[len("documents/") :]
+            if self.exists(temp_blob_name):
+                logger.info(
+                    "Saving %s in container %s of account %s using temp blob %s",
+                    available_name,
+                    __class__.azure_container,
+                    __class__.account_name,
+                    temp_blob_name,
+                )
+                return self._move_temp_blob(temp_blob_name, available_name, content)
 
         if not hasattr(content, "chunks"):
             content = File(content, available_name)
@@ -93,7 +85,6 @@ class AzureMediaStorage(AzureStorage):
             available_name,
             __class__.azure_container,
             __class__.account_name,
-            temp_blob_name,
         )
         return self._save(available_name, content)
 
@@ -110,7 +101,7 @@ class AzureMediaStorage(AzureStorage):
 
     def _open(self, name, mode="rb"):
         logger.info("Opening media storage: %s %s", name, mode)
-        return AzureMediaStorageFile(name, self, mode)
+        return AzureStorageFile(name, mode, self)
 
     def _get_valid_path(self, name):
         return self._normalize_name(clean_name(name))

@@ -17,7 +17,7 @@ from uuid import uuid4
 DEFAULT_BLOB_BLOCK_SIZE = 1024 * 1024 * 4
 
 
-class AzureMediaStorageFile(AzureStorageFile):
+class AzureBlobStorageFile(AzureStorageFile):
     def __init__(
         self,
         blob_name,
@@ -52,12 +52,8 @@ class AzureMediaStorageFile(AzureStorageFile):
             self.block_list = []
             self.size = 0
 
-    def _get_file(self):
-        logger.info("get AzureMediaStorageFile from %s", self._blob)
-        return super()._get_file(self)
-
     def delete(self):
-        logger.info("deleting AzureMediaStorageFile from %s", self.blob_name)
+        logger.info("deleting AzureBlobStorageFile from %s", self.blob_name)
         try:
             self.blob_client.delete_blob(self.blob_name)
         except ResourceNotFoundError:

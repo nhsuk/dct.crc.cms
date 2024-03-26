@@ -6,7 +6,7 @@ import json
 from django.core.files.uploadedfile import UploadedFile
 from io import BytesIO
 from campaignresourcecentre.custom_storages.custom_azure_file import (
-    AzureMediaStorageFile,
+    AzureBlobStorageFile,
 )
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -77,7 +77,7 @@ class AzureBlobUploadHandler(FileUploadHandler):
             end_blob_name,
         )
         self.chunks = 0
-        self.blob_file = AzureMediaStorageFile(self.blob_name, self.storage, "wb")
+        self.blob_file = AzureBlobStorageFile(self.blob_name, self.storage, "wb")
 
     def receive_data_chunk(self, raw_data, start):
         self.blob_file.write(raw_data)
