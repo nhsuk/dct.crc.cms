@@ -9,6 +9,9 @@ from campaignresourcecentre.custom_storages.custom_azure_uploader import (
 from campaignresourcecentre.custom_storages.custom_azure_file import (
     AzureBlobStorageFile,
 )
+from campaignresourcecentre.custom_storages.custom_azure_storage import (
+    AzureMediaStorage,
+)
 
 
 TEST_CONTENT = b"test_content"
@@ -165,3 +168,70 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
         self.assertEqual(result.size, len(TEST_CONTENT))
         self.assertEqual(result.charset, self.charset)
         self.assertEqual(result.content_type_extra, self.content_type_extra)
+
+
+class AzureMediaStorageTestCase(unittest.TestCase):
+    def setUp(self):
+        self.storage = AzureMediaStorage()
+
+    def test_save_document_when_no_temp_blob_exists_uses_basic_save(self):
+        name = "documents/smallfile.pdf"
+
+        with patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+        ) as get_available_name_mock, patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.exists"
+        ) as exists_mock, patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
+        ) as _save_mock:
+            get_available_name_mock.return_value = name
+            exists_mock.return_value = False
+
+            self.storage.save(name, TEST_CONTENT)
+
+            self.assertTrue(_save_mock.called)
+
+    def test_save_document_when_temp_blob_exists_uses_move_temp_blob(self):
+        name = "documents/largefile.pdf"
+
+        with patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+        ) as get_available_name_mock, patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.exists"
+        ) as exists_mock, patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._move_temp_blob"
+        ) as _move_temp_blob_mock:
+            get_available_name_mock.return_value = name
+            exists_mock.return_value = True
+
+            self.storage.save(name, TEST_CONTENT)
+
+            self.assertTrue(_move_temp_blob_mock.called)
+
+    def test_save_image_rendition_uses_basic_save(self):
+        name = "images/rendition.width-200.jpg"
+
+        with patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+        ) as get_available_name_mock, patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
+        ) as _save_mock:
+            get_available_name_mock.return_value = name
+
+            self.storage.save(name, TEST_CONTENT)
+
+            self.assertTrue(_save_mock.called)
+
+    def test_save_original_image_uses_basic_save(self):
+        name = "original_images/original.jpg"
+
+        with patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+        ) as get_available_name_mock, patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
+        ) as _save_mock:
+            get_available_name_mock.return_value = name
+
+            self.storage.save(name, TEST_CONTENT)
+
+            self.assertTrue(_save_mock.called)

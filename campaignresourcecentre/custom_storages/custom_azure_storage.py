@@ -19,40 +19,16 @@ class AzureMediaStorage(AzureStorage):
     external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
     custom_domain = None
 
-    # Based on Azure storage _save method
-    def _move_temp_blob(
-        self,
-        temp_blob_name,
-        new_blob_name,
-        content,
-    ):
-        cleaned_name = clean_name(new_blob_name)
-        new_blob_name = self._get_valid_path(new_blob_name)
-        params = self._get_content_settings_parameters(new_blob_name, content)
-        temp_blob_client = self.client.get_blob_client(temp_blob_name)
-        new_blob_client = self.client.get_blob_client(new_blob_name)
+    def __init__(self, **settings):
+        super().__init__(**settings)
+        logger.info("Using storage domain '%s' for media", self.custom_domain)
 
-        temp_url = temp_blob_client.url
-        new_blob_client.start_copy_from_url(temp_url)
-        if params:
-            new_blob_client.set_http_headers(
-                ContentSettings(
-                    **{
-                        name: value
-                        for name, value in params.items()
-                        if value is not None
-                    }
-                )
-            )
-        temp_blob_client.delete_blob()
-
-        logger.info(
-            "Blob %s renamed to %s with headers %s",
-            temp_blob_name,
-            new_blob_name,
-            params,
-        )
-        return cleaned_name
+    def url(self, name, expire=None, parameters=None):
+        initial_url = super().url(name, expire, parameters)
+        components = list(urlparse(initial_url))
+        components[1] = self.external_domain
+        new_url = urlunparse(components)
+        return new_url
 
     def save(self, name, content, max_length=None):
         """
@@ -88,16 +64,40 @@ class AzureMediaStorage(AzureStorage):
         )
         return self._save(available_name, content)
 
-    def __init__(self, **settings):
-        super().__init__(**settings)
-        logger.info("Using storage domain '%s' for media", self.custom_domain)
+    # Based on Azure storage _save method
+    def _move_temp_blob(
+        self,
+        temp_blob_name,
+        new_blob_name,
+        content,
+    ):
+        cleaned_name = clean_name(new_blob_name)
+        new_blob_name = self._get_valid_path(new_blob_name)
+        params = self._get_content_settings_parameters(new_blob_name, content)
+        temp_blob_client = self.client.get_blob_client(temp_blob_name)
+        new_blob_client = self.client.get_blob_client(new_blob_name)
 
-    def url(self, name, expire=None, parameters=None):
-        initial_url = super().url(name, expire, parameters)
-        components = list(urlparse(initial_url))
-        components[1] = self.external_domain
-        new_url = urlunparse(components)
-        return new_url
+        temp_url = temp_blob_client.url
+        new_blob_client.start_copy_from_url(temp_url)
+        if params:
+            new_blob_client.set_http_headers(
+                ContentSettings(
+                    **{
+                        name: value
+                        for name, value in params.items()
+                        if value is not None
+                    }
+                )
+            )
+        temp_blob_client.delete_blob()
+
+        logger.info(
+            "Blob %s renamed to %s with headers %s",
+            temp_blob_name,
+            new_blob_name,
+            params,
+        )
+        return cleaned_name
 
     def _open(self, name, mode="rb"):
         logger.info("Opening media storage: %s %s", name, mode)
