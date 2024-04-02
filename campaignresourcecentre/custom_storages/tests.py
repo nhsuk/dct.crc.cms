@@ -171,73 +171,58 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
 
 
 class AzureMediaStorageTestCase(unittest.TestCase):
+    def __init__(self, methodName: str = "runTest"):
+        super().__init__(methodName)
+        self.storage_class_to_mock = "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage"
+        self.storage_mock_method_names = [
+            "get_available_name",
+            "exists",
+            "_save",
+            "_move_temp_blob",
+        ]
+
     def setUp(self):
         self.storage = AzureMediaStorage()
+        self.patches = {}
+        self.mocks = {}
+        for method in self.storage_mock_method_names:
+            self.patches[method] = patch(f"{self.storage_class_to_mock}.{method}")
+            self.mocks[method] = self.patches[method].start()
 
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
-    )
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.exists"
-    )
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
-    )
-    def test_save_document_when_no_temp_blob_exists_uses_basic_save(
-        self, get_available_name, exists, _save
-    ):
+    def tearDown(self):
+        for patch in self.patches.values():
+            patch.stop()
+
+    def test_save_document_when_no_temp_blob_exists_uses_basic_save(self):
         name = "documents/smallfile.pdf"
-        get_available_name.return_value = name
-        exists.return_value = False
+        self.mocks["get_available_name"].return_value = name
+        self.mocks["exists"].return_value = False
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(_save.called)
+        self.assertTrue(self.mocks["_save"].called)
 
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
-    )
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.exists"
-    )
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._move_temp_blob"
-    )
-    def test_save_document_when_temp_blob_exists_uses_move_temp_blob(
-        self, get_available_name, exists, _move_temp_blob
-    ):
+    def test_save_document_when_temp_blob_exists_uses_move_temp_blob(self):
         name = "documents/largefile.pdf"
-        get_available_name.return_value = name
-        exists.return_value = True
+        self.mocks["get_available_name"].return_value = name
+        self.mocks["exists"].return_value = True
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(_move_temp_blob.called)
+        self.assertTrue(self.mocks["_move_temp_blob"].called)
 
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
-    )
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
-    )
-    def test_save_image_rendition_uses_basic_save(self, get_available_name, _save):
+    def test_save_image_rendition_uses_basic_save(self):
         name = "images/rendition.width-200.jpg"
-        get_available_name.return_value = name
+        self.mocks["get_available_name"].return_value = name
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(_save.called)
+        self.assertTrue(self.mocks["_save"].called)
 
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
-    )
-    @patch(
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
-    )
-    def test_save_original_image_uses_basic_save(self, get_available_name, _save):
+    def test_save_original_image_uses_basic_save(self):
         name = "original_images/original.jpg"
-        get_available_name.return_value = name
+        self.mocks["get_available_name"].return_value = name
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(_save.called)
+        self.assertTrue(self.mocks["_save"].called)
