@@ -2,6 +2,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
+from django.http import HttpRequest
 
 from .azure import (
     AzureSearchBackend,
@@ -14,6 +15,9 @@ from .azure import (
 from campaignresourcecentre.core.management.commands.searchorphans import (
     process_orphans,
 )
+
+from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
+from campaignresourcecentre.campaigns.models import logger
 
 
 class TestAzureSearchBackend(TestCase):
@@ -47,7 +51,7 @@ class TestAzureSearchBackend(TestCase):
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
         results_per_page = "1000"
-        expected = "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&searchMode=all&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&$orderby=content/resource/title asc&$top=1000"  # noqa
+        expected = "https://nhsuk-apim-int-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&searchMode=all&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&$orderby=content/resource/title asc&$top=1000"  # noqa
         url = self.azure_search._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
@@ -130,3 +134,131 @@ class TestAzureSearchRebuilder(TestCase):
             repr(results),
             repr(MOCKED_ORPHANS_RESULT),
         )
+
+
+class TestDatabaseSearch(TestCase):
+    def setUp(self):
+        self.campaign_hub_page = CampaignHubPage()
+        self.mock_campaigns = [
+            MagicMock(
+                spec=CampaignPage,
+                id=1,
+                listing_title="Campaign 1",
+                title="Title 1",
+                summary="Summary 1",
+                listing_image="Image1.jpg",
+                image="ImageA.jpg",
+                listing_summary="Listing Summary 1",
+                url="/campaign/1/",
+                taxonomy_json=json.dumps([{"code": "FLU"}]),
+            ),
+            MagicMock(
+                spec=CampaignPage,
+                id=2,
+                listing_title="Campaign 2",
+                title="Title 2",
+                summary="Summary 2",
+                listing_image="Image2.jpg",
+                image="ImageB.jpg",
+                listing_summary="Listing Summary 2",
+                url="/campaign/2/",
+                taxonomy_json=json.dumps([{"code": "FLU"}]),
+            ),
+            MagicMock(
+                spec=CampaignPage,
+                id=3,
+                listing_title="Campaign 3",
+                title="Title 3",
+                summary="Summary 3",
+                listing_image="Image3.jpg",
+                image="ImageB.jpg",
+                listing_summary="Listing Summary 3",
+                url="/campaign/3/",
+                taxonomy_json=json.dumps([{"code": "CANCER"}]),
+            ),
+        ]
+
+    @patch("campaignresourcecentre.campaigns.models.CampaignPage.objects.live")
+    def test_from_database_filter_all(self, mock_live):
+        mock_queryset = MagicMock()
+        mock_queryset.public().child_of().order_by.return_value = self.mock_campaigns
+        mock_live.return_value = mock_queryset
+
+        request = HttpRequest()
+        request.GET["topic"] = "ALL"
+        request.GET["sort"] = "recommended"
+
+        expected_data = [
+            {
+                "title": "Campaign 1",
+                "summary": "Summary 1",
+                "image": "Image1.jpg",
+                "listing_summary": "Listing Summary 1",
+                "url": "/campaign/1/",
+            },
+            {
+                "title": "Campaign 2",
+                "summary": "Summary 2",
+                "image": "Image2.jpg",
+                "listing_summary": "Listing Summary 2",
+                "url": "/campaign/2/",
+            },
+            {
+                "title": "Campaign 3",
+                "summary": "Summary 3",
+                "image": "Image3.jpg",
+                "listing_summary": "Listing Summary 3",
+                "url": "/campaign/3/",
+            },
+        ]
+
+        actual_data = self.campaign_hub_page.from_database(request)
+        self.assertEqual(expected_data, actual_data)
+
+    @patch("campaignresourcecentre.campaigns.models.CampaignPage.objects.live")
+    def test_from_database_filter_specific_topic(self, mock_live):
+        mock_live().public().child_of().order_by.return_value = self.mock_campaigns
+
+        request = HttpRequest()
+        request.GET["topic"] = "CANCER"
+
+        expected_data = [
+            {
+                "title": "Campaign 3",
+                "summary": "Summary 3",
+                "image": "Image3.jpg",
+                "listing_summary": "Listing Summary 3",
+                "url": "/campaign/3/",
+            }
+        ]
+
+        actual_data = self.campaign_hub_page.from_database(request)
+        self.assertEqual(expected_data, actual_data)
+
+    @patch("campaignresourcecentre.campaigns.models.CampaignPage.objects.live")
+    @patch("campaignresourcecentre.campaigns.models.logger")
+    def test_from_database_invalid_json(self, mock_logger, mock_live):
+
+        self.mock_campaigns.append(
+            MagicMock(
+                spec=CampaignPage,
+                id=4,
+                listing_title="Invalid JSON Campaign",
+                title="Invalid JSON",
+                summary="Invalid JSON",
+                listing_image="ImageInvalid.jpg",
+                image="ImageInvalid.jpg",
+                listing_summary="Invalid JSON Summary",
+                url="/campaign/invalid/",
+                taxonomy_json="invalid_json",
+            )
+        )
+
+        mock_live().public().child_of().order_by.return_value = self.mock_campaigns
+
+        request = HttpRequest()
+        request.GET["topic"] = "ALL"
+
+        self.campaign_hub_page.from_database(request)
+
+        mock_logger.error.assert_called()
