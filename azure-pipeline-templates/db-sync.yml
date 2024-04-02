@@ -49,6 +49,16 @@ stages:
       - CopyFromProdDB
     condition: and(succeeded(), eq('${{ parameters.deployToReview }}', true), eq('${{ parameters.deployToProd }}', 'false'))
     jobs:
+      - job: DBUsersCopy
+        steps:
+          - template: templates/db-users-download.yaml
+            parameters:
+              azureSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-rev-uks"
+              StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+              BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+              BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
+              environment: "review"
       - job: DBPaste
         steps:
           - template: templates/db-sync-upload.yaml
@@ -59,6 +69,7 @@ stages:
               DBName: crcv3review
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks
+              environment: "review"
 
   - stage: CopyToIntegrationDB
     displayName: "Copy to Integration Database"
