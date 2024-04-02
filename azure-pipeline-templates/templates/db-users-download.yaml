@@ -20,11 +20,11 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:11 \
-      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile"> db-dump-${{parameters.environment}}.dump
+      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile"> ${{parameters.environment}}-users-db-dump.dump
   name: 'CreateUsersCopy'
   displayName: 'Create Env Users Copy'
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/db-dump-${{parameters.environment}}.dump
-    artifactName: '${{parameters.environment}}-db.dump'
+    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.environment}}-users-db-dump.dump
+    artifactName: '${{parameters.environment}}-users-db.dump'

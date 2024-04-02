@@ -13,7 +13,7 @@ steps:
 
 - task: DownloadPipelineArtifact@2
   inputs:
-    artifact: '${{parameters.envrionment}}-db.dump'
+    artifact: '${{parameters.envrionment}}-users-db.dump'
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
@@ -29,7 +29,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/prod-db-dump.dump:/prod-db.dump \
-      -v $(pwd)/${{parameters.envrionment}}-db-dump.dump:/${{parameters.envrionment}}-db.dump \
+      -v $(pwd)/${{parameters.envrionment}}-users-db-dump.dump:/${{parameters.envrionment}}-users-db.dump \
       postgres:11 \
       psql -d "${{parameters.DBName}}" \
       -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '${{parameters.DBName}}' AND pid <> pg_backend_pid();"
@@ -75,7 +75,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/db-dump.dump:/db.dump \
+      -v $(pwd)/prod-db-dump.dump:/prod-db.dump \
       postgres:11 \
       pg_restore --no-acl --no-owner -d "${{parameters.DBName}}" prod-db.dump
   displayName: 'Copy prod to target database'
@@ -92,7 +92,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.envrionment}}-db-dump.dump:/${{parameters.envrionment}}-db.dump \
+      -v $(pwd)/${{parameters.envrionment}}-db-dump.dump:/${{parameters.envrionment}}-users-db.dump \
       postgres:11 \
       psql -d "${{parameters.DBName}}" \
       -c "copy (SELECT 'ALTER TABLE '||constrained_table||' DROP CONSTRAINT '||constraint_name||'; ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||on_delete||' '||def||';'
@@ -138,7 +138,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.environment}}-db-dump.dump:/${{parameters.environment}}-db.dump \
+      -v $(pwd)/${{parameters.environment}}-users-db-dump.dump:/${{parameters.environment}}-users-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner --clean -d "${{parameters.DBName}}" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.environment}}-db.dump 
+      pg_restore --no-acl --no-owner --clean -d "${{parameters.DBName}}" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.environment}}-users-db.dump 
   displayName: 'Restore non-prod users to target database'

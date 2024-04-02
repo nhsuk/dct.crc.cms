@@ -47,7 +47,7 @@ steps:
         --file db-dump-$(currentDatestamp.Datestamp).dump \
         --name db-dump-$(currentDatestamp.Datestamp).dump
 
-      # Rename the data dump back to db.dump
+      # Rename the data dump back to prod-db.dump
       mv db-dump-$(currentDatestamp.Datestamp).dump prod-db-dump.dump
   name: 'BlobStorageBackup'
   displayName: 'Backup to Blob Storage'
