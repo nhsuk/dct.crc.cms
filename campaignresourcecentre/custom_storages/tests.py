@@ -171,6 +171,9 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
 
 
 class AzureMediaStorageTestCase(unittest.TestCase):
+    def setUp(self):
+        self.storage = AzureMediaStorage()
+
     @patch(
         "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
     )
@@ -180,46 +183,61 @@ class AzureMediaStorageTestCase(unittest.TestCase):
     @patch(
         "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
     )
+    def test_save_document_when_no_temp_blob_exists_uses_basic_save(
+        self, get_available_name, exists, _save
+    ):
+        name = "documents/smallfile.pdf"
+        get_available_name.return_value = name
+        exists.return_value = False
+
+        self.storage.save(name, TEST_CONTENT)
+
+        self.assertTrue(_save.called)
+
+    @patch(
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+    )
+    @patch(
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.exists"
+    )
     @patch(
         "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._move_temp_blob"
     )
-    def setUp(self, get_available_name, exists, _save, _move_temp_blob):
-        self.storage = AzureMediaStorage()
-        self.get_available_name_mock = get_available_name
-        self.exists_mock = exists
-        self._save_mock = _save
-        self._move_temp_blob = _move_temp_blob
-
-    def test_save_document_when_no_temp_blob_exists_uses_basic_save(self):
-        name = "documents/smallfile.pdf"
-        self.get_available_name_mock.return_value = name
-        self.exists_mock.return_value = False
-
-        self.storage.save(name, TEST_CONTENT)
-
-        self.assertTrue(self._save_mock.called)
-
-    def test_save_document_when_temp_blob_exists_uses_move_temp_blob(self):
+    def test_save_document_when_temp_blob_exists_uses_move_temp_blob(
+        self, get_available_name, exists, _move_temp_blob
+    ):
         name = "documents/largefile.pdf"
-        self.get_available_name_mock.return_value = name
-        self.exists_mock.return_value = True
+        get_available_name.return_value = name
+        exists.return_value = True
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(self._move_temp_blob_mock.called)
+        self.assertTrue(_move_temp_blob.called)
 
-    def test_save_image_rendition_uses_basic_save(self):
+    @patch(
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+    )
+    @patch(
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
+    )
+    def test_save_image_rendition_uses_basic_save(self, get_available_name, _save):
         name = "images/rendition.width-200.jpg"
-        self.get_available_name_mock.return_value = name
+        get_available_name.return_value = name
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(self._save_mock.called)
+        self.assertTrue(_save.called)
 
-    def test_save_original_image_uses_basic_save(self):
+    @patch(
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage.get_available_name"
+    )
+    @patch(
+        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage._save"
+    )
+    def test_save_original_image_uses_basic_save(self, get_available_name, _save):
         name = "original_images/original.jpg"
-        self.get_available_name_mock.return_value = name
+        get_available_name.return_value = name
 
         self.storage.save(name, TEST_CONTENT)
 
-        self.assertTrue(self._save_mock.called)
+        self.assertTrue(_save.called)
