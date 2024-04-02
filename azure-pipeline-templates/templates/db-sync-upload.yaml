@@ -13,7 +13,7 @@ steps:
 
 - task: DownloadPipelineArtifact@2
   inputs:
-    artifact: '${{parameters.envrionment}}-users-db.dump'
+    artifact: '${{parameters.environment}}-users-db.dump'
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
