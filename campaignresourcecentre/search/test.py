@@ -171,11 +171,21 @@ class TestDatabaseSearch(TestCase):
                 title="Title 3",
                 summary="Summary 3",
                 listing_image="Image3.jpg",
-                image="ImageB.jpg",
+                image="ImageC.jpg",
                 listing_summary="Listing Summary 3",
                 url="/campaign/3/",
                 taxonomy_json=json.dumps([{"code": "CANCER"}]),
             ),
+        ]
+        self.expected_mock_campaigns_data = [
+            {
+                "title": mock.listing_title,
+                "summary": mock.summary,
+                "image": mock.listing_image,
+                "listing_summary": mock.listing_summary,
+                "url": mock.url,
+            }
+            for mock in self.mock_campaigns
         ]
 
     @patch("campaignresourcecentre.campaigns.models.CampaignPage.objects.live")
@@ -188,32 +198,8 @@ class TestDatabaseSearch(TestCase):
         request.GET["topic"] = "ALL"
         request.GET["sort"] = "recommended"
 
-        expected_data = [
-            {
-                "title": "Campaign 1",
-                "summary": "Summary 1",
-                "image": "Image1.jpg",
-                "listing_summary": "Listing Summary 1",
-                "url": "/campaign/1/",
-            },
-            {
-                "title": "Campaign 2",
-                "summary": "Summary 2",
-                "image": "Image2.jpg",
-                "listing_summary": "Listing Summary 2",
-                "url": "/campaign/2/",
-            },
-            {
-                "title": "Campaign 3",
-                "summary": "Summary 3",
-                "image": "Image3.jpg",
-                "listing_summary": "Listing Summary 3",
-                "url": "/campaign/3/",
-            },
-        ]
-
         actual_data = self.campaign_hub_page.from_database(request)
-        self.assertEqual(expected_data, actual_data)
+        self.assertEqual(self.expected_mock_campaigns_data, actual_data)
 
     @patch("campaignresourcecentre.campaigns.models.CampaignPage.objects.live")
     def test_from_database_filter_specific_topic(self, mock_live):
