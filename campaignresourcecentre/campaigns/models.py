@@ -186,8 +186,6 @@ class CampaignHubPage(BasePage):
                     for taxonomy_item in taxonomy_json
                 )
             ]
-        else:
-            return campaigns
 
         # Format the campaigns for display in the template
         return [
