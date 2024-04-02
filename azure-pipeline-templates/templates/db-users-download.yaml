@@ -1,4 +1,14 @@
 parameters:
+  - name: azureSubscription
+    type: string
+  - name: VaultId
+    type: string
+  - name: StorageAccountNameDbDump
+    type: string
+  - name: BlobStorageKeyDbDump
+    type: string
+  - name: BlobStorageContainerNameDbDump
+    type: string
   - name: environment
     type: string
     
