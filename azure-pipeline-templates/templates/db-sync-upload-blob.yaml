@@ -1,0 +1,40 @@
+steps:
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
+  inputs:
+    azureSubscription: ${{parameters.azureSubscription}}
+    KeyVaultName: ${{parameters.VaultId}}
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
+
+- bash: |
+    date=`date "+%d-%m-%Y_%H:%M:%S"`;
+    echo $date
+    echo "##vso[task.setvariable variable=Datestamp;isOutput=True]$date"
+  name: 'currentDatestamp'
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: '${{parameters.artifactPrefix}}-db.dump'
+    path: $(Build.SourcesDirectory)
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+
+      # Rename the data dump to contain timestamp before upload
+      mv ${{parameters.artifactPrefix}}-db.dump db-dump-$(currentDatestamp.Datestamp).dump
+
+      # Save a copy to azure blob storage
+      az storage blob upload \
+        --account-name ${{parameters.StorageAccountNameDbDump}} \
+        --account-key ${{parameters.BlobStorageKeyDbDump}} \
+        --container-name ${{parameters.BlobStorageContainerNameDbDump}} \
+        --file db-dump-$(currentDatestamp.Datestamp).dump \
+        --name db-dump-$(currentDatestamp.Datestamp).dump
+  name: 'BlobStorageBackup'
+  displayName: 'Backup to Blob Storage'

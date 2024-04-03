@@ -1,0 +1,30 @@
+steps:
+- template: templates/db-sync-download-dump.yaml
+  parameters:
+    azureSubscription: ${{ parameters.azureVaultSubscription }}
+    VaultId: ${{ parameters.VaultId }}
+    artifactPrefix: "${{ parameters.environment }}-users"
+    usersOnly: True
+
+- template: templates/db-sync-upload-dump.yaml
+  parameters:
+    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    VaultId: ${{ parameters.VaultId }}
+    DBName: ${{ parameters.DBName }}
+    Server: ${{ parameters.Server }}
+    ResourceGroup: ${{ parameters.ResourceGroup }}
+    artifactPrefix: "prod"
+
+- template: templates/db-sync-restore-users.yaml
+  parameters:
+    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    VaultId: ${{ parameters.VaultId }}
+    artifactPrefix: "${{ parameters.environment }}-users"
+    
+- template: templates/db-sync-download-dump.yaml
+  parameters:
+    azureSubscription: ${{ parameters.azureVaultSubscription }}
+    VaultId: ${{ parameters.VaultId }}
+    artifactPrefix: ${{ parameters.environment }}

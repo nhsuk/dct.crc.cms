@@ -207,23 +207,6 @@ steps:
   displayName: 'Delete prod users'
 
 - task: AzureCLI@2
-  continueOnError: true
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
-      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
-      psql -d "crcv3review" -f "/psql_commands_scripts/drop_user_constraints.csv"
-  displayName: 'Drop user based constraints again'
-
-- task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
