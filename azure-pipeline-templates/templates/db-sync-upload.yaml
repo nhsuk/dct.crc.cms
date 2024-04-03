@@ -238,37 +238,3 @@ steps:
       postgres:11 \
       pg_restore --no-acl --no-owner --clean -d "${{parameters.DBName}}" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.environment}}-users-db.dump 
   displayName: 'Restore non-prod users to target database'
-
-- task: AzureCLI@2
-  continueOnError: true
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
-      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
-      psql -d "crcv3review" -f "/psql_commands_scripts/drop_user_constraints.csv"
-  displayName: 'Drop new user based constraints'
-
-- task: AzureCLI@2
-  continueOnError: true
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
-      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
-      psql -d "crcv3review" -f "/psql_commands_scripts/add_user_constraints.csv"
-  displayName: 'Add modified user based constraints again'
