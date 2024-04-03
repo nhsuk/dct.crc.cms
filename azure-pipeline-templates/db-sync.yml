@@ -60,6 +60,7 @@ stages:
 
   - stage: GenerateScripts
     displayName: "Generate Scripts"
+    dependsOn: []
     condition: and(eq('${{ parameters.deployToProd }}', 'false'), or(eq('${{ parameters.deployToReview }}', 'true'), eq('${{ parameters.deployToIntegration }}', 'true'), eq('${{ parameters.deployToStaging }}', 'true')))
     jobs:
       - job: GenerateScripts
