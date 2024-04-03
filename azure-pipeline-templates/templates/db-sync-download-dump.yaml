@@ -7,7 +7,7 @@ steps:
     SecretsFilter: DBPass, DBName, DBHost, DBUser
 
   - task: AzureCLI@2
-    condition: eq(parameters.usersOnly, True)
+    condition: ${{ eq(parameters.usersOnly, True) }}
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}
       scriptType: 'bash'
@@ -25,7 +25,7 @@ steps:
     displayName: 'Dump ${{parameters.artifactPrefix}} users'
 
   - task: AzureCLI@2
-    condition: ne(parameters.usersOnly, True)
+    condition: ${{ ne(parameters.usersOnly, True) }}
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}
       scriptType: 'bash'
