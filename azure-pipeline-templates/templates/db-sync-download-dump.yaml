@@ -6,8 +6,8 @@ steps:
     KeyVaultName: ${{parameters.VaultId}}
     SecretsFilter: DBPass, DBName, DBHost, DBUser
 
-- ${{ if eq(parameters.usersOnly, true) }}
   - task: AzureCLI@2
+    condition: eq(parameters.usersOnly, True)
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}
       scriptType: 'bash'
@@ -24,8 +24,8 @@ steps:
     name: 'CreateUsersCopy'
     displayName: 'Dump ${{parameters.artifactPrefix}} users'
 
-- ${{ else }}
   - task: AzureCLI@2
+    condition: ne(parameters.usersOnly, True)
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}
       scriptType: 'bash'
