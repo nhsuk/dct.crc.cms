@@ -3,7 +3,7 @@ steps:
   parameters:
     azureSubscription: ${{ parameters.azureVaultSubscription }}
     VaultId: ${{ parameters.VaultId }}
-    artifactPrefix: "${{ parameters.environment }}-users"
+    artifactPrefix: "${{ parameters.environment }}_users"
     usersOnly: True
 
 - template: ./db-sync-upload-dump.yaml
@@ -21,7 +21,7 @@ steps:
     azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
     VaultId: ${{ parameters.VaultId }}
-    artifactPrefix: "${{ parameters.environment }}-users"
+    artifactPrefix: "${{ parameters.environment }}_users"
     
 - template: ./db-sync-download-dump.yaml
   parameters:

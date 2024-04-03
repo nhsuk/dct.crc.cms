@@ -21,7 +21,7 @@ steps:
       -e PGUSER="$(DBUser)" \
       postgres:11 \
       pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.artifactPrefix}}-db-dump.dump
-  name: 'Create${{parameters.artifactPrefix}}Copy'
+  name: 'Create_${{parameters.artifactPrefix}}_Copy'
   displayName: 'Dump ${{parameters.artifactPrefix}}'
 
 - task: AzureCLI@2
@@ -39,7 +39,7 @@ steps:
       -e PGUSER="$(DBUser)" \
       postgres:11 \
       pg_dump -Fc "$(DBName)" > ${{parameters.artifactPrefix}}-db-dump.dump
-  name: 'Create${{parameters.artifactPrefix}}DBCopy'
+  name: 'Create_${{parameters.artifactPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.artifactPrefix}} DB'
 
 - task: PublishPipelineArtifact@1
