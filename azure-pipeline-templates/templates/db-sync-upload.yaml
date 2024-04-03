@@ -238,3 +238,26 @@ steps:
       postgres:11 \
       pg_restore --no-acl --no-owner --clean -d "${{parameters.DBName}}" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.environment}}-users-db.dump 
   displayName: 'Restore non-prod users to target database'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      postgres:11 \
+      pg_dump -Fc "$(DBName)" > ${{parameters.environment}}-db-dump.dump
+  name: 'CreateCopy'
+  displayName: 'Create Env Copy'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.environment}}-db-dump.dump
+    artifactName: '${{parameters.environment}}-db.dump'
