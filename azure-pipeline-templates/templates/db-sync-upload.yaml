@@ -137,7 +137,7 @@ steps:
                     WHERE table_name=relname
                         AND ordinal_position=confkey[1]) AS ref_column,
                 (SELECT
-                    CASE WHEN NOT is_nullable = 'NO' THEN 'ON DELETE CASCADE'
+                    CASE WHEN is_nullable = 'NO' THEN 'ON DELETE CASCADE'
                     ELSE 'ON DELETE SET NULL'
                     END
                     FROM information_schema.columns
