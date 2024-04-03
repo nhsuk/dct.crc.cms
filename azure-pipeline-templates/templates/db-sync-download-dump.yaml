@@ -6,41 +6,41 @@ steps:
     KeyVaultName: ${{parameters.VaultId}}
     SecretsFilter: DBPass, DBName, DBHost, DBUser
 
-  - task: AzureCLI@2
-    condition: ${{ eq(parameters.usersOnly, True) }}
-    inputs:
-      azureSubscription: ${{parameters.azureSubscription}}
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        set -x
-        set -e
-        docker run \
-        -e PGHOST="$(DBHost)" \
-        -e PGPASSWORD="$(DBPass)" \
-        -e PGUSER="$(DBUser)" \
-        postgres:11 \
-        pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.artifactPrefix}}-db-dump.dump
-    name: 'CreateUsersCopy'
-    displayName: 'Dump ${{parameters.artifactPrefix}} users'
+- task: AzureCLI@2
+  condition: ${{ eq(parameters.usersOnly, True) }}
+  inputs:
+    azureSubscription: ${{parameters.azureSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      postgres:11 \
+      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.artifactPrefix}}-db-dump.dump
+  name: 'CreateUsersCopy'
+  displayName: 'Dump ${{parameters.artifactPrefix}} users'
 
-  - task: AzureCLI@2
-    condition: ${{ ne(parameters.usersOnly, True) }}
-    inputs:
-      azureSubscription: ${{parameters.azureSubscription}}
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        set -x
-        set -e
-        docker run \
-        -e PGHOST="$(DBHost)" \
-        -e PGPASSWORD="$(DBPass)" \
-        -e PGUSER="$(DBUser)" \
-        postgres:11 \
-        pg_dump -Fc "$(DBName)" > ${{parameters.artifactPrefix}}-db-dump.dump
-    name: 'CreateDBCopy'
-    displayName: 'Dump ${{parameters.artifactPrefix}} DB'
+- task: AzureCLI@2
+  condition: ${{ ne(parameters.usersOnly, True) }}
+  inputs:
+    azureSubscription: ${{parameters.azureSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      postgres:11 \
+      pg_dump -Fc "$(DBName)" > ${{parameters.artifactPrefix}}-db-dump.dump
+  name: 'CreateDBCopy'
+  displayName: 'Dump ${{parameters.artifactPrefix}} DB'
 
 - task: PublishPipelineArtifact@1
   inputs:
