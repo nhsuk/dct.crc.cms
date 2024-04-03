@@ -203,7 +203,7 @@ steps:
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
-      psql -d "crcv3review" -f "DELETE FROM users_user"
+      psql -d "crcv3review" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'
 
 - task: AzureCLI@2
