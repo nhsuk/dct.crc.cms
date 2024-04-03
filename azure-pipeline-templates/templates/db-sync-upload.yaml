@@ -94,7 +94,36 @@ steps:
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
       psql -d "${{parameters.DBName}}" \
-      -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' DROP CONSTRAINT '||constraint_name||'; ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||on_delete||' '||def||';'
+      -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' DROP CONSTRAINT '||constraint_name||';'
+        FROM (
+            SELECT
+                relname AS constrained_table,
+                conname AS constraint_name
+            FROM pg_constraint
+            INNER JOIN pg_class ON conrelid=pg_class.oid
+            WHERE contype='f'
+                AND confrelid = 'users_user'::regclass)
+        AS drop_constraints)
+        to '/psql_commands_scripts/drop_user_constraints.csv' csv;"
+  displayName: 'Generate user constraint dropping script'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      mkdir psql_commands_scripts
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      postgres:11 \
+      psql -d "${{parameters.DBName}}" \
+      -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||on_delete||' '||def||';'
         FROM (
             SELECT
                 relname AS constrained_table,
@@ -123,8 +152,8 @@ steps:
             WHERE contype='f'
                 AND confrelid = 'users_user'::regclass)
         AS add_constraints)
-        to '/psql_commands_scripts/constraint_commands.csv' csv;"
-  displayName: 'Generate user constraint modification scripts'
+        to '/psql_commands_scripts/add_user_constraints.csv' csv;"
+  displayName: 'Generate user constraint adding script'
 
 - task: AzureCLI@2
   continueOnError: true
@@ -140,8 +169,59 @@ steps:
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
-      psql -d "crcv3review" -f "/psql_commands_scripts/constraint_commands.csv"
-  displayName: 'Modify user based constraints'
+      psql -d "crcv3review" -f "/psql_commands_scripts/drop_user_constraints.csv"
+  displayName: 'Drop user based constraints'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      postgres:11 \
+      psql -d "crcv3review" -f "/psql_commands_scripts/add_user_constraints.csv"
+  displayName: 'Add modified user based constraints'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      postgres:11 \
+      psql -d "crcv3review" -f "DELETE FROM users_user"
+  displayName: 'Delete prod users'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      postgres:11 \
+      psql -d "crcv3review" -f "/psql_commands_scripts/drop_user_constraints.csv"
+  displayName: 'Drop user based constraints again'
 
 - task: AzureCLI@2
   inputs:
@@ -158,3 +238,37 @@ steps:
       postgres:11 \
       pg_restore --no-acl --no-owner --clean -d "${{parameters.DBName}}" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.environment}}-users-db.dump 
   displayName: 'Restore non-prod users to target database'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      postgres:11 \
+      psql -d "crcv3review" -f "/psql_commands_scripts/drop_user_constraints.csv"
+  displayName: 'Drop new user based constraints'
+
+- task: AzureCLI@2
+  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      postgres:11 \
+      psql -d "crcv3review" -f "/psql_commands_scripts/add_user_constraints.csv"
+  displayName: 'Add modified user based constraints again'
