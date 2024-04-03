@@ -123,7 +123,7 @@ steps:
             WHERE contype='f'
                 AND confrelid = 'users_user'::regclass)
         AS add_constraints)
-        to '/psql_commands_scripts/constraint_commands.csv' csv;""
+        to '/psql_commands_scripts/constraint_commands.csv' csv;"
   displayName: 'Generate user constraint modification scripts'
 
 - task: AzureCLI@2
