@@ -1,11 +1,4 @@
 steps:
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
-  inputs:
-    azureSubscription: ${{parameters.azureVaultSubscription}}
-    KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBName, DBHost, DBUser
-
 - bash: |
     date=`date "+%d-%m-%Y_%H:%M:%S"`;
     echo $date
