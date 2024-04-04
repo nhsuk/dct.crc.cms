@@ -9,7 +9,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   inputs:
     artifact: 'psql_commands_scripts'
-    path: $(Build.SourcesDirectory)
+    path: '$(Build.SourcesDirectory)/psql_commands_scripts'
 
 - task: DownloadPipelineArtifact@2
   inputs:
@@ -62,7 +62,6 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
       psql -d "crcv3review" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'
@@ -78,7 +77,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.artifactPrefix}}-db.dump:/${{parameters.artifactPrefix}}-db.dump \
+      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
       postgres:11 \
       pg_restore --no-acl --no-owner --clean -d "${{parameters.DBName}}" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.artifactPrefix}}-db.dump 
   displayName: 'Restore ${{parameters.artifactPrefix}} users to target database'
