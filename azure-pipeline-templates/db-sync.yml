@@ -54,15 +54,15 @@ stages:
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
               artifactPrefix: "prod"
-        - job: GenerateScripts
-          dependsOn: []
-          condition: or(eq('${{ parameters.deployToReview }}', 'true'), eq('${{ parameters.deployToIntegration }}', 'true'), eq('${{ parameters.deployToStaging }}', 'true'))
-          steps:
-            - template: templates/db-sync-generate-scripts.yaml
-              parameters:
-                azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-                azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
-                VaultId: "dct-crc-v3-vlt-prod-uks"
+      - job: GenerateScripts
+        dependsOn: []
+        condition: or(eq('${{ parameters.deployToReview }}', 'true'), eq('${{ parameters.deployToIntegration }}', 'true'), eq('${{ parameters.deployToStaging }}', 'true'))
+        steps:
+          - template: templates/db-sync-generate-scripts.yaml
+            parameters:
+              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-prod-uks"
 
   - stage: CopyToReviewDB
     displayName: "Copy to Review Database"
