@@ -7,7 +7,7 @@ steps:
       RunAsPreJob: false
   # Assign values to values.yaml file for helm deployment
   - script: |
-      pip3 install black==23.12.1
+      pip3 install black==22.8.0
     displayName: Installs the latest version of black
   - script: |
       black --check ./ --config 'poetry/pyproject.toml'
