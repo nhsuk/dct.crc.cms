@@ -27,7 +27,7 @@ steps:
       set -e
 
       # Rename the data dump to contain timestamp before upload
-      mv ${{parameters.artifactPrefix}}-db.dump db-dump-$(currentDatestamp.Datestamp).dump
+      mv $(Build.SourcesDirectory)/${{parameters.artifactPrefix}}-db.dump db-dump-$(currentDatestamp.Datestamp).dump
 
       # Save a copy to azure blob storage
       az storage blob upload \

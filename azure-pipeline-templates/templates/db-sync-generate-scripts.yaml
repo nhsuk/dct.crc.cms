@@ -21,7 +21,7 @@ steps:
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
-      psql -d "${{parameters.DBName}}" \
+      psql -d "$(DBName)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' DROP CONSTRAINT '||constraint_name||';'
         FROM (
             SELECT
@@ -50,7 +50,7 @@ steps:
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
-      psql -d "${{parameters.DBName}}" \
+      psql -d "$(DBName)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||on_delete||' '||def||';'
         FROM (
             SELECT
