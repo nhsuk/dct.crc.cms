@@ -2,7 +2,7 @@ steps:
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
   inputs:
-    azureSubscription: ${{parameters.azureSubscription}}
+    azureSubscription: ${{parameters.azureVaultSubscription}}
     KeyVaultName: ${{parameters.VaultId}}
     SecretsFilter: DBPass, DBName, DBHost, DBUser
 
@@ -19,7 +19,7 @@ steps:
 
 - task: AzureCLI@2
   inputs:
-    azureSubscription: ${{parameters.azureSubscription}}
+    azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -27,7 +27,7 @@ steps:
       set -e
 
       # Rename the data dump to contain timestamp before upload
-      mv $(Build.SourcesDirectory)/${{parameters.artifactPrefix}}-db.dump $(Build.SourcesDirectory)/db-dump-$(currentDatestamp.Datestamp).dump
+      mv $(Build.SourcesDirectory)/${{parameters.artifactPrefix}}-db.dump/${{parameters.artifactPrefix}}-db-dump.dump $(Build.SourcesDirectory)/db-dump-$(currentDatestamp.Datestamp).dump
 
       # Save a copy to azure blob storage
       az storage blob upload \

@@ -2,14 +2,14 @@ steps:
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
   inputs:
-    azureSubscription: ${{parameters.azureSubscription}}
+    azureSubscription: ${{parameters.azureVaultSubscription}}
     KeyVaultName: ${{parameters.VaultId}}
     SecretsFilter: DBPass, DBName, DBHost, DBUser
 
 - task: AzureCLI@2
   condition: ${{ eq(parameters.usersOnly, True) }}
   inputs:
-    azureSubscription: ${{parameters.azureSubscription}}
+    azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -27,7 +27,7 @@ steps:
 - task: AzureCLI@2
   condition: ${{ ne(parameters.usersOnly, True) }}
   inputs:
-    azureSubscription: ${{parameters.azureSubscription}}
+    azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |

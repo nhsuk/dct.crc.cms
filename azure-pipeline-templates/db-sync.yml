@@ -37,7 +37,8 @@ stages:
         steps:
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
               VaultId: "dct-crc-v3-vlt-prod-uks"
               artifactPrefix: "prod"
 
@@ -51,7 +52,8 @@ stages:
         steps:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
-              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
               VaultId: "dct-crc-v3-vlt-prod-uks"
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
@@ -67,9 +69,9 @@ stages:
         steps:
           - template: templates/db-sync-generate-scripts.yaml
             parameters:
-              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              VaultId: "dct-crc-v3-vlt-prod-uks"
+              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
               azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-prod-uks"
 
   - stage: CopyToReviewDB
     displayName: "Copy to Review Database"
@@ -82,9 +84,9 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
-              VaultId: "dct-crc-v3-vlt-rev-uks"
+              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
               azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              VaultId: "dct-crc-v3-vlt-rev-uks"
               DBName: crcv3review
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks

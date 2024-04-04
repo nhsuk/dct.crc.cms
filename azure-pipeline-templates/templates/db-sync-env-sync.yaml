@@ -1,7 +1,8 @@
 steps:
 - template: ./db-sync-download-dump.yaml
   parameters:
-    azureSubscription: ${{ parameters.azureVaultSubscription }}
+    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
     VaultId: ${{ parameters.VaultId }}
     artifactPrefix: "${{ parameters.environment }}_users"
     usersOnly: True
@@ -25,6 +26,7 @@ steps:
     
 - template: ./db-sync-download-dump.yaml
   parameters:
-    azureSubscription: ${{ parameters.azureVaultSubscription }}
+    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
     VaultId: ${{ parameters.VaultId }}
     artifactPrefix: ${{ parameters.environment }}
