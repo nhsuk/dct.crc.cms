@@ -5,6 +5,7 @@ from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
+import os
 
 from AcceptanceTests.common.common_test_methods import *
 
@@ -20,7 +21,7 @@ class CRCV3MainPage(BasePage):
     CRCV_mainpage_label = PageElement(
         By.XPATH, "//h1[text()='Campaign Resource Centre']"
     )
-    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest Live Campaigns']")
+    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")
     S4l_h1 = PageElement(By.TAG_NAME, "h1")
     Sign_In_link = PageElement(By.PARTIAL_LINK_TEXT, "Sign in")
     Sign_In_label = PageElement(By.XPATH, "//h1[text()[normalize-space()='Sign in']]")
@@ -534,6 +535,36 @@ class CRCV3MainPage(BasePage):
     we_are_prototype_learn_expand = PageElement(By.XPATH, "(//span[text()='Show'])[2]")
     hide_we_are_prototype = PageElement(By.XPATH, "//span[text()='Hide']")
 
+    def __init__(self, browser, logger):
+        self.browser = browser
+        self.logger = logger
+        self.base_url = os.getenv("BASE_URL")
+        self.wagtail_user = os.getenv("wagtailUser")
+        self.wagtail_password = os.getenv("wagtailPassword")
+
+    def navigate_to_admin(self):
+        admin_url = f"{self.base_url}/crc-admin"
+        print(f"Navigating to admin panel at: {admin_url}")
+        self.browser.get(admin_url)
+
+    def login_to_admin(self):
+        # print self.wagtail_user and self.wagtail_password
+        print(f"Logging in to admin panel as: {self.wagtail_user}")
+        self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
+        self.browser.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
+        self.browser.find_element(
+            By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+        ).click()
+
+    def navigate_to_admin_campaigns_sort(self):
+        admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
+        print(f"Navigating to admin campaign sort at: {admin_campaigns_sort_url}")
+        self.browser.get(admin_campaigns_sort_url)
+
+    def navigate_to_campaigns_page(self):
+        campaigns_url = f"{self.base_url}/campaigns"
+        self.browser.get(campaigns_url)
+
     def CRCV3_Campaigns_list_h3(self):
         # self.interact.click_element(self.campaigns_tab)
         list_elements = self.find.elements(self.Campaigns_list)
@@ -845,6 +876,10 @@ class CRCV3MainPage(BasePage):
             # self.find.element("//select[@id='sort']/option[text()='newest']").click()
         elif sort == "Oldest":
             self.interact.select_by_visible_text(self.sort, "Oldest")
+
+        elif sort == "Recommended":
+            self.interact.select_by_visible_text(self.sort, "Recommended")
+
             # self.find.element("//select[@id='sort']/option[text()='Oldest']").click()
         # select = self.driver.Select(find_element_by_id('fruits01'))
 

@@ -3,6 +3,13 @@ from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
 from pages.CRCV3_Main_Page import CRCV3MainPage
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+import random
+import os
+
 
 # from common.common_test_methods import create_list_from_feature_table_column
 
@@ -369,7 +376,7 @@ def Cervical_screening_link(context):
     context.support_page.Latest_Updates_links("Better_Health_Local_Authority_Tier_2")
 
 
-@Step('verify "{sort_by}" Newest and oldest')
+@Step('verify "{sort_by}" Recommended, Newest and Oldest')
 def sort_by(context, sort_by):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.campaigns_tab_click()
@@ -555,3 +562,128 @@ def Close_window(context, option):
     elif option == "back":
         context.driver.execute_script("window.history.go(-1)")
         # context.driver.back()
+
+
+@Step("I log in to the admin panel")
+def log_in_to_admin_panel(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.navigate_to_admin()
+    # context.browser.get("http://0.0.0.0:8000/crc-admin/login/")
+
+    WebDriverWait(context.browser, 10).until(
+        EC.visibility_of_element_located((By.ID, "id_username"))
+    )
+
+    context.support_page.login_to_admin()
+
+    # get WAGTAIL_USER and WAGTAIL_PASSWORD from environment variables
+
+    # print env variables
+    # print('Wagtail User:', os.getenv('wagtailUser'))
+    # print('Wagtail Password:', os.getenv('wagtailPassword'))
+    # print('BASE_URL:', os.getenv('BASE_URL'))
+    # context.browser.find_element(By.ID, "id_username").send_keys(os.getenv('wagtailUser'))
+    # context.browser.find_element(By.ID, "id_password").send_keys(os.getenv('wagtailPassword'))
+
+    # context.browser.find_element(By.XPATH, "//em[contains(text(), 'Sign in')]/..").click()
+
+    WebDriverWait(context.browser, 10).until(
+        EC.visibility_of_element_located((By.ID, "header-title"))
+    )
+
+
+@Step("I navigate to the sorted admin campaigns page")
+def navigate_to_sorted_admin_campaigns_page(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.navigate_to_admin_campaigns_sort()
+    # context.browser.get("http://0.0.0.0:8000/crc-admin/pages/13/?ordering=ord")
+    print("Navigated to sorted admin campaigns page")
+
+
+@Step("I rearrange some of the posts")
+def rearrange_posts(context):
+    WebDriverWait(context.browser, 20).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".ui-sortable-handle"))
+    )
+
+    draggable_elements = context.browser.find_elements_by_css_selector(
+        ".ui-sortable-handle"
+    )
+    draggable_elements = draggable_elements[:5]
+
+    action = ActionChains(context.browser)
+
+    for _ in range(3):
+        source_pos = random.randint(0, 4)
+        target_pos = random.randint(0, 4)
+
+        while source_pos == target_pos:
+            target_pos = random.randint(0, 4)
+
+        source_element = draggable_elements[source_pos]
+        target_element = draggable_elements[target_pos]
+
+        action.click_and_hold(source_element).pause(1)
+        action.move_to_element(target_element)
+        action.move_by_offset(0, -10)
+        action.release().perform()
+
+        draggable_elements = context.browser.find_elements_by_css_selector(
+            ".ui-sortable-handle"
+        )
+        draggable_elements = draggable_elements[:5]
+
+    print("Posts rearranged")
+
+
+@Step("I capture the first 5 campaign titles from admin")
+def capture_admin_campaign_titles(context):
+    live_campaign_links = WebDriverWait(context.browser, 20).until(
+        EC.presence_of_all_elements_located(
+            (
+                By.CSS_SELECTOR,
+                "a.w-status.w-status--primary[title='Visit the live page']",
+            )
+        )
+    )
+
+    context.admin_campaign_titles = [
+        link.find_element(
+            By.XPATH, "./ancestor::tr//div[@class='title-wrapper']/a"
+        ).text.strip()
+        for link in live_campaign_links[:5]
+    ]
+
+    print("Captured live campaign titles:", context.admin_campaign_titles)
+
+
+@Step("I navigate to the main campaigns page")
+def navigate_to_sorted_admin_campaigns_page(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.navigate_to_campaigns_page()
+
+    # context.browser.get("http://0.0.0.0:8000/campaigns")
+    print("Navigated to main campaigns page")
+
+
+@Step("I capture the first 5 campaign titles from the main page")
+def capture_main_campaign_titles(context):
+    campaign_cards = context.browser.find_elements_by_css_selector(
+        "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
+    )
+
+    context.main_campaign_titles = [
+        card.find_element_by_css_selector("h3.nhsuk-card__heading a").text.strip()
+        for card in campaign_cards[:5]
+    ]
+
+    print("Captured main page campaign titles:", context.main_campaign_titles)
+
+
+@Step("I verify that the captured campaign page orders match")
+def verify_campaign_titles_match(context):
+    assert (
+        context.admin_campaign_titles == context.main_campaign_titles
+    ), "Campaign page orders do not match."
+
+    print("Verified: Campaign titles match between the admin panel and the main page.")
