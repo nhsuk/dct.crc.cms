@@ -568,24 +568,12 @@ def Close_window(context, option):
 def log_in_to_admin_panel(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.navigate_to_admin()
-    # context.browser.get("http://0.0.0.0:8000/crc-admin/login/")
 
     WebDriverWait(context.browser, 10).until(
         EC.visibility_of_element_located((By.ID, "id_username"))
     )
 
     context.support_page.login_to_admin()
-
-    # get WAGTAIL_USER and WAGTAIL_PASSWORD from environment variables
-
-    # print env variables
-    # print('Wagtail User:', os.getenv('wagtailUser'))
-    # print('Wagtail Password:', os.getenv('wagtailPassword'))
-    # print('BASE_URL:', os.getenv('BASE_URL'))
-    # context.browser.find_element(By.ID, "id_username").send_keys(os.getenv('wagtailUser'))
-    # context.browser.find_element(By.ID, "id_password").send_keys(os.getenv('wagtailPassword'))
-
-    # context.browser.find_element(By.XPATH, "//em[contains(text(), 'Sign in')]/..").click()
 
     WebDriverWait(context.browser, 10).until(
         EC.visibility_of_element_located((By.ID, "header-title"))
@@ -596,8 +584,6 @@ def log_in_to_admin_panel(context):
 def navigate_to_sorted_admin_campaigns_page(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.navigate_to_admin_campaigns_sort()
-    # context.browser.get("http://0.0.0.0:8000/crc-admin/pages/13/?ordering=ord")
-    print("Navigated to sorted admin campaigns page")
 
 
 @Step("I rearrange some of the posts")
@@ -633,8 +619,6 @@ def rearrange_posts(context):
         )
         draggable_elements = draggable_elements[:5]
 
-    print("Posts rearranged")
-
 
 @Step("I capture the first 5 campaign titles from admin")
 def capture_admin_campaign_titles(context):
@@ -654,16 +638,11 @@ def capture_admin_campaign_titles(context):
         for link in live_campaign_links[:5]
     ]
 
-    print("Captured live campaign titles:", context.admin_campaign_titles)
-
 
 @Step("I navigate to the main campaigns page")
 def navigate_to_sorted_admin_campaigns_page(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.navigate_to_campaigns_page()
-
-    # context.browser.get("http://0.0.0.0:8000/campaigns")
-    print("Navigated to main campaigns page")
 
 
 @Step("I capture the first 5 campaign titles from the main page")
@@ -677,13 +656,9 @@ def capture_main_campaign_titles(context):
         for card in campaign_cards[:5]
     ]
 
-    print("Captured main page campaign titles:", context.main_campaign_titles)
-
 
 @Step("I verify that the captured campaign page orders match")
 def verify_campaign_titles_match(context):
     assert (
         context.admin_campaign_titles == context.main_campaign_titles
     ), "Campaign page orders do not match."
-
-    print("Verified: Campaign titles match between the admin panel and the main page.")
