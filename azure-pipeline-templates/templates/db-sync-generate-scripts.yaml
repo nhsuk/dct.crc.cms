@@ -85,5 +85,5 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: $(pwd)/psql_commands_scripts/
+    targetPath: $(System.DefaultWorkingDirectory)/psql_commands_scripts/
     artifactName: 'psql_commands_scripts'
