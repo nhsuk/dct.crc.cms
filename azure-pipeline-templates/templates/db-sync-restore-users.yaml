@@ -63,7 +63,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:11 \
-      psql -d "$(DBName)"" -c "DELETE FROM users_user"
+      psql -d "$(DBName)" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'
 
 - task: AzureCLI@2
