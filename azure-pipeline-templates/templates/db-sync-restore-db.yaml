@@ -4,7 +4,7 @@ steps:
   inputs:
     azureSubscription: ${{parameters.azureVaultSubscription}}
     KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBHost, DBUser
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
 
 - task: DownloadPipelineArtifact@2
   inputs:
