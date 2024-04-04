@@ -544,12 +544,9 @@ class CRCV3MainPage(BasePage):
 
     def navigate_to_admin(self):
         admin_url = f"{self.base_url}/crc-admin"
-        print(f"Navigating to admin panel at: {admin_url}")
         self.browser.get(admin_url)
 
     def login_to_admin(self):
-        # print self.wagtail_user and self.wagtail_password
-        print(f"Logging in to admin panel as: {self.wagtail_user}")
         self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
         self.browser.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
         self.browser.find_element(
@@ -558,7 +555,6 @@ class CRCV3MainPage(BasePage):
 
     def navigate_to_admin_campaigns_sort(self):
         admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
-        print(f"Navigating to admin campaign sort at: {admin_campaigns_sort_url}")
         self.browser.get(admin_campaigns_sort_url)
 
     def navigate_to_campaigns_page(self):
