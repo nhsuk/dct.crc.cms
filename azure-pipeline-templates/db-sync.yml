@@ -84,7 +84,7 @@ stages:
   - stage: CopyToIntegrationDB
     displayName: "Copy to Integration Database"
     dependsOn:
-      - CopyFromProdDB
+      - ProdDBJobs
     condition: and(succeeded(), eq('${{ parameters.deployToIntegration }}', true), eq('${{ parameters.deployToProd }}', 'false'))
     jobs:
       - job: DBPaste
@@ -102,7 +102,7 @@ stages:
   - stage: CopyToStagingDB 
     displayName: "Copy to Staging Database"
     dependsOn:
-      - CopyFromProdDB
+      - ProdDBJobs
     condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true), eq('${{ parameters.deployToProd }}', 'false'))
     jobs:
       - job: DBPaste
