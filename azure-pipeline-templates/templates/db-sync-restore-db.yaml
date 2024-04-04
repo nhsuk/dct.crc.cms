@@ -24,8 +24,8 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:11 \
-      psql -d "${{parameters.DBName}}" \
-      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '${{parameters.DBName}}' AND pid <> pg_backend_pid();"
+      psql -d "$(DBName)" \
+      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(DBName)' AND pid <> pg_backend_pid();"
   displayName: 'End connections to target database'
 
 - task: AzureCLI@2
@@ -36,7 +36,7 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
       az postgres db delete \
-      --name "${{parameters.DBName}}" \
+      --name "$(DBName)" \
       --resource-group "${{parameters.ResourceGroup}}" \
       --server-name "${{parameters.Server}}" \
       --yes \
@@ -51,7 +51,7 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
       az postgres db create \
-      --name "${{parameters.DBName}}" \
+      --name "$(DBName)" \
       --resource-group "${{parameters.ResourceGroup}}" \
       --server-name "${{parameters.Server}}" \
       --debug
@@ -70,5 +70,5 @@ steps:
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner -d "${{parameters.DBName}}" ${{parameters.artifactPrefix}}-db.dump
+      pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.artifactPrefix}}-db.dump
   displayName: 'Copy ${{parameters.artifactPrefix}} to target database'

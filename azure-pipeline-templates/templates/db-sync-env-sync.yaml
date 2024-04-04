@@ -12,7 +12,6 @@ steps:
     azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
     VaultId: ${{ parameters.VaultId }}
-    DBName: ${{ parameters.DBName }}
     Server: ${{ parameters.Server }}
     ResourceGroup: ${{ parameters.ResourceGroup }}
     artifactPrefix: "prod"

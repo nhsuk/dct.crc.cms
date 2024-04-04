@@ -87,7 +87,6 @@ stages:
               azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
               azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
               VaultId: "dct-crc-v3-vlt-rev-uks"
-              DBName: crcv3review
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks
               environment: "review"
