@@ -96,7 +96,7 @@ steps:
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
       psql -d "$(DBName)" \
-      -c "\copy (SELECT indexdef FROM pg_indexes
+      -c "\copy (SELECT ''||indexdef||';' FROM pg_indexes
         WHERE tablename = 'users_user'
           OR tablename = 'otp_totp_totpdevice'
           OR tablename = 'users_user_groups'
