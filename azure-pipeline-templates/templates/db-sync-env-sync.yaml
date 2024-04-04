@@ -7,7 +7,7 @@ steps:
     artifactPrefix: "${{ parameters.environment }}_users"
     usersOnly: True
 
-- template: ./db-sync-upload-dump.yaml
+- template: ./db-sync-restore-db.yaml
   parameters:
     azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}

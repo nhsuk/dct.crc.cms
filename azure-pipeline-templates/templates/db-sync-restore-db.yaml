@@ -8,7 +8,7 @@ steps:
 
 - task: DownloadPipelineArtifact@2
   inputs:
-    artifact: '${{ parameters.artifactName }}-db.dump'
+    artifact: '${{ parameters.artifactPrefix }}-db.dump'
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
@@ -68,7 +68,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.artifactName}}-db-dump.dump:/${{parameters.artifactName}}-db.dump \
+      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner -d "${{parameters.DBName}}" ${{parameters.artifactName}}-db.dump
-  displayName: 'Copy ${{parameters.artifactName}} to target database'
+      pg_restore --no-acl --no-owner -d "${{parameters.DBName}}" ${{parameters.artifactPrefix}}-db.dump
+  displayName: 'Copy ${{parameters.artifactPrefix}} to target database'
