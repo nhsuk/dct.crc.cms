@@ -12,7 +12,6 @@ steps:
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
-  continueOnError: true
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
@@ -29,7 +28,6 @@ steps:
   displayName: 'End connections to target database'
 
 - task: AzureCLI@2
-  continueOnError: true
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
@@ -44,7 +42,6 @@ steps:
   displayName: 'Delete target database'
 
 - task: AzureCLI@2
-  continueOnError: true
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
