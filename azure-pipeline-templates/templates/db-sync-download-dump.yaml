@@ -1,0 +1,48 @@
+steps:
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
+  inputs:
+    azureSubscription: ${{parameters.azureVaultSubscription}}
+    KeyVaultName: ${{parameters.VaultId}}
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
+
+- task: AzureCLI@2
+  condition: ${{ eq(parameters.usersOnly, True) }}
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      postgres:11 \
+      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.artifactPrefix}}-db-dump.dump
+  name: 'Create_${{parameters.artifactPrefix}}_Copy'
+  displayName: 'Dump ${{parameters.artifactPrefix}} (Users only)'
+
+- task: AzureCLI@2
+  condition: ${{ ne(parameters.usersOnly, True) }}
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      postgres:11 \
+      pg_dump -Fc "$(DBName)" > ${{parameters.artifactPrefix}}-db-dump.dump
+  name: 'Create_${{parameters.artifactPrefix}}_DBCopy'
+  displayName: 'Dump ${{parameters.artifactPrefix}} (Full DB)'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.artifactPrefix}}-db-dump.dump
+    artifactName: '${{parameters.artifactPrefix}}-db.dump'

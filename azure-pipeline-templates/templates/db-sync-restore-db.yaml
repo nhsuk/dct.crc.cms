@@ -4,15 +4,14 @@ steps:
   inputs:
     azureSubscription: ${{parameters.azureVaultSubscription}}
     KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBHost, DBUser
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
 
 - task: DownloadPipelineArtifact@2
   inputs:
-    artifact: 'db.dump'
+    artifact: '${{ parameters.artifactPrefix }}-db.dump'
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
-  continueOnError: true
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
@@ -23,24 +22,37 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/db-dump.dump:/db.dump \
       postgres:11 \
-      psql -d "${{parameters.DBName}}" \
-      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '${{parameters.DBName}}' AND pid <> pg_backend_pid();"
+      psql -d "$(DBName)" \
+      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(DBName)' AND pid <> pg_backend_pid();"
   displayName: 'End connections to target database'
 
 - task: AzureCLI@2
-  continueOnError: true
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az postgres db delete \
+      --name "$(DBName)" \
+      --resource-group "${{parameters.ResourceGroup}}" \
+      --server-name "${{parameters.Server}}" \
+      --yes \
+      --debug
+  displayName: 'Delete target database'
+
+- task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
       az postgres db create \
-      --name "${{parameters.DBName}}" \
+      --name "$(DBName)" \
       --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}"
-  displayName: 'Delete and recreate target database'
+      --server-name "${{parameters.Server}}" \
+      --debug
+  displayName: 'Recreate target database'
 
 - task: AzureCLI@2
   inputs:
@@ -53,7 +65,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/db-dump.dump:/db.dump \
+      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner -d "${{parameters.DBName}}" db.dump
-  displayName: 'Copy to target database'
+      pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.artifactPrefix}}-db.dump
+  displayName: 'Copy ${{parameters.artifactPrefix}} to target database'
