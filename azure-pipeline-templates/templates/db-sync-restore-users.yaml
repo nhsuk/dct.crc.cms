@@ -92,7 +92,7 @@ steps:
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.artifactPrefix}}-db.dump 
+      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.artifactPrefix}}-db.dump 
   displayName: 'Restore ${{parameters.artifactPrefix}} users to target database'
 
 # - task: AzureCLI@2
