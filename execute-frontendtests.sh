@@ -62,8 +62,11 @@ docker run \
   --env PARALLEL=$PARALLEL \
   --env SCENARIOS=$SCENARIOS \
   --env TIMEOUT=$TIMEOUT \
+  --env WAGTAIL_USER \
+  --env WAGTAIL_PASSWORD \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \
+  --mount type=bind,source=${SECRETS_FILE_WAGTAIL_USER:?No Wagtail secrets file specified (SECRETS_FILE_WAGTAIL_USER)},target=/automation-ui/crcv3-wagtailuser \
   dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
 PASSED=$?
 echo "Status of tests: $PASSED"

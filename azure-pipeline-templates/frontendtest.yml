@@ -4,11 +4,17 @@ steps:
     name: CSVFile # The name with which to reference the secure file’s path on the agent, like $(CSVFile.secureFilePath)
     inputs:
       secureFile: crcv3-user.csv # A secret file in the pipeline library with a Parkhouse test API username/password value
+  - task: DownloadSecureFile@1
+    displayName: 'Download username/password secret file for Wagtail user'
+    name: WagtailCSVFile 
+    inputs:
+      secureFile: crcv3-wagtailuser.csv 
   - bash: ./execute-frontendtests.sh
     env:
       WORK: $(System.DefaultWorkingDirectory)
       TAGS: $(tags)
       SECRETS_FILE: $(CSVFile.secureFilePath)
+      SECRETS_FILE_WAGTAIL_USER: $(WagtailCSVFile.secureFilePath)
       BASE_URL: https://$(hostUrl)
       IMAGE_TAG: $(imageTag)
       PARALLEL: 4

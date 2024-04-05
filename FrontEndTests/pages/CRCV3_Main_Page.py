@@ -6,6 +6,7 @@ from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
 import os
+import csv
 
 from AcceptanceTests.common.common_test_methods import *
 
@@ -539,8 +540,14 @@ class CRCV3MainPage(BasePage):
         self.browser = browser
         self.logger = logger
         self.base_url = os.getenv("BASE_URL")
-        self.wagtail_user = os.getenv("wagtailUser")
-        self.wagtail_password = os.getenv("wagtailPassword")
+        csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER", "./crcv3-wagtailuser")
+
+        try:
+            with open(csv_file_path) as csvfile:
+                self.wagtail_user, self.wagtail_password = list(csv.reader(csvfile))[0]
+        except Exception as e:
+            self.logger.error(f"Failed to read Wagtail credentials from CSV: {e}")
+            raise
 
     def navigate_to_admin(self):
         admin_url = f"{self.base_url}/crc-admin"

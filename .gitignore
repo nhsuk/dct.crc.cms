@@ -48,3 +48,4 @@ crcv3-1-user.csv
 database_dumps/
 
 poetry/requirements.txt
+crcv3-wagtailuser.csv
