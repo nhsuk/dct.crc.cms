@@ -5,10 +5,7 @@ from django.conf import settings
 from django.core.files import File
 from django.core.files.storage import get_storage_class
 from django.utils.functional import LazyObject
-from storages.backends.azure_storage import AzureStorage, clean_name
-from campaignresourcecentre.custom_storages.custom_azure_file import (
-    AzureMediaStorageFile,
-)
+from storages.backends.azure_storage import AzureStorage, AzureStorageFile, clean_name
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +18,51 @@ class AzureMediaStorage(AzureStorage):
     azure_container = getattr(settings, "AZURE_CONTAINER", None)
     external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
     custom_domain = None
+
+    def __init__(self, **settings):
+        super().__init__(**settings)
+        logger.info("Using storage domain '%s' for media", self.custom_domain)
+
+    def url(self, name, expire=None, parameters=None):
+        initial_url = super().url(name, expire, parameters)
+        components = list(urlparse(initial_url))
+        components[1] = self.external_domain
+        new_url = urlunparse(components)
+        return new_url
+
+    def save(self, name, content, max_length=None):
+        """
+        Save new content to the file specified by name. The content should be
+        a proper File object or any Python file-like object, ready to be read
+        from the beginning.
+        """
+        # Get the proper name for the file, as it will actually be saved.
+        if name is None:
+            name = content.name
+        available_name = self.get_available_name(name, max_length=max_length)
+
+        if name.startswith("documents/"):
+            temp_blob_name = name[len("documents/") :]
+            if self.exists(temp_blob_name):
+                logger.info(
+                    "Saving %s in container %s of account %s using temp blob %s",
+                    available_name,
+                    __class__.azure_container,
+                    __class__.account_name,
+                    temp_blob_name,
+                )
+                return self._move_temp_blob(temp_blob_name, available_name, content)
+
+        if not hasattr(content, "chunks"):
+            content = File(content, available_name)
+
+        logger.info(
+            "Saving %s in container %s of account %s using direct upload",
+            available_name,
+            __class__.azure_container,
+            __class__.account_name,
+        )
+        return self._save(available_name, content)
 
     # Based on Azure storage _save method
     def _move_temp_blob(
@@ -57,60 +99,9 @@ class AzureMediaStorage(AzureStorage):
         )
         return cleaned_name
 
-    def save(self, name, content, max_length=None):
-        """
-        Save new content to the file specified by name. The content should be
-        a proper File object or any Python file-like object, ready to be read
-        from the beginning.
-        """
-        # Get the proper name for the file, as it will actually be saved.
-        if name is None:
-            name = content.name
-        available_name = self.get_available_name(name, max_length=max_length)
-
-        if not name.startswith("documents/"):
-            logger.error(
-                f"attempting to save blob to folder other than 'documents' - save will not take place"
-            )
-            return
-
-        temp_blob_name = name[len("documents/") :]
-        if self.exists(temp_blob_name):
-            logger.info(
-                "Saving %s in container %s of account %s using temp blob %s",
-                available_name,
-                __class__.azure_container,
-                __class__.account_name,
-                temp_blob_name,
-            )
-            return self._move_temp_blob(temp_blob_name, available_name, content)
-
-        if not hasattr(content, "chunks"):
-            content = File(content, available_name)
-
-        logger.info(
-            "Saving %s in container %s of account %s using direct upload",
-            available_name,
-            __class__.azure_container,
-            __class__.account_name,
-            temp_blob_name,
-        )
-        return self._save(available_name, content)
-
-    def __init__(self, **settings):
-        super().__init__(**settings)
-        logger.info("Using storage domain '%s' for media", self.custom_domain)
-
-    def url(self, name, expire=None, parameters=None):
-        initial_url = super().url(name, expire, parameters)
-        components = list(urlparse(initial_url))
-        components[1] = self.external_domain
-        new_url = urlunparse(components)
-        return new_url
-
     def _open(self, name, mode="rb"):
         logger.info("Opening media storage: %s %s", name, mode)
-        return AzureMediaStorageFile(name, self, mode)
+        return AzureStorageFile(name, mode, self)
 
     def _get_valid_path(self, name):
         return self._normalize_name(clean_name(name))

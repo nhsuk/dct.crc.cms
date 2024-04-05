@@ -1,17 +1,13 @@
-import io
 import unittest
 from unittest.mock import MagicMock, patch
 
 from azure.storage.blob import BlobProperties
-
-from django.conf import settings
-from django.core.files.storage import default_storage
 from campaignresourcecentre.custom_storages.custom_azure_uploader import (
     AzureBlobUploadHandler,
     AzureUploadedFile,
 )
 from campaignresourcecentre.custom_storages.custom_azure_file import (
-    AzureMediaStorageFile,
+    AzureBlobStorageFile,
 )
 from campaignresourcecentre.custom_storages.custom_azure_storage import (
     AzureMediaStorage,
@@ -28,13 +24,13 @@ class TestAzureBlobFile(unittest.TestCase):
         self.blob_client = MagicMock()
         self.container_client.get_blob_client.return_value = self.blob_client
         self.storage.client = self.container_client
-        self.blob_input_file = AzureMediaStorageFile(
+        self.blob_input_file = AzureBlobStorageFile(
             "test_blob_in", self.storage, mode="rb"
         )
-        self.blob_output_file = AzureMediaStorageFile(
+        self.blob_output_file = AzureBlobStorageFile(
             "test_blob_out", self.storage, mode="wb"
         )
-        self.temporary_blob_file = AzureMediaStorageFile(
+        self.temporary_blob_file = AzureBlobStorageFile(
             "test_blob_in", self.storage, mode="rb"
         )
 
@@ -62,7 +58,7 @@ class TestAzureBlobFile(unittest.TestCase):
 
     def test_init_with_invalid_mode(self):
         with self.assertRaises(NotImplementedError):
-            AzureMediaStorageFile("test_blob", self.storage, mode="invalid")
+            AzureBlobStorageFile("test_blob", self.storage, mode="invalid")
 
     def test_write(self):
         self.blob_output_file.write(TEST_CONTENT)
@@ -72,9 +68,9 @@ class TestAzureBlobFile(unittest.TestCase):
 
     def test_close_with_wb_mode(self):
         with patch(
-            "campaignresourcecentre.custom_storages.custom_azure_file.AzureMediaStorageFile.delete"
+            "campaignresourcecentre.custom_storages.custom_azure_file.AzureBlobStorageFile.delete"
         ) as delete_mock, patch(
-            "campaignresourcecentre.custom_storages.custom_azure_file.AzureMediaStorageFile._write_block"
+            "campaignresourcecentre.custom_storages.custom_azure_file.AzureBlobStorageFile._write_block"
         ) as write_block_mock:
             self.blob_output_file.close()
             self.assertTrue(write_block_mock.called)
@@ -150,7 +146,7 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
     def test_new_file(self):
         self.assertIsInstance(self.handler.blob_name, str)
         self.assertEqual(self.handler.file_name, self.file_name)
-        self.assertIsInstance(self.handler.blob_file, AzureMediaStorageFile)
+        self.assertIsInstance(self.handler.blob_file, AzureBlobStorageFile)
         self.assertEqual(self.handler.chunks, 0)
 
     def test_receive_data_chunk(self):
@@ -172,3 +168,61 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
         self.assertEqual(result.size, len(TEST_CONTENT))
         self.assertEqual(result.charset, self.charset)
         self.assertEqual(result.content_type_extra, self.content_type_extra)
+
+
+class AzureMediaStorageTestCase(unittest.TestCase):
+    def __init__(self, methodName: str = "runTest"):
+        super().__init__(methodName)
+        self.storage_class_to_mock = "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage"
+        self.storage_mock_method_names = [
+            "get_available_name",
+            "exists",
+            "_save",
+            "_move_temp_blob",
+        ]
+
+    def setUp(self):
+        self.storage = AzureMediaStorage()
+        self.patches = {}
+        self.mocks = {}
+        for method in self.storage_mock_method_names:
+            self.patches[method] = patch(f"{self.storage_class_to_mock}.{method}")
+            self.mocks[method] = self.patches[method].start()
+
+    def tearDown(self):
+        for patch in self.patches.values():
+            patch.stop()
+
+    def test_save_document_when_no_temp_blob_exists_uses_basic_save(self):
+        name = "documents/smallfile.pdf"
+        self.mocks["get_available_name"].return_value = name
+        self.mocks["exists"].return_value = False
+
+        self.storage.save(name, TEST_CONTENT)
+
+        self.assertTrue(self.mocks["_save"].called)
+
+    def test_save_document_when_temp_blob_exists_uses_move_temp_blob(self):
+        name = "documents/largefile.pdf"
+        self.mocks["get_available_name"].return_value = name
+        self.mocks["exists"].return_value = True
+
+        self.storage.save(name, TEST_CONTENT)
+
+        self.assertTrue(self.mocks["_move_temp_blob"].called)
+
+    def test_save_image_rendition_uses_basic_save(self):
+        name = "images/rendition.width-200.jpg"
+        self.mocks["get_available_name"].return_value = name
+
+        self.storage.save(name, TEST_CONTENT)
+
+        self.assertTrue(self.mocks["_save"].called)
+
+    def test_save_original_image_uses_basic_save(self):
+        name = "original_images/original.jpg"
+        self.mocks["get_available_name"].return_value = name
+
+        self.storage.save(name, TEST_CONTENT)
+
+        self.assertTrue(self.mocks["_save"].called)
