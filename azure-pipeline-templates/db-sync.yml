@@ -38,7 +38,7 @@ stages:
           - template: templates/db-sync-download-dump.yaml
             parameters:
               azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-prod"
               VaultId: "dct-crc-v3-vlt-prod-uks"
               artifactPrefix: "prod"
 
@@ -53,7 +53,7 @@ stages:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
               azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-prod"
               VaultId: "dct-crc-v3-vlt-prod-uks"
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
@@ -70,7 +70,7 @@ stages:
           - template: templates/db-sync-generate-scripts.yaml
             parameters:
               azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
+              azureStorageSubscription: "nhsuk-dct-rg-prod"
               VaultId: "dct-crc-v3-vlt-prod-uks"
 
   - stage: CopyToReviewDB
