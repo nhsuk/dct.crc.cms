@@ -106,10 +106,10 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
+      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
       postgres:11 \
-      psql -d "$(DBName)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
-  displayName: 'Readd original user based constraints'
+      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.artifactPrefix}}-db.dump 
+  displayName: 'Restore ${{parameters.artifactPrefix}} users to target database'
 
 - task: AzureCLI@2
   inputs:
@@ -122,7 +122,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
+      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
-      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.artifactPrefix}}-db.dump 
-  displayName: 'Restore ${{parameters.artifactPrefix}} users to target database'
+      psql -d "$(DBName)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
+  displayName: 'Readd original user based constraints'
