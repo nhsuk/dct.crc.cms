@@ -4,29 +4,23 @@ from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
-from django.utils import timezone
-
-from wagtail.models import Revision
 
 logger = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET"])
 def publish_pages(request):
-    """Publish pages that are scheduled to be published"""
+    """Publish pages that are scheduled to be published and unpublish pages that are scheduled to expire"""
 
     pubtoken = getattr(settings, "PUBTOKEN", None)
     try:
         if request.headers.get("Authorization", "") == "Bearer " + pubtoken:
-            future_pages = len(
-                Revision.objects.filter(approved_go_live_at__lt=timezone.now())
+            logger.info("Start: management command 'publish_scheduled'")
+            call_command("publish_scheduled")
+            logger.info("End: management command 'publish_scheduled'")
+            return HttpResponse(
+                "Published scheduled pages and unpublished expired pages", status=202
             )
-            if future_pages > 0:
-                logger.info("publishing " + str(future_pages) + " scheduled pages")
-                call_command("publish_scheduled_pages")
-            else:
-                logger.info("No scehduled pages")
-            return HttpResponse("ok", status=202)
     except TypeError:
         logger.warning("PUBTOKEN not set")
         raise PermissionDenied

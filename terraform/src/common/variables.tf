@@ -1,0 +1,15 @@
+# ======================================================================================
+# General Variables
+# ======================================================================================
+variable "resource_group" {
+  description = "dct-crccms resource group"
+}
+
+variable "environment" {
+  description = "Full environment name for tagging purpose."
+}
+
+variable "tfstate_account_name" {
+  description = "Terraform tfstate storage"
+}
+

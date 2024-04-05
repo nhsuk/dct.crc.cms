@@ -29,7 +29,7 @@ echo "Effective TAGS: '$TAGS'"
 # Create a temporary directory for the tests
 
 WORK=$(mktemp -d -t frontendtest-XXXXXXXXXX)
-echo "Test ${BASE_URL:?No deployment URL specified (BASE_URL)} in $WORK with tags: $TAGS"
+echo "Test ${BASE_URL:?No deployment URL specified (BASE_URL)} in $WORK with tags [$TAGS]"
 
 cp -r FrontEndTests $WORK
 mkdir $WORK/work
