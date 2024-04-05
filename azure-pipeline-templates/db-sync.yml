@@ -12,6 +12,9 @@ schedules:
     - main
 
 parameters:
+  - name: backupProdToBlobStore
+    type: boolean
+    default: true
   - name: syncToReview
     type: boolean
     default: false
@@ -42,7 +45,7 @@ stages:
     displayName: "Backup Production Database"
     dependsOn:
       - CopyFromProdDB
-    condition: succeeded()
+    condition: and(succeeded(), eq('${{ parameters.backupProdToBlobStore }}', 'true'))
     jobs:
       - job: DumpUpload
         steps:
@@ -59,7 +62,7 @@ stages:
   - stage: GenerateScripts
     displayName: "Generate Scripts"
     dependsOn: []
-    condition: or(eq('${{ parameters.deployToReview }}', 'true'), eq('${{ parameters.deployToIntegration }}', 'true'), eq('${{ parameters.deployToStaging }}', 'true'))
+    condition: or(eq('${{ parameters.syncToReview }}', 'true'), eq('${{ parameters.syncToIntegration }}', 'true'), eq('${{ parameters.syncToStaging }}', 'true'))
     jobs:
       - job: GenerateScripts
         steps:
@@ -74,7 +77,7 @@ stages:
     dependsOn:
       - CopyFromProdDB
       - GenerateScripts
-    condition: and(succeeded(), eq('${{ parameters.deployToReview }}', true))
+    condition: and(succeeded(), eq('${{ parameters.syncToReview }}', true))
     jobs:
       - job: ReviewPaste
         steps:
@@ -92,7 +95,7 @@ stages:
     dependsOn:
       - CopyFromProdDB
       - GenerateScripts
-    condition: and(succeeded(), eq('${{ parameters.deployToIntegration }}', true))
+    condition: and(succeeded(), eq('${{ parameters.syncToIntegration }}', true))
     jobs:
       - job: IntegrationPaste
         steps:
@@ -110,7 +113,7 @@ stages:
     dependsOn:
       - CopyFromProdDB
       - GenerateScripts
-    condition: and(succeeded(), eq('${{ parameters.deployToStaging }}', true))
+    condition: and(succeeded(), eq('${{ parameters.syncToStaging }}', true))
     jobs:
       - job: StagingPaste
         steps:
