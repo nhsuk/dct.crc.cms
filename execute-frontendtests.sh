@@ -17,6 +17,19 @@
 # PARALLEL - number of parallel runs to execute (default 1)
 # SCENARIOS - how to run scenarios (sequential/parallel, default sequential)
 
+echo "### Executing frontend tests ###"
+
+echo "Checking required environment variables..."
+required_vars=("BASE_URL" "SECRETS_FILE" "REPO_USERNAME" "REPO_PASSWORD" "IMAGE_TAG" "SECRETS_FILE_WAGTAIL_USER")
+for var in "${required_vars[@]}"; do
+    if [[ -z "${!var}" ]]; then
+        echo "Error: Environment variable $var is not set. Exiting..."
+        exit 1
+    else
+        echo "$var is set."
+    fi
+done
+
 echo "### IMAGE_TAG: ${IMAGE_TAG:=1.1.1}"
 echo "### PARALLEL: ${PARALLEL:=1}"
 echo "### SCENARIOS: ${SCENARIOS:=sequential}"

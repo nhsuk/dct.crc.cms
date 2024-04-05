@@ -545,28 +545,59 @@ class CRCV3MainPage(BasePage):
         try:
             with open(csv_file_path) as csvfile:
                 self.wagtail_user, self.wagtail_password = list(csv.reader(csvfile))[0]
+            self.logger.info("Wagtail credentials loaded successfully.")
         except Exception as e:
             self.logger.error(f"Failed to read Wagtail credentials from CSV: {e}")
             raise
 
     def navigate_to_admin(self):
         admin_url = f"{self.base_url}/crc-admin"
-        self.browser.get(admin_url)
+        try:
+            self.browser.get(admin_url)
+            self.logger.info(f"Navigated to admin URL: {admin_url}")
+        except Exception as e:
+            self.logger.error(
+                f"Failed to navigate to admin URL: {admin_url}. Error: {e}"
+            )
+            raise
 
     def login_to_admin(self):
-        self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
-        self.browser.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
-        self.browser.find_element(
-            By.XPATH, "//em[contains(text(), 'Sign in')]/.."
-        ).click()
+        try:
+            self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
+            self.browser.find_element(By.ID, "id_password").send_keys(
+                self.wagtail_password
+            )
+            self.browser.find_element(
+                By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+            ).click()
+            self.logger.info("Attempted login to admin.")
+        except Exception as e:
+            self.logger.error(f"Login to admin failed. Error: {e}")
+            raise
 
     def navigate_to_admin_campaigns_sort(self):
         admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
-        self.browser.get(admin_campaigns_sort_url)
+        try:
+            self.browser.get(admin_campaigns_sort_url)
+            self.logger.info(
+                f"Navigated to admin campaigns sort URL: {admin_campaigns_sort_url}"
+            )
+        except Exception as e:
+            self.logger.error(
+                f"Failed to navigate to admin campaigns sort URL: {admin_campaigns_sort_url}. Error: {e}"
+            )
+            raise
 
     def navigate_to_campaigns_page(self):
         campaigns_url = f"{self.base_url}/campaigns"
-        self.browser.get(campaigns_url)
+        try:
+            self.browser.get(campaigns_url)
+            self.logger.info(f"Navigated to campaigns URL: {campaigns_url}")
+        except Exception as e:
+            self.logger.error(
+                f"Failed to navigate to campaigns URL: {campaigns_url}. Error: {e}"
+            )
+            raise
 
     def CRCV3_Campaigns_list_h3(self):
         # self.interact.click_element(self.campaigns_tab)
