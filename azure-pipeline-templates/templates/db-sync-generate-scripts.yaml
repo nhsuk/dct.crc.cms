@@ -96,30 +96,6 @@ steps:
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
       psql -d "$(DBName)" \
-      -c "\copy (SELECT ''||indexdef||';' FROM pg_indexes
-        WHERE tablename = 'users_user'
-          OR tablename = 'otp_totp_totpdevice'
-          OR tablename = 'users_user_groups'
-          OR tablename = 'users_user_user_permissions'
-          OR tablename = 'wagtailusers_userprofile')
-        to '/psql_commands_scripts/add_original_user_indexes.csv' csv;"
-  displayName: 'Make add original indexes script'
-
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      mkdir psql_commands_scripts
-      set -e
-      docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
-      -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
-      psql -d "$(DBName)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||def||';'
         FROM (
             SELECT
