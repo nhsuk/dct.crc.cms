@@ -118,7 +118,7 @@ stages:
     displayName: 'Deploy Review'
     condition: and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')))
     variables:
-      - group: 'Review'
+    - group: Review
       environmentName: 'review'
       namespace: 'dct-crc-v3-review-$(sourceBranchName)-ns'
       tag: 'review-$(sourceBranchName)'
