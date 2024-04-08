@@ -1,6 +1,9 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
@@ -540,6 +543,7 @@ class CRCV3MainPage(BasePage):
         self.browser = browser
         self.logger = logger
         self.base_url = os.getenv("BASE_URL")
+        self.otp_code = os.getenv("WAGTAIL_OTP_CODE")
         csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER", "./crcv3-wagtailuser")
 
         try:
@@ -574,6 +578,22 @@ class CRCV3MainPage(BasePage):
         except Exception as e:
             self.logger.error(f"Login to admin failed. Error: {e}")
             raise
+
+    def enter_totp_code(self):
+        try:
+            WebDriverWait(self.browser, 5).until(
+                EC.visibility_of_element_located((By.ID, "id_otp_token"))
+            )
+            totp_code = os.environ["WAGTAIL_OTP_CODE"]
+            self.browser.find_element(By.ID, "id_otp_token").send_keys(totp_code)
+            self.browser.find_element(
+                By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+            ).click()
+            self.logger.info("TOTP code entered successfully.")
+        except TimeoutException:
+            self.logger.info("TOTP input not found, proceeding without it.")
+        except Exception as e:
+            self.logger.error(f"Unable to enter TOTP code. Error: {e}")
 
     def navigate_to_admin_campaigns_sort(self):
         admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"

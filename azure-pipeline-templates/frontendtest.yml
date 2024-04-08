@@ -15,6 +15,7 @@ steps:
       TAGS: $(tags)
       SECRETS_FILE: $(CSVFile.secureFilePath)
       SECRETS_FILE_WAGTAIL_USER: $(WagtailCSVFile.secureFilePath)
+      WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
       BASE_URL: https://$(hostUrl)
       IMAGE_TAG: $(imageTag)
       PARALLEL: 4

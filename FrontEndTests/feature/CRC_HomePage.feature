@@ -271,7 +271,8 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 
   @CRCV3-030 @Smoke
   Scenario: verify custom admin and frontend campaign page order match
-    Given I log in to the admin panel
+    Given I generate a TOTP code for the admin panel
+    And I log in to the admin panel
     And I navigate to the sorted admin campaigns page
     And I rearrange some of the posts
     Then I capture the first 5 campaign titles from admin

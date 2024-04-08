@@ -118,6 +118,7 @@ stages:
     displayName: 'Deploy Review'
     condition: and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')))
     variables:
+      - group: 'Review'
       environmentName: 'review'
       namespace: 'dct-crc-v3-review-$(sourceBranchName)-ns'
       tag: 'review-$(sourceBranchName)'
@@ -142,6 +143,8 @@ stages:
         kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
+      parameters:
+        WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
   - job: deployTest
     displayName: 'Deploy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')

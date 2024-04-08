@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import random
 import os
-
+import pyotp
 
 # from common.common_test_methods import create_list_from_feature_table_column
 
@@ -564,6 +564,13 @@ def Close_window(context, option):
         # context.driver.back()
 
 
+@Step("I generate a TOTP code for the admin panel")
+def generate_totp_code(context):
+    parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
+    current_code = parsed_pyotp.now()
+    os.environ["WAGTAIL_OTP_CODE"] = current_code
+
+
 @Step("I log in to the admin panel")
 def log_in_to_admin_panel(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
@@ -574,6 +581,7 @@ def log_in_to_admin_panel(context):
     )
 
     context.support_page.login_to_admin()
+    context.support_page.enter_totp_code()
 
     WebDriverWait(context.browser, 10).until(
         EC.visibility_of_element_located((By.ID, "header-title"))

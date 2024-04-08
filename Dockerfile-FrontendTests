@@ -1,0 +1,4 @@
+ARG IMAGE_TAG
+FROM dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
+
+RUN pip install pyotp
