@@ -622,38 +622,44 @@ class CRCV3MainPage(BasePage):
             raise
 
     def rearrange_campaign_posts(self):
-        WebDriverWait(self.browser, 10).until(
-            EC.presence_of_all_elements_located(
-                (By.CSS_SELECTOR, ".ui-sortable-handle")
+        try:
+            WebDriverWait(self.browser, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.CSS_SELECTOR, ".ui-sortable-handle")
+                )
             )
-        )
-
-        draggable_elements = self.browser.find_elements_by_css_selector(
-            ".ui-sortable-handle"
-        )
-        draggable_elements = draggable_elements[:5]
-
-        action = ActionChains(self.browser)
-
-        for _ in range(3):
-            source_pos = random.randint(0, 4)
-            target_pos = random.randint(0, 4)
-
-            while source_pos == target_pos:
-                target_pos = random.randint(0, 4)
-
-            source_element = draggable_elements[source_pos]
-            target_element = draggable_elements[target_pos]
-
-            action.click_and_hold(source_element).pause(1)
-            action.move_to_element(target_element)
-            action.move_by_offset(0, -10)
-            action.release().perform()
 
             draggable_elements = self.browser.find_elements_by_css_selector(
                 ".ui-sortable-handle"
             )
             draggable_elements = draggable_elements[:5]
+
+            action = ActionChains(self.browser)
+
+            for _ in range(3):
+                source_pos = random.randint(0, 4)
+                target_pos = random.randint(0, 4)
+
+                while source_pos == target_pos:
+                    target_pos = random.randint(0, 4)
+
+                source_element = draggable_elements[source_pos]
+                target_element = draggable_elements[target_pos]
+
+                action.click_and_hold(source_element).pause(1)
+                action.move_to_element(target_element)
+                action.move_by_offset(0, -10)
+                action.release().perform()
+
+                draggable_elements = self.browser.find_elements_by_css_selector(
+                    ".ui-sortable-handle"
+                )
+                draggable_elements = draggable_elements[:5]
+        except Exception as e:
+            self.logger.error(
+                f"Failed to rearrange campaign pages in the admin panel. Error: {e}"
+            )
+            raise
 
     def navigate_to_campaigns_page(self):
         campaigns_url = f"{self.base_url}/campaigns"
@@ -663,6 +669,55 @@ class CRCV3MainPage(BasePage):
         except Exception as e:
             self.logger.error(
                 f"Failed to navigate to campaigns URL: {campaigns_url}. Error: {e}"
+            )
+            raise
+
+    def capture_admin_campaign_titles(self):
+        try:
+            live_campaign_links = WebDriverWait(self.browser, 10).until(
+                EC.presence_of_all_elements_located(
+                    (
+                        By.CSS_SELECTOR,
+                        "a.w-status.w-status--primary[title='Visit the live page']",
+                    )
+                )
+            )
+            self.admin_campaign_titles = [
+                link.find_element(
+                    By.XPATH, "./ancestor::tr//div[@class='title-wrapper']/a"
+                ).text.strip()
+                for link in live_campaign_links[:5]
+            ]
+        except Exception as e:
+            self.logger.error(
+                f"Failed to capture campaign titles in the admin panel. Error: {e}"
+            )
+            raise
+
+    def capture_crc_campaign_titles(self):
+        try:
+            campaign_cards = self.browser.find_elements_by_css_selector(
+                "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
+            )
+
+            self.crc_campaign_titles = [
+                card.find_element_by_css_selector(
+                    "h3.nhsuk-card__heading a"
+                ).text.strip()
+                for card in campaign_cards[:5]
+            ]
+        except Exception as e:
+            self.logger.error(
+                f"Failed to capture campaign titles on the CRC page. Error: {e}"
+            )
+            raise
+
+    def verify_campaign_titles_match(self, admin_titles, crc_titles):
+        try:
+            assert admin_titles == crc_titles, "Campaign page orders do not match."
+        except Exception as e:
+            self.logger.error(
+                f"Failed to verify that campaign titles match. Error: {e}"
             )
             raise
 

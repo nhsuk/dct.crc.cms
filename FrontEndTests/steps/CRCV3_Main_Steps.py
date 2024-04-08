@@ -592,21 +592,8 @@ def rearrange_posts(context):
 
 @Step("I capture the first 5 campaign titles from admin")
 def capture_admin_campaign_titles(context):
-    live_campaign_links = WebDriverWait(context.browser, 20).until(
-        EC.presence_of_all_elements_located(
-            (
-                By.CSS_SELECTOR,
-                "a.w-status.w-status--primary[title='Visit the live page']",
-            )
-        )
-    )
-
-    context.admin_campaign_titles = [
-        link.find_element(
-            By.XPATH, "./ancestor::tr//div[@class='title-wrapper']/a"
-        ).text.strip()
-        for link in live_campaign_links[:5]
-    ]
+    context.support_page.capture_admin_campaign_titles()
+    context.admin_campaign_titles = context.support_page.admin_campaign_titles
 
 
 @Step("I navigate to the main campaigns page")
@@ -617,18 +604,12 @@ def navigate_to_sorted_admin_campaigns_page(context):
 
 @Step("I capture the first 5 campaign titles from the main page")
 def capture_main_campaign_titles(context):
-    campaign_cards = context.browser.find_elements_by_css_selector(
-        "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
-    )
-
-    context.main_campaign_titles = [
-        card.find_element_by_css_selector("h3.nhsuk-card__heading a").text.strip()
-        for card in campaign_cards[:5]
-    ]
+    context.support_page.capture_crc_campaign_titles()
+    context.crc_campaign_titles = context.support_page.crc_campaign_titles
 
 
 @Step("I verify that the captured campaign page orders match")
 def verify_campaign_titles_match(context):
-    assert (
-        context.admin_campaign_titles == context.main_campaign_titles
-    ), "Campaign page orders do not match."
+    context.support_page.verify_campaign_titles_match(
+        context.admin_campaign_titles, context.crc_campaign_titles
+    )
