@@ -607,17 +607,30 @@ class CRCV3MainPage(BasePage):
 
     def navigate_to_admin_campaigns_sort(self):
         admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
+        self.logger.info("Preparing to navigate to the admin campaigns sort page.")
         try:
+            current_url_before = self.browser.current_url
+            self.logger.info(
+                f"Current URL before attempting to navigate: {current_url_before}"
+            )
+
+            self.logger.info("Waiting for the 'header-title' element to be visible.")
             WebDriverWait(self.browser, 10).until(
                 EC.visibility_of_element_located((By.ID, "header-title"))
             )
+
+            self.logger.info(f"Navigating to {admin_campaigns_sort_url}")
             self.browser.get(admin_campaigns_sort_url)
+
+            current_url_after = self.browser.current_url
             self.logger.info(
-                f"Navigated to admin campaigns sort URL: {admin_campaigns_sort_url}"
+                f"Successfully navigated. Current URL after navigating: {current_url_after}"
             )
+
         except Exception as e:
+            current_url_error = self.browser.current_url
             self.logger.error(
-                f"Failed to navigate to admin campaigns sort URL: {admin_campaigns_sort_url}. Error: {e}"
+                f"Failed to navigate to admin campaigns sort URL: {admin_campaigns_sort_url}. Error: {e}. Current URL during error: {current_url_error}"
             )
             raise
 
