@@ -82,8 +82,7 @@ docker run \
   --env SECRETS_FILE_WAGTAIL_USER=$SECRETS_FILE_WAGTAIL_USER \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \
-  --mount type=bind,source=${SECRETS_FILE_WAGTAIL_USER:?No Wagtail secrets file specified (SECRETS_FILE_WAGTAIL_USER)},target=/automation-ui/crcv3-wagtailuser \
-  my-acceptancetests:${IMAGE_TAG}
+  --mount type=bind,source=${SECRETS_FILE_WAGTAIL_USER:?No secrets file specified (SECRETS_FILE_WAGTAIL_USER)},target=/automation-ui/crcv3-wagtailuser.csv \
 PASSED=$?
 echo "Status of tests: $PASSED"
 
