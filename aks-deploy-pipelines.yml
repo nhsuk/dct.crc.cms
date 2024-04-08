@@ -119,22 +119,38 @@ stages:
     condition: and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')))
     variables:
     - group: Review
-      environmentName: 'review'
-      namespace: 'dct-crc-v3-review-$(sourceBranchName)-ns'
-      tag: 'review-$(sourceBranchName)'
-      hostUrl: 'crc-v3-review-$(sourceBranchName).nhswebsite-dev.nhs.uk'
-      appName: 'crc-v3'
-      devEnv: 'int'
-      appEnv: 'review'
-      autoscaleEnv: 'int'
-      paragonMock: ${{ parameters.paragonMock }}
-      debug: ${{ parameters.debug }}
-      notifyDebug: ${{ parameters.notifyDebug }}
-      workers: 2
-      gunicornArgs: ${{ parameters.gunicornArgs }}
-      azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
-      tags: ${{ parameters.tags }}
-      imageTag: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
+    - name: environmentName
+      value: 'review'
+    - name: namespace
+      value: 'dct-crc-v3-review-$(sourceBranchName)-ns'
+    - name: tag
+      value: 'review-$(sourceBranchName)'
+    - name: hostUrl
+      value: 'crc-v3-review-$(sourceBranchName).nhswebsite-dev.nhs.uk'
+    - name: appName
+      value: 'crc-v3'
+    - name: devEnv
+      value: 'int'
+    - name: appEnv
+      value: 'review'
+    - name: autoscaleEnv
+      value: 'int'
+    - name: paragonMock
+      value: ${{ parameters.paragonMock }}
+    - name: debug
+      value: ${{ parameters.debug }}
+    - name: notifyDebug
+      value: ${{ parameters.notifyDebug }}
+    - name: workers
+      value: 2
+    - name: gunicornArgs
+      value: ${{ parameters.gunicornArgs }}
+    - name: azureSearchUpdate
+      value: ${{ parameters.azureSearchUpdate }}
+    - name: tags
+      value: ${{ parameters.tags }}
+    - name: imageTag
+      value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
