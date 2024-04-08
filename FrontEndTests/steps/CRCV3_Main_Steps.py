@@ -575,17 +575,8 @@ def generate_totp_code(context):
 def log_in_to_admin_panel(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.navigate_to_admin()
-
-    WebDriverWait(context.browser, 10).until(
-        EC.visibility_of_element_located((By.ID, "id_username"))
-    )
-
     context.support_page.login_to_admin()
     context.support_page.enter_totp_code()
-
-    WebDriverWait(context.browser, 10).until(
-        EC.visibility_of_element_located((By.ID, "header-title"))
-    )
 
 
 @Step("I navigate to the sorted admin campaigns page")
@@ -596,36 +587,7 @@ def navigate_to_sorted_admin_campaigns_page(context):
 
 @Step("I rearrange some of the posts")
 def rearrange_posts(context):
-    WebDriverWait(context.browser, 20).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".ui-sortable-handle"))
-    )
-
-    draggable_elements = context.browser.find_elements_by_css_selector(
-        ".ui-sortable-handle"
-    )
-    draggable_elements = draggable_elements[:5]
-
-    action = ActionChains(context.browser)
-
-    for _ in range(3):
-        source_pos = random.randint(0, 4)
-        target_pos = random.randint(0, 4)
-
-        while source_pos == target_pos:
-            target_pos = random.randint(0, 4)
-
-        source_element = draggable_elements[source_pos]
-        target_element = draggable_elements[target_pos]
-
-        action.click_and_hold(source_element).pause(1)
-        action.move_to_element(target_element)
-        action.move_by_offset(0, -10)
-        action.release().perform()
-
-        draggable_elements = context.browser.find_elements_by_css_selector(
-            ".ui-sortable-handle"
-        )
-        draggable_elements = draggable_elements[:5]
+    context.support_page.rearrange_campaign_posts()
 
 
 @Step("I capture the first 5 campaign titles from admin")

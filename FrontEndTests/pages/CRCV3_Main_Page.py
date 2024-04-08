@@ -10,6 +10,7 @@ from hamcrest import *
 from time import sleep
 import os
 import csv
+import random
 
 from AcceptanceTests.common.common_test_methods import *
 
@@ -550,6 +551,7 @@ class CRCV3MainPage(BasePage):
             with open(csv_file_path) as csvfile:
                 self.wagtail_user, self.wagtail_password = list(csv.reader(csvfile))[0]
             self.logger.info("Wagtail credentials loaded successfully.")
+            print("Username: ", self.wagtail_user)
         except Exception as e:
             self.logger.error(f"Failed to read Wagtail credentials from CSV: {e}")
             raise
@@ -567,6 +569,9 @@ class CRCV3MainPage(BasePage):
 
     def login_to_admin(self):
         try:
+            WebDriverWait(self.browser, 10).until(
+                EC.visibility_of_element_located((By.ID, "id_username"))
+            )
             self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
             self.browser.find_element(By.ID, "id_password").send_keys(
                 self.wagtail_password
@@ -581,23 +586,31 @@ class CRCV3MainPage(BasePage):
 
     def enter_totp_code(self):
         try:
-            WebDriverWait(self.browser, 5).until(
-                EC.visibility_of_element_located((By.ID, "id_otp_token"))
+            WebDriverWait(self.browser, 2).until(
+                EC.visibility_of_element_located((By.NAME, "otp_token"))
             )
-            totp_code = os.environ["WAGTAIL_OTP_CODE"]
-            self.browser.find_element(By.ID, "id_otp_token").send_keys(totp_code)
-            self.browser.find_element(
-                By.XPATH, "//em[contains(text(), 'Sign in')]/.."
-            ).click()
-            self.logger.info("TOTP code entered successfully.")
+            totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
+            if totp_code:
+                otp_element = self.browser.find_element(By.NAME, "otp_token")
+                otp_element.send_keys(totp_code)
+                self.browser.find_element(
+                    By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+                ).click()
+                self.logger.info("TOTP code entered successfully.")
+            else:
+                self.logger.warning("WAGTAIL_OTP_CODE env is not set or empty.")
         except TimeoutException:
             self.logger.info("TOTP input not found, proceeding without it.")
         except Exception as e:
-            self.logger.error(f"Unable to enter TOTP code. Error: {e}")
+            self.logger.error(f"An error occurred while entering the TOTP code: {e}")
+            raise
 
     def navigate_to_admin_campaigns_sort(self):
         admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
         try:
+            WebDriverWait(self.browser, 10).until(
+                EC.visibility_of_element_located((By.ID, "header-title"))
+            )
             self.browser.get(admin_campaigns_sort_url)
             self.logger.info(
                 f"Navigated to admin campaigns sort URL: {admin_campaigns_sort_url}"
@@ -607,6 +620,40 @@ class CRCV3MainPage(BasePage):
                 f"Failed to navigate to admin campaigns sort URL: {admin_campaigns_sort_url}. Error: {e}"
             )
             raise
+
+    def rearrange_campaign_posts(self):
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".ui-sortable-handle")
+            )
+        )
+
+        draggable_elements = self.browser.find_elements_by_css_selector(
+            ".ui-sortable-handle"
+        )
+        draggable_elements = draggable_elements[:5]
+
+        action = ActionChains(self.browser)
+
+        for _ in range(3):
+            source_pos = random.randint(0, 4)
+            target_pos = random.randint(0, 4)
+
+            while source_pos == target_pos:
+                target_pos = random.randint(0, 4)
+
+            source_element = draggable_elements[source_pos]
+            target_element = draggable_elements[target_pos]
+
+            action.click_and_hold(source_element).pause(1)
+            action.move_to_element(target_element)
+            action.move_by_offset(0, -10)
+            action.release().perform()
+
+            draggable_elements = self.browser.find_elements_by_css_selector(
+                ".ui-sortable-handle"
+            )
+            draggable_elements = draggable_elements[:5]
 
     def navigate_to_campaigns_page(self):
         campaigns_url = f"{self.base_url}/campaigns"
