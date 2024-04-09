@@ -16,7 +16,7 @@ steps:
     ResourceGroup: ${{ parameters.ResourceGroup }}
     artifactPrefix: "prod"
 
-- template: templates/db-sync-generate-scripts.yaml
+- template: ./db-sync-generate-scripts.yaml
   parameters:
     azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}

@@ -12,7 +12,7 @@ schedules:
     - main
 
 parameters:
-  - name: backupProdToBlobStore
+  - name: backupProduction
     type: boolean
     default: true
   - name: syncToReview
