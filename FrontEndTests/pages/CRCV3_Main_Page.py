@@ -700,46 +700,6 @@ class CRCV3MainPage(BasePage):
             )
             raise
 
-    def rearrange_campaign_posts(self):
-        try:
-            WebDriverWait(self.browser, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CSS_SELECTOR, ".ui-sortable-handle")
-                )
-            )
-
-            draggable_elements = self.browser.find_elements_by_css_selector(
-                ".ui-sortable-handle"
-            )
-            draggable_elements = draggable_elements[:5]
-
-            action = ActionChains(self.browser)
-
-            for _ in range(3):
-                source_pos = random.randint(0, 4)
-                target_pos = random.randint(0, 4)
-
-                while source_pos == target_pos:
-                    target_pos = random.randint(0, 4)
-
-                source_element = draggable_elements[source_pos]
-                target_element = draggable_elements[target_pos]
-
-                action.click_and_hold(source_element).pause(1)
-                action.move_to_element(target_element)
-                action.move_by_offset(0, -10)
-                action.release().perform()
-
-                draggable_elements = self.browser.find_elements_by_css_selector(
-                    ".ui-sortable-handle"
-                )
-                draggable_elements = draggable_elements[:5]
-        except Exception as e:
-            self.logger.error(
-                f"Failed to rearrange campaign pages in the admin panel. Error: {e}"
-            )
-            raise
-
     def navigate_to_campaigns_page(self):
         campaigns_url = f"{self.base_url}/campaigns"
         try:

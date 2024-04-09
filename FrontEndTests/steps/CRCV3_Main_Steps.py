@@ -585,11 +585,6 @@ def navigate_to_sorted_admin_campaigns_page(context):
     context.support_page.navigate_to_admin_campaigns_sort()
 
 
-@Step("I rearrange some of the posts")
-def rearrange_posts(context):
-    context.support_page.rearrange_campaign_posts()
-
-
 @Step("I capture the first 5 campaign titles from admin")
 def capture_admin_campaign_titles(context):
     context.support_page.capture_admin_campaign_titles()
