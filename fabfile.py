@@ -293,6 +293,8 @@ def sync_db(c, env, storageKey):
                 "Please ensure that you are logged in az cli and have the az cli extension installed."
             )
         else:
+            print("restarting containers to ensure importing succeeds...")
+            restart(c)
             print("Attempting to import the database...")
             import_data(c, f"/database_dumps/{env}-db.dump")
             print("All done. You might need to run migrations.")
@@ -304,7 +306,13 @@ def sync_db(c, env, storageKey):
 
 def extract_datetime_from_blob(blob_properties):
     blob_name = blob_properties["name"]
-    datetime_in_name = blob_name.replace("db-dump-", "").replace(".dump", "")
+    datetime_in_name = (
+        blob_name.replace("db-dump-", "")
+        .replace(".dump", "")
+        .replace("review/", "")
+        .replace("integration/", "")
+        .replace("staging/", "")
+    )
     return datetime.strptime(datetime_in_name, "%d-%m-%Y_%H:%M:%S")
 
 
