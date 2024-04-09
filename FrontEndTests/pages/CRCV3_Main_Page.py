@@ -549,9 +549,12 @@ class CRCV3MainPage(BasePage):
 
         try:
             with open(csv_file_path) as csvfile:
-                self.wagtail_user, self.wagtail_password = list(csv.reader(csvfile))[0]
+                self.wagtail_user, self.wagtail_password = [
+                    value.strip() for value in list(csv.reader(csvfile))[0]
+                ]
             self.logger.info("Wagtail credentials loaded successfully.")
             print("Username: ", self.wagtail_user)
+            print("Password:", self.wagtail_password)
         except Exception as e:
             self.logger.error(f"Failed to read Wagtail credentials from CSV: {e}")
             raise
