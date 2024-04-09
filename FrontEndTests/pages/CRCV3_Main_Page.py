@@ -572,22 +572,30 @@ class CRCV3MainPage(BasePage):
             WebDriverWait(self.browser, 10).until(
                 EC.visibility_of_element_located((By.ID, "id_username"))
             )
-            self.logger.info("Username input field is visible.")
             self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
-            self.logger.info(f"Entered username: {self.wagtail_user}")
             self.browser.find_element(By.ID, "id_password").send_keys(
                 self.wagtail_password
             )
-            self.logger.info("Entered password.")
             self.browser.find_element(
                 By.XPATH, "//em[contains(text(), 'Sign in')]/.."
             ).click()
+
             self.logger.info("Clicked on Sign in button. Attempting login to admin.")
 
-            WebDriverWait(self.browser, 10).until(
-                EC.visibility_of_element_located((By.NAME, "otp_token"))
+            try:
+                WebDriverWait(self.browser, 5).until(
+                    EC.visibility_of_element_located((By.NAME, "otp_token"))
+                )
+                self.logger.info("Login to admin was successful. OTP input visible.")
+                return
+            except TimeoutException:
+                pass
+
+            WebDriverWait(self.browser, 5).until(
+                EC.visibility_of_element_located((By.XPATH, "//li[@class='error']"))
             )
-            self.logger.info("Login to admin was successful. OTP input visible.")
+            self.logger.info("Login credentials inputted were invalid.")
+
         except Exception as e:
             self.logger.error(f"Login to admin failed. Error: {e}")
             raise
@@ -599,18 +607,28 @@ class CRCV3MainPage(BasePage):
             )
             totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
             if totp_code:
-                otp_element = self.browser.find_element(By.NAME, "otp_token")
-                otp_element.send_keys(totp_code)
+                self.browser.find_element(By.NAME, "otp_token").send_keys(totp_code)
                 self.browser.find_element(
                     By.XPATH, "//em[contains(text(), 'Sign in')]/.."
                 ).click()
 
-                WebDriverWait(self.browser, 10).until(
-                    EC.visibility_of_element_located((By.ID, "header-title"))
+                self.logger.info("OTP sign in clicked...")
+
+                try:
+                    WebDriverWait(self.browser, 5).until(
+                        EC.visibility_of_element_located((By.ID, "header-title"))
+                    )
+                    self.logger.info(
+                        "TOTP code entered successfully, admin home page visible."
+                    )
+                    return
+                except TimeoutException:
+                    pass
+
+                WebDriverWait(self.browser, 5).until(
+                    EC.visibility_of_element_located((By.XPATH, "//li[@class='error']"))
                 )
-                self.logger.info(
-                    "TOTP code entered successfully, admin home page visible."
-                )
+                self.logger.info("OTP code inputted were invalid.")
             else:
                 self.logger.warning("WAGTAIL_OTP_CODE env is not set or empty.")
         except TimeoutException:
