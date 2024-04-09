@@ -8,6 +8,8 @@ trigger:
     - 'review/*'
     - 'refs/tags/*'
     - 'main'
+    exclude:
+    - 'refs/tags/tf-*'
   paths:
     exclude:
     - 'terraform'
