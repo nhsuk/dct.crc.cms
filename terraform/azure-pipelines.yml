@@ -5,7 +5,7 @@ trigger:
   branches:
     include:
     - 'review/*'
-    - 'refs/tags/*'
+    - 'refs/tags/tf-*'
     - 'main'
   paths:
     include:
