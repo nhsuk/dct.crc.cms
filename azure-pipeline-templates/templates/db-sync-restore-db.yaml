@@ -1,16 +1,4 @@
 steps:
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
-  inputs:
-    azureSubscription: ${{parameters.azureVaultSubscription}}
-    KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBName, DBHost, DBUser
-
-- task: DownloadPipelineArtifact@2
-  inputs:
-    artifact: '${{ parameters.artifactPrefix }}-db.dump'
-    path: $(Build.SourcesDirectory)
-
 - task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
@@ -65,7 +53,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
+      -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.artifactPrefix}}-db.dump
-  displayName: 'Copy ${{parameters.artifactPrefix}} to target database'
+      pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.dumpPrefix}}-db.dump
+  displayName: 'Copy ${{parameters.dumpPrefix}} to target database'

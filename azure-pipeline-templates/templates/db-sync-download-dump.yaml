@@ -1,11 +1,4 @@
 steps:
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
-  inputs:
-    azureSubscription: ${{parameters.azureVaultSubscription}}
-    KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBName, DBHost, DBUser
-
 - task: AzureCLI@2
   condition: ${{ eq(parameters.usersOnly, True) }}
   inputs:
@@ -20,9 +13,9 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:11 \
-      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.artifactPrefix}}-db-dump.dump
-  name: 'Create_${{parameters.artifactPrefix}}_Copy'
-  displayName: 'Dump ${{parameters.artifactPrefix}} (Users only)'
+      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
+  name: 'Create_${{parameters.dumpPrefix}}_Copy'
+  displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
 
 - task: AzureCLI@2
   condition: ${{ ne(parameters.usersOnly, True) }}
@@ -38,11 +31,12 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:11 \
-      pg_dump -Fc "$(DBName)" > ${{parameters.artifactPrefix}}-db-dump.dump
-  name: 'Create_${{parameters.artifactPrefix}}_DBCopy'
-  displayName: 'Dump ${{parameters.artifactPrefix}} (Full DB)'
+      pg_dump -Fc "$(DBName)" > ${{parameters.dumpPrefix}}-db-dump.dump
+  name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
+  displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
 
 - task: PublishPipelineArtifact@1
+  condition: ${{ eq(parameters.publishDump, True) }}
   inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.artifactPrefix}}-db-dump.dump
-    artifactName: '${{parameters.artifactPrefix}}-db.dump'
+    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.dumpPrefix}}-db-dump.dump
+    artifactName: '${{parameters.dumpPrefix}}-db.dump'

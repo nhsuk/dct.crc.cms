@@ -7,19 +7,20 @@ steps:
 
 - bash: |
     root=""
-    echo ${{parameters.environment}}
-    if [ "${{parameters.environment}}" = "prod" ]; then
+    echo ${{parameters.dumpPrefix}}
+    if [ "${{parameters.dumpPrefix}}" = "prod" ]; then
       echo "##vso[task.setvariable variable=folder;isOutput=True]$root"
       echo "using root directory"
     else
-      echo "##vso[task.setvariable variable=folder;isOutput=True]${{parameters.environment}}/"
-      echo "using ${{parameters.environment}} folder"
+      echo "##vso[task.setvariable variable=folder;isOutput=True]${{parameters.dumpPrefix}}/"
+      echo "using ${{parameters.dumpPrefix}} folder"
     fi
   name: 'environment'
 
 - task: DownloadPipelineArtifact@2
+  condition: ${{ eq(parameters.useArtifact, True) }}
   inputs:
-    artifact: '${{parameters.artifactPrefix}}-db.dump'
+    artifact: '${{parameters.dumpPrefix}}-db.dump'
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
@@ -32,7 +33,7 @@ steps:
       set -e
 
       # Rename the data dump to contain timestamp before upload
-      mv ${{parameters.artifactPrefix}}-db-dump.dump db-dump-$(currentDatestamp.Datestamp).dump
+      mv ${{parameters.dumpPrefix}}-db-dump.dump db-dump-$(currentDatestamp.Datestamp).dump
 
       # Save a copy to azure blob storage
       az storage blob upload \

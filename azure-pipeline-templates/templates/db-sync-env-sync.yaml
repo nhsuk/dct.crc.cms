@@ -1,48 +1,42 @@
 steps:
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
+  inputs:
+    azureSubscription: ${{parameters.azureVaultSubscription}}
+    KeyVaultName: ${{parameters.VaultId}}
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
+
 - template: ./db-sync-download-dump.yaml
   parameters:
-    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    VaultId: ${{ parameters.VaultId }}
-    artifactPrefix: "${{ parameters.environment }}_users"
+    dumpPrefix: "${{ parameters.environment }}_users"
     usersOnly: True
 
 - template: ./db-sync-restore-db.yaml
   parameters:
-    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    VaultId: ${{ parameters.VaultId }}
     Server: ${{ parameters.Server }}
     ResourceGroup: ${{ parameters.ResourceGroup }}
-    artifactPrefix: "prod"
+    dumpPrefix: "prod"
 
 - template: ./db-sync-generate-scripts.yaml
   parameters:
-    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    VaultId: ${{ parameters.VaultId }}
 
 - template: ./db-sync-restore-users.yaml
   parameters:
-    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    VaultId: ${{ parameters.VaultId }}
-    artifactPrefix: "${{ parameters.environment }}_users"
+    dumpPrefix: "${{ parameters.environment }}_users"
     
 - template: ./db-sync-download-dump.yaml
   parameters:
-    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    VaultId: ${{ parameters.VaultId }}
-    artifactPrefix: ${{ parameters.environment }}
+    dumpPrefix: ${{ parameters.environment }}
     
 - template: ./db-sync-upload-blob.yaml
   parameters:
-    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    VaultId: ${{ parameters.VaultId }}
     StorageAccountNameDbDump: $(StorageAccountNameDbDump)
     BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
     BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
-    artifactPrefix: ${{ parameters.environment }}
-    environment: ${{ parameters.environment }}
+    dumpPrefix: ${{ parameters.environment }}

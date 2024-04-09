@@ -34,12 +34,17 @@ stages:
     jobs:
       - job: ProdDBCopy
         steps:
+          - task: AzureKeyVault@1
+            displayName: 'Azure Key Vault: dct-crc-v3-vlt-prod-uks'
+            inputs:
+              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+              KeyVaultName: "dct-crc-v3-vlt-prod-uks"
+              SecretsFilter: DBPass, DBName, DBHost, DBUser
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
               azureStorageSubscription: "nhsuk-dct-rg-prod"
-              VaultId: "dct-crc-v3-vlt-prod-uks"
-              artifactPrefix: "prod"
+              dumpPrefix: "prod"
+              publishDump: true
 
   - stage: UploadProdDumpToBlob
     displayName: "Backup Production Database"
@@ -57,21 +62,8 @@ stages:
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
-              artifactPrefix: "prod"
-              environment: "prod"
-
-  # - stage: GenerateScripts
-  #   displayName: "Generate Scripts"
-  #   dependsOn: []
-  #   condition: or(eq('${{ parameters.syncToReview }}', 'true'), eq('${{ parameters.syncToIntegration }}', 'true'), eq('${{ parameters.syncToStaging }}', 'true'))
-  #   jobs:
-  #     - job: GenerateScripts
-  #       steps:
-  #         - template: templates/db-sync-generate-scripts.yaml
-  #           parameters:
-  #             azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-  #             azureStorageSubscription: "nhsuk-dct-rg-prod"
-  #             VaultId: "dct-crc-v3-vlt-prod-uks"
+              useArtifact: true
+              dumpPrefix: "prod"
 
   - stage: CopyToReviewDB
     displayName: "Copy to Review Database"

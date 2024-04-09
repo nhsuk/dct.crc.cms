@@ -1,21 +1,4 @@
 steps:
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
-  inputs:
-    azureSubscription: ${{parameters.azureVaultSubscription}}
-    KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: DBPass, DBName, DBHost, DBUser
-
-- task: DownloadPipelineArtifact@2
-  inputs:
-    artifact: 'psql_commands_scripts'
-    path: '$(Build.SourcesDirectory)/psql_commands_scripts'
-
-- task: DownloadPipelineArtifact@2
-  inputs:
-    artifact: '${{parameters.artifactPrefix}}-db.dump'
-    path: $(Build.SourcesDirectory)
-
 - task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
@@ -90,10 +73,10 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      -v $(pwd)/${{parameters.artifactPrefix}}-db-dump.dump:/${{parameters.artifactPrefix}}-db.dump \
+      -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:11 \
-      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.artifactPrefix}}-db.dump 
-  displayName: 'Restore ${{parameters.artifactPrefix}} users to target database'
+      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump 
+  displayName: 'Restore ${{parameters.dumpPrefix}} users to target database'
 
 - task: AzureCLI@2
   inputs:
