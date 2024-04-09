@@ -18,6 +18,7 @@ steps:
     Server: ${{ parameters.Server }}
     ResourceGroup: ${{ parameters.ResourceGroup }}
     dumpPrefix: "prod"
+    useArtifact: true
 
 - template: ./db-sync-generate-scripts.yaml
   parameters:

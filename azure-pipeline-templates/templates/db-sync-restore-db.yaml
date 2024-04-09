@@ -42,6 +42,12 @@ steps:
       --debug
   displayName: 'Recreate target database'
 
+- task: DownloadPipelineArtifact@2
+  condition: ${{ eq(parameters.useArtifact, True) }}
+  inputs:
+    artifact: '${{parameters.dumpPrefix}}-db.dump'
+    path: $(Build.SourcesDirectory)
+
 - task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
