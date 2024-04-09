@@ -45,7 +45,7 @@ stages:
     displayName: "Backup Production Database"
     dependsOn:
       - CopyFromProdDB
-    condition: and(succeeded(), eq('${{ parameters.backupProdToBlobStore }}', 'true'))
+    condition: and(succeeded(), eq('${{ parameters.backupProduction }}', 'true'))
     jobs:
       - job: DumpUpload
         steps:
