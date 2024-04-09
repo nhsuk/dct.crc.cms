@@ -545,7 +545,7 @@ class CRCV3MainPage(BasePage):
         self.logger = logger
         self.base_url = os.getenv("BASE_URL")
         self.otp_code = os.getenv("WAGTAIL_OTP_CODE")
-        csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER", "./crcv3-wagtailuser")
+        csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER")
 
         try:
             with open(csv_file_path) as csvfile:
