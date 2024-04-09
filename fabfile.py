@@ -246,14 +246,7 @@ def import_data(c, database_filename):
 
 @task
 def sync_db(c, env, storageKey):
-    options = {
-        "staging": "staging_dump",
-        "integration": "integration_dump",
-        "review": "review_dump",
-    }
-
-    if options.get(env) is not None:
-        # env = options.get(env)
+    if env in ["staging", "integration", "review"]:
         try:
             print(f"Determining latest {env} dump to download...")
             blobs = local(
@@ -293,7 +286,7 @@ def sync_db(c, env, storageKey):
                 "Please ensure that you are logged in az cli and have the az cli extension installed."
             )
         else:
-            print("restarting containers to ensure importing succeeds...")
+            print("Restarting containers to ensure importing succeeds...")
             restart(c)
             print("Attempting to import the database...")
             import_data(c, f"/database_dumps/{env}-db.dump")
