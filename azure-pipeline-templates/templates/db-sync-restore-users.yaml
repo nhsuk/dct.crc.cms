@@ -109,4 +109,4 @@ steps:
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:11 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
-  displayName: 'Readd original user based constraints'
+  displayName: 'Re-add original user based constraints'

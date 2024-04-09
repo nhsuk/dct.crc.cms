@@ -58,25 +58,25 @@ stages:
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
               artifactPrefix: "prod"
+              environment: "prod"
 
-  - stage: GenerateScripts
-    displayName: "Generate Scripts"
-    dependsOn: []
-    condition: or(eq('${{ parameters.syncToReview }}', 'true'), eq('${{ parameters.syncToIntegration }}', 'true'), eq('${{ parameters.syncToStaging }}', 'true'))
-    jobs:
-      - job: GenerateScripts
-        steps:
-          - template: templates/db-sync-generate-scripts.yaml
-            parameters:
-              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-prod"
-              VaultId: "dct-crc-v3-vlt-prod-uks"
+  # - stage: GenerateScripts
+  #   displayName: "Generate Scripts"
+  #   dependsOn: []
+  #   condition: or(eq('${{ parameters.syncToReview }}', 'true'), eq('${{ parameters.syncToIntegration }}', 'true'), eq('${{ parameters.syncToStaging }}', 'true'))
+  #   jobs:
+  #     - job: GenerateScripts
+  #       steps:
+  #         - template: templates/db-sync-generate-scripts.yaml
+  #           parameters:
+  #             azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
+  #             azureStorageSubscription: "nhsuk-dct-rg-prod"
+  #             VaultId: "dct-crc-v3-vlt-prod-uks"
 
   - stage: CopyToReviewDB
     displayName: "Copy to Review Database"
     dependsOn:
       - CopyFromProdDB
-      - GenerateScripts
     condition: and(succeeded(), eq('${{ parameters.syncToReview }}', true))
     jobs:
       - job: ReviewPaste
@@ -94,7 +94,6 @@ stages:
     displayName: "Copy to Integration Database"
     dependsOn:
       - CopyFromProdDB
-      - GenerateScripts
     condition: and(succeeded(), eq('${{ parameters.syncToIntegration }}', true))
     jobs:
       - job: IntegrationPaste
@@ -112,7 +111,6 @@ stages:
     displayName: "Copy to Staging Database"
     dependsOn:
       - CopyFromProdDB
-      - GenerateScripts
     condition: and(succeeded(), eq('${{ parameters.syncToStaging }}', true))
     jobs:
       - job: StagingPaste

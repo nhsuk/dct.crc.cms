@@ -16,6 +16,12 @@ steps:
     ResourceGroup: ${{ parameters.ResourceGroup }}
     artifactPrefix: "prod"
 
+- template: templates/db-sync-generate-scripts.yaml
+  parameters:
+    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    VaultId: ${{ parameters.VaultId }}
+
 - template: ./db-sync-restore-users.yaml
   parameters:
     azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
@@ -30,6 +36,13 @@ steps:
     VaultId: ${{ parameters.VaultId }}
     artifactPrefix: ${{ parameters.environment }}
     
-- template: ./db-sync-upload-to-feed.yaml
+- template: ./db-sync-upload-blob.yaml
   parameters:
+    azureVaultSubscription: ${{ parameters.azureVaultSubscription }}
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    VaultId: ${{ parameters.VaultId }}
+    StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+    BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+    BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
     artifactPrefix: ${{ parameters.environment }}
+    environment: ${{ parameters.environment }}
