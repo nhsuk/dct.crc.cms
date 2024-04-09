@@ -3,7 +3,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
@@ -553,8 +553,7 @@ class CRCV3MainPage(BasePage):
                     value.strip() for value in list(csv.reader(csvfile))[0]
                 ]
             self.logger.info("Wagtail credentials loaded successfully.")
-            print("Username: ", self.wagtail_user)
-            print("Password:", self.wagtail_password)
+            print("Username:", self.wagtail_user)
         except Exception as e:
             self.logger.error(f"Failed to read Wagtail credentials from CSV: {e}")
             raise
@@ -594,13 +593,43 @@ class CRCV3MainPage(BasePage):
             except TimeoutException:
                 pass
 
-            WebDriverWait(self.browser, 5).until(
-                EC.visibility_of_element_located((By.XPATH, "//li[@class='error']"))
-            )
-            self.logger.info("Login credentials inputted were invalid.")
+            try:
+                invalid_credentials_message = WebDriverWait(self.browser, 5).until(
+                    EC.visibility_of_element_located((By.XPATH, "//li[@class='error']"))
+                )
+                self.logger.info(
+                    f"Login failed with error message: {invalid_credentials_message.text}"
+                )
+                return
+            except TimeoutException:
+                pass
 
+            try:
+                server_error_message = self.browser.find_element_by_xpath(
+                    "//h1[contains(text(), 'Something went wrong')]/following-sibling::p"
+                )
+                if server_error_message:
+                    self.logger.info(
+                        f"Server error encountered: {server_error_message.text}"
+                    )
+                    return
+            except NoSuchElementException:
+                pass
+
+            self.logger.info("Login failed, but no specific error message was given.")
+
+        except NoSuchElementException as e:
+            self.logger.error(
+                f"Failed to locate a necessary element for login. Error: {e}"
+            )
+        except TimeoutException as e:
+            self.logger.error(
+                f"Timeout occurred waiting for a necessary element. Error: {e}"
+            )
         except Exception as e:
-            self.logger.error(f"Login to admin failed. Error: {e}")
+            self.logger.error(
+                f"Login to admin failed due to an unexpected error. Error: {e}"
+            )
             raise
 
     def enter_totp_code(self):
