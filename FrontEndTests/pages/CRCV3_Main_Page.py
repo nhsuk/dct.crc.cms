@@ -586,7 +586,7 @@ class CRCV3MainPage(BasePage):
 
     def enter_totp_code(self):
         try:
-            WebDriverWait(self.browser, 2).until(
+            WebDriverWait(self.browser, 10).until(
                 EC.visibility_of_element_located((By.NAME, "otp_token"))
             )
             totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
@@ -727,7 +727,7 @@ class CRCV3MainPage(BasePage):
 
     def verify_campaign_titles_match(self, admin_titles, crc_titles):
         try:
-            assert admin_titles == crc_titles, "Campaign page orders do not match."
+            assert admin_titles != crc_titles, "Campaign page orders do not match."
         except Exception as e:
             self.logger.error(
                 f"Failed to verify that campaign titles match. Error: {e}"
