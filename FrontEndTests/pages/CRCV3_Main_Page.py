@@ -572,14 +572,22 @@ class CRCV3MainPage(BasePage):
             WebDriverWait(self.browser, 10).until(
                 EC.visibility_of_element_located((By.ID, "id_username"))
             )
+            self.logger.info("Username input field is visible.")
             self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
+            self.logger.info(f"Entered username: {self.wagtail_user}")
             self.browser.find_element(By.ID, "id_password").send_keys(
                 self.wagtail_password
             )
+            self.logger.info("Entered password.")
             self.browser.find_element(
                 By.XPATH, "//em[contains(text(), 'Sign in')]/.."
             ).click()
-            self.logger.info("Attempted login to admin.")
+            self.logger.info("Clicked on Sign in button. Attempting login to admin.")
+
+            WebDriverWait(self.browser, 10).until(
+                EC.visibility_of_element_located((By.NAME, "otp_token"))
+            )
+            self.logger.info("Login to admin was successful. OTP input visible.")
         except Exception as e:
             self.logger.error(f"Login to admin failed. Error: {e}")
             raise
@@ -596,7 +604,13 @@ class CRCV3MainPage(BasePage):
                 self.browser.find_element(
                     By.XPATH, "//em[contains(text(), 'Sign in')]/.."
                 ).click()
-                self.logger.info("TOTP code entered successfully.")
+
+                WebDriverWait(self.browser, 10).until(
+                    EC.visibility_of_element_located((By.ID, "header-title"))
+                )
+                self.logger.info(
+                    "TOTP code entered successfully, admin home page visible."
+                )
             else:
                 self.logger.warning("WAGTAIL_OTP_CODE env is not set or empty.")
         except TimeoutException:
@@ -614,17 +628,18 @@ class CRCV3MainPage(BasePage):
                 f"Current URL before attempting to navigate: {current_url_before}"
             )
 
-            self.logger.info("Waiting for the 'header-title' element to be visible.")
-            WebDriverWait(self.browser, 10).until(
-                EC.visibility_of_element_located((By.ID, "header-title"))
-            )
-
             self.logger.info(f"Navigating to {admin_campaigns_sort_url}")
             self.browser.get(admin_campaigns_sort_url)
 
+            WebDriverWait(self.browser, 10).until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, "//a[@href='/crc-admin/pages/13/?']")
+                )
+            )
+
             current_url_after = self.browser.current_url
             self.logger.info(
-                f"Successfully navigated. Current URL after navigating: {current_url_after}"
+                f"Successfully navigated, sort button visible. Current URL after navigating: {current_url_after}"
             )
 
         except Exception as e:
@@ -727,7 +742,7 @@ class CRCV3MainPage(BasePage):
 
     def verify_campaign_titles_match(self, admin_titles, crc_titles):
         try:
-            assert admin_titles != crc_titles, "Campaign page orders do not match."
+            assert admin_titles == crc_titles, "Campaign page orders do not match."
         except Exception as e:
             self.logger.error(
                 f"Failed to verify that campaign titles match. Error: {e}"
