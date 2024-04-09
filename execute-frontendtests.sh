@@ -54,6 +54,13 @@ docker build --build-arg IMAGE_TAG=${IMAGE_TAG} -t my-acceptancetests:${IMAGE_TA
 
 printf  'Docker Build completed'
 
+LOCAL_CSV_PATH="$REPO_ROOT/crcv3-wagtailuser.csv"
+
+if [ -z "$SYSTEM_TEAMFOUNDATIONCOLLECTIONURI" ]; then
+    SECRETS_FILE_WAGTAIL_USER="$LOCAL_CSV_PATH"
+else
+    SECRETS_FILE_WAGTAIL_USER="${SECRETS_FILE_WAGTAIL_USER}"
+fi
 
 # Wait for the BASE_URL to be available or timeout after one minute
 
