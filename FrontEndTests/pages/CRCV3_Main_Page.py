@@ -562,6 +562,7 @@ class CRCV3MainPage(BasePage):
         admin_url = f"{self.base_url}/crc-admin"
         try:
             self.browser.get(admin_url)
+            self.logger.info(f"Base URL: {self.base_url}")
             self.logger.info(f"Navigated to admin URL: {admin_url}")
         except Exception as e:
             self.logger.error(
