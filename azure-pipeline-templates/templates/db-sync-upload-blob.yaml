@@ -1,17 +1,19 @@
 steps:
 - bash: |
-    date=`date "+%d-%m-%Y_%H:%M:%S"`;
+    date=`date "+%d-%m-%Y_%H:%M:%S"`
     echo $date
     echo "##vso[task.setvariable variable=Datestamp;isOutput=True]$date"
   name: 'currentDatestamp'
 
 - bash: |
-    emptyFolder=""
+    root=""
     echo ${{parameters.environment}}
-    if [ "${{parameters.environment}}" = "prod" ] then
-      echo "##vso[task.setvariable variable=folder;isOutput=True]$emptyFolder"
+    if [ "${{parameters.environment}}" = "prod" ]; then
+      echo "##vso[task.setvariable variable=folder;isOutput=True]$root"
+      echo "using root directory"
     else
       echo "##vso[task.setvariable variable=folder;isOutput=True]${{parameters.environment}}/"
+      echo "using ${{parameters.environment}} folder"
     fi
   name: 'environment'
 
