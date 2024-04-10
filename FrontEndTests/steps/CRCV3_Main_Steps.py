@@ -567,27 +567,16 @@ def generate_totp_code(context):
     os.environ["WAGTAIL_OTP_CODE"] = current_code
 
 
-@Step("I log in to the admin panel")
+@Step("I log in to the admin panel and navigate to the sorted admin campaigns page")
 def log_in_to_admin_panel(context):
+    context.landing_page = CRCV3MainPage(context.browser, context.logger)
     base_url = os.getenv("BASE_URL")
     admin_url = f"{base_url}/crc-admin"
-    context.landing_page = CRCV3MainPage(context.browser, context.logger)
     context.landing_page.interact.open_url(admin_url)
     context.landing_page.login_to_admin()
     context.landing_page.enter_totp_code()
-
-
-@Step("I navigate to the sorted admin campaigns page")
-def navigate_to_sorted_admin_campaigns_page(context):
-    context.landing_page = CRCV3MainPage(context.browser, context.logger)
-    base_url = os.getenv("BASE_URL")
     sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
     context.landing_page.interact.open_url(sorted_admin_url)
-
-
-@Step("I capture the first 5 campaign titles from admin")
-def capture_admin_campaign_titles(context):
-    context.landing_page = CRCV3MainPage(context.browser, context.logger)
     context.landing_page.capture_admin_campaign_titles()
     context.admin_campaign_titles = context.landing_page.admin_campaign_titles
 
@@ -598,18 +587,8 @@ def navigate_to_sorted_admin_campaigns_page(context):
     base_url = os.getenv("BASE_URL")
     campaigns_url = f"{base_url}/campaigns"
     context.landing_page.interact.open_url(campaigns_url)
-
-
-@Step("I capture the first 5 campaign titles from the main page")
-def capture_main_campaign_titles(context):
-    context.landing_pagee = CRCV3MainPage(context.browser, context.logger)
     context.landing_page.capture_crc_campaign_titles()
     context.crc_campaign_titles = context.landing_page.crc_campaign_titles
-
-
-@Step("I verify that the captured campaign page orders match")
-def verify_campaign_titles_match(context):
-    context.landing_page = CRCV3MainPage(context.browser, context.logger)
     context.landing_page.verify_campaign_titles_match(
         context.admin_campaign_titles, context.crc_campaign_titles
     )

@@ -574,7 +574,6 @@ class CRCV3MainPage(BasePage):
             )
 
     def navigate_to_admin_campaigns_sort(self):
-
         WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "//a[@href='/crc-admin/pages/13/?']")
