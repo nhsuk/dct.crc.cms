@@ -132,74 +132,70 @@ stages:
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
   
-  # - stage: terraformProduction
-  #   displayName: 'Terraform Production Env'
-  #   dependsOn: terraformStaging
-  #   condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
-  #   pool:
-  #     vmImage: windows-2022
-  #   variables:
-  #     - name: ARTIFACT_PATH
-  #       value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-  #     - template: ./templates/release-variables.yml
-  #       parameters:
-  #         releaseEnvironment: 'prod'
-  #         location: 'uks'
-  #     - name: ENVIRONMENT
-  #       value: 'production'
-  #     - name: PUBLISHING_ENDPOINT
-  #       value: 'https://campaignresources.dhsc.gov.uk/crc-admin/pub'
-  #   jobs:
-  #     - deployment: approval
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #     - deployment: 'terraformProd'
-  #       displayName: 'Terraform Production'
-  #       condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - template: ./templates/deployment-steps.yml
-  #               parameters:
-  #                 artifactPath: ${{ variables.ARTIFACT_PATH }}
-  #                 environment: ${{ variables.ENVIRONMENT }}
-  #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-  #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
-  #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+  - stage: terraformProduction
+    displayName: 'Terraform Production Env'
+    dependsOn: terraformStaging
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    pool:
+      vmImage: windows-2022
+    variables:
+      - name: ARTIFACT_PATH
+        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
+      - template: ./templates/release-variables.yml
+        parameters:
+          releaseEnvironment: 'prod'
+          location: 'uks'
+      - name: ENVIRONMENT
+        value: 'production'
+    jobs:
+      - deployment: approval
+        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: 'terraformProd'
+        displayName: 'Terraform Production'
+        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+        environment: ${{ variables.ENVIRONMENT }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - template: ./templates/deployment-steps.yml
+                parameters:
+                  artifactPath: ${{ variables.ARTIFACT_PATH }}
+                  environment: ${{ variables.ENVIRONMENT }}
+                  azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
+                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
 
-  # - stage: terraformDR
-  #   displayName: 'Terraform DR Env'
-  #   dependsOn: terraformStaging
-  #   condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
-  #   pool:
-  #     vmImage: windows-2022
-  #   variables:
-  #     - name: ARTIFACT_PATH
-  #       value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-  #     - template: ./templates/release-variables.yml
-  #       parameters:
-  #         releaseEnvironment: 'prod'
-  #         location: 'ukw'
-  #     - name: ENVIRONMENT
-  #       value: 'production'
-  #     - name: PUBLISHING_ENDPOINT
-  #       value: 'https://campaignresources.dhsc.gov.uk/crc-admin/pub'
-  #   jobs:
-  #     - deployment: approval
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #     - deployment: 'terraformDr'
-  #       displayName: 'Terraform DR'
-  #       condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
-  #       environment: ${{ variables.ENVIRONMENT }}
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - template: ./templates/deployment-steps.yml
-  #               parameters:
-  #                 artifactPath: ${{ variables.ARTIFACT_PATH }}
-  #                 environment: ${{ variables.ENVIRONMENT }}
-  #                 azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-  #                 resourceGroup: ${{ variables.RESOURCE_GROUP }}
-  #                 tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+  - stage: terraformDR
+    displayName: 'Terraform DR Env'
+    dependsOn: terraformProduction
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    pool:
+      vmImage: windows-2022
+    variables:
+      - name: ARTIFACT_PATH
+        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
+      - template: ./templates/release-variables.yml
+        parameters:
+          releaseEnvironment: 'prod'
+          location: 'ukw'
+      - name: ENVIRONMENT
+        value: 'production'
+    jobs:
+      - deployment: approval
+        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: 'terraformDr'
+        displayName: 'Terraform DR'
+        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+        environment: ${{ variables.ENVIRONMENT }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - template: ./templates/deployment-steps.yml
+                parameters:
+                  artifactPath: ${{ variables.ARTIFACT_PATH }}
+                  environment: ${{ variables.ENVIRONMENT }}
+                  azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
+                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
