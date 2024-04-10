@@ -547,218 +547,88 @@ class CRCV3MainPage(BasePage):
         self.otp_code = os.getenv("WAGTAIL_OTP_CODE")
         csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER")
 
-        try:
-            with open(csv_file_path) as csvfile:
-                self.wagtail_user, self.wagtail_password = [
-                    value.strip() for value in list(csv.reader(csvfile))[0]
-                ]
-            self.logger.info("Wagtail credentials loaded successfully.")
-            print("Username:", self.wagtail_user)
-        except Exception as e:
-            self.logger.error(f"Failed to read Wagtail credentials from CSV: {e}")
-            raise
+        with open(csv_file_path) as csvfile:
+            self.wagtail_user, self.wagtail_password = [
+                value.strip() for value in list(csv.reader(csvfile))[0]
+            ]
 
     def navigate_to_admin(self):
         admin_url = f"{self.base_url}/crc-admin"
-        try:
-            self.browser.get(admin_url)
-            self.logger.info(f"Base URL: {self.base_url}")
-            self.logger.info(f"Navigated to admin URL: {admin_url}")
-        except Exception as e:
-            self.logger.error(
-                f"Failed to navigate to admin URL: {admin_url}. Error: {e}"
-            )
-            raise
+        self.browser.get(admin_url)
+        self.logger.info(f"Navigated to admin URL: {admin_url}")
 
     def login_to_admin(self):
-        try:
-            WebDriverWait(self.browser, 10).until(
-                EC.visibility_of_element_located((By.ID, "id_username"))
-            )
-            self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
-            self.browser.find_element(By.ID, "id_password").send_keys(
-                self.wagtail_password
-            )
+        WebDriverWait(self.browser, 10).until(
+            EC.visibility_of_element_located((By.ID, "id_username"))
+        )
+        self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
+        self.browser.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
+        self.browser.find_element(
+            By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+        ).click()
+
+        WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.NAME, "otp_token"))
+        )
+
+    def enter_totp_code(self):
+        WebDriverWait(self.browser, 10).until(
+            EC.visibility_of_element_located((By.NAME, "otp_token"))
+        )
+        totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
+        if totp_code:
+            self.browser.find_element(By.NAME, "otp_token").send_keys(totp_code)
             self.browser.find_element(
                 By.XPATH, "//em[contains(text(), 'Sign in')]/.."
             ).click()
 
-            self.logger.info("Clicked on Sign in button. Attempting login to admin.")
-
-            try:
-                WebDriverWait(self.browser, 5).until(
-                    EC.visibility_of_element_located((By.NAME, "otp_token"))
-                )
-                self.logger.info("Login to admin was successful. OTP input visible.")
-                return
-            except TimeoutException:
-                pass
-
-            try:
-                invalid_credentials_message = WebDriverWait(self.browser, 5).until(
-                    EC.visibility_of_element_located((By.XPATH, "//li[@class='error']"))
-                )
-                self.logger.info(
-                    f"Login failed with error message: {invalid_credentials_message.text}"
-                )
-                return
-            except TimeoutException:
-                pass
-
-            try:
-                server_error_message = self.browser.find_element_by_xpath(
-                    "//h1[contains(text(), 'Something went wrong')]/following-sibling::p"
-                )
-                if server_error_message:
-                    self.logger.info(
-                        f"Server error encountered: {server_error_message.text}"
-                    )
-                    return
-            except NoSuchElementException:
-                pass
-
-            self.logger.info("Login failed, but no specific error message was given.")
-
-        except NoSuchElementException as e:
-            self.logger.error(
-                f"Failed to locate a necessary element for login. Error: {e}"
+            WebDriverWait(self.browser, 5).until(
+                EC.visibility_of_element_located((By.ID, "header-title"))
             )
-        except TimeoutException as e:
-            self.logger.error(
-                f"Timeout occurred waiting for a necessary element. Error: {e}"
-            )
-        except Exception as e:
-            self.logger.error(
-                f"Login to admin failed due to an unexpected error. Error: {e}"
-            )
-            raise
-
-    def enter_totp_code(self):
-        try:
-            WebDriverWait(self.browser, 10).until(
-                EC.visibility_of_element_located((By.NAME, "otp_token"))
-            )
-            totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
-            if totp_code:
-                self.browser.find_element(By.NAME, "otp_token").send_keys(totp_code)
-                self.browser.find_element(
-                    By.XPATH, "//em[contains(text(), 'Sign in')]/.."
-                ).click()
-
-                self.logger.info("OTP sign in clicked...")
-
-                try:
-                    WebDriverWait(self.browser, 5).until(
-                        EC.visibility_of_element_located((By.ID, "header-title"))
-                    )
-                    self.logger.info(
-                        "TOTP code entered successfully, admin home page visible."
-                    )
-                    return
-                except TimeoutException:
-                    pass
-
-                WebDriverWait(self.browser, 5).until(
-                    EC.visibility_of_element_located((By.XPATH, "//li[@class='error']"))
-                )
-                self.logger.info("OTP code inputted were invalid.")
-            else:
-                self.logger.warning("WAGTAIL_OTP_CODE env is not set or empty.")
-        except TimeoutException:
-            self.logger.info("TOTP input not found, proceeding without it.")
-        except Exception as e:
-            self.logger.error(f"An error occurred while entering the TOTP code: {e}")
-            raise
 
     def navigate_to_admin_campaigns_sort(self):
         admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
-        self.logger.info("Preparing to navigate to the admin campaigns sort page.")
-        try:
-            current_url_before = self.browser.current_url
-            self.logger.info(
-                f"Current URL before attempting to navigate: {current_url_before}"
-            )
+        self.browser.get(admin_campaigns_sort_url)
 
-            self.logger.info(f"Navigating to {admin_campaigns_sort_url}")
-            self.browser.get(admin_campaigns_sort_url)
-
-            WebDriverWait(self.browser, 10).until(
-                EC.visibility_of_element_located(
-                    (By.XPATH, "//a[@href='/crc-admin/pages/13/?']")
-                )
+        WebDriverWait(self.browser, 10).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "//a[@href='/crc-admin/pages/13/?']")
             )
-
-            current_url_after = self.browser.current_url
-            self.logger.info(
-                f"Successfully navigated, sort button visible. Current URL after navigating: {current_url_after}"
-            )
-
-        except Exception as e:
-            current_url_error = self.browser.current_url
-            self.logger.error(
-                f"Failed to navigate to admin campaigns sort URL: {admin_campaigns_sort_url}. Error: {e}. Current URL during error: {current_url_error}"
-            )
-            raise
+        )
 
     def navigate_to_campaigns_page(self):
         campaigns_url = f"{self.base_url}/campaigns"
-        try:
-            self.browser.get(campaigns_url)
-            self.logger.info(f"Navigated to campaigns URL: {campaigns_url}")
-        except Exception as e:
-            self.logger.error(
-                f"Failed to navigate to campaigns URL: {campaigns_url}. Error: {e}"
-            )
-            raise
+        self.browser.get(campaigns_url)
+        self.logger.info(f"Navigated to campaigns URL: {campaigns_url}")
 
     def capture_admin_campaign_titles(self):
-        try:
-            live_campaign_links = WebDriverWait(self.browser, 10).until(
-                EC.presence_of_all_elements_located(
-                    (
-                        By.CSS_SELECTOR,
-                        "a.w-status.w-status--primary[title='Visit the live page']",
-                    )
+        live_campaign_links = WebDriverWait(self.browser, 10).until(
+            EC.presence_of_all_elements_located(
+                (
+                    By.CSS_SELECTOR,
+                    "a.w-status.w-status--primary[title='Visit the live page']",
                 )
             )
-            self.admin_campaign_titles = [
-                link.find_element(
-                    By.XPATH, ".//ancestor::tr//div[contains(@class,'title-wrapper')]/a"
-                ).text.strip()
-                for link in live_campaign_links[:5]
-            ]
-        except Exception as e:
-            self.logger.error(
-                f"Failed to capture campaign titles in the admin panel. Error: {e}"
-            )
-            raise
+        )
+        self.admin_campaign_titles = [
+            link.find_element(
+                By.XPATH, ".//ancestor::tr//div[contains(@class,'title-wrapper')]/a"
+            ).text.strip()
+            for link in live_campaign_links[:5]
+        ]
 
     def capture_crc_campaign_titles(self):
-        try:
-            campaign_cards = self.browser.find_elements_by_css_selector(
-                "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
-            )
+        campaign_cards = self.browser.find_elements_by_css_selector(
+            "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
+        )
 
-            self.crc_campaign_titles = [
-                card.find_element_by_css_selector(
-                    "h3.nhsuk-card__heading a"
-                ).text.strip()
-                for card in campaign_cards[:5]
-            ]
-        except Exception as e:
-            self.logger.error(
-                f"Failed to capture campaign titles on the CRC page. Error: {e}"
-            )
-            raise
+        self.crc_campaign_titles = [
+            card.find_element_by_css_selector("h3.nhsuk-card__heading a").text.strip()
+            for card in campaign_cards[:5]
+        ]
 
     def verify_campaign_titles_match(self, admin_titles, crc_titles):
-        try:
-            assert admin_titles == crc_titles, "Campaign page orders do not match."
-        except Exception as e:
-            self.logger.error(
-                f"Failed to verify that campaign titles match. Error: {e}"
-            )
-            raise
+        assert admin_titles == crc_titles, "Campaign page orders do not match."
 
     def CRCV3_Campaigns_list_h3(self):
         # self.interact.click_element(self.campaigns_tab)
