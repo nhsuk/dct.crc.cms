@@ -1,7 +1,7 @@
 #noinspection CucumberUndefinedStep
 Feature: CRCV3 Main Page  - NHSUK CRC Website
 
-  @CRCV3-001
+  @CRCV3-001 @Smoke
   Scenario: open CRCV3 site and verify page loaded successfully
     Given I loaded CRCV3 site to load the home page
     Then  Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available
@@ -22,7 +22,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-003
+  @CRCV3-003 @Smoke
   Scenario: open CRCV3 site and login with email and password
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -49,7 +49,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | error_list                             |
       | Enter a valid email address.           |
 
-  @CRCV3-005
+  @CRCV3-005 @Smoke
   Scenario Outline: open CRCV3 site to verify forgot password confirmation message
     Given I loaded CRCV3 site to load the home page
     When  I click on Sign in button Sign in page loaded with Email_address and and password
@@ -156,7 +156,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When I browsed to Better Health Local Authority Tier 2 Adult Weight Management Programme resource campaign
     Then Verify Campaign details for "Better_Health_Local_Authority_Tier_2"
 
-  @CRCV3-020
+  @CRCV3-020 @Smoke
   Scenario: open CRCV3 site and verify resources in campaigns tab Smoke test
     Given I loaded CRCV3 site to load the home page
     When Verify Campaign Resource Centre lable, Covid advices resources and latest updates labels are available

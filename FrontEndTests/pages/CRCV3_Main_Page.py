@@ -1,16 +1,12 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
 import os
 import csv
-import random
 
 from AcceptanceTests.common.common_test_methods import *
 

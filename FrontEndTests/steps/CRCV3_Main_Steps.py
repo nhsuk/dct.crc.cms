@@ -3,11 +3,7 @@ from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
 from pages.CRCV3_Main_Page import CRCV3MainPage
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-import random
 import os
 import pyotp
 
