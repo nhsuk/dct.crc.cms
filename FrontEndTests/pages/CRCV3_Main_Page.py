@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from uitestcore.page import BasePage
@@ -22,7 +24,7 @@ class CRCV3MainPage(BasePage):
     CRCV_mainpage_label = PageElement(
         By.XPATH, "//h1[text()='Campaign Resource Centre']"
     )
-    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest updates']")
+    Latest_updates_label = PageElement(By.XPATH, "//h2[text()='Latest Live Campaigns']")
     S4l_h1 = PageElement(By.TAG_NAME, "h1")
     Sign_In_link = PageElement(By.PARTIAL_LINK_TEXT, "Sign in")
     Sign_In_label = PageElement(By.XPATH, "//h1[text()[normalize-space()='Sign in']]")
@@ -536,69 +538,51 @@ class CRCV3MainPage(BasePage):
     we_are_prototype_learn_expand = PageElement(By.XPATH, "(//span[text()='Show'])[2]")
     hide_we_are_prototype = PageElement(By.XPATH, "//span[text()='Hide']")
 
-    def __init__(self, browser, logger):
-        self.browser = browser
-        self.logger = logger
-        self.base_url = os.getenv("BASE_URL")
-        self.otp_code = os.getenv("WAGTAIL_OTP_CODE")
+    def login_to_admin(self):
         csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER")
-
         with open(csv_file_path) as csvfile:
             self.wagtail_user, self.wagtail_password = [
                 value.strip() for value in list(csv.reader(csvfile))[0]
             ]
 
-    def navigate_to_admin(self):
-        admin_url = f"{self.base_url}/crc-admin"
-        self.browser.get(admin_url)
-        self.logger.info(f"Navigated to admin URL: {admin_url}")
-
-    def login_to_admin(self):
-        WebDriverWait(self.browser, 10).until(
+        WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.ID, "id_username"))
         )
-        self.browser.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
-        self.browser.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
-        self.browser.find_element(
+        self.driver.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
+        self.driver.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
+        self.driver.find_element(
             By.XPATH, "//em[contains(text(), 'Sign in')]/.."
         ).click()
 
-        WebDriverWait(self.browser, 5).until(
+        WebDriverWait(self.driver, 5).until(
             EC.visibility_of_element_located((By.NAME, "otp_token"))
         )
 
     def enter_totp_code(self):
-        WebDriverWait(self.browser, 10).until(
+        WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.NAME, "otp_token"))
         )
         totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
         if totp_code:
-            self.browser.find_element(By.NAME, "otp_token").send_keys(totp_code)
-            self.browser.find_element(
+            self.driver.find_element(By.NAME, "otp_token").send_keys(totp_code)
+            self.driver.find_element(
                 By.XPATH, "//em[contains(text(), 'Sign in')]/.."
             ).click()
 
-            WebDriverWait(self.browser, 5).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.visibility_of_element_located((By.ID, "header-title"))
             )
 
     def navigate_to_admin_campaigns_sort(self):
-        admin_campaigns_sort_url = f"{self.base_url}/crc-admin/pages/13/?ordering=ord"
-        self.browser.get(admin_campaigns_sort_url)
 
-        WebDriverWait(self.browser, 10).until(
+        WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "//a[@href='/crc-admin/pages/13/?']")
             )
         )
 
-    def navigate_to_campaigns_page(self):
-        campaigns_url = f"{self.base_url}/campaigns"
-        self.browser.get(campaigns_url)
-        self.logger.info(f"Navigated to campaigns URL: {campaigns_url}")
-
     def capture_admin_campaign_titles(self):
-        live_campaign_links = WebDriverWait(self.browser, 10).until(
+        live_campaign_links = WebDriverWait(self.driver, 10).until(
             EC.presence_of_all_elements_located(
                 (
                     By.CSS_SELECTOR,
@@ -614,7 +598,7 @@ class CRCV3MainPage(BasePage):
         ]
 
     def capture_crc_campaign_titles(self):
-        campaign_cards = self.browser.find_elements_by_css_selector(
+        campaign_cards = self.driver.find_elements_by_css_selector(
             "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
         )
 
