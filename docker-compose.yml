@@ -124,8 +124,6 @@ services:
       - ./database_dumps:/database_dumps:delegated,rw
     logging:
       driver: none
-    ports: 
-      - 5432:5432
 
   redis:
     image: redis:3.0
