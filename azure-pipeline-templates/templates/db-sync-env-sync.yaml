@@ -20,10 +20,6 @@ steps:
     dumpPrefix: "prod"
     useArtifact: true
 
-- template: ./db-sync-generate-scripts.yaml
-  parameters:
-    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-
 - template: ./db-sync-restore-users.yaml
   parameters:
     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
