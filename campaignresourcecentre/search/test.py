@@ -217,7 +217,6 @@ class TestDatabaseSearch(TestCase):
     @patch("campaignresourcecentre.campaigns.models.CampaignPage.objects.live")
     @patch("campaignresourcecentre.campaigns.models.logger")
     def test_from_database_invalid_json(self, mock_logger, mock_live):
-
         self.mock_campaigns.append(
             MagicMock(
                 spec=CampaignPage,
