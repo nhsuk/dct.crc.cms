@@ -3,6 +3,9 @@ from behave import Step
 from pages.CRCV3_Main_Page import *
 from AcceptanceTests.common.common_test_methods import *
 from pages.CRCV3_Main_Page import CRCV3MainPage
+from selenium.webdriver.support import expected_conditions as EC
+import os
+import pyotp
 
 # from common.common_test_methods import create_list_from_feature_table_column
 
@@ -369,7 +372,7 @@ def Cervical_screening_link(context):
     context.support_page.Latest_Updates_links("Better_Health_Local_Authority_Tier_2")
 
 
-@Step('verify "{sort_by}" Newest and oldest')
+@Step('verify "{sort_by}" Recommended, Newest and Oldest')
 def sort_by(context, sort_by):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.campaigns_tab_click()
@@ -555,3 +558,37 @@ def Close_window(context, option):
     elif option == "back":
         context.driver.execute_script("window.history.go(-1)")
         # context.driver.back()
+
+
+@Step("I generate a TOTP code for the admin panel")
+def generate_totp_code(context):
+    parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
+    current_code = parsed_pyotp.now()
+    os.environ["WAGTAIL_OTP_CODE"] = current_code
+
+
+@Step("I log in to the admin panel and navigate to the sorted admin campaigns page")
+def log_in_to_admin_panel(context):
+    context.landing_page = CRCV3MainPage(context.browser, context.logger)
+    base_url = os.getenv("BASE_URL")
+    admin_url = f"{base_url}/crc-admin"
+    context.landing_page.interact.open_url(admin_url)
+    context.landing_page.login_to_admin()
+    context.landing_page.enter_totp_code()
+    sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
+    context.landing_page.interact.open_url(sorted_admin_url)
+    context.landing_page.capture_admin_campaign_titles()
+    context.admin_campaign_titles = context.landing_page.admin_campaign_titles
+
+
+@Step("I navigate to the main campaigns page")
+def navigate_to_sorted_admin_campaigns_page(context):
+    context.landing_page = CRCV3MainPage(context.browser, context.logger)
+    base_url = os.getenv("BASE_URL")
+    campaigns_url = f"{base_url}/campaigns"
+    context.landing_page.interact.open_url(campaigns_url)
+    context.landing_page.capture_crc_campaign_titles()
+    context.crc_campaign_titles = context.landing_page.crc_campaign_titles
+    context.landing_page.verify_campaign_titles_match(
+        context.admin_campaign_titles, context.crc_campaign_titles
+    )

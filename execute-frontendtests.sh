@@ -27,7 +27,7 @@ TAGS=$([ "$TAGS" = "all" ] && echo "" || echo "$TAGS")
 echo "Effective TAGS: '$TAGS'"
 
 # Create a temporary directory for the tests
-
+REPO_ROOT=$(pwd)
 WORK=$(mktemp -d -t frontendtest-XXXXXXXXXX)
 echo "Test ${BASE_URL:?No deployment URL specified (BASE_URL)} in $WORK with tags [$TAGS]"
 
@@ -37,9 +37,9 @@ cd $WORK/work
 
 echo "### Running docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
 docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_USERNAME)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
-docker pull dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
-printf  'Docker Pull completed'
+docker build --build-arg IMAGE_TAG=${IMAGE_TAG} -t my-acceptancetests:${IMAGE_TAG} -f $REPO_ROOT/Dockerfile-FrontendTests .
 
+printf  'Docker Build completed'
 
 # Wait for the BASE_URL to be available or timeout after one minute
 
@@ -62,9 +62,14 @@ docker run \
   --env PARALLEL=$PARALLEL \
   --env SCENARIOS=$SCENARIOS \
   --env TIMEOUT=$TIMEOUT \
+  --env WAGTAIL_USER \
+  --env WAGTAIL_PASSWORD \
+  --env WAGTAIL_TOTP_URI \
+  --env SECRETS_FILE_WAGTAIL_USER=/automation-ui/crcv3-wagtailuser.csv \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \
-  dctimages.azurecr.io/acceptancetests:${IMAGE_TAG}
+  --mount type=bind,source=${SECRETS_FILE_WAGTAIL_USER:?No wagtail user secrets file specified (SECRETS_FILE_WAGTAIL_USER)},target=/automation-ui/crcv3-wagtailuser.csv \
+  my-acceptancetests:${IMAGE_TAG}
 PASSED=$?
 echo "Status of tests: $PASSED"
 

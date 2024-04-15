@@ -160,29 +160,38 @@ class CampaignHubPage(BasePage):
 
     def from_database(self, request):
         # Get the initial queryset of child campaign pages of the hub.
-        campaigns = (
-            CampaignPage.objects.live()
-            .public()
-            .child_of(self)
-            .order_by("-first_published_at")
-        )
+        campaigns = CampaignPage.objects.live().public().child_of(self).order_by("path")
+
+        def get_taxonomy_JSON(campaign):
+            try:
+                return json.loads(campaign.taxonomy_json)
+            except json.JSONDecodeError:
+                logger.error(
+                    f"Invalid JSON/JSON not found for campaign ID {campaign.id}"
+                )
+                return []
+
+        campaign_taxonomy_data = [
+            (campaign, get_taxonomy_JSON(campaign)) for campaign in campaigns
+        ]
 
         # Apply filtering to the child pages, if applicable.
         topic = request.GET.get("topic")
-        if topic:
-            try:
-                topic = int(topic)
-            except ValueError:
-                # topic should be an int, return nothing if the filter value in
-                # the URL has been tampered with.
-                campaigns = CampaignPage.objects.none()
-            else:
-                campaigns = campaigns.filter(topics=topic)
+        if topic and topic != "ALL":
+            campaigns = [
+                campaign
+                for campaign, taxonomy_json in campaign_taxonomy_data
+                if any(
+                    taxonomy_item.get("code") == topic
+                    for taxonomy_item in taxonomy_json
+                )
+            ]
 
         # Format the campaigns for display in the template
         return [
             {
                 "title": campaign.listing_title or campaign.title,
+                "summary": campaign.summary,
                 "image": campaign.listing_image or campaign.image,
                 "listing_summary": campaign.listing_summary,
                 "url": campaign.url,
@@ -206,9 +215,9 @@ class CampaignHubPage(BasePage):
         ]
 
         selected_topic = request.GET.get("topic") or "ALL"
-        sort = request.GET.get("sort") or "newest"
+        sort = request.GET.get("sort") or "recommended"
 
-        if from_azure_search:
+        if from_azure_search and sort != "recommended":
             campaigns = self.from_azure_search(request)
         else:
             campaigns = self.from_database(request)
@@ -389,9 +398,9 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     "description": resource.description,
                     "summary": resource.summary,
                     "image": resource_item.image if resource_item else None,
-                    "image_alt_text": resource_item.image_alt_text
-                    if resource_item
-                    else None,
+                    "image_alt_text": (
+                        resource_item.image_alt_text if resource_item else None
+                    ),
                     "url": resource.url,
                     "last_published_at": resource.last_published_at,
                 }

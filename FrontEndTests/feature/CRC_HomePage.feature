@@ -268,3 +268,9 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When click on about tab and verify its loaded
     Then verify OHID link is accessible
     Then verify what guides us sections are working
+
+  @CRCV3-030 @Smoke
+  Scenario: verify custom admin and frontend campaign page order match
+    Given I generate a TOTP code for the admin panel
+    And I log in to the admin panel and navigate to the sorted admin campaigns page
+    Then I navigate to the main campaigns page

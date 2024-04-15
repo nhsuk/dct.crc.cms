@@ -1,10 +1,14 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from uitestcore.page import BasePage
 from uitestcore.page_element import PageElement
 from hamcrest import *
 from time import sleep
+import os
+import csv
 
 from AcceptanceTests.common.common_test_methods import *
 
@@ -534,6 +538,77 @@ class CRCV3MainPage(BasePage):
     we_are_prototype_learn_expand = PageElement(By.XPATH, "(//span[text()='Show'])[2]")
     hide_we_are_prototype = PageElement(By.XPATH, "//span[text()='Hide']")
 
+    def login_to_admin(self):
+        csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER")
+        with open(csv_file_path) as csvfile:
+            self.wagtail_user, self.wagtail_password = [
+                value.strip() for value in list(csv.reader(csvfile))[0]
+            ]
+
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "id_username"))
+        )
+        self.driver.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
+        self.driver.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
+        self.driver.find_element(
+            By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+        ).click()
+
+        WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located((By.NAME, "otp_token"))
+        )
+
+    def enter_totp_code(self):
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.NAME, "otp_token"))
+        )
+        totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
+        if totp_code:
+            self.driver.find_element(By.NAME, "otp_token").send_keys(totp_code)
+            self.driver.find_element(
+                By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+            ).click()
+
+            WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.ID, "header-title"))
+            )
+
+    def navigate_to_admin_campaigns_sort(self):
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "//a[@href='/crc-admin/pages/13/?']")
+            )
+        )
+
+    def capture_admin_campaign_titles(self):
+        live_campaign_links = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located(
+                (
+                    By.CSS_SELECTOR,
+                    "a.w-status.w-status--primary[title='Visit the live page']",
+                )
+            )
+        )
+        self.admin_campaign_titles = [
+            link.find_element(
+                By.XPATH, ".//ancestor::tr//div[contains(@class,'title-wrapper')]/a"
+            ).text.strip()
+            for link in live_campaign_links[:5]
+        ]
+
+    def capture_crc_campaign_titles(self):
+        campaign_cards = self.driver.find_elements_by_css_selector(
+            "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"
+        )
+
+        self.crc_campaign_titles = [
+            card.find_element_by_css_selector("h3.nhsuk-card__heading a").text.strip()
+            for card in campaign_cards[:5]
+        ]
+
+    def verify_campaign_titles_match(self, admin_titles, crc_titles):
+        assert admin_titles == crc_titles, "Campaign page orders do not match."
+
     def CRCV3_Campaigns_list_h3(self):
         # self.interact.click_element(self.campaigns_tab)
         list_elements = self.find.elements(self.Campaigns_list)
@@ -845,6 +920,10 @@ class CRCV3MainPage(BasePage):
             # self.find.element("//select[@id='sort']/option[text()='newest']").click()
         elif sort == "Oldest":
             self.interact.select_by_visible_text(self.sort, "Oldest")
+
+        elif sort == "Recommended":
+            self.interact.select_by_visible_text(self.sort, "Recommended")
+
             # self.find.element("//select[@id='sort']/option[text()='Oldest']").click()
         # select = self.driver.Select(find_element_by_id('fruits01'))
 
