@@ -1,0 +1,46 @@
+steps:
+- bash: |
+    date=`date "+%d-%m-%Y_%H:%M:%S"`
+    echo $date
+    echo "##vso[task.setvariable variable=Datestamp;isOutput=True]$date"
+  name: 'currentDatestamp'
+
+- bash: |
+    root=""
+    echo ${{parameters.dumpPrefix}}
+    if [ "${{parameters.dumpPrefix}}" = "prod" ]; then
+      echo "##vso[task.setvariable variable=folder;isOutput=True]$root"
+      echo "using root directory"
+    else
+      echo "##vso[task.setvariable variable=folder;isOutput=True]${{parameters.dumpPrefix}}/"
+      echo "using ${{parameters.dumpPrefix}} folder"
+    fi
+  name: 'environment'
+
+- task: DownloadPipelineArtifact@2
+  condition: ${{ eq(parameters.useArtifact, True) }}
+  inputs:
+    artifact: '${{parameters.dumpPrefix}}-db.dump'
+    path: $(Build.SourcesDirectory)
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -x
+      set -e
+
+      # Rename the data dump to contain timestamp before upload
+      mv ${{parameters.dumpPrefix}}-db-dump.dump db-dump-$(currentDatestamp.Datestamp).dump
+
+      # Save a copy to azure blob storage
+      az storage blob upload \
+        --account-name ${{parameters.StorageAccountNameDbDump}} \
+        --account-key ${{parameters.BlobStorageKeyDbDump}} \
+        --container-name ${{parameters.BlobStorageContainerNameDbDump}} \
+        --file db-dump-$(currentDatestamp.Datestamp).dump \
+        --name $(environment.folder)db-dump-$(currentDatestamp.Datestamp).dump
+  name: 'BlobStorageBackup'
+  displayName: 'Backup to Blob Storage'

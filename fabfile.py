@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 import subprocess
@@ -244,40 +245,68 @@ def import_data(c, database_filename):
 
 
 @task
-def sync_db(c, env):
-    options = {
-        "staging": "staging_dump",
-        "integration": "integration_dump",
-        "review": "review_dump",
-    }
-
-    if options.get(env) is not None:
-        env = options.get(env)
+def sync_db(c, env, storageKey):
+    if env in ["staging", "integration", "review"]:
         try:
-            print(f"Attempting to download the latest {env}...")
-            local(
-                f"""az artifacts universal download \
-                --organization "https://dev.azure.com/nhsuk/" \
-                --project "02ce9625-f296-4600-8036-2f52eecd696a" \
-                --scope project \
-                --feed "dct-crcv3" \
-                --name "{env}" \
-                --version "*" \
-                --path database_dumps"""
+            print(f"Determining latest {env} dump to download...")
+            blobs = local(
+                f"""az storage blob list \
+                    -c crc-v3-backups \
+                    --account-name digitalcampaignsstorage \
+                    --account-key "{storageKey}" \
+                    --auth-mode key""",
+                warn=True,
+                hide=True,
             )
+            #                --prefix "{env}/" \
+            if blobs:
+                blobs_list = json.loads(blobs.stdout)
+                if blobs_list:
+                    blobs_list.sort(key=extract_datetime_from_blob, reverse=True)
+                    latest_blob = blobs_list[0]
+                    print(f"Downloading {latest_blob['name']}")
+                    local(
+                        f"""az storage blob download \
+                            -f database_dumps/{env}-db.dump \
+                            -c crc-v3-backups \
+                            -n {latest_blob['name']} \
+                            --account-name digitalcampaignsstorage \
+                            --account-key "{storageKey}" \
+                            --auth-mode key""",
+                        warn=True,
+                        hide=True,
+                    )
+                else:
+                    print(f"No {env} dumps found")
+                    return
+
         except Exception as e:
             print("Exception: %s" % e)
             print(
                 "Please ensure that you are logged in az cli and have the az cli extension installed."
             )
         else:
+            print("Restarting containers to ensure importing succeeds...")
+            restart(c)
             print("Attempting to import the database...")
-            import_data(c, "/database_dumps/db.dump")
+            import_data(c, f"/database_dumps/{env}-db.dump")
             print("All done. You might need to run migrations.")
     else:
         print(
             "Please enter a valid environment name such as 'staging', 'integration' or 'review'"
         )
+
+
+def extract_datetime_from_blob(blob_properties):
+    blob_name = blob_properties["name"]
+    datetime_in_name = (
+        blob_name.replace("db-dump-", "")
+        .replace(".dump", "")
+        .replace("review/", "")
+        .replace("integration/", "")
+        .replace("staging/", "")
+    )
+    return datetime.strptime(datetime_in_name, "%d-%m-%Y_%H:%M:%S")
 
 
 @task

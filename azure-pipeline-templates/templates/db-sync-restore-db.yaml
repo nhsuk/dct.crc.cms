@@ -1,0 +1,65 @@
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      postgres:11 \
+      psql -d "$(DBName)" \
+      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(DBName)' AND pid <> pg_backend_pid();"
+  displayName: 'End connections to target database'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az postgres db delete \
+      --name "$(DBName)" \
+      --resource-group "${{parameters.ResourceGroup}}" \
+      --server-name "${{parameters.Server}}" \
+      --yes \
+      --debug
+  displayName: 'Delete target database'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az postgres db create \
+      --name "$(DBName)" \
+      --resource-group "${{parameters.ResourceGroup}}" \
+      --server-name "${{parameters.Server}}" \
+      --debug
+  displayName: 'Recreate target database'
+
+- task: DownloadPipelineArtifact@2
+  condition: ${{ eq(parameters.useArtifact, True) }}
+  inputs:
+    artifact: '${{parameters.dumpPrefix}}-db.dump'
+    path: $(Build.SourcesDirectory)
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: ${{parameters.azureStorageSubscription}}
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER="$(DBUser)" \
+      -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
+      postgres:11 \
+      pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.dumpPrefix}}-db.dump
+  displayName: 'Copy ${{parameters.dumpPrefix}} to target database'

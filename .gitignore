@@ -44,7 +44,7 @@ coverage.xml
 *.cover
 .env
 test_env.sh
-crcv3-1-user.csv
+*user.csv
 database_dumps/
 
 poetry/requirements.txt

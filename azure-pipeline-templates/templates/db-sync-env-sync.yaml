@@ -1,0 +1,39 @@
+steps:
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: ${{parameters.VaultId}}'
+  inputs:
+    azureSubscription: ${{parameters.azureVaultSubscription}}
+    KeyVaultName: ${{parameters.VaultId}}
+    SecretsFilter: DBPass, DBName, DBHost, DBUser
+
+- template: ./db-sync-download-dump.yaml
+  parameters:
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    dumpPrefix: "${{ parameters.environment }}_users"
+    usersOnly: True
+
+- template: ./db-sync-restore-db.yaml
+  parameters:
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    Server: ${{ parameters.Server }}
+    ResourceGroup: ${{ parameters.ResourceGroup }}
+    dumpPrefix: "prod"
+    useArtifact: true
+
+- template: ./db-sync-restore-users.yaml
+  parameters:
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    dumpPrefix: "${{ parameters.environment }}_users"
+    
+- template: ./db-sync-download-dump.yaml
+  parameters:
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    dumpPrefix: ${{ parameters.environment }}
+    
+- template: ./db-sync-upload-blob.yaml
+  parameters:
+    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+    StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+    BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+    BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
+    dumpPrefix: ${{ parameters.environment }}
