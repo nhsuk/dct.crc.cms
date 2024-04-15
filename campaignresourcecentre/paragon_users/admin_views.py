@@ -55,7 +55,7 @@ def search_users(request):
 
     users_per_page = int(request.GET.get("limit", 20))
     page_num = int(request.GET.get("p", 1))
-    offset = users_per_page - (page_num * users_per_page)
+    offset = (page_num - 1) * users_per_page
 
     try:
         response = paragon_client.search_users(

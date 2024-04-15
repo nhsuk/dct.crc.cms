@@ -7,7 +7,12 @@ trigger:
     include:
     - 'review/*'
     - 'refs/tags/*'
-    - 'main' 
+    - 'main'
+    exclude:
+    - 'refs/tags/tf-*'
+  paths:
+    exclude:
+    - 'terraform'
 
 parameters:
 - name: debug
