@@ -64,8 +64,8 @@ docker run \
   --env TIMEOUT=$TIMEOUT \
   --env WAGTAIL_USER \
   --env WAGTAIL_PASSWORD \
-  --env WAGTAIL_SELENIUM_USERNAME \
-  --env WAGTAIL_SELENIUM_PASSWORD \
+  --env WAGTAIL_AUTOMATION_USERNAME \
+  --env WAGTAIL_AUTOMATION_PASSWORD \
   --env WAGTAIL_TOTP_URI \
   --mount type=bind,source=$WORK/FrontEndTests,target=/automation-ui/FrontEndTests \
   --mount type=bind,source=${SECRETS_FILE:?No secrets file specified (SECRETS_FILE)},target=/automation-ui/login.csv \

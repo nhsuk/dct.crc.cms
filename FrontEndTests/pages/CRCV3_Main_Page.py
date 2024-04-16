@@ -544,10 +544,10 @@ class CRCV3MainPage(BasePage):
         )
 
         self.driver.find_element(By.ID, "id_username").send_keys(
-            os.environ.get("WAGTAIL_SELENIUM_USERNAME", "")
+            os.environ.get("WAGTAIL_AUTOMATION_USERNAME", "")
         )
         self.driver.find_element(By.ID, "id_password").send_keys(
-            os.environ.get("WAGTAIL_SELENIUM_PASSWORD", "")
+            os.environ.get("WAGTAIL_AUTOMATION_PASSWORD", "")
         )
         self.driver.find_element(
             By.XPATH, "//em[contains(text(), 'Sign in')]/.."

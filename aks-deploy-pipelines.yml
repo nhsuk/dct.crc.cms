@@ -166,6 +166,8 @@ stages:
     - template: azure-pipeline-templates/frontendtest.yml
       parameters:
         WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
+        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
+        WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_USERNAME)
   - job: deployTest
     displayName: 'Deploy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
