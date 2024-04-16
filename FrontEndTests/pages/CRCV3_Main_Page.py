@@ -539,17 +539,16 @@ class CRCV3MainPage(BasePage):
     hide_we_are_prototype = PageElement(By.XPATH, "//span[text()='Hide']")
 
     def login_to_admin(self):
-        csv_file_path = os.getenv("SECRETS_FILE_WAGTAIL_USER")
-        with open(csv_file_path) as csvfile:
-            self.wagtail_user, self.wagtail_password = [
-                value.strip() for value in list(csv.reader(csvfile))[0]
-            ]
-
         WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.ID, "id_username"))
         )
-        self.driver.find_element(By.ID, "id_username").send_keys(self.wagtail_user)
-        self.driver.find_element(By.ID, "id_password").send_keys(self.wagtail_password)
+
+        self.driver.find_element(By.ID, "id_username").send_keys(
+            os.environ.get("WAGTAIL_SELENIUM_USERNAME", "")
+        )
+        self.driver.find_element(By.ID, "id_password").send_keys(
+            os.environ.get("WAGTAIL_SELENIUM_PASSWORD", "")
+        )
         self.driver.find_element(
             By.XPATH, "//em[contains(text(), 'Sign in')]/.."
         ).click()
