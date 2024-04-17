@@ -543,12 +543,11 @@ class CRCV3MainPage(BasePage):
             EC.visibility_of_element_located((By.ID, "id_username"))
         )
 
-        self.driver.find_element(By.ID, "id_username").send_keys(
-            os.environ.get("WAGTAIL_AUTOMATION_USERNAME", "")
-        )
-        self.driver.find_element(By.ID, "id_password").send_keys(
-            os.environ.get("WAGTAIL_AUTOMATION_PASSWORD", "")
-        )
+        wagtail_admin_username = os.environ.get("WAGTAIL_AUTOMATION_USERNAME", "")
+        wagtail_admin_password = os.environ.get("WAGTAIL_AUTOMATION_PASSWORD", "")
+
+        self.driver.find_element(By.ID, "id_username").send_keys(wagtail_admin_username)
+        self.driver.find_element(By.ID, "id_password").send_keys(wagtail_admin_password)
         self.driver.find_element(
             By.XPATH, "//em[contains(text(), 'Sign in')]/.."
         ).click()
