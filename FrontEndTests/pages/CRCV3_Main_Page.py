@@ -543,38 +543,38 @@ class CRCV3MainPage(BasePage):
             EC.visibility_of_element_located((By.ID, "id_username"))
         )
 
-        wagtail_admin_username = os.environ.get("WAGTAIL_AUTOMATION_USERNAME", "")
-        wagtail_admin_password = os.environ.get("WAGTAIL_AUTOMATION_PASSWORD", "")
+        wagtail_admin_username = os.environ.get("WAGTAIL_AUTOMATION_USERNAME")
+        wagtail_admin_password = os.environ.get("WAGTAIL_AUTOMATION_PASSWORD")
 
-        if wagtail_admin_username and wagtail_admin_password:
-            self.driver.find_element(By.ID, "id_username").send_keys(
-                wagtail_admin_username
-            )
-            self.driver.find_element(By.ID, "id_password").send_keys(
-                wagtail_admin_password
-            )
-            self.driver.find_element(
-                By.XPATH, "//em[contains(text(), 'Sign in')]/.."
-            ).click()
+        assert wagtail_admin_username is not None, "Admin username not provided."
+        assert wagtail_admin_password is not None, "Admin password not provided."
 
-            WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located((By.NAME, "otp_token"))
-            )
+        self.driver.find_element(By.ID, "id_username").send_keys(wagtail_admin_username)
+        self.driver.find_element(By.ID, "id_password").send_keys(wagtail_admin_password)
+        self.driver.find_element(
+            By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+        ).click()
+
+        WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located((By.NAME, "otp_token"))
+        )
 
     def enter_totp_code(self):
         WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.NAME, "otp_token"))
         )
-        totp_code = os.environ.get("WAGTAIL_OTP_CODE", "")
-        if totp_code:
-            self.driver.find_element(By.NAME, "otp_token").send_keys(totp_code)
-            self.driver.find_element(
-                By.XPATH, "//em[contains(text(), 'Sign in')]/.."
-            ).click()
 
-            WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located((By.ID, "header-title"))
-            )
+        totp_code = os.environ.get("WAGTAIL_OTP_CODE")
+        assert totp_code is not None, "TOTP code not provided."
+
+        self.driver.find_element(By.NAME, "otp_token").send_keys(totp_code)
+        self.driver.find_element(
+            By.XPATH, "//em[contains(text(), 'Sign in')]/.."
+        ).click()
+
+        WebDriverWait(self.driver, 5).until(
+            EC.visibility_of_element_located((By.ID, "header-title"))
+        )
 
     def navigate_to_admin_campaigns_sort(self):
         WebDriverWait(self.driver, 10).until(
