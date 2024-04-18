@@ -240,8 +240,7 @@ stages:
     - template: azure-pipeline-templates/frontendtest.yml
       parameters:
         WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-        
-        : $(WAGTAIL_AUTOMATION_USERNAME)
+        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
         WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
   - job: deployStaging
     displayName: 'Deploy Staging'
