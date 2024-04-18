@@ -240,7 +240,8 @@ stages:
     - template: azure-pipeline-templates/frontendtest.yml
       parameters:
         WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
+        
+        : $(WAGTAIL_AUTOMATION_USERNAME)
         WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
   - job: deployStaging
     displayName: 'Deploy Staging'
@@ -311,8 +312,6 @@ stages:
       value: 'campaignresources.dhsc.gov.uk'
     - name: hostUrlCertSecretName
       value: 'campaigns-resources-prod-tls-cert'
-    # - name: intHostUrl
-    #   value: 'crc-v3.nhswebsite.nhs.uk'
     - name: appName
       value: 'crc-v3'
     - name: appEnv
