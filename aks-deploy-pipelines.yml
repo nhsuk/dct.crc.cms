@@ -164,10 +164,6 @@ stages:
         kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
-      parameters:
-        WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
-        WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
   - job: deployTest
     displayName: 'Deploy Perf Testing'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
@@ -238,10 +234,6 @@ stages:
         kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
-      parameters:
-        WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
-        WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
   - job: deployStaging
     displayName: 'Deploy Staging'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
@@ -287,10 +279,6 @@ stages:
         kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
-      parameters:
-        WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
-        WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
 - stage: deployProduction
   displayName: 'Deploy Production'
   condition: and(succeeded('Deploy'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
@@ -347,10 +335,6 @@ stages:
         kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
         kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
     - template: azure-pipeline-templates/frontendtest.yml
-      parameters:
-        WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-        WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
-        WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
 - stage: deployDr
   displayName: 'Deploy DR'
   condition: and(succeeded('Deploy'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
