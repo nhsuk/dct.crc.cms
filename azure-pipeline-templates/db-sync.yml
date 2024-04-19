@@ -15,15 +15,19 @@ parameters:
   - name: backupProduction
     type: boolean
     default: true
+    displayName: Backup Production DB
   - name: syncToReview
     type: boolean
     default: false
+    displayName: Sync To Review Env
   - name: syncToIntegration
     type: boolean
     default: false
+    displayName: Sync To Integration Env
   - name: syncToStaging
     type: boolean
     default: false
+    displayName: Sync To Staging Env
 
 resources:
   - repo: self
@@ -105,6 +109,8 @@ stages:
       - CopyFromProdDB
     condition: and(succeeded(), eq('${{ parameters.syncToStaging }}', true))
     jobs:
+      - deployment: approval
+        environment: staging
       - job: StagingPaste
         steps:
           - template: templates/db-sync-env-sync.yaml
