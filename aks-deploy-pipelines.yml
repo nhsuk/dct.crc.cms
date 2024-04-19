@@ -226,6 +226,10 @@ stages:
       value: ${{ parameters.gunicornArgs }}
     - name: azureSearchUpdate
       value: ${{ parameters.azureSearchUpdate }}
+    - name: tags
+      value: ${{ parameters.tags }}
+    - name: imageTag
+      value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
@@ -271,6 +275,10 @@ stages:
       value: ${{ parameters.gunicornArgs }}
     - name: azureSearchUpdate
       value: true
+    - name: tags
+      value: ${{ parameters.tags }}
+    - name: imageTag
+      value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     steps:
     - template: azure-pipeline-templates/deploy.yml
       parameters:
@@ -325,6 +333,10 @@ stages:
       value: ${{ parameters.gunicornArgs }}
     - name: azureSearchUpdate
       value: true
+    - name: tags
+      value: ${{ parameters.tags }}
+    - name: imageTag
+      value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
