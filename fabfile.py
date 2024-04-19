@@ -252,13 +252,13 @@ def sync_db(c, env, storageKey):
             blobs = local(
                 f"""az storage blob list \
                     -c crc-v3-backups \
+                    --prefix "{env}/" \
                     --account-name digitalcampaignsstorage \
                     --account-key "{storageKey}" \
                     --auth-mode key""",
                 warn=True,
                 hide=True,
             )
-            #                --prefix "{env}/" \
             if blobs:
                 blobs_list = json.loads(blobs.stdout)
                 if blobs_list:
