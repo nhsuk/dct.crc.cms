@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 def get_field(sku):
     # Find the first resource item, if any, matching this SKU
     resource_item = ResourceItem.objects.filter(sku=sku).first()
-    if resource_item:
-        return resource_item
-    else:
+    if not resource_item:
         logger.error("No resource item with SKU '%s'" % sku)
-        raise ResourceItem.DoesNotExist
+        resource_item = ResourceItem()
+        resource_item.title = "Item not found"
+    return resource_item
