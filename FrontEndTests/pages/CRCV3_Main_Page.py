@@ -599,6 +599,21 @@ class CRCV3MainPage(BasePage):
             for link in live_campaign_links[:5]
         ]
 
+    def capture_search_results_heading(self):
+        heading = (
+            WebDriverWait(self.driver, 10)
+            .until(
+                EC.presence_of_all_elements_located(
+                    (
+                        By.XPATH,
+                        "//h2[role='alert']",
+                    )
+                )
+            )
+            .text.strip()
+        )
+        return heading
+
     def capture_crc_campaign_titles(self):
         campaign_cards = self.driver.find_elements_by_css_selector(
             "div.block-Card_group ul.nhsuk-grid-row.nhsuk-card-group > li > div.nhsuk-card--clickable"

@@ -274,3 +274,24 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Given I generate a TOTP code for the admin panel
     And I log in to the admin panel and navigate to the sorted admin campaigns page
     Then I navigate to the main campaigns page
+
+  @CRCV3-031 @Smoke
+  Scenario: Wagtail page search returns search results
+    Given I generate a TOTP code for the admin panel
+    And I log in to the admin panel
+    When I search for NHS pages
+    Then search results are found
+
+  @CRCV3-032 @Smoke
+  Scenario: Wagtail page search returns search results
+    Given I generate a TOTP code for the admin panel
+    And I log in to the admin panel
+    When I search for NHS documents
+    Then search results are found
+
+  @CRCV3-033 @Smoke
+  Scenario: Wagtail page search returns search results
+    Given I generate a TOTP code for the admin panel
+    And I log in to the admin panel
+    When I search for NHS images
+    Then search results are found
