@@ -82,10 +82,11 @@ stages:
         redact: false
         reportformat: 'json'
     - template: azure-pipeline-templates/test.yml
+
 - stage: Build
   displayName: Build
   dependsOn: Test
-  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  condition: and(succeeded('Test'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
   jobs:
   - job: buildReview
     displayName: 'Build Review'
