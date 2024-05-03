@@ -1,6 +1,7 @@
 """
 Django settings for campaignresourcecentre project.
 """
+
 import os
 import sys
 
@@ -165,7 +166,7 @@ DATABASES = {
         "PORT": getenv_int("DB_PORT", 5432),
         "USER": env.get("DB_USER", "postgres"),
         "PASSWORD": env.get("DB_PASS", "postgres"),
-        "CONN_MAX_AGE": getenv_int("DB_CONN_MAX_AGE", 60)
+        "CONN_MAX_AGE": getenv_int("DB_CONN_MAX_AGE", 60),
         # Beware do not use DB_CONN_MAX_AGE > 0 with runserver (djrun) as
         # it will exceed permitted database connections under moderate to heavy load
     }
@@ -225,7 +226,10 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 # Search
 # https://docs.wagtail.io/en/latest/topics/search/backends.html
 
-WAGTAILSEARCH_BACKENDS = {"default": {"BACKEND": "campaignresourcecentre.search.azure"}}
+WAGTAILSEARCH_BACKENDS = {
+    "default": {"BACKEND": "wagtail.search.backends.database"},
+    "azure": {"BACKEND": "campaignresourcecentre.search.azure"},
+}
 
 
 # Password validation
