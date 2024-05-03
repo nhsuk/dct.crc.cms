@@ -74,7 +74,6 @@ stages:
   - job: test
     displayName: 'Test'
     steps:
-    - template: azure-pipeline-templates/test.yml
     - task: Gitleaks@2
       inputs:
         scanlocation: '$(Build.SourcesDirectory)'
@@ -82,6 +81,7 @@ stages:
         configfile: '$(Build.SourcesDirectory)/pre-commit/git-secrets/nhsd-gitleaks-config.toml'
         redact: false
         reportformat: 'json'
+    - template: azure-pipeline-templates/test.yml
 - stage: Build
   displayName: Build
   dependsOn: Test
@@ -117,7 +117,7 @@ stages:
 - stage: Deploy
   displayName: 'Deploy'
   dependsOn: Build
-  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  condition: and(succeeded('Build'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
   jobs:
   - job: deployReview
     displayName: 'Deploy Review'
