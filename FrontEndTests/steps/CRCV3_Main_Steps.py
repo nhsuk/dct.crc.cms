@@ -606,31 +606,13 @@ def log_in_to_admin_panel_only(context):
         context.landing_page.enter_totp_code()
 
 
-@Step("I search for NHS pages")
-def search_pages(context):
+@Step("I search for NHS {search_type}")
+def search_pages(context, search_type):
     base_url = os.getenv("BASE_URL")
-    page_search_url = f"{base_url}/crc-admin/pages/search/?q=NHS"
-    context.landing_page.interact.open_url(page_search_url)
-    context.search_results_heading = (
-        context.landing_page.capture_search_results_heading()
-    )
-
-
-@Step("I search for NHS documents")
-def search_pages(context):
-    base_url = os.getenv("BASE_URL")
-    docs_search_url = f"{base_url}/crc-admin/documents/?q=NHS"
-    context.landing_page.interact.open_url(docs_search_url)
-    context.search_results_heading = (
-        context.landing_page.capture_search_results_heading()
-    )
-
-
-@Step("I search for NHS images")
-def search_pages(context):
-    base_url = os.getenv("BASE_URL")
-    images_search_url = f"{base_url}/crc-admin/images/?q=NHS"
-    context.landing_page.interact.open_url(images_search_url)
+    if search_type == "pages":
+        search_type = "pages/search"
+    search_url = f"{base_url}/crc-admin/{search_type}/?q=NHS"
+    context.landing_page.interact.open_url(search_url)
     context.search_results_heading = (
         context.landing_page.capture_search_results_heading()
     )
