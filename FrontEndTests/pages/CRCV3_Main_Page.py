@@ -568,15 +568,14 @@ class CRCV3MainPage(BasePage):
             EC.visibility_of_element_located((By.NAME, "otp_token"))
         )
 
-    def enter_totp_code(self):
+    def enter_totp_code(self, otp_code):
         WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.NAME, "otp_token"))
         )
 
-        totp_code = os.environ.get("WAGTAIL_OTP_CODE")
-        assert totp_code is not None, "TOTP code not provided."
+        assert otp_code is not None, "TOTP code not provided."
 
-        self.driver.find_element(By.NAME, "otp_token").send_keys(totp_code)
+        self.driver.find_element(By.NAME, "otp_token").send_keys(otp_code)
         self.driver.find_element(
             By.XPATH, "//em[contains(text(), 'Sign in')]/.."
         ).click()

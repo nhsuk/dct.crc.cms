@@ -560,14 +560,28 @@ def Close_window(context, option):
         # context.driver.back()
 
 
-@Step("I generate a TOTP code for the admin panel")
-def generate_totp_code(context):
+def generate_totp_code():
     parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
     current_code = parsed_pyotp.now()
-    os.environ["WAGTAIL_OTP_CODE"] = current_code
+    return current_code
 
 
-@Step("I log in to the admin panel and navigate to the sorted admin campaigns page")
+# @Step("I log in to the admin panel and navigate to the sorted admin campaigns page")
+# def log_in_to_admin_panel(context):
+#     context.landing_page = CRCV3MainPage(context.browser, context.logger)
+#     base_url = os.getenv("BASE_URL")
+#     admin_url = f"{base_url}/crc-admin"
+#     context.landing_page.interact.open_url(admin_url)
+#     if not context.landing_page.already_logged_in_to_wagtail():
+#         context.landing_page.login_to_admin()
+#         context.landing_page.enter_totp_code(generate_totp_code())
+#     sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
+#     context.landing_page.interact.open_url(sorted_admin_url)
+#     context.landing_page.capture_admin_campaign_titles()
+#     context.admin_campaign_titles = context.landing_page.admin_campaign_titles
+
+
+@Step("I log in to the admin panel")
 def log_in_to_admin_panel(context):
     context.landing_page = CRCV3MainPage(context.browser, context.logger)
     base_url = os.getenv("BASE_URL")
@@ -575,7 +589,12 @@ def log_in_to_admin_panel(context):
     context.landing_page.interact.open_url(admin_url)
     if not context.landing_page.already_logged_in_to_wagtail():
         context.landing_page.login_to_admin()
-        context.landing_page.enter_totp_code()
+        context.landing_page.enter_totp_code(generate_totp_code())
+
+
+@Step("I capture the order of the campaign titles in wagtail")
+def capture_admin_campaign_titles(context):
+    base_url = os.getenv("BASE_URL")
     sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
     context.landing_page.interact.open_url(sorted_admin_url)
     context.landing_page.capture_admin_campaign_titles()
@@ -590,20 +609,13 @@ def navigate_to_sorted_admin_campaigns_page(context):
     context.landing_page.interact.open_url(campaigns_url)
     context.landing_page.capture_crc_campaign_titles()
     context.crc_campaign_titles = context.landing_page.crc_campaign_titles
+
+
+@Step("campaign titles are in the same order")
+def campaign_titles_in_the_same_order(context):
     context.landing_page.verify_campaign_titles_match(
         context.admin_campaign_titles, context.crc_campaign_titles
     )
-
-
-@Step("I log in to the admin panel")
-def log_in_to_admin_panel_only(context):
-    context.landing_page = CRCV3MainPage(context.browser, context.logger)
-    base_url = os.getenv("BASE_URL")
-    admin_url = f"{base_url}/crc-admin"
-    context.landing_page.interact.open_url(admin_url)
-    if not context.landing_page.already_logged_in_to_wagtail():
-        context.landing_page.login_to_admin()
-        context.landing_page.enter_totp_code()
 
 
 @Step("I search for NHS {search_type}")

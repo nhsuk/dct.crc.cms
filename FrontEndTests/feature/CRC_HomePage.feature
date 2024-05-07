@@ -271,14 +271,14 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 
   @CRCV3-030 @Smoke
   Scenario: verify custom admin and frontend campaign page order match
-    Given I generate a TOTP code for the admin panel
-    And I log in to the admin panel and navigate to the sorted admin campaigns page
-    Then I navigate to the main campaigns page
+    Given I log in to the admin panel
+    And I capture the order of the campaign titles in wagtail
+    When I navigate to the main campaigns page
+    Then campaign titles are in the same order
 
   @CRCV3-031 @Smoke
   Scenario Outline: Wagtail <search_type> search returns search results
-    Given I generate a TOTP code for the admin panel
-    And I log in to the admin panel
+    Given I log in to the admin panel
     When I search for NHS <search_type>
     Then search results are found
     Examples:
