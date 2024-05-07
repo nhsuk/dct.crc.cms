@@ -538,6 +538,15 @@ class CRCV3MainPage(BasePage):
     we_are_prototype_learn_expand = PageElement(By.XPATH, "(//span[text()='Show'])[2]")
     hide_we_are_prototype = PageElement(By.XPATH, "//span[text()='Hide']")
 
+    def already_logged_in_to_wagtail(self):
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.ID, "header-title"))
+            )
+            return True
+        except:
+            return False
+
     def login_to_admin(self):
         WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.ID, "id_username"))
@@ -606,10 +615,10 @@ class CRCV3MainPage(BasePage):
                 EC.presence_of_all_elements_located(
                     (
                         By.XPATH,
-                        "//h2[role='alert']",
+                        "//h2[@role='alert']",
                     )
                 )
-            )
+            )[0]
             .text.strip()
         )
         return heading

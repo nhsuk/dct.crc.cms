@@ -573,8 +573,9 @@ def log_in_to_admin_panel(context):
     base_url = os.getenv("BASE_URL")
     admin_url = f"{base_url}/crc-admin"
     context.landing_page.interact.open_url(admin_url)
-    context.landing_page.login_to_admin()
-    context.landing_page.enter_totp_code()
+    if not context.landing_page.already_logged_in_to_wagtail():
+        context.landing_page.login_to_admin()
+        context.landing_page.enter_totp_code()
     sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
     context.landing_page.interact.open_url(sorted_admin_url)
     context.landing_page.capture_admin_campaign_titles()
@@ -595,13 +596,14 @@ def navigate_to_sorted_admin_campaigns_page(context):
 
 
 @Step("I log in to the admin panel")
-def log_in_to_admin_panel(context):
+def log_in_to_admin_panel_only(context):
     context.landing_page = CRCV3MainPage(context.browser, context.logger)
     base_url = os.getenv("BASE_URL")
     admin_url = f"{base_url}/crc-admin"
     context.landing_page.interact.open_url(admin_url)
-    context.landing_page.login_to_admin()
-    context.landing_page.enter_totp_code()
+    if not context.landing_page.already_logged_in_to_wagtail():
+        context.landing_page.login_to_admin()
+        context.landing_page.enter_totp_code()
 
 
 @Step("I search for NHS pages")
