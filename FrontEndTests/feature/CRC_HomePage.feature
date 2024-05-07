@@ -283,14 +283,14 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then search results are found
 
   @CRCV3-032 @Smoke
-  Scenario: Wagtail page search returns search results
+  Scenario: Wagtail documents search returns search results
     Given I generate a TOTP code for the admin panel
     And I log in to the admin panel
     When I search for NHS documents
     Then search results are found
 
   @CRCV3-033 @Smoke
-  Scenario: Wagtail page search returns search results
+  Scenario: Wagtail images search returns search results
     Given I generate a TOTP code for the admin panel
     And I log in to the admin panel
     When I search for NHS images
