@@ -560,27 +560,6 @@ def Close_window(context, option):
         # context.driver.back()
 
 
-def generate_totp_code():
-    parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
-    current_code = parsed_pyotp.now()
-    return current_code
-
-
-# @Step("I log in to the admin panel and navigate to the sorted admin campaigns page")
-# def log_in_to_admin_panel(context):
-#     context.landing_page = CRCV3MainPage(context.browser, context.logger)
-#     base_url = os.getenv("BASE_URL")
-#     admin_url = f"{base_url}/crc-admin"
-#     context.landing_page.interact.open_url(admin_url)
-#     if not context.landing_page.already_logged_in_to_wagtail():
-#         context.landing_page.login_to_admin()
-#         context.landing_page.enter_totp_code(generate_totp_code())
-#     sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
-#     context.landing_page.interact.open_url(sorted_admin_url)
-#     context.landing_page.capture_admin_campaign_titles()
-#     context.admin_campaign_titles = context.landing_page.admin_campaign_titles
-
-
 @Step("I log in to the admin panel")
 def log_in_to_admin_panel(context):
     context.landing_page = CRCV3MainPage(context.browser, context.logger)
@@ -590,6 +569,12 @@ def log_in_to_admin_panel(context):
     if not context.landing_page.already_logged_in_to_wagtail():
         context.landing_page.login_to_admin()
         context.landing_page.enter_totp_code(generate_totp_code())
+
+
+def generate_totp_code():
+    parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
+    current_code = parsed_pyotp.now()
+    return current_code
 
 
 @Step("I capture the order of the campaign titles in wagtail")
