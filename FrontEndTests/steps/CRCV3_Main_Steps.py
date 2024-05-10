@@ -560,21 +560,26 @@ def Close_window(context, option):
         # context.driver.back()
 
 
-@Step("I generate a TOTP code for the admin panel")
-def generate_totp_code(context):
-    parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
-    current_code = parsed_pyotp.now()
-    os.environ["WAGTAIL_OTP_CODE"] = current_code
-
-
-@Step("I log in to the admin panel and navigate to the sorted admin campaigns page")
+@Step("I log in to the admin panel")
 def log_in_to_admin_panel(context):
     context.landing_page = CRCV3MainPage(context.browser, context.logger)
     base_url = os.getenv("BASE_URL")
     admin_url = f"{base_url}/crc-admin"
     context.landing_page.interact.open_url(admin_url)
-    context.landing_page.login_to_admin()
-    context.landing_page.enter_totp_code()
+    if not context.landing_page.already_logged_in_to_wagtail():
+        context.landing_page.login_to_admin()
+        context.landing_page.enter_totp_code(generate_totp_code())
+
+
+def generate_totp_code():
+    parsed_pyotp = pyotp.parse_uri(os.getenv("WAGTAIL_TOTP_URI"))
+    current_code = parsed_pyotp.now()
+    return current_code
+
+
+@Step("I capture the order of the campaign titles in wagtail")
+def capture_admin_campaign_titles(context):
+    base_url = os.getenv("BASE_URL")
     sorted_admin_url = f"{base_url}/crc-admin/pages/13/?ordering=ord"
     context.landing_page.interact.open_url(sorted_admin_url)
     context.landing_page.capture_admin_campaign_titles()
@@ -589,6 +594,39 @@ def navigate_to_sorted_admin_campaigns_page(context):
     context.landing_page.interact.open_url(campaigns_url)
     context.landing_page.capture_crc_campaign_titles()
     context.crc_campaign_titles = context.landing_page.crc_campaign_titles
+
+
+@Step("campaign titles are in the same order")
+def campaign_titles_in_the_same_order(context):
     context.landing_page.verify_campaign_titles_match(
         context.admin_campaign_titles, context.crc_campaign_titles
+    )
+
+
+@Step("I search for NHS {search_type}")
+def search_pages(context, search_type):
+    base_url = os.getenv("BASE_URL")
+    if search_type == "pages":
+        search_type = "pages/search"
+    search_url = f"{base_url}/crc-admin/{search_type}/?q=NHS"
+    context.landing_page.interact.open_url(search_url)
+    context.search_results_heading = (
+        context.landing_page.capture_search_results_heading()
+    )
+
+
+@Step("search results are found")
+def check_search_results_are_found(context):
+    assert_that(
+        context.search_results_heading,
+        starts_with("There are "),
+        f"Search did not return results: {context.search_results_heading}",
+    )
+
+    number_of_results = int(context.search_results_heading.split()[2])
+
+    assert_that(
+        number_of_results,
+        greater_than(0),
+        f"Search did not return results: {context.search_results_heading}",
     )

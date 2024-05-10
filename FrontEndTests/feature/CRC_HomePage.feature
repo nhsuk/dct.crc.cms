@@ -12,15 +12,15 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When  I click on Sign in button Sign in page loaded with Email_address and and password
     Then I enter your details of "<email>" "<password>"
     Then I sign in
-     Examples:
-      | email            | password            |
-      | example.com      | ^%$^%GGJHKJ         |
-      | #@%^%#$@#$@#.com | ^%$^%$              |
-      | email@example    | 122fghfg            |
-      | example          | 1                   |
+    Examples:
+      | email            | password    |
+      | example.com      | ^%$^%GGJHKJ |
+      | #@%^%#$@#$@#.com | ^%$^%$      |
+      | email@example    | 122fghfg    |
+      | example          | 1           |
     Then verify all fields validation errors displayed in the error list for
-      | error_list                             |
-      | Enter a valid email address.           |
+      | error_list                   |
+      | Enter a valid email address. |
 
   @CRCV3-003 @Smoke
   Scenario: open CRCV3 site and login with email and password
@@ -39,15 +39,15 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on forgot password link and verify forgotten your password page loaded
     Then I enter Email address field with "<email>"
     Then I submit
-      Examples:
+    Examples:
       | email            |
       | example.com      |
       | #@%^%#$@#$@#.com |
       | email@example    |
       | example          |
     Then verify Enter your email address validation error is displayed
-      | error_list                             |
-      | Enter a valid email address.           |
+      | error_list                   |
+      | Enter a valid email address. |
 
   @CRCV3-005 @Smoke
   Scenario Outline: open CRCV3 site to verify forgot password confirmation message
@@ -56,20 +56,20 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on forgot password link and verify forgotten your password page loaded
     Then I enter Email address field with "<email>"
     Then I submit
-      Examples:
-      | email                     |
-      | test-crc-101@nhs.net     |
+    Examples:
+      | email                |
+      | test-crc-101@nhs.net |
     Then verify forgot password confirmation message
 
   @CRCV3-008
   Scenario: open CRCV3 site and verify Latest Updated links are loaded to respective pages
     Given I loaded CRCV3 site to load the home page
     When I click on Latest updates links
-      | links            |
+      | links       |
       #| Start4Life       |
-      | Change4Life      |
-      #| BetterHealth     |
-    #Then Verify how to guide page loaded successfully
+      | Change4Life |
+  #| BetterHealth     |
+  #Then Verify how to guide page loaded successfully
 
   @CRCV3-009
   Scenario: open CRCV3 site and verify Start4Life Campaigns pages and contents
@@ -106,10 +106,10 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
   Scenario Outline: open CRCV3 site and Validate all errors are displayed in Register form for invalid fields
     Given I loaded CRCV3 site to load the home page
     When I click on Register link where register page loaded with all fields displayed
-     Then I enter Register details of "<FirstName>" "<LastName>" "<Org_Name>" "<Postcode>" "<Email>" "<Password>"
-     Examples:
-      | FirstName   | LastName      | Org_Name      | Postcode      | Email         | Password     |
-      | $£^%£34     | ^%$^%         | £$%^&         | %$%$^%^%      | &^^&^^%$      | ^%$^$!%^     |
+    Then I enter Register details of "<FirstName>" "<LastName>" "<Org_Name>" "<Postcode>" "<Email>" "<Password>"
+    Examples:
+      | FirstName | LastName | Org_Name | Postcode | Email    | Password |
+      | $£^%£34   | ^%$^%    | £$%^&    | %$%$^%^% | &^^&^^%$ | ^%$^$!%^ |
     #Then I click Register button
     Then Verify all register invalid fields validation errors displayed in the problem error list
       | problem_error_list                                                                                                            |
@@ -135,12 +135,12 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     When I browsed to Help us help you campaigns link
     Then Research behind this campaign and how to use this campaign expand and collapse for "Help us help you"
     Then browse help us help you "<Campaigns>" and verify its resources
-      Examples:
-      |Campaigns                                   |
+    Examples:
+      | Campaigns                                   |
       #|Accessing NHS maternity services            |
       #|Accessing NHS mental health services        |
-      |Abdominal and urological symptoms of cancer |
-      |Childhood vaccination 2022                  |
+      | Abdominal and urological symptoms of cancer |
+      | Childhood vaccination 2022                  |
 
   @CRCV3-018
   Scenario: open CRCV3 site and verify We Are Undefeatable pages and links
@@ -166,18 +166,18 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
   Scenario Outline: open CRCV3 site and Automate filter by Newest topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
-      Examples:
-      |sort_by      |
-      |Newest       |
+    Examples:
+      | sort_by |
+      | Newest  |
     Then I Click on Filter by topic
 
   @CRCV3-021_2
   Scenario Outline: open CRCV3 site and Automate filter by oldest topic for Campaigns
     Given I loaded CRCV3 site to load the home page
     When verify "<sort_by>" Newest and oldest
-      Examples:
-      |sort_by      |
-      |Oldest       |
+    Examples:
+      | sort_by |
+      | Oldest  |
     Then I Click on Filter by topic
 
   @CRCV3-022
@@ -214,11 +214,11 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | 11    |
     Then click on basket to proceed to checkout
     Then verify empty and invalid delivery address and click review order Error_lists
-       |Error_lists|
-       |Enter your full name|
-       |Enter your address line 1|
-       |Enter your town or city|
-       |Enter your postcode|
+      | Error_lists               |
+      | Enter your full name      |
+      | Enter your address line 1 |
+      | Enter your town or city   |
+      | Enter your postcode       |
     Then click Sign Out link and verify its logged out successfully
 
   @CRCV3-025
@@ -240,14 +240,14 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then click on account tab and verify page loaded
     Then click on reset password link and verify the page loaded successfully
     Then verify the Empty_email address validation
-      |Empty_email|
-      |Enter your email address|
+      | Empty_email              |
+      | Enter your email address |
     Then I enter Email address field with invalid_email and click submit button then verify invalid_email_error
-      | invalid_email    | invalid_email_error         |
-      | example.com      | Enter a valid email address.|
-      | #@%^%#$@#$@#.com | Enter a valid email address.|
-      | email@example    | Enter a valid email address.|
-      | example          | Enter a valid email address.|
+      | invalid_email    | invalid_email_error          |
+      | example.com      | Enter a valid email address. |
+      | #@%^%#$@#$@#.com | Enter a valid email address. |
+      | email@example    | Enter a valid email address. |
+      | example          | Enter a valid email address. |
     Then click Sign Out link and verify its logged out successfully
 
   @CRCV3-027
@@ -271,6 +271,18 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
 
   @CRCV3-030 @Smoke
   Scenario: verify custom admin and frontend campaign page order match
-    Given I generate a TOTP code for the admin panel
-    And I log in to the admin panel and navigate to the sorted admin campaigns page
-    Then I navigate to the main campaigns page
+    Given I log in to the admin panel
+    And I capture the order of the campaign titles in wagtail
+    When I navigate to the main campaigns page
+    Then campaign titles are in the same order
+
+  @CRCV3-031 @Smoke
+  Scenario Outline: Wagtail <search_type> search returns search results
+    Given I log in to the admin panel
+    When I search for NHS <search_type>
+    Then search results are found
+    Examples:
+      | search_type |
+      | pages       |
+      | documents   |
+      | images      |
