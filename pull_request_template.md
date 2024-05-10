@@ -1,6 +1,6 @@
 ## Jira tickets resolved by this PR
 
-- https://digitaltools.phe.org.uk/browse/CV-1234
+- https://jira.collab.test-and-trace.nhs.uk/browse/CV-1234
 
 ## Description
 

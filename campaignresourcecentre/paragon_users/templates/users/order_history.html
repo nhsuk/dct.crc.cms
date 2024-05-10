@@ -77,7 +77,11 @@
                                                                     Item
                                                                 </dt>
                                                                 <dd class="govuk-summary-list__value">
-                                                                    <a href={{DBItem.resource_page.url}}>{{DBItem.title}}</a>
+                                                                    {% if DBItem.resource_page.url %}
+                                                                        <a href={{DBItem.resource_page.url}}>{{DBItem.title}}</a>
+                                                                    {% else %}
+                                                                        <span>{{DBItem.title}}</span>
+                                                                    {% endif %}
                                                                 </dd>
                                                             </div>
                                                             <div class="govuk-summary-list__row">
