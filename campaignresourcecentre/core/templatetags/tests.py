@@ -17,16 +17,9 @@ class GetFieldTagTest(TestCase):
             result = get_field(sku)
         self.assertEqual(result, self.mock_resource_item)
 
-    def test_get_field_raises_does_not_exist_when_sku_missing(self):
-        sku = ""
-        with self.assertRaises(ResourceItem.DoesNotExist):
-            get_field(sku)
+    def test_get_field_invalid_sku_returns_empty_resource(self):
+        invalid_skus = ["", "sku123", None]
 
-    def test_get_field_raises_does_not_exist_when_sku_unmatched(self):
-        sku = "sku123"
-        mock_queryset = MagicMock(spec=ResourceItem.objects)
-        mock_queryset.first.return_value = None
-        mock_queryset.first.side_effect = ResourceItem.DoesNotExist
-        with patch.object(ResourceItem.objects, "filter", return_value=mock_queryset):
-            with self.assertRaises(ResourceItem.DoesNotExist):
-                get_field(sku)
+        for sku in invalid_skus:
+            result = get_field(sku)
+            self.assertEqual(result.title, "Item not found")
