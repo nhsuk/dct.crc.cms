@@ -14,21 +14,16 @@ parameters:
   - name: production
     type: boolean
     default: false
-  - name: environmentUrl
-    type: string
 
 jobs:
   - job: IndexDev
     displayName: 'Index Dev'
     condition: eq('${{ parameters.dev }}', true)
-    parameters: 
-      azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
-      keyVaultName: 'dct-crc-v3-vlt-rev-uks'
     steps:
       - task: AzureKeyVault@1
         inputs:
-          azureSubscription: ${{parameters.azureSubscription}}
-          KeyVaultName: ${{parameters.keyVaultName}}
+          azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
+          KeyVaultName: 'dct-crc-v3-vlt-rev-uks'
           SecretsFilter: '*'
           RunAsPreJob: false 
       - bash: |
