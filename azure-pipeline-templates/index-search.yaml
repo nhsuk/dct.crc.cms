@@ -86,6 +86,8 @@ jobs:
       
       - bash: cat .env
 
+      - bash: docker-compose run web ./manage.py update_index
+
       # - task: DockerCompose@0
       #   displayName: 'Build and run Docker Compose'
       #   inputs:
