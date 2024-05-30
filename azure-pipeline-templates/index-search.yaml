@@ -14,34 +14,112 @@ parameters:
   - name: production
     type: boolean
     default: false
+  - name: environmentUrl
+    type: string
 
 jobs:
   - job: IndexDev
     displayName: 'Index Dev'
     condition: eq('${{ parameters.dev }}', true)
+    parameters: 
+      azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
+      keyVaultName: 'dct-crc-v3-vlt-rev-uks'
     steps:
-    - template: templates/index.yaml
-      parameters:
-        searchServiceAdminApiKey: $(searchServiceAdminApiKeyDev)
-        indexerName: "campaignscrcv3-1-0-b-dev"
-        searchService: "campaigns-search-dev-uks"
+      - task: AzureKeyVault@1
+        inputs:
+          azureSubscription: ${{parameters.azureSubscription}}
+          KeyVaultName: ${{parameters.keyVaultName}}
+          SecretsFilter: '*'
+          RunAsPreJob: false 
+      - bash: |
+          echo "
+          ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost,$(hostUrl),$(intHostUrl)
+          MEDIA_DIR: /app/media/
+          # RECAPTCHA_PRIVATE_KEY: $(recaptchaPrivateKey) # pragma: allowlist secret
+          # RECAPTCHA_PUBLIC_KEY: $(recaptchaPublicKey)
+          REDIS_URL: $(redisUrl)
+          DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)
+          PRIMARY_HOST: $(primaryHost)
+          SECRET_KEY: $(secretKey)
+          SECURE_SSL_REDIRECT: 'true'
+          STATIC_DIR: $(staticDir)
+          STATIC_URL: $(staticUrl)
+          DB_HOST: $(dbHost)
+          DB_NAME: $(dbName)
+          DB_PASS: $(dbPass)
+          DB_USER: $(dbUser)
+          AZURE_CONTAINER: $(storageAccountContainer)
+          AZURE_CUSTOM_DOMAIN: $(azureCustomDomain)
+          AZURE_ACCOUNT_NAME: $(storageAccountName)
+          AZURE_ACCOUNT_KEY: $(storageAccountKey)
+          AZURE_ACCOUNT_PUBLIC_ENDPOINT: $(storageAccountPublicEndpoint)
+          AZURE_ACCOUNT_PRIVATE_ENDPOINT: $(storageAccountPrivateEndpoint)
+          PARAGON_API_ENDPOINT: $(paragonApiEndpoint)
+          PARAGON_API_KEY: $(paragonApiKey)
+          PARAGON_MOCK: $(paragonMock)
+          DEBUG: $(debug)
+          WEB_CONCURRENCY: $(workers)
+          GUNICORN_CMD_ARGS: $(gunicornArgs)
+          NOTIFY_DEBUG: $(notifyDebug)
+          NOTIFY_API_KEY: $(notifyApiKey)
+          ADOBE_TRACKING_URL: $(adobeTrackingUrl)
+          COOKIE_DECLARATION: $(cookieDeclaration)
+          AZURE_SEARCH_CONTAINER: $(azureSearchContainer)
+          AZURE_SEARCH_ACCESS_KEY: $(azureSearchAccessKey)
+          AZURE_SEARCH_STORAGE_ACCOUNT_NAME: $(azureSearchStorageAccountName)
+          AZURE_SEARCH_UPDATE: $(azureSearchUpdate)
+          AZURE_SEARCH_PREFIX: $(azureSearchPrefix)
+          AZURE_SEARCH_API_HOST: $(azureSearchApiHost)
+          AZURE_SEARCH_API_VERSION: $(azureSearchApiVersion)
+          AZURE_SEARCH_DELETE_API_HOST: $(azureSearchDeleteApiHost)
+          AZURE_SEARCH_DELETE_API_VERSION: $(azureSearchDeleteApiVersion)
+          AZURE_SEARCH_API_KEY: $(azureSearchApiKey)
+          AZURE_SEARCH_FACETS: $(azureSearchFacets)
+          CAMPAIGNS_EVENT_API_ENDPOINT: $(campaignsEventApiEndpoint)
+          COOKIE_CONSENT_CAMPAIGNS: $(cookieConsentCampaigns)
+          PARAGON_ENCRYPTION_KEY: $(paragonEncryptionKey)
+          PARAGON_SIGN_KEY: $(paragonSignKey)
+          PARAGON_SALT: $(paragonSalt)
+          PHE_PARTNERSHIPS_EMAIL: $(phePartnershipsEmail)
+          REPORTING_ENDPOINT: $(reportingEndpoint)
+          REPORTING_ENABLED: $(reportingEnabled)
+          TWO_FA: $(twoFA)
+          WAGTAIL_USER: $(wagtailUser)
+          WAGTAIL_PASSWORD: $(wagtailPassword)
+          PUBTOKEN: $(pubToken)
+          " > .env
+      
+      - bash: cat .env
 
-  - job: IndexStaging
-    displayName: 'Index staging'
-    condition: eq('${{ parameters.staging }}', 'true')
-    steps:
-    - template: templates/index.yaml
-      parameters:
-        searchServiceAdminApiKey: $(searchServiceAdminApiKeyStag)
-        indexerName: "campaignscrcv3-1-0-b-stag"
-        searchService: "campaigns-search-stag-uks"
+      # - task: DockerCompose@0
+      #   displayName: 'Build and run Docker Compose'
+      #   inputs:
+      #     action: 'Run a specific service'
+      #     serviceName: "web"
+      #     containerCommand: "./manage.py update_index"
 
-  - job: IndexProduction
-    displayName: 'Index Production'
-    condition: eq('${{ parameters.Production }}', 'true')
-    steps:
-    - template: templates/index.yaml
-      parameters:
-        searchServiceAdminApiKey: $(searchServiceAdminApiKeyProd)
-        indexerName: "campaignscrcv3-1-0-b-prod"
-        searchService: "campaigns-search-prod-uks"
+      # - template: templates/index.yaml
+      #   parameters:
+      #     searchServiceAdminApiKey: $(searchServiceAdminApiKeyDev)
+      #     indexerName: "campaignscrcv3-1-0-b-dev"
+      #     searchService: "campaigns-search-dev-uks"
+
+  # - job: IndexStaging
+  #   displayName: 'Index staging'
+  #   condition: eq('${{ parameters.staging }}', 'true')
+  #   steps:
+  #   - template: templates/index.yaml
+  #     parameters:
+  #       searchServiceAdminApiKey: $(searchServiceAdminApiKeyStag)
+  #       indexerName: "campaignscrcv3-1-0-b-stag"
+  #       searchService: "campaigns-search-stag-uks"
+
+  # - job: IndexProduction
+  #   displayName: 'Index Production'
+  #   condition: eq('${{ parameters.Production }}', 'true')
+  #   steps:
+  #   - template: templates/index.yaml
+  #     parameters:
+  #       searchServiceAdminApiKey: $(searchServiceAdminApiKeyProd)
+  #       indexerName: "campaignscrcv3-1-0-b-prod"
+  #       searchService: "campaigns-search-prod-uks"
