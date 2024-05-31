@@ -77,6 +77,46 @@ class TestAzureSearchBackend(TestCase):
         self.assertTrue(actual_data["ok"])
         self.assertEqual(200, actual_data["code"])
 
+    def test_azure_search_returning_no_matches(self):
+        mock_response = Response()
+        mock_response.status_code = 200
+        search_content = {"value": []}
+        mock_response._content = json.dumps(search_content).encode()
+
+        search_value = "Resource"
+        fields_queryset = {"objecttype": "resource"}
+        facets_queryset = {"TOPIC": "SMOKING"}
+        sort_by = "title asc"
+
+        with patch("requests.get", return_value=mock_response):
+            actual_data = self.azure_search.azure_search(
+                search_value, fields_queryset, facets_queryset, sort_by
+            )
+
+        self.assertEqual(search_content, actual_data["search_content"])
+        self.assertTrue(actual_data["ok"])
+        self.assertEqual(200, actual_data["code"])
+
+    def test_azure_search_returning_no_content(self):
+        mock_response = Response()
+        mock_response.status_code = 200
+        mock_response._content = b""
+        search_content = {"value": []}
+
+        search_value = "Resource"
+        fields_queryset = {"objecttype": "resource"}
+        facets_queryset = {"TOPIC": "SMOKING"}
+        sort_by = "title asc"
+
+        with patch("requests.get", return_value=mock_response):
+            actual_data = self.azure_search.azure_search(
+                search_value, fields_queryset, facets_queryset, sort_by
+            )
+
+        self.assertEqual(search_content, actual_data["search_content"])
+        self.assertTrue(actual_data["ok"])
+        self.assertEqual(200, actual_data["code"])
+
 
 DUMMY_URL = "https://example.com/something-to-search-for"
 MOCKED_RESULT_VALUE = {
