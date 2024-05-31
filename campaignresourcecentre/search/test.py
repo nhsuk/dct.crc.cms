@@ -59,7 +59,9 @@ class TestAzureSearchBackend(TestCase):
     @patch("requests.get")
     def test_azure_search_returning_matches(self, mock_get):
         mock_response = Response()
-        with open("./test_sample_azure_response.json") as f:
+        with open(
+            "./campaignresourcecentre/search/test_sample_azure_response.json"
+        ) as f:
             mock_response.status_code = 200
             mock_response._content = f.read().encode()
             mock_matches_obj = json.load(f)
