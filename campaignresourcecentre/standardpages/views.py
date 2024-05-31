@@ -95,10 +95,16 @@ def clear_cache(request):
     return HttpResponse("Cache has been cleared")
 
 
+# @require_http_methods(["GET"])
+# def update_index(request):
+#     if not request.user.is_superuser:
+#         raise PermissionDenied
+#     return spawn_command("update_index")
+
+
 @require_http_methods(["GET"])
 def update_index(request):
-    if not request.user.is_superuser:
-        raise PermissionDenied
+    print("Running update_index")
     return spawn_command("update_index")
 
 
