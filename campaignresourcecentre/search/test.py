@@ -8,7 +8,6 @@ from django.http import HttpRequest
 from .azure import (
     AzureSearchBackend,
     AzureSearchRebuilder,
-    AzureSearchException,
     AzureStorage,
     AzureIndex,
 )
@@ -17,6 +16,9 @@ from campaignresourcecentre.core.management.commands.searchorphans import (
     process_orphans,
 )
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
+from campaignresourcecentre.search.test_data import (
+    azure_response,
+)
 
 
 class TestAzureSearchBackend(TestCase):
@@ -56,27 +58,22 @@ class TestAzureSearchBackend(TestCase):
         )
         self.assertEqual(expected, url)
 
-    @patch("requests.get")
-    def test_azure_search_returning_matches(self, mock_get):
+    def test_azure_search_returning_matches(self):
         mock_response = Response()
-        with open(
-            "./campaignresourcecentre/search/test_sample_azure_response.json"
-        ) as f:
-            mock_response.status_code = 200
-            mock_response._content = f.read().encode()
-            mock_matches_obj = json.load(f)
-
-        mock_get.return_value = mock_response
+        mock_response.status_code = 200
+        mock_response._content = json.dumps(azure_response).encode()
 
         search_value = "Resource"
         fields_queryset = {"objecttype": "resource"}
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
-        actual_data = self.azure_search.azure_search(
-            search_value, fields_queryset, facets_queryset, sort_by
-        )
 
-        self.assertEqual(mock_matches_obj, actual_data["search_content"])
+        with patch("requests.get", return_value=mock_response):
+            actual_data = self.azure_search.azure_search(
+                search_value, fields_queryset, facets_queryset, sort_by
+            )
+
+        self.assertEqual(azure_response, actual_data["search_content"])
         self.assertTrue(actual_data["ok"])
         self.assertEqual(200, actual_data["code"])
 
@@ -135,18 +132,15 @@ class TestAzureSearchRebuilder(TestCase):
     def test_retrieve_current_search_objects(self):
         # Can't seem to mock these objects, so mock the result from the search
         self.rebuilder.azure_search = AzureSearchBackend({})
-        mocked_response = MagicMock()
-        mocked_response.content = json.dumps(
+        mocked_response = Response()
+        mocked_response._content = json.dumps(
             {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
-        )
-        mocked_response.json().return_value = {
-            "value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]
-        }
-        mocked_response.ok = True
+        ).encode()
         mocked_response.status_code = 200
 
         with patch("requests.get", return_value=mocked_response):
             search_objects = self.rebuilder.retrieve_current_search_objects()
+
         self.assertEqual(
             repr(search_objects),
             repr(MOCKED_CURRENT_SEARCH_OBJECTS),
