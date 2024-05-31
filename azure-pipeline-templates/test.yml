@@ -5,6 +5,19 @@ steps:
     command: 'login'
 # Run CMS Test Coverage using pytest
 - script: |
-    docker-compose -f ./docker-compose-test.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test
+    docker-compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
   enabled: true
+- task: PublishTestResults@2
+  displayName: "Publish Test Results "
+  inputs:
+    testResultsFormat: 'XUnit'
+    testResultsFiles: "./docker/testresults.xml"
+  condition: succeededOrFailed()
+  #publish code coverage reports in cobertura format
+  - task: PublishCodeCoverageResults@2
+    displayName: "Publish code coverage results"
+    inputs:
+      summaryFileLocation: "./docker/coverage.xml"
+      failIfCoverageEmpty: true
+    condition: succeededOrFailed()

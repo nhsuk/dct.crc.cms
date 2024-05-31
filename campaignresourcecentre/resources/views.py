@@ -49,12 +49,18 @@ def _search(request):
     )
 
     resources = []
-    if response["search_content"] and response["search_content"].get("value"):
+    if (
+        response.get("search_content")
+        and response["search_content"].get("value") != None
+    ):
         resources = response["search_content"]["value"]
-    elif response["search_content"]:
+    elif response.get("search_content") and response["search_content"].get("Message"):
         logger.info(
-            f"Azure Search Issue:\
-            {response.get('search_content').get('Message')}"
+            f"Azure Search Issue:{response.get('search_content').get('Message')}"
+        )
+    else:
+        logger.info(
+            f"Azure Search Issue: neither search content values nor message returned"
         )
 
     search_results = [

@@ -20,3 +20,5 @@ SECURE_SSL_REDIRECT = False
 # We don't need such a strong algorithm in tests, so use MD5
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 PUBTOKEN = "correct"
+TEST_RUNNER = "xmlrunner.extra.djangotestrunner.XMLTestRunner"
+TEST_OUTPUT_FILE_NAME = "testresults.xml"

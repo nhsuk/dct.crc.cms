@@ -373,8 +373,16 @@ class AzureSearchBackend(BaseSearchBackend):
         headers = {"Subscription-Key": settings.AZURE_SEARCH["API_KEY"]}
         try:
             response = requests.get(url, headers=headers)
+            if len(response.content) > 0:
+                content = response.json()
+            else:
+                logger.warn(
+                    f"Azure search returned '{response.status_code}' status code and no content in response, returning no matching results"
+                )
+                content = {"value": []}
+
             json_response = {
-                "search_content": json.loads(response.content),
+                "search_content": content,
                 "ok": response.ok,
                 "code": response.status_code,
             }
@@ -394,14 +402,20 @@ class AzureSearchBackend(BaseSearchBackend):
             except Exception as e:
                 logger.error("Couldn't interpret search response: %s", e)
                 raise
+
             logger.info(
-                "%d items returned from search, %d not interpretable",
+                "%d items returned from search%s",
                 len(result_urls),
-                not_interpretable,
+                (
+                    f", {not_interpretable} not interpretable"
+                    if not_interpretable > 0
+                    else ""
+                ),
             )
         except Exception as err:
             logger.error("Exception raised - Azure Search Get: %s", err)
             json_response = {"ok": False, "code": 500}
+
         return json_response
 
     # Implement Wagtail base query class method for use in Wagtail CMS searches
