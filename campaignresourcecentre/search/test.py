@@ -139,6 +139,12 @@ class TestAzureSearchRebuilder(TestCase):
         mocked_response.content = json.dumps(
             {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
         )
+        mocked_response.json().return_value = {
+            "value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]
+        }
+        mocked_response.ok = True
+        mocked_response.status_code = 200
+
         with patch("requests.get", return_value=mocked_response):
             search_objects = self.rebuilder.retrieve_current_search_objects()
         self.assertEqual(

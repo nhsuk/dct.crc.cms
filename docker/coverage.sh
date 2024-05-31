@@ -1,19 +1,21 @@
 #!/bin/sh
+echo "running migrations..."
 python manage.py migrate
-echo "1"
-python manage.py test --noinput --keepdb
-echo "2"
-mv ./testresults.xml ./docker
-echo "3"
+echo "erasing old coverage..."
 coverage erase 
-echo "4"
+echo "running tests..."
 coverage run manage.py test --noinput --keepdb
-echo "5"
+exitcode=$?
+echo "mounting test results"
+mv ./testresults.xml ./docker
+echo "generating xml coverage report..."
 coverage xml -i
-echo "6"
+echo "mounting xml coverage report"
 mv ./coverage.xml ./docker
-echo "7"
+echo "getnerating html coverage report..."
 coverage html -i -d coverage_html
-echo "8"
+echo "mounting html coverage report"
 mkdir ./docker/coverage_html
 mv ./coverage_html/* ./docker/coverage_html
+echo "exiting with code $exitcode"
+exit $exitcode
