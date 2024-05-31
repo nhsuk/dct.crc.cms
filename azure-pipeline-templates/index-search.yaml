@@ -16,7 +16,6 @@ parameters:
     default: false
 
   - name: environmentUrl
-    description: 'The URL of the environment to index without trailing /'
     type: string
 
 jobs:
@@ -29,7 +28,7 @@ jobs:
           FULL_URL="${{ parameters.environmentUrl }}/crc-admin/update_index"
           
           echo "Full URL: $FULL_URL"
-          # TODO: add pub token
+          # TODO: add authentication
           curl -X POST $FULL_URL
 
       # - task: DockerCompose@0
