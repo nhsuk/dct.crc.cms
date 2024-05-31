@@ -8,6 +8,7 @@
                 "resource": {
                     "title": "Resource Page",
                     "objecttype": "resource",
+                    "object_url": "test.resource",
                     "description": "<p>Test</p>",
                     "display_url": null,
                     "taxonomy_json": "[{\"code\":\"ANTMBREST\",\"label\":\"Antimicrobial resistance\"},{\"code\":\"SMOKING\",\"label\":\"Becoming smokefree\"},{\"code\":\"BLOODPRESSURE\",\"label\":\"Blood pressure\"},{\"code\":\"30S\",\"label\":\"30s\"},{\"code\":\"40TO60\",\"label\":\"40-60s\"},{\"code\":\"PARENTS2B\",\"label\":\"Parents-to-be\"},{\"code\":\"PARENTS0TO2\",\"label\":\"Parents of 0-2 years\"},{\"code\":\"PRCOMMSTEAMS\",\"label\":\"PR and comms teams\"},{\"code\":\"SCREEN72DPI\",\"label\":\"Digital screen 72 dpi\"},{\"code\":\"ADVERTISING\",\"label\":\"Advertising\"},{\"code\":\"GPSURGERY\",\"label\":\"GP surgery\"},{\"code\":\"NHSCH\",\"label\":\"NHS\"},{\"code\":\"COMMPARTNER\",\"label\":\"Commercial partner\"},{\"code\":\"CANTON\",\"label\":\"Cantonese\"},{\"code\":\"LONDON\",\"label\":\"London\"},{\"code\":\"6SHEETPOSTER\",\"label\":\"6 sheet poster\"}]",

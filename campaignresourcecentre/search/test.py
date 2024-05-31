@@ -1,5 +1,6 @@
 import json
 from unittest.mock import MagicMock, patch
+from requests import Response
 
 from django.test import TestCase
 from django.http import HttpRequest
@@ -54,6 +55,28 @@ class TestAzureSearchBackend(TestCase):
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         self.assertEqual(expected, url)
+
+    @patch("requests.get")
+    def test_azure_search_returning_matches(self, mock_get):
+        mock_response = Response()
+        with open("./test_sample_azure_response.json") as f:
+            mock_response.status_code = 200
+            mock_response._content = f.read().encode()
+            mock_matches_obj = json.load(f)
+
+        mock_get.return_value = mock_response
+
+        search_value = "Resource"
+        fields_queryset = {"objecttype": "resource"}
+        facets_queryset = {"TOPIC": "SMOKING"}
+        sort_by = "title asc"
+        actual_data = self.azure_search.azure_search(
+            search_value, fields_queryset, facets_queryset, sort_by
+        )
+
+        self.assertEqual(mock_matches_obj, actual_data["search_content"])
+        self.assertTrue(actual_data["ok"])
+        self.assertEqual(200, actual_data["code"])
 
 
 DUMMY_URL = "https://example.com/something-to-search-for"

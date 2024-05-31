@@ -348,7 +348,7 @@ class AzureSearchBackend(BaseSearchBackend):
         facets_queryset: example: {"TARGAUD": ["PARENTS"]}
         sort_by: example: "active_from_time desc"
 
-    Sample url parameers:
+    Sample url parameters:
         query: Better
         sort: title
         f.content/resource/TARGAUD: PARENTS
