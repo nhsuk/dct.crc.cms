@@ -9,12 +9,11 @@ steps:
   displayName: 'Run Coverage Test'
   enabled: true
 - task: PublishTestResults@2
-  displayName: "Publish Test Results "
+  displayName: "Publish Test Results"
   inputs:
     testResultsFormat: 'XUnit'
-    testResultsFiles: "./docker/testresults.xml"
+    testResultsFiles: "**/testresults.xml"
   condition: succeededOrFailed()
-#publish code coverage reports in cobertura format
 - task: PublishCodeCoverageResults@2
   displayName: "Publish code coverage results"
   inputs:

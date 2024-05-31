@@ -16,7 +16,6 @@ from campaignresourcecentre.core.management.commands.searchorphans import (
     process_orphans,
 )
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
-from campaignresourcecentre.campaigns.models import logger
 
 
 class TestAzureSearchBackend(TestCase):
