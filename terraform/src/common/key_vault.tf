@@ -25,11 +25,47 @@ resource "azurerm_key_vault" "kv" {
   #   ]
   # }
 
-  access_policy {
-    tenant_id = azapi_resource.search_reindex.identity[0].tenant_id
-    object_id = azapi_resource.search_reindex.identity[0].principal_id
-    secret_permissions = [
-      "Get", "List"
-    ]
-  }
+  # access_policy {
+  #   tenant_id = azapi_resource.search_reindex.identity[0].tenant_id
+  #   object_id = azapi_resource.search_reindex.identity[0].principal_id
+  #   secret_permissions = [
+  #     "Get", "List"
+  #   ]
+  # }
+}
+
+resource "azurerm_key_vault_access_policy" "scheduler_la" {
+  key_vault_id = azurerm_key_vault.current.id
+
+  tenant_id = azapi_resource.scheduler_la.identity[0].tenant_id
+  object_id = azapi_resource.scheduler_la.identity[0].principal_id
+
+  secret_permissions = [
+    "GET",
+    "LIST"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "scheduler_alert_la" {
+  key_vault_id = azurerm_key_vault.current.id
+
+  tenant_id = azapi_resource.scheduler_alert_la.identity[0].tenant_id
+  object_id = azapi_resource.scheduler_alert_la.identity[0].principal_id
+
+  secret_permissions = [
+    "GET",
+    "LIST"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "search_reindex" {
+  key_vault_id = azurerm_key_vault.current.id
+
+  tenant_id = azapi_resource.search_reindex.identity[0].tenant_id
+  object_id = azapi_resource.search_reindex.identity[0].principal_id
+
+  secret_permissions = [
+    "GET",
+    "LIST"
+  ]
 }
