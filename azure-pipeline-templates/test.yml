@@ -3,7 +3,6 @@ steps:
   inputs:
     containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
     command: 'login'
-# Run CMS Test Coverage using pytest
 - script: |
     docker-compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
@@ -13,9 +12,10 @@ steps:
   inputs:
     testResultsFiles: "**/testresults.xml"
   condition: succeededOrFailed()
-- task: PublishCodeCoverageResults@2
+- task: PublishCodeCoverageResults@1
   displayName: "Publish code coverage results"
   inputs:
+    codeCoverageTool: "Cobertura"
     summaryFileLocation: "./docker/coverage.xml"
     failIfCoverageEmpty: true
   condition: succeededOrFailed()
