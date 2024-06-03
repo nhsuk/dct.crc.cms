@@ -18,10 +18,13 @@ parameters:
   - name: environmentUrl
     type: string
 
+
 jobs:
   - job: IndexDev
     displayName: 'Index Dev'
     condition: eq('${{ parameters.dev }}', true)
+    variables:
+      - group: Review
     steps:
       - bash: |
           echo "Index Dev"
