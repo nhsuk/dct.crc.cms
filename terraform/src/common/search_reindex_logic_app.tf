@@ -1,6 +1,6 @@
-resource "azapi_resource" "scheduler_la" {
+resource "azapi_resource" "search_reindex" {
   type      = "Microsoft.Logic/workflows@2019-05-01"
-  name      = local.scheduler_logic_app_name
+  name      = local.search_reindex_logic_app_name
   location  = data.azurerm_resource_group.rg.location
   parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
@@ -38,7 +38,7 @@ resource "azapi_resource" "scheduler_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('pubEndpoint')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('searchIndexEndpoint')}/value"
                 },
                 "runAfter" : {},
                 "type" : "ApiConnection"
