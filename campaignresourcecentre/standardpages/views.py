@@ -14,7 +14,7 @@ from django.template import Context, loader
 from django.views.decorators.cache import never_cache
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.http import require_http_methods
-
+from campaignresourcecentre.core.helpers import verify_pubtoken
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.notifications.dataclasses import ContactUsData
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
@@ -95,16 +95,12 @@ def clear_cache(request):
     return HttpResponse("Cache has been cleared")
 
 
-# @require_http_methods(["GET"])
-# def update_index(request):
-#     if not request.user.is_superuser:
-#         raise PermissionDenied
-#     return spawn_command("update_index")
-
-
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def update_index(request):
-    print("Running update_index")
+    if request.method == "POST" and not verify_pubtoken(request):
+        raise PermissionDenied
+    elif not request.user.is_superuser:
+        raise PermissionDenied
     return spawn_command("update_index")
 
 
