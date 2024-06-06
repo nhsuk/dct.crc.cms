@@ -71,9 +71,10 @@ resource "azapi_resource" "search_reindex_la" {
               },
               "Trigger Re-Index" : {
                 "inputs" : {
-                  "headers" : {
-                    "Authorization" : "Bearer @{body('Get Token')?['value']}"
-                  },
+                  "authentication": {
+                    "type": "Raw",
+                    "value": "Bearer @{body('Get Token')?['value']}"
+                  }
                   "method" : "GET",
                   "queries" : {},
                   "uri" : "@{body('Get Endpoint')?['value']}"
