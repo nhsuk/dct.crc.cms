@@ -96,11 +96,11 @@ def clear_cache(request):
     return HttpResponse("Cache has been cleared")
 
 
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET"])
 def update_index(request):
-    if request.method == "POST" and not verify_pubtoken(request):
+    if request.user.is_authenticated and not request.user.is_superuser:
         raise PermissionDenied
-    elif not request.user.is_superuser:
+    elif not verify_pubtoken(request):
         raise PermissionDenied
     return spawn_command("update_index")
 
