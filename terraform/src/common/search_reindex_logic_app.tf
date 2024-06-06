@@ -43,7 +43,7 @@ resource "azapi_resource" "search_reindex_la" {
         "actions" : {
           "Re-Index" : {
             "actions" : {
-              "Get index endpoint" : {
+              "Get Endpoint" : {
                 "inputs" : {
                   "host" : {
                     "connection" : {
@@ -56,7 +56,7 @@ resource "azapi_resource" "search_reindex_la" {
                 "runAfter" : {},
                 "type" : "ApiConnection"
               },
-              "Get publishing token" : {
+              "Get Token" : {
                 "inputs" : {
                   "host" : {
                     "connection" : {
@@ -67,23 +67,23 @@ resource "azapi_resource" "search_reindex_la" {
                   "path" : "/secrets/@{encodeURIComponent('pubToken')}/value"
                 },
                 "runAfter" : {
-                  "Get index endpoint" : [
+                  "Get Endpoint" : [
                     "Succeeded"
                   ]
                 },
                 "type" : "ApiConnection"
               },
-              "Publish scheduled pages request" : {
+              "Trigger Re-Index" : {
                 "inputs" : {
                   "headers" : {
-                    "Authorization" : "Bearer @{body('Get publishing token')?['value']}"
+                    "Authorization" : "Bearer @{body('Get Token')?['value']}"
                   },
                   "method" : "GET",
                   "queries" : {},
-                  "uri" : "@{body('Get index endpoint')?['value']}"
+                  "uri" : "@{body('Get Endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get publishing token" : [
+                  "Get Token" : [
                     "Succeeded"
                   ]
                 },
@@ -100,7 +100,7 @@ resource "azapi_resource" "search_reindex_la" {
                 {
                   "not" : {
                     "equals" : [
-                      "@outputs('Publish scheduled pages request')['statusCode']",
+                      "@outputs('Trigger Re-Index')['statusCode']",
                       202
                     ]
                   }
@@ -120,7 +120,7 @@ resource "azapi_resource" "search_reindex_la" {
               }
             },
             "runAfter" : {
-              "Publish" : [
+              "Re-" : [
                 "Failed",
                 "Skipped",
                 "TimedOut",

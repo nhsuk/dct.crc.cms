@@ -110,8 +110,12 @@ def debug_az_search(request):
     if not request.user.is_superuser:
         raise PermissionDenied
 
+    result_limit = request.GET.get("limit", 1000)
+
     azure_search = AzureSearchBackend({})
-    json_result = azure_search.azure_search("", {}, {}, None, 1000)
+    json_result = azure_search.azure_search(
+        "", {}, {}, None, results_per_page=result_limit
+    )
 
     if not json_result.get("ok"):
         return JsonResponse({})
