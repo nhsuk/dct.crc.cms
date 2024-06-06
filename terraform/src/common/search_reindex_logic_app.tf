@@ -22,10 +22,6 @@ resource "azapi_resource" "search_reindex_la" {
         },
 
         "triggers" : {
-          "When_a_HTTP_request_is_received": {
-            "type": "Request",
-            "kind": "Http"
-          },
           "Recurrence": {
             "type": "Recurrence",
             "recurrence": {
