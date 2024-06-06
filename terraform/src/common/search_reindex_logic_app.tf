@@ -25,10 +25,23 @@ resource "azapi_resource" "search_reindex_la" {
           "When_a_HTTP_request_is_received": {
             "type": "Request",
             "kind": "Http"
+          },
+          "Recurrence": {
+            "type": "Recurrence",
+            "recurrence": {
+              "interval": 1,
+              "frequency": "Day",
+              "timeZone": "GMT Standard Time",
+              "schedule": {
+                "hours": [
+                  "4"
+                ]
+              }
+            }
           }
         },
         "actions" : {
-          "Publish" : {
+          "Re-Index" : {
             "actions" : {
               "Get index endpoint" : {
                 "inputs" : {
