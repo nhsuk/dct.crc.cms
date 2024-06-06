@@ -84,7 +84,12 @@ resource "azapi_resource" "search_reindex_la" {
                     "Succeeded"
                   ]
                 },
-                "type" : "Http"
+                "type" : "Http",
+                "runtimeConfiguration": {
+                  "contentTransfer": {
+                    "transferMode": "Chunked"
+                  }
+                }
               }
             },
             "runAfter" : {},
