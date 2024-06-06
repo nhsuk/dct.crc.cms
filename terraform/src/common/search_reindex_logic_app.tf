@@ -120,7 +120,7 @@ resource "azapi_resource" "search_reindex_la" {
               }
             },
             "runAfter" : {
-              "Re-" : [
+              "Re-Index" : [
                 "Failed",
                 "Skipped",
                 "TimedOut",
