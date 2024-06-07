@@ -96,29 +96,39 @@ resource "azapi_resource" "search_reindex_la" {
             "type" : "Scope"
           },
           "Check" : {
-            "type" : "If",
-            "expression" : {
-              "and" : [
-                {
-                  "not" : {
-                    "equals" : [
-                      "@outputs('Trigger Re-Index')['statusCode']",
-                      202
-                    ]
-                  }
-                }
-              ]
-            },
+            "type" : "scope",
             "actions" : {
-              "Terminate" : {
+              "Get alerting webhook" : {
                 "inputs" : {
-                  "runError" : {
-                    "message" : "Publishing scheduled pages failed"
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
                   },
-                  "runStatus" : "Failed"
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
                 },
                 "runAfter" : {},
-                "type" : "Terminate"
+                "type" : "ApiConnection"
+              },
+              "Send slack alert" : {
+                "inputs" : {
+                  "body" : templatefile("${path.module}/templates/slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id }),
+                  "headers" : {
+                    "Content-Type" : "application/json"
+                  },
+                  "method" : "POST",
+                  "uri" : "@{body('Get alerting webhook')?['value']}"
+                },
+                "runAfter" : {
+                  "Get publishing endpoint" : [
+                    "Failed",
+                    "Skipped",
+                    "TimedOut",
+                    "Succeeded"
+                  ]
+                },
+                "type" : "Http"
               }
             },
             "runAfter" : {
