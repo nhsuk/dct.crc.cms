@@ -9,7 +9,7 @@
         },
         {
             "text" : {
-                "text" : "${@outputs('Trigger Re-Index')['statusCode']}",
+                "text" : "Status Code: @{outputs('Trigger Re-Index')?['statusCode'] }",
                 "type" : "mrkdwn"
             },
             "type" : "section"
