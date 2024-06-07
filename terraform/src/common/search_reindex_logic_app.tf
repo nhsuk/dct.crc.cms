@@ -96,8 +96,27 @@ resource "azapi_resource" "search_reindex_la" {
             "type" : "Scope"
           },
           "Check" : {
-            "type" : "scope",
-            "actions" : {
+            "type": "If",
+            "expression": {
+              "and": [
+                {
+                  "equals": [
+                    "@outputs('Trigger Re-Index')?['statusCode']",
+                    200
+                  ]
+                }
+              ]
+            },
+            "actions": {
+              "Terminate" : {
+                "inputs" : {
+                  "runStatus" : "Succeeded"
+                },
+                "runAfter" : {},
+                "type" : "Terminate"
+              }
+            },
+            "else" : {
               "Get alerting webhook" : {
                 "inputs" : {
                   "host" : {
@@ -113,7 +132,7 @@ resource "azapi_resource" "search_reindex_la" {
               },
               "Send slack alert" : {
                 "inputs" : {
-                  "body" : templatefile("${path.module}/templates/slack-alert-reindex.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.scheduler_la.name, la_id = azapi_resource.scheduler_la.id }),
+                  "body" : templatefile("${path.module}/templates/slack-alert-reindex.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.search_reindex_la.name, la_id = azapi_resource.search_reindex_la.id }),
                   "headers" : {
                     "Content-Type" : "application/json"
                   },
@@ -127,6 +146,20 @@ resource "azapi_resource" "search_reindex_la" {
                     "Succeeded"
                   ]
                 }
+              },
+              "Terminate" : {
+                "inputs" : {
+                  "runError" : {
+                    "message" : "Publishing scheduled pages failed"
+                  },
+                  "runStatus" : "Failed"
+                },
+                "runAfter" : {
+                  "Send slack alert": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type" : "Terminate"
               }
             },
             "runAfter" : {
