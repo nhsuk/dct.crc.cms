@@ -117,54 +117,56 @@ resource "azapi_resource" "search_reindex_la" {
               }
             },
             "else" : {
-              "Get alerting webhook" : {
-                "inputs" : {
-                  "host" : {
-                    "connection" : {
-                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+              "actions": {
+                 "Get alerting webhook" : {
+                    "inputs" : {
+                      "host" : {
+                        "connection" : {
+                          "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                        }
+                      },
+                      "method" : "get",
+                      "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+                    },
+                    "runAfter" : {},
+                    "type" : "ApiConnection"
+                  },
+                  "Send slack alert" : {
+                    "inputs" : {
+                      "body" : templatefile(
+                          "${path.module}/templates/slack-alert-reindex.json.tftpl",
+                          { 
+                            rg_name = data.azurerm_resource_group.rg.name, 
+                            rg_id = data.azurerm_resource_group.rg.id, 
+                          }),
+                      "headers" : {
+                        "Content-Type" : "application/json"
+                      },
+                      "method" : "POST",
+                      "uri" : "@{body('Get alerting webhook')?['value']}"
+                    },
+                
+                    "type" : "Http", 
+                    "runAfter": {
+                      "Get alerting webhook" : [
+                        "Succeeded"
+                      ]
                     }
                   },
-                  "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
-                },
-                "runAfter" : {},
-                "type" : "ApiConnection"
-              },
-              "Send slack alert" : {
-                "inputs" : {
-                  "body" : templatefile(
-                      "${path.module}/templates/slack-alert-reindex.json.tftpl",
-                      { 
-                        rg_name = data.azurerm_resource_group.rg.name, 
-                        rg_id = data.azurerm_resource_group.rg.id, 
-                      }),
-                  "headers" : {
-                    "Content-Type" : "application/json"
-                  },
-                  "method" : "POST",
-                  "uri" : "@{body('Get alerting webhook')?['value']}"
-                },
-             
-                "type" : "Http", 
-                "runAfter": {
-                  "Get alerting webhook" : [
-                    "Succeeded"
-                  ]
-                }
-              },
-              "Terminate" : {
-                "inputs" : {
-                  "runError" : {
-                    "message" : "Publishing scheduled pages failed"
-                  },
-                  "runStatus" : "Failed"
-                },
-                "runAfter" : {
-                  "Send slack alert": [
-                    "SUCCEEDED"
-                  ]
-                },
-                "type" : "Terminate"
+                  "Terminate" : {
+                    "inputs" : {
+                      "runError" : {
+                        "message" : "Publishing scheduled pages failed"
+                      },
+                      "runStatus" : "Failed"
+                    },
+                    "runAfter" : {
+                      "Send slack alert": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type" : "Terminate"
+                  }
               }
             },
             "runAfter" : {
