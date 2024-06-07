@@ -120,14 +120,7 @@ resource "azapi_resource" "search_reindex_la" {
                   "method" : "POST",
                   "uri" : "@{body('Get alerting webhook')?['value']}"
                 },
-                "runAfter" : {
-                  "Get publishing endpoint" : [
-                    "Failed",
-                    "Skipped",
-                    "TimedOut",
-                    "Succeeded"
-                  ]
-                },
+             
                 "type" : "Http"
               }
             },
