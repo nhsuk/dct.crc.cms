@@ -121,7 +121,12 @@ resource "azapi_resource" "search_reindex_la" {
                   "uri" : "@{body('Get alerting webhook')?['value']}"
                 },
              
-                "type" : "Http"
+                "type" : "Http", 
+                "runAfter": {
+                  "Get alerting webhook" : [
+                    "Succeeded"
+                  ]
+                }
               }
             },
             "runAfter" : {
