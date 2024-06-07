@@ -108,7 +108,7 @@ resource "azapi_resource" "search_reindex_la" {
               ]
             },
             "actions": {
-              "Terminate" : {
+              "Terminate Success" : {
                 "inputs" : {
                   "runStatus" : "Succeeded"
                 },
@@ -153,7 +153,7 @@ resource "azapi_resource" "search_reindex_la" {
                       ]
                     }
                   },
-                  "Terminate" : {
+                  "Terminate with error" : {
                     "inputs" : {
                       "runError" : {
                         "message" : "Publishing scheduled pages failed"
