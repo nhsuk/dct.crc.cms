@@ -137,8 +137,6 @@ resource "azapi_resource" "search_reindex_la" {
                       { 
                         rg_name = data.azurerm_resource_group.rg.name, 
                         rg_id = data.azurerm_resource_group.rg.id, 
-                        la_name = self.name, 
-                        la_id = self.id 
                       }),
                   "headers" : {
                     "Content-Type" : "application/json"
