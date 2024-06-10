@@ -1,6 +1,6 @@
 import json
 from unittest.mock import MagicMock, patch
-from requests import Response
+from requests import Response, utils
 
 from django.test import TestCase
 from django.http import HttpRequest
@@ -42,7 +42,9 @@ class TestAzureSearchBackend(TestCase):
             "(content/resource/objecttype eq 'resource')",
             "(content/resource/TOPIC/any(t: t eq 'SMOKING'))",
         ]
-        expected = "&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"  # noqa
+        expected = "&$filter=" + utils.quote(
+            "((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"
+        )  # noqa
         facets_filter = self.azure_search._build_query_string_from_filters(filters)
         self.assertEqual(expected, facets_filter)
 
@@ -52,7 +54,15 @@ class TestAzureSearchBackend(TestCase):
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
         results_per_page = "1000"
-        expected = "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&searchMode=all&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&$orderby=content/resource/title asc&$top=1000"  # noqa
+        expected = (
+            "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search="
+            + utils.quote("Resource")
+            + "&api-version=v1&searchMode=all&$filter="
+            + utils.quote(
+                "((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"
+            )
+            + "&$orderby=content/resource/title asc&$top=1000"
+        )  # noqa
         url = self.azure_search._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
