@@ -5,7 +5,7 @@ from requests import Response, utils
 from django.test import TestCase
 from django.http import HttpRequest
 
-from .azure import (
+from campaignresourcecentre.search.azure import (
     AzureSearchBackend,
     AzureSearchRebuilder,
     AzureStorage,
@@ -16,7 +16,7 @@ from campaignresourcecentre.core.management.commands.searchorphans import (
     process_orphans,
 )
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
-from campaignresourcecentre.search.test_data import (
+from campaignresourcecentre.search.tests.test_data import (
     azure_response,
 )
 
