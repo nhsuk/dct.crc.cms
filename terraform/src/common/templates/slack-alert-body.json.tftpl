@@ -8,32 +8,32 @@
             }
         },
         {
-            "text" : {
-                "text" : "@{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'], 'RunsFailed'), 'Failed runs', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'])} count @{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'], 'GreaterThanOrEqual'), 'greater than or equal to', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'])} @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['threshold']}",
-                "type" : "mrkdwn"
+            "text": {
+                "text": "@{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'], 'RunsFailed'), 'Failed runs', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricName'])} count @{if(equals(triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'], 'GreaterThanOrEqual'), 'greater than or equal to', triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['operator'])} @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['threshold']}",
+                "type": "mrkdwn"
             },
-            "type" : "section"
+            "type": "section"
         },
         {
-            "text" : {
-                "text" : "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource${la_id}|${la_name}>",
-                "type" : "mrkdwn"
+            "text": {
+                "text": "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource@{workflow().id}|@{workflow().name}>",
+                "type": "mrkdwn"
             },
-            "type" : "section"
+            "type": "section"
         },
         {
-            "text" : {
-                "text" : "*Resource Group*\n <https://portal.azure.com/#@nhschoices.net/resource${rg_id}|${rg_name}>",
-                "type" : "mrkdwn"
+            "text": {
+                "text": "*Resource Group*\n <https://portal.azure.com/#@nhschoices.net/resource${rg_id}|${rg_name}>",
+                "type": "mrkdwn"
             },
-            "type" : "section"
+            "type": "section"
         },
         {
-            "text" : {
-                "text" : "*Publishing Endpoint*\n @{body('Get publishing endpoint')?['value']}",
-                "type" : "mrkdwn"
+            "text": {
+                "text": "*Publishing Endpoint*\n @{body('Get publishing endpoint')?['value']}",
+                "type": "mrkdwn"
             },
-            "type" : "section"
+            "type": "section"
         }
     ]
 }
