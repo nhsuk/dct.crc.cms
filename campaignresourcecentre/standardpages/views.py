@@ -98,11 +98,11 @@ def clear_cache(request):
 
 @require_http_methods(["GET"])
 def update_index(request):
-    if request.user.is_authenticated and not request.user.is_superuser:
+    if hasattr(request.headers, "Authorization") and not verify_pubtoken(request):
         raise PermissionDenied
-    elif not verify_pubtoken(request):
+    elif not request.user.is_superuser:
         raise PermissionDenied
-    return spawn_command("update_index")
+    return spawn_command("update_index", {"backend_name": "azure"})
 
 
 @require_http_methods(["GET"])
