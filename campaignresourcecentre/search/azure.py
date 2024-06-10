@@ -591,7 +591,7 @@ class AzureSearchBackend(BaseSearchBackend):
                 filter_string += "{} and ".format(value)
             filter_string = re.sub(" and $", "", filter_string)
             filter_string += ")"
-            filter_string = "&$filter=" + requests.requests.utils.quote(filter_string)
+            filter_string = "&$filter=" + requests.utils.quote(filter_string)
         return filter_string
 
     def _build_query_sting_from_facet_categories(self, facets_filters):
