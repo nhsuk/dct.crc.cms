@@ -17,7 +17,7 @@ from campaignresourcecentre.core.management.commands.searchorphans import (
     process_orphans,
 )
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
-from campaignresourcecentre.search.tests.test_data import (
+from campaignresourcecentre.search.test_data import (
     azure_response,
 )
 
