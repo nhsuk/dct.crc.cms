@@ -546,7 +546,8 @@ class AzureSearchBackend(BaseSearchBackend):
         self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
     ):
         query_string = "search={}&api-version={}&searchMode=all".format(
-            requests.utils.quote(search_value), settings.AZURE_SEARCH["API_VERSION"]
+            escape(requests.utils.quote(search_value)),
+            settings.AZURE_SEARCH["API_VERSION"],
         )
         filters = self._get_filters_from_fields(fields_queryset)
         filters = filters + self._get_filters_from_facets(facets_queryset)
@@ -559,7 +560,7 @@ class AzureSearchBackend(BaseSearchBackend):
         top = "" if results_per_page is None else "&$top=" + str(results_per_page)
         query_string = query_string + filters_query_string + sort_query_string + top
 
-        return escape("{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string))
+        return "{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string)
 
     def _get_filters_from_fields(self, fields_queryset):
         filters = []

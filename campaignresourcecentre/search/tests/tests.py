@@ -50,14 +50,14 @@ class TestAzureSearchBackend(TestCase):
         self.assertEqual(expected, facets_filter)
 
     def test_create_azure_search_url_and_query(self):
-        search_value = "Resource"
+        search_value = "Resource&Campaings"
         fields_queryset = {"objecttype": "resource"}
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
         results_per_page = "1000"
-        expected = escape(
+        expected = (
             "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search="
-            + utils.quote("Resource")
+            + escape(utils.quote("Resource&Campaings"))
             + "&api-version=v1&searchMode=all&$filter="
             + utils.quote(
                 "((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"
