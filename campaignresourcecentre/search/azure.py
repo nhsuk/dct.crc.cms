@@ -3,7 +3,6 @@ import re
 import logging
 import requests
 
-
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
@@ -587,11 +586,12 @@ class AzureSearchBackend(BaseSearchBackend):
     def _build_query_string_from_filters(self, filters):
         filter_string = ""
         if len(filters) > 0:
-            filter_string = "&$filter=("
+            filter_string = "("
             for value in filters:
                 filter_string += "{} and ".format(value)
             filter_string = re.sub(" and $", "", filter_string)
             filter_string += ")"
+            filter_string = "&$filter=" + requests.requests.utils.quote(filter_string)
         return filter_string
 
     def _build_query_sting_from_facet_categories(self, facets_filters):
