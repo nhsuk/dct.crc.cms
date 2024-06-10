@@ -1,6 +1,7 @@
 import json
 from unittest.mock import MagicMock, patch
 from requests import Response, utils
+from html import escape
 
 from django.test import TestCase
 from django.http import HttpRequest
@@ -54,7 +55,7 @@ class TestAzureSearchBackend(TestCase):
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
         results_per_page = "1000"
-        expected = (
+        expected = escape(
             "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search="
             + utils.quote("Resource")
             + "&api-version=v1&searchMode=all&$filter="

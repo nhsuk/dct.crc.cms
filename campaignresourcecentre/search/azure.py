@@ -3,6 +3,7 @@ import re
 import logging
 import requests
 
+from html import escape
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
@@ -558,7 +559,7 @@ class AzureSearchBackend(BaseSearchBackend):
         top = "" if results_per_page is None else "&$top=" + str(results_per_page)
         query_string = query_string + filters_query_string + sort_query_string + top
 
-        return "{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string)
+        return escape("{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string))
 
     def _get_filters_from_fields(self, fields_queryset):
         filters = []
