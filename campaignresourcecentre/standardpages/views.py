@@ -9,15 +9,16 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import Context, loader
 from django.views.decorators.cache import never_cache
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.http import require_http_methods
-
+from campaignresourcecentre.core.helpers import verify_pubtoken
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.notifications.dataclasses import ContactUsData
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
+from campaignresourcecentre.search.azure import AzureSearchBackend
 
 from .forms import ContactUsForm
 
@@ -97,9 +98,32 @@ def clear_cache(request):
 
 @require_http_methods(["GET"])
 def update_index(request):
-    if not request.user.is_superuser:
+    if request.headers.get("Authorization", None):
+        if not verify_pubtoken(request):
+            raise PermissionDenied
+    elif not request.user.is_superuser:
         raise PermissionDenied
     return spawn_command("update_index")
+
+
+@require_http_methods(["GET"])
+def debug_az_search(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    result_limit = request.GET.get("limit", 1000)
+
+    azure_search = AzureSearchBackend({})
+    json_result = azure_search.azure_search(
+        "", {}, {}, None, results_per_page=result_limit
+    )
+
+    if not json_result.get("ok"):
+        return JsonResponse({})
+
+    results = json_result["search_content"]["value"]
+    content = [r["content"]["resource"] for r in results]
+    return JsonResponse(content, safe=False)
 
 
 def spawn_command(command, params=None):

@@ -228,6 +228,7 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 WAGTAILSEARCH_BACKENDS = {
     "default": {"BACKEND": "wagtail.search.backends.database"},
+    "azure": {"BACKEND": "campaignresourcecentre.search.azure"},
 }
 
 
