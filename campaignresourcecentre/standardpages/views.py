@@ -103,7 +103,7 @@ def update_index(request):
             raise PermissionDenied
     elif not request.user.is_superuser:
         raise PermissionDenied
-    return spawn_command("update_index", {"backend_name": "azure"})
+    return spawn_command("update_index")
 
 
 @require_http_methods(["GET"])
