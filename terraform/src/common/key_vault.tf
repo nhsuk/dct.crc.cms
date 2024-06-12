@@ -8,44 +8,47 @@ resource "azurerm_key_vault" "kv" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   purge_protection_enabled    = false
   sku_name                    = "standard"
-
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-    secret_permissions = [
-      "Get", "Set"
-    ]
-  }
-
-  access_policy {
-    tenant_id = azapi_resource.scheduler_la.identity[0].tenant_id
-    object_id = azapi_resource.scheduler_la.identity[0].principal_id
-    secret_permissions = [
-      "Get", "List"
-    ]
-  }
-
-  access_policy {
-    tenant_id = azapi_resource.scheduler_alert_la.identity[0].tenant_id
-    object_id = azapi_resource.scheduler_alert_la.identity[0].principal_id
-    secret_permissions = [
-      "Get", "List"
-    ]
-  }
-
-  access_policy {
-    tenant_id = azapi_resource.search_reindex_la.identity[0].tenant_id
-    object_id = azapi_resource.search_reindex_la.identity[0].principal_id
-    secret_permissions = [
-      "Get", "List"
-    ]
-  }
-
   lifecycle {
     ignore_changes = [
       access_policy
     ]
   }
+}
+
+resource "azurerm_key_vault_access_policy" "terraform_kv_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+  secret_permissions = [
+    "Get", "Set"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "scheduler_kv_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = azapi_resource.scheduler_la.identity[0].tenant_id
+  object_id    = azapi_resource.scheduler_la.identity[0].principal_id
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "scheduler_alert_kv_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = azapi_resource.scheduler_alert_la.identity[0].tenant_id
+  object_id    = azapi_resource.scheduler_alert_la.identity[0].principal_id
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "search_reindex_kv_policy" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = azapi_resource.search_reindex_la.identity[0].tenant_id
+  object_id    = azapi_resource.search_reindex_la.identity[0].principal_id
+  secret_permissions = [
+    "Get", "List"
+  ]
 }
 
 resource "azurerm_key_vault_secret" "secrets" {

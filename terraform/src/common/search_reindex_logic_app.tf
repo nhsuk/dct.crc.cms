@@ -162,7 +162,7 @@ resource "azapi_resource" "search_reindex_la" {
                   },
                   "runAfter" : {
                     "Send slack alert" : [
-                      "SUCCEEDED"
+                      "Succeeded"
                     ]
                   },
                   "type" : "Terminate"
