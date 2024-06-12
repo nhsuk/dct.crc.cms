@@ -5,7 +5,6 @@ import wagtail.images.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("images", "0003_alter_customimage_file_hash"),
     ]
