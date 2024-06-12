@@ -107,7 +107,7 @@ resource "azapi_resource" "scheduler_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.publishing_endpoint.name}')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.secrets["pubEndpoint"].name}')}/value"
                 },
                 "runAfter" : {},
                 "type" : "ApiConnection"
@@ -120,7 +120,7 @@ resource "azapi_resource" "scheduler_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.auth_token.name}')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.secrets["pubToken"].name}')}/value"
                 },
                 "runAfter" : {
                   "Get publishing endpoint" : [

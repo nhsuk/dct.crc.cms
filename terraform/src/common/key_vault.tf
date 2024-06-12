@@ -16,7 +16,7 @@ resource "azurerm_key_vault" "kv" {
       "Get", "List"
     ]
   }
-  
+
   access_policy {
     tenant_id = azapi_resource.scheduler_alert_la.identity[0].tenant_id
     object_id = azapi_resource.scheduler_alert_la.identity[0].principal_id
@@ -37,5 +37,15 @@ resource "azurerm_key_vault" "kv" {
     ignore_changes = [
       access_policy
     ]
+  }
+}
+
+resource "azurerm_key_vault_secret" "secrets" {
+  for_each     = toset(local.secret_names)
+  name         = each.key
+  value        = ""
+  key_vault_id = azurerm_key_vault.kv.id
+  lifecycle {
+    ignore_changes = [value]
   }
 }

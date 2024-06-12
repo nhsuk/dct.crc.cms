@@ -47,7 +47,7 @@ resource "azapi_resource" "search_reindex_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.search_index_endpoint.name}')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.secrets["searchIndexEndpoint"].name}')}/value"
                 },
                 "runAfter" : {},
                 "type" : "ApiConnection"
@@ -60,7 +60,7 @@ resource "azapi_resource" "search_reindex_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.auth_token.name}')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.secrets["pubToken"].name}')}/value"
                 },
                 "runAfter" : {
                   "Get Endpoint" : [
@@ -126,7 +126,7 @@ resource "azapi_resource" "search_reindex_la" {
                       }
                     },
                     "method" : "get",
-                    "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.alerting_webhook.name}')}/value"
+                    "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.secrets["alertingWebhook"].name}')}/value"
                   },
                   "runAfter" : {},
                   "type" : "ApiConnection"
