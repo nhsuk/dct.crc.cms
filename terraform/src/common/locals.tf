@@ -10,7 +10,7 @@ locals {
     "team"            = "Digital Campaigns"
   }
 
-  scheduler_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
+  scheduler_logic_app_name      = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   search_reindex_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-search-reindex-la-")
-  key_vault_name           = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
+  key_vault_name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
 }

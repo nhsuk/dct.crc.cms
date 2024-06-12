@@ -38,7 +38,7 @@ resource "azapi_resource" "scheduler_alert_la" {
                 }
               },
               "method" : "get",
-              "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+              "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.alerting_webhook.name}')}/value"
             },
             "runAfter" : {},
             "type" : "ApiConnection"
@@ -51,7 +51,7 @@ resource "azapi_resource" "scheduler_alert_la" {
                 }
               },
               "method" : "get",
-              "path" : "/secrets/@{encodeURIComponent('pubEndpoint')}/value"
+              "path" : "/secrets/@{encodeURIComponent('${azurerm_key_vault_secret.publishing_endpoint.name}')}/value"
             },
             "runAfter" : {
               "Get alerting webhook" : [
