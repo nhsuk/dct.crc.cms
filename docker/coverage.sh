@@ -1,12 +1,29 @@
 #!/bin/sh
+echo "[1/9] Running migrations..."
 python manage.py migrate
-echo "1"
-python manage.py test --noinput 
-echo "2"
-coverage erase 
-echo "3"
-coverage run manage.py test --settings=campaignresourcecentre.settings.test
-echo "4"
-coverage xml -i 
-echo "5"
+
+echo "[2/9] Erasing old coverage..."
+coverage erase
+
+echo "[3/9] Running tests..."
+coverage run manage.py test --noinput --keepdb
+exitcode=$?
+
+echo "[4/9] Mounting test results..."
+mv ./testresults.xml ./docker
+
+echo "[5/9] Generating xml coverage report..."
+coverage xml
+
+echo "[6/9] Mounting xml coverage report..."
 mv ./coverage.xml ./docker
+
+echo "[7/9] Generating html coverage report..."
+coverage html
+
+echo "[8/9] Mounting html coverage report..."
+mkdir ./docker/coverage_html
+mv ./coverage_html/* ./docker/coverage_html
+
+echo "[9/9] Exiting with code $exitcode"
+exit $exitcode

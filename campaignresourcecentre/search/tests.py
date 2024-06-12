@@ -1,13 +1,14 @@
 import json
 from unittest.mock import MagicMock, patch
+from requests import Response, utils
+from html import escape
 
 from django.test import TestCase
 from django.http import HttpRequest
 
-from .azure import (
+from campaignresourcecentre.search.azure import (
     AzureSearchBackend,
     AzureSearchRebuilder,
-    AzureSearchException,
     AzureStorage,
     AzureIndex,
 )
@@ -16,7 +17,9 @@ from campaignresourcecentre.core.management.commands.searchorphans import (
     process_orphans,
 )
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
-from campaignresourcecentre.campaigns.models import logger
+from campaignresourcecentre.search.test_data import (
+    azure_response,
+)
 
 
 class TestAzureSearchBackend(TestCase):
@@ -40,21 +43,90 @@ class TestAzureSearchBackend(TestCase):
             "(content/resource/objecttype eq 'resource')",
             "(content/resource/TOPIC/any(t: t eq 'SMOKING'))",
         ]
-        expected = "&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"  # noqa
+        expected = "&$filter=" + utils.quote(
+            "((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"
+        )  # noqa
         facets_filter = self.azure_search._build_query_string_from_filters(filters)
         self.assertEqual(expected, facets_filter)
 
     def test_create_azure_search_url_and_query(self):
-        search_value = "Resource"
+        search_value = "Resource&Campaings"
         fields_queryset = {"objecttype": "resource"}
         facets_queryset = {"TOPIC": "SMOKING"}
         sort_by = "title asc"
         results_per_page = "1000"
-        expected = "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search=Resource&api-version=v1&searchMode=all&$filter=((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))&$orderby=content/resource/title asc&$top=1000"  # noqa
+        expected = (
+            "https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3?search="
+            + escape(utils.quote("Resource&Campaings"))
+            + "&api-version=v1&searchMode=all&$filter="
+            + utils.quote(
+                "((content/resource/objecttype eq 'resource') and (content/resource/TOPIC/any(t: t eq 'SMOKING')))"
+            )
+            + "&$orderby=content/resource/title asc&$top=1000"
+        )  # noqa
         url = self.azure_search._create_azure_search_url_and_query(
             search_value, fields_queryset, facets_queryset, sort_by, results_per_page
         )
         self.assertEqual(expected, url)
+
+    def test_azure_search_returning_matches(self):
+        mock_response = Response()
+        mock_response.status_code = 200
+        mock_response._content = json.dumps(azure_response).encode()
+
+        search_value = "Resource"
+        fields_queryset = {"objecttype": "resource"}
+        facets_queryset = {"TOPIC": "SMOKING"}
+        sort_by = "title asc"
+
+        with patch("requests.get", return_value=mock_response):
+            actual_data = self.azure_search.azure_search(
+                search_value, fields_queryset, facets_queryset, sort_by
+            )
+
+        self.assertEqual(azure_response, actual_data["search_content"])
+        self.assertTrue(actual_data["ok"])
+        self.assertEqual(200, actual_data["code"])
+
+    def test_azure_search_returning_no_matches(self):
+        mock_response = Response()
+        mock_response.status_code = 200
+        search_content = {"value": []}
+        mock_response._content = json.dumps(search_content).encode()
+
+        search_value = "Resource"
+        fields_queryset = {"objecttype": "resource"}
+        facets_queryset = {"TOPIC": "SMOKING"}
+        sort_by = "title asc"
+
+        with patch("requests.get", return_value=mock_response):
+            actual_data = self.azure_search.azure_search(
+                search_value, fields_queryset, facets_queryset, sort_by
+            )
+
+        self.assertEqual(search_content, actual_data["search_content"])
+        self.assertTrue(actual_data["ok"])
+        self.assertEqual(200, actual_data["code"])
+
+    def test_azure_search_returning_no_content(self):
+        mock_response = Response()
+        mock_response.status_code = 200
+        mock_response._content = b""
+        search_content = {"value": []}
+
+        search_value = "Resource"
+        fields_queryset = {"objecttype": "resource"}
+        facets_queryset = {"TOPIC": "SMOKING"}
+        sort_by = "title asc"
+
+        with patch("requests.get", return_value=mock_response):
+            actual_data = self.azure_search.azure_search(
+                search_value, fields_queryset, facets_queryset, sort_by
+            )
+
+        self.assertEqual(search_content, actual_data["search_content"])
+        self.assertTrue(actual_data["ok"])
+        self.assertEqual(200, actual_data["code"])
 
 
 DUMMY_URL = "https://example.com/something-to-search-for"
@@ -111,12 +183,15 @@ class TestAzureSearchRebuilder(TestCase):
     def test_retrieve_current_search_objects(self):
         # Can't seem to mock these objects, so mock the result from the search
         self.rebuilder.azure_search = AzureSearchBackend({})
-        mocked_response = MagicMock()
-        mocked_response.content = json.dumps(
+        mocked_response = Response()
+        mocked_response._content = json.dumps(
             {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
-        )
+        ).encode()
+        mocked_response.status_code = 200
+
         with patch("requests.get", return_value=mocked_response):
             search_objects = self.rebuilder.retrieve_current_search_objects()
+
         self.assertEqual(
             repr(search_objects),
             repr(MOCKED_CURRENT_SEARCH_OBJECTS),

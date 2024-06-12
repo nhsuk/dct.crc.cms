@@ -3,6 +3,7 @@ import re
 import logging
 import requests
 
+from html import escape
 from django.conf import settings
 from django.db.models.query import QuerySet
 
@@ -344,7 +345,7 @@ class AzureSearchBackend(BaseSearchBackend):
         facets_queryset: example: {"TARGAUD": ["PARENTS"]}
         sort_by: example: "active_from_time desc"
 
-    Sample url parameers:
+    Sample url parameters:
         query: Better
         sort: title
         f.content/resource/TARGAUD: PARENTS
@@ -369,8 +370,16 @@ class AzureSearchBackend(BaseSearchBackend):
         headers = {"Subscription-Key": settings.AZURE_SEARCH["API_KEY"]}
         try:
             response = requests.get(url, headers=headers)
+            if len(response.content) > 0:
+                content = response.json()
+            else:
+                logger.warn(
+                    f"Azure search returned '{response.status_code}' status code and no content in response, returning no matching results"
+                )
+                content = {"value": []}
+
             json_response = {
-                "search_content": json.loads(response.content),
+                "search_content": content,
                 "ok": response.ok,
                 "code": response.status_code,
             }
@@ -390,14 +399,20 @@ class AzureSearchBackend(BaseSearchBackend):
             except Exception as e:
                 logger.error("Couldn't interpret search response: %s", e)
                 raise
+
             logger.info(
-                "%d items returned from search, %d not interpretable",
+                "%d items returned from search%s",
                 len(result_urls),
-                not_interpretable,
+                (
+                    f", {not_interpretable} not interpretable"
+                    if not_interpretable > 0
+                    else ""
+                ),
             )
         except Exception as err:
             logger.error("Exception raised - Azure Search Get: %s", err)
             json_response = {"ok": False, "code": 500}
+
         return json_response
 
     # Implement Wagtail base query class method for use in Wagtail CMS searches
@@ -527,7 +542,8 @@ class AzureSearchBackend(BaseSearchBackend):
         self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
     ):
         query_string = "search={}&api-version={}&searchMode=all".format(
-            search_value, settings.AZURE_SEARCH["API_VERSION"]
+            escape(requests.utils.quote(search_value)),
+            settings.AZURE_SEARCH["API_VERSION"],
         )
         filters = self._get_filters_from_fields(fields_queryset)
         filters = filters + self._get_filters_from_facets(facets_queryset)
@@ -539,6 +555,7 @@ class AzureSearchBackend(BaseSearchBackend):
             )
         top = "" if results_per_page is None else "&$top=" + str(results_per_page)
         query_string = query_string + filters_query_string + sort_query_string + top
+
         return "{}?{}".format(settings.AZURE_SEARCH["API_HOST"], query_string)
 
     def _get_filters_from_fields(self, fields_queryset):
@@ -567,11 +584,12 @@ class AzureSearchBackend(BaseSearchBackend):
     def _build_query_string_from_filters(self, filters):
         filter_string = ""
         if len(filters) > 0:
-            filter_string = "&$filter=("
+            filter_string = "("
             for value in filters:
                 filter_string += "{} and ".format(value)
             filter_string = re.sub(" and $", "", filter_string)
             filter_string += ")"
+            filter_string = "&$filter=" + requests.utils.quote(filter_string)
         return filter_string
 
     def _build_query_sting_from_facet_categories(self, facets_filters):
