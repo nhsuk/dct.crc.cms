@@ -88,7 +88,8 @@ steps:
         for secretId in ${secretIds[@]};
         do  
           secretName=$(echo $secretId | awk -F'/' '{print $NF})
-          secretValue=$(az keyvault secret show --id $secretId --query value | awk '{gsub(/"/,"")}1')
+          secretValue=$(az keyvault secret show --id $secretId --query value)
+          secretValue=$(echo $secretValue | awk '{gsub(/"/,"")}1')
           if [[ $secretValue == '' ]];
           then
             echo "##vso[task.logissue type=warning;]$secretName has no value"
