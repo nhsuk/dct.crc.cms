@@ -87,9 +87,10 @@ steps:
 
         for secretId in ${secretIds[@]};
         do  
-          secretName=$(echo $secretId | awk -F'/' '{print $NF})
+          secretName=$(echo $secretId | awk -F'/' '{print $NF}')
           secretValue=$(az keyvault secret show --id $secretId --query value)
-          if [[ $secretValue == '""' ]];
+          secretValue=$(echo $secretValue | awk '{gsub(/"/,"")}1')
+          if [[ $secretValue == '' ]];
           then
             echo "WARNING: $secretName has no value"
             emptySecrets="${emptySecrets} ${secretName}"
@@ -100,6 +101,6 @@ steps:
         
         if [[ $emptySecrets != '' ]];
         then
-          echo "##vso[task.logissue type=warning;]Empty secrets found: $emptySecrets"
+          echo "##vso[task.logissue type=warning;]Empty secrets found in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}: $emptySecrets"
           echo "##vso[task.complete result=SucceededWithIssues;]"
         fi
