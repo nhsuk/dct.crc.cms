@@ -19,6 +19,28 @@ pr: none
 #       - 'terraform'
 
 parameters:
+   # Dry run changes
+  - name: dryRun
+    displayName: Dry Run
+    type: boolean
+    default: false
+  - name: deployReview
+    displayName: Force Deploy Review
+    type: boolean
+    default: false
+  - name: deployIntegration
+    displayName: Force Deploy Integration
+    type: boolean
+    default: false
+  - name: deployStaging
+    displayName: Force Deploy Staging
+    type: boolean
+    default: false
+  - name: deployProduction
+    displayName: Force Deploy Production
+    type: boolean
+    default: false
+  # end dryrun
   - name: debug
     displayName: Debug (forced false in production)
     type: boolean
@@ -45,28 +67,6 @@ parameters:
     default: -c gunicorn-conf.py --worker-class 'gthread' --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 5
   - name: azureSearchUpdate
     displayName: Update Azure search (forced true in staging and production)
-    type: boolean
-    default: false
-
-  # Dry run changes
-  - name: dryRun
-    displayName: Dry Run
-    type: boolean
-    default: false
-  - name: deployReview
-    displayName: Force Deploy Review
-    type: boolean
-    default: false
-  - name: deployIntegration
-    displayName: Force Deploy Integration
-    type: boolean
-    default: false
-  - name: deployStaging
-    displayName: Force Deploy Staging
-    type: boolean
-    default: false
-  - name: deployProduction
-    displayName: Force Deploy Production
     type: boolean
     default: false
 
@@ -101,11 +101,9 @@ stages:
         displayName: 'Test'
         steps:
           - bash: |
-            echo "Print arg if needed: `if [[ '${{ parameters.dryRun }}' == 'True' ]]; then printf %s '--dryrun'; fi`"
-            if [[ '${{ parameters.dryRun }}' == 'True' ]]; then
-              echo "##vso[task.logissue type=warning;]Running in dryrun mode"
-              echo "##vso[task.complete result=SucceededWithIssues;]"
-            fi
+            echo "##vso[task.logissue type=warning;]Running in dryrun mode"
+            echo "##vso[task.complete result=SucceededWithIssues;]"
+          condition: eq(parameters.dryRun, true)
           displayName: 'Dry Run: ${{ parameters.dryRun }}'
           - task: Gitleaks@2
             inputs:
