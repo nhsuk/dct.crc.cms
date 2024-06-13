@@ -126,6 +126,7 @@ stages:
           - template: azure-pipeline-templates/build.yml
             parameters:
               tag: $(tag)
+              dryRun: ${{ parameters.dryRun }}
       - job: buildIntegration
         displayName: 'Build Integration'
         condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
@@ -135,6 +136,7 @@ stages:
           - template: azure-pipeline-templates/build.yml
             parameters:
               tag: $(tag)
+              dryRun: ${{ parameters.dryRun }}
       - job: buildStaging
         displayName: 'Build Staging'
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
@@ -144,6 +146,7 @@ stages:
           - template: azure-pipeline-templates/build.yml
             parameters:
               tag: $(tag)
+              dryRun: ${{ parameters.dryRun }}
   - stage: Deploy
     displayName: 'Deploy'
     dependsOn: Build

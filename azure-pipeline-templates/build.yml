@@ -1,3 +1,8 @@
+parameters:
+  - name: dryRun
+    type: boolean
+    default: False
+
 steps:
   - task: Docker@2
     displayName: 'Docker Build'
