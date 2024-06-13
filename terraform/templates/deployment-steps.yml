@@ -57,7 +57,7 @@ steps:
       KeyVaultName: ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}
       SecretsFilter: '*'
 
-  - bash: |
+  - bash: |          
       secretsToVerify=("alertingWebhook" "pubToken" "pubEndpoint" "searchIndexEndpoint")
       echo "Checking for secret values being set in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}"
       for i in ${!secretsToVerify[@]}
@@ -72,4 +72,4 @@ steps:
           echo "SUCCESS: $secretName has a value"
         fi
       done
-    displayName: 'Verify secrets in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}'
+    displayName: Verify secrets in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}
