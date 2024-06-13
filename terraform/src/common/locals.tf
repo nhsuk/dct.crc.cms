@@ -18,6 +18,6 @@ locals {
     "alertingWebhook",
     "pubToken",
     "pubEndpoint",
-    "searchIndexEndpont"
+    "searchIndexEndpoint"
   ]
 }

@@ -58,7 +58,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        requiredSecretsNotYetFound=("alertingWebhook" "pubToken" "pubEndpoint" "searchIndexEndpoint" "missingSecret")
+        requiredSecretsNotYetFound=("alertingWebhook" "pubToken" "pubEndpoint" "searchIndexEndpoint")
 
         secretIds=$(az keyvault secret list --vault-name ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }} --query [].id)
         secretIds=$(echo $secretIds | jq -c '.[]' | awk '{gsub(/"/,"")}1')
