@@ -101,7 +101,7 @@ stages:
         displayName: 'Test'
         steps:
           - bash: echo "##vso[task.logissue type=warning]Running in dryrun mode."
-            condition: eq(parameters.dryRun, true)
+            condition: ${{ eq(parameters.dryRun, true) }}
             displayName: 'Dry Run: ${{ parameters.dryRun }}'
           - task: Gitleaks@2
             inputs:
