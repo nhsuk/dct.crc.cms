@@ -9,6 +9,17 @@ resource "azurerm_key_vault" "kv" {
   purge_protection_enabled    = false
   sku_name                    = "standard"
 
+  dynamic "access_policy" {
+    for_each = var.environment == "development" ? [1] : []
+    content {
+      tenant_id = data.azurerm_client_config.current.tenant_id
+      object_id = "8c147d05-8d42-4dbb-8ddd-c466d1fc5210" # "AZURE_Development_Contributors" Azure Entra Group Object Id
+      secret_permissions = [
+        "Get", "List", "Set", "Delete", "Purge", "Backup", "Recover", "Restore"
+      ]
+    }
+  }
+
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
