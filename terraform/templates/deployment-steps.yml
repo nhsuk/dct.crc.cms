@@ -51,29 +51,6 @@ steps:
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
 
-  - task: AzureKeyVault@1
-    inputs:
-      azureSubscription: ${{ parameters.azureSubscription }}
-      KeyVaultName: ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}
-      SecretsFilter: '*'
-
-  - bash: |          
-      secretsToVerify=("alertingWebhook" "pubToken" "pubEndpoint" "searchIndexEndpoint")
-      echo "Checking for secret values being set in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}"
-      for i in ${!secretsToVerify[@]}
-      do
-        secretName=${secretsToVerify[$i]}
-        if [[ ${!secretName} == '' ]];
-        then
-          echo "##vso[task.logissue type=warning;]$secretName has no value"
-          echo "##vso[task.complete result=SucceededWithIssues;]"
-          echo "WARNING: $secretName has no value"
-        else
-          echo "SUCCESS: $secretName has a value"
-        fi
-      done
-    displayName: Verify secrets in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}
-
   - task: AzureCLI@2
     displayName: Azure CLI check secrets
     inputs:
@@ -81,7 +58,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        requiredSecretsNotYetFound=("alertingWebhook" "missingSecret")
+        requiredSecretsNotYetFound=("alertingWebhook" "pubToken" "pubEndpoint" "searchIndexEndpoint" "missingSecret")
 
         secretIds=$(az keyvault secret list --vault-name ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }} --query [].id)
         secretIds=$(echo $secretIds | jq -c '.[]' | awk '{gsub(/"/,"")}1')
