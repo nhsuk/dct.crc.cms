@@ -1,6 +1,6 @@
 parameters:
   artifactPath:           '' # working directory
-  environment:            '' # env name for secret retrieval from Vault
+  environment:            '' # env name for resource tags
   azureSubscription:      '' # the service connection in the pipeline
   resourceGroup:          '' # name of the resource group which contains the TF resources
   tfStorageAccount:       '' # name of the storage account which stores the TF state
@@ -50,3 +50,26 @@ steps:
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: ${{ parameters.azureSubscription }}
+      KeyVaultName: ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}
+      SecretsFilter: '*'
+
+  - bash: |
+      secretsToVerify=("alertingWebhook" "pubToken" "pubEndpoint" "searchIndexEndpoint")
+      echo "Checking for secret values being set in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}"
+      for i in ${!secretsToVerify[@]}
+      do
+        secretName=${secretsToVerify[$i]}
+        if [[ ${!secretName} == '' ]];
+        then
+          echo "##vso[task.logissue type=warning;]$secretName has no value"
+          echo "##vso[task.complete result=SucceededWithIssues;]"
+          echo "WARNING: $secretName has no value"
+        else
+          echo "SUCCESS: $secretName has a value"
+        fi
+      done
+    displayName: 'Verify secrets in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}'
