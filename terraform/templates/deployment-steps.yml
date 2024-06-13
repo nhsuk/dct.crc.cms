@@ -89,11 +89,8 @@ steps:
         do  
           secretName=$(echo $secretId | awk -F'/' '{print $NF})
           secretValue=$(az keyvault secret show --id $secretId --query value)
-          secretValue=$(echo $secretValue | awk '{gsub(/"/,"")}1')
-          if [[ $secretValue == '' ]];
+          if [[ $secretValue == '""' ]];
           then
-            echo "##vso[task.logissue type=warning;]$secretName has no value"
-            echo "##vso[task.complete result=SucceededWithIssues;]"
             echo "WARNING: $secretName has no value"
             emptySecrets="${emptySecrets} ${secretName}"
           else
