@@ -53,6 +53,7 @@ steps:
 
   - task: AzureCLI@2
     displayName: Azure CLI check secrets
+    condition: succeededOrFailed()
     inputs:
       azureSubscription: ${{ parameters.azureSubscription }}
       scriptType: bash
