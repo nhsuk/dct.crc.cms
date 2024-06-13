@@ -98,7 +98,7 @@ steps:
           fi
         done
         
-        if [[ $emptySecrets != '' ]]
+        if [[ $emptySecrets != '' ]];
         then
           echo "##vso[task.logissue type=warning;]Empty secrets found: $emptySecrets"
           echo "##vso[task.complete result=SucceededWithIssues;]"
