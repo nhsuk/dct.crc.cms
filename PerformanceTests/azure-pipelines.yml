@@ -1,0 +1,115 @@
+name: $(BuildId)
+
+pr: none
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - 'review/*'
+    - 'main'
+  paths:
+    include:
+    - 'PerformanceTests'
+
+variables: 
+  - name: ARTIFACT_NAME
+    value: drop
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Publish
+        pool:
+          vmImage: windows-2022
+        steps:
+          - task: CopyFiles@2
+            displayName: 'Copy all terraform files to artifacts'
+            inputs:
+              SourceFolder: PerformanceTests/terraform/src/
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/terraform'
+              CleanTargetFolder: true
+              OverWrite: true
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: $(ARTIFACT_NAME)
+
+  - stage: LoadTestCRCv3
+    displayName: 'Load Test CRCv3'
+    dependsOn: Build
+    pool:
+      vmImage: windows-2022
+    variables:
+      - name: ARTIFACT_PATH
+        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
+      - name: RESOURCE_GROUP
+        value: dct-testing-rg-dev-uks
+      - name: LOAD_TESTING_RESOURCE
+        value: dct-testing-lt-dev-uks
+      - name: AZURE_SUBSCRIPTION
+        value: dct-crccms-rg-dev
+      - name: TF_STORAGE_ACCOUNT
+        value: crccmstfdevuks
+      - name: ENVIRONMENT
+        value: 'development'
+    jobs:
+      - deployment: 'Terraform'
+        displayName: 'Terraform Azure Resources'
+        environment: ${{ variables.ENVIRONMENT }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+                displayName: 'Install latest Terraform'
+                inputs:
+                  terraformVersion: latest
+              - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+                displayName: 'terraform init'
+                inputs:
+                  command: init
+                  workingDirectory: ${{ variables.ARTIFACT_PATH }}
+                  backendType: azurerm
+                  backendServiceArm: ${{ variables.AZURE_SUBSCRIPTION }}
+                  backendAzureRmResourceGroupName: ${{ variables.RESOURCE_GROUP }}
+                  backendAzureRmStorageAccountName: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  backendAzureRmContainerName: tfstate
+                  backendAzureRmKey: terraform.tfstate
+              - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+                displayName: 'terraform validate'
+                inputs:
+                  workingDirectory: ${{ variables.ARTIFACT_PATH }}
+              - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+                displayName: 'terraform plan'
+                inputs:
+                  command: plan
+                  workingDirectory: ${{ variables.ARTIFACT_PATH }}
+                  environmentServiceName: ${{ variables.AZURE_SUBSCRIPTION }}
+                  publishPlanResults: "load_testing_deployment_plan"
+                  commandOptions: >
+                    -var resource_group=${{ variables.RESOURCE_GROUP }}
+                    -var load_testing_resource=${{ variables.LOAD_TESTING_RESOURCE }}
+                    -var environment=${{ variables.ENVIRONMENT }}
+                    -var tfstate_account_name=${{ variables.TF_STORAGE_ACCOUNT }}
+                    -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
+                    -detailed-exitcode
+              - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+                displayName: 'terraform apply'
+                inputs:
+                  command: apply
+                  workingDirectory: ${{ variables.ARTIFACT_PATH }}
+                  environmentServiceName: ${{ variables.AZURE_SUBSCRIPTION }}
+                  commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+
+      - job: 'RunLoadTests'
+        displayName: 'Run Load Tests'
+        steps:
+          - task: AzureLoadTest@1
+            inputs:
+              AZURE_SUBSCRIPTION: ${{ variables.AZURE_SUBSCRIPTION }}
+              loadTestConfigFile: 'config.yaml'
+              loadTestResource: ${{ variables.LOAD_TESTING_RESOURCE }}
+              RESOURCE_GROUP: ${{ variables.RESOURCE_GROUP }}
