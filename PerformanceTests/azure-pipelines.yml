@@ -17,9 +17,6 @@ variables:
     value: drop
 
 stages:
-  - stage: Build
-    jobs:
-
   - stage: LoadTestCRCv3
     displayName: 'Load Test CRCv3'
     dependsOn: Build
