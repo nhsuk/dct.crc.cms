@@ -107,7 +107,7 @@ stages:
         steps:
           - task: AzureLoadTest@1
             inputs:
-              AZURE_SUBSCRIPTION: ${{ variables.AZURE_SUBSCRIPTION }}
+              azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
               loadTestConfigFile: '$(Build.SourcesDirectory)/PerformanceTests/config.yml'
               loadTestResource: ${{ variables.LOAD_TESTING_RESOURCE }}
-              RESOURCE_GROUP: ${{ variables.RESOURCE_GROUP }}
+              resourceGroup: ${{ variables.RESOURCE_GROUP }}
