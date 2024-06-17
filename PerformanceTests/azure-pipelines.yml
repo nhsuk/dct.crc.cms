@@ -19,7 +19,6 @@ variables:
 stages:
   - stage: LoadTestCRCv3
     displayName: 'Load Test CRCv3'
-    dependsOn: Build
     pool:
       vmImage: windows-2022
     variables:
