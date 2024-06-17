@@ -22,6 +22,8 @@ stages:
     pool:
       vmImage: windows-2022
     variables:
+      - name: PERFORMANCE_TESTS_DIRECTORY
+        value: '$(Build.SourcesDirectory)/PerformanceTests'
       - name: ARTIFACT_PATH
         value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
       - name: RESOURCE_GROUP
@@ -42,7 +44,7 @@ stages:
           - task: CopyFiles@2
             displayName: 'Copy all terraform files to artifacts'
             inputs:
-              SourceFolder: PerformanceTests/terraform/src/
+              SourceFolder: $(PERFORMANCE_TESTS_DIRECTORY)/terraform/src/
               TargetFolder: '$(Build.ArtifactStagingDirectory)/terraform'
               CleanTargetFolder: true
               OverWrite: true
@@ -105,9 +107,16 @@ stages:
         displayName: 'Run Load Tests'
         dependsOn: Terraform
         steps:
+          - task: DownloadSecureFile@1
+            displayName: 'Download jmeter.csv'
+            name: jmeterUsers # The name with which to reference the secure file’s path on the agent, like $(CSVFile.secureFilePath)
+            inputs:
+              secureFile: jmeter.csv # A secret file in the pipeline library with a CRC username/password value
+          - bash: |
+              cat $(jmeterUsers.secureFilePath) > $(PERFORMANCE_TESTS_DIRECTORY)/jmeter.csv
           - task: AzureLoadTest@1
             inputs:
               azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-              loadTestConfigFile: '$(Build.SourcesDirectory)/PerformanceTests/config.yml'
+              loadTestConfigFile: '$(PERFORMANCE_TESTS_DIRECTORY)/config.yml'
               loadTestResource: ${{ variables.LOAD_TESTING_RESOURCE }}
               resourceGroup: ${{ variables.RESOURCE_GROUP }}
