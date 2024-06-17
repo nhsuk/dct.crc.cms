@@ -3,4 +3,3 @@ pre-commit==3.0.2
 fabric==3.0.0
 black==23.1.0
 invoke==2.0.0
-locust==2.29.0
