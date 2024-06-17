@@ -113,7 +113,7 @@ stages:
             inputs:
               secureFile: jmeter.csv # A secret file in the pipeline library with a CRC username/password value
           - bash: |
-              cat $(jmeterUsers.secureFilePath) > '$(PERFORMANCE_TESTS_DIRECTORY)/jmeter.csv'
+              cat '$(jmeterUsers.secureFilePath)' > '$(PERFORMANCE_TESTS_DIRECTORY)/jmeter.csv'
           - task: AzureLoadTest@1
             inputs:
               azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
