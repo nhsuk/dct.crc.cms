@@ -19,23 +19,6 @@ variables:
 stages:
   - stage: Build
     jobs:
-      - job: Publish
-        pool:
-          vmImage: windows-2022
-        steps:
-          - task: CopyFiles@2
-            displayName: 'Copy all terraform files to artifacts'
-            inputs:
-              SourceFolder: PerformanceTests/terraform/src/
-              TargetFolder: '$(Build.ArtifactStagingDirectory)/terraform'
-              CleanTargetFolder: true
-              OverWrite: true
-
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish Artifact'
-            inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: $(ARTIFACT_NAME)
 
   - stage: LoadTestCRCv3
     displayName: 'Load Test CRCv3'
@@ -50,14 +33,32 @@ stages:
       - name: LOAD_TESTING_RESOURCE
         value: dct-testing-lt-dev-uks
       - name: AZURE_SUBSCRIPTION
-        value: dct-crccms-rg-dev
+        value: dct-testing-rg-dev
       - name: TF_STORAGE_ACCOUNT
-        value: crccmstfdevuks
+        value: testingtfdevuks
       - name: ENVIRONMENT
         value: 'development'
     jobs:
-      - deployment: 'Terraform'
+      - job: Publish
+        pool:
+          vmImage: windows-2022
+        steps:
+          - task: CopyFiles@2
+            displayName: 'Copy all terraform files to artifacts'
+            inputs:
+              SourceFolder: PerformanceTests/terraform/src/
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/terraform'
+              CleanTargetFolder: true
+              OverWrite: true
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: $(ARTIFACT_NAME)
+      
+      - deployment: Terraform
         displayName: 'Terraform Azure Resources'
+        dependsOn: Publish
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
           runOnce:
@@ -104,8 +105,9 @@ stages:
                   environmentServiceName: ${{ variables.AZURE_SUBSCRIPTION }}
                   commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
-      - job: 'RunLoadTests'
+      - job: RunLoadTests
         displayName: 'Run Load Tests'
+        dependsOn: Terraform
         steps:
           - task: AzureLoadTest@1
             inputs:
