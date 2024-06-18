@@ -8,7 +8,7 @@ splitAllCSVs: False
 configurationFiles:
 - jmeter.csv
 failureCriteria:
-- percentage(error) > 5
+- percentage(error) > 0
 autoStop:
   errorPercentage: 90
   timeWindow: 30
