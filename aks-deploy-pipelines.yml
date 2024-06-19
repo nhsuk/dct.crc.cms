@@ -160,7 +160,7 @@ stages:
   - stage: Deploy
     displayName: 'Deploy'
     dependsOn: Build
-    condition: and(succeeded(), False)
+    condition: succeeded()
     jobs:
       - job: deployReview
         displayName: 'Deploy Review'
