@@ -100,7 +100,7 @@ variables:
 stages:
   - stage: DryRun
     displayName: 'Dry Run'
-    condition: eq(parameters.dryRun, true)
+    condition: ne('${{ parameters.dryRun }}', 'True')
     jobs:
       - job: dryRun
         displayName: 'Dry Run'
