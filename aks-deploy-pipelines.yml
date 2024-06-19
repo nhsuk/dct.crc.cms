@@ -40,6 +40,10 @@ parameters:
     displayName: Force Deploy Production
     type: boolean
     default: false
+  - name: deployDr 
+    displayName: Force Deploy DiasterRecovery
+    type: boolean
+    default: false
   # end dryrun
   - name: debug
     displayName: Debug (forced false in production)
@@ -94,15 +98,22 @@ variables:
   staticUrl: '/static/'
 
 stages:
+  ${{ if eq(parameters.dryRun, true) }}:
+    - stage: DryRun
+      displayName: 'Dry Run'
+      jobs:
+        - job: dryRun
+          displayName: 'Dry Run'
+          steps:
+            - bash: echo "##vso[task.logissue type=warning]Running in dryrun mode."
+              displayName: 'Dry Run: ${{ parameters.dryRun }}'
+  
   - stage: Test
     displayName: Test
     jobs:
       - job: test
         displayName: 'Test'
-        steps:
-          - bash: echo "##vso[task.logissue type=warning]Running in dryrun mode."
-            condition: ${{ eq(parameters.dryRun, true) }}
-            displayName: 'Dry Run: ${{ parameters.dryRun }}'
+        steps:           
           - task: Gitleaks@2
             inputs:
               scanlocation: '$(Build.SourcesDirectory)'
@@ -154,7 +165,7 @@ stages:
     jobs:
       - job: deployReview
         displayName: 'Deploy Review'
-        condition: and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')))
+        condition: or(${{ parameters.deployReview }}, and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-'))))
         variables:
           - group: Review
           - name: environmentName
@@ -192,6 +203,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
+              dryRun: ${{ parameters.dryRun }}
               azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
               keyVaultName: 'dct-crc-v3-vlt-rev-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
@@ -226,7 +238,7 @@ stages:
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
       - job: deployIntegration
         displayName: 'Deploy Integration'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+        condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
         variables:
           - group: Integration
           - name: environmentName
@@ -273,7 +285,7 @@ stages:
           - template: azure-pipeline-templates/frontendtest.yml
       - job: deployStaging
         displayName: 'Deploy Staging'
-        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+        condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
         variables:
           - group: Staging
           - name: environmentName
@@ -322,7 +334,7 @@ stages:
           - template: azure-pipeline-templates/frontendtest.yml
   - stage: deployProduction
     displayName: 'Deploy Production'
-    condition: and(succeeded('Deploy'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    condition: or(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), ${{ parameters.deployProduction }})
     dependsOn: Deploy
     jobs:
       - deployment: approval
@@ -382,7 +394,7 @@ stages:
           - template: azure-pipeline-templates/frontendtest.yml
   - stage: deployDr
     displayName: 'Deploy DR'
-    condition: and(succeeded('Deploy'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    condition: or(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), ${{ parameters.deployDr }})
     dependsOn: Deploy
     jobs:
       - deployment: approval

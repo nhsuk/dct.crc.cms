@@ -6,12 +6,10 @@ steps:
       SecretsFilter: '*'
       RunAsPreJob: false
   # Assign values to values.yaml file for helm deployment
-  - script: |
+  - bash: |
       pip3 install black==23.12.1
-    displayName: Installs the latest version of black
-  - script: |
       black --check ./ --config 'poetry/pyproject.toml'
-    displayName: Checks if the python scripts are formatted properly with black
+    displayName: Installs Black & Checks if the python scripts are formatted properly with black
   - bash: |
       echo "
         imageName: $(imageName)
@@ -133,6 +131,7 @@ steps:
       helmVersionToInstall: '3.2.0'
   - task: HelmDeploy@0
     displayName: 'Add helm repository'
+    condition: ne('${{ parameters.dryRun }}', 'True')
     inputs:
       connectionType: 'Kubernetes Service Connection'
       kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
@@ -140,6 +139,7 @@ steps:
       arguments: 'add dct https://digitalcampaignsstorage.blob.core.windows.net/helm/'
   - task: HelmDeploy@0
     displayName: 'Update Helm Repository'
+    condition: ne('${{ parameters.dryRun }}', 'True')
     inputs:
       connectionType: 'Kubernetes Service Connection'
       kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
@@ -159,6 +159,7 @@ steps:
       arguments: '--install --dry-run --debug --repo https://digitalcampaignsstorage.blob.core.windows.net/helm/ --version 2.2.3 --create-namespace -f helm/values.yaml -f helm/extra-values.yaml --timeout 900s'
   - task: HelmDeploy@0
     displayName: 'Helm Upgrade'
+    condition: ne('${{ parameters.dryRun }}', 'True')
     inputs:
       connectionType: 'Kubernetes Service Connection'
       kubernetesServiceConnection: ${{parameters.kubernetesServiceConnection}}
@@ -173,6 +174,7 @@ steps:
     inputs:
       kubectlVersion: 'latest'
   - task: Kubernetes@1
+    condition: ne('${{ parameters.dryRun }}', 'True')
     inputs:
       connectionType: 'Kubernetes Service Connection'
       kubernetesServiceEndpoint: ${{parameters.kubernetesServiceEndPoint}}
