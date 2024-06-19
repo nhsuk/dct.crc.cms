@@ -1,5 +1,6 @@
 from io import StringIO
 import sys
+import threading
 
 from logging import getLogger
 
@@ -96,6 +97,14 @@ def clear_cache(request):
     return HttpResponse("Cache has been cleared")
 
 
+class UpdateIndexThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        call_command("update_index")
+
+
 @require_http_methods(["GET"])
 def update_index(request):
     if request.headers.get("Authorization", None):
@@ -103,7 +112,8 @@ def update_index(request):
             raise PermissionDenied
     elif not request.user.is_superuser:
         raise PermissionDenied
-    return spawn_command("update_index")
+    UpdateIndexThread().start()
+    return HttpResponse("Index update started")
 
 
 @require_http_methods(["GET"])
