@@ -98,19 +98,17 @@ variables:
   staticUrl: '/static/'
 
 stages:
-  - stage: DryRun
-    displayName: 'Dry Run'
-    condition: eq('${{ parameters.dryRun }}', 'True')
-    jobs:
-      - job: dryRun
-        displayName: 'Dry Run'
-        steps:
-          - bash: echo "##vso[task.logissue type=warning]Running in dryrun mode."
-            displayName: 'Dry Run: ${{ parameters.dryRun }}'
-  
   - stage: Test
     displayName: Test
     jobs:
+      - job: dryRun
+        displayName: 'Dry Run'
+        condition: eq('${{ parameters.dryRun }}', 'True')
+        steps:
+          - bash: |
+              echo "##vso[task.logissue type=error]Running in dryrun mode."
+              exit 1
+            displayName: 'Dry Run: ${{ parameters.dryRun }}'
       - job: test
         displayName: 'Test'
         steps:           
@@ -208,6 +206,7 @@ stages:
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
           - template: azure-pipeline-templates/frontendtest.yml
+            condition: ne('${{ parameters.dryRun }}', 'True')
       - job: deployTest
         displayName: 'Deploy Perf Testing'
         condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
