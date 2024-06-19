@@ -231,6 +231,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
+              dryRun: ${{ parameters.dryRun }}
               azureSubscription: 'dct-staging-vault-uks-dct.campaign-resource-centre-v3'
               keyVaultName: 'dct-crc-v3-vlt-test-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
@@ -277,6 +278,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
+              dryRun: ${{ parameters.dryRun }}
               azureSubscription: 'dct-development-vault-uks-dct.campaign-resource-centre-v3'
               keyVaultName: 'dct-crc-v3-vlt-int-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
@@ -326,6 +328,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
+              dryRun: ${{ parameters.dryRun }}
               azureSubscription: 'dct-staging-vault-uks-dct.campaign-resource-centre-v3'
               keyVaultName: 'dct-crc-v3-vlt-stag-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
@@ -386,6 +389,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
+              dryRun: ${{ parameters.dryRun }}
               azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
               keyVaultName: 'dct-crc-v3-vlt-prod-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
@@ -424,6 +428,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
+              dryRun: ${{ parameters.dryRun }}
               azureSubscription: 'dct-dr-vault-ukw-dct.campaign-resource-centre-v3'
               keyVaultName: 'dct-crc-v3-vlt-dr-ukw'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
