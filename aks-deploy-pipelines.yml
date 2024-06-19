@@ -205,8 +205,9 @@ stages:
               keyVaultName: 'dct-crc-v3-vlt-rev-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
-          - template: azure-pipeline-templates/frontendtest.yml
-            condition: ne('${{ parameters.dryRun }}', 'True')
+          - ${{ if ne('${{ parameters.dryRun }}', 'True') }}:
+            - template: azure-pipeline-templates/frontendtest.yml
+
       - job: deployTest
         displayName: 'Deploy Perf Testing'
         condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
