@@ -51,3 +51,5 @@ database_dumps/
 
 poetry/requirements.txt
 crcv3-wagtailuser.csv
+
+PerformanceTests/jmeter.csv
