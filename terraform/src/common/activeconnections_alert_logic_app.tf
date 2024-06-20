@@ -10,121 +10,117 @@ resource "azapi_resource" "activeconnectionsalert_la" {
   }
 
   body = jsonencode({
-    "properties" : {
-      "parameters" : {},
-      "state"      : "Enabled",
-      "definition" : {
-        "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-        "actions"   : {
-          "Condition_Moderate" : {
-            "actions"    : {
-              "SendModerateAlert" : {
-                "inputs" : {
-                  "body"    : templatefile("${path.module}/templates/activeconnections-severe-slack-alert-body.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
-                  "headers" : {
-                    "Content-Type" : "application/json"
+    "properties": {
+      "parameters": {},
+      "state": "Enabled",
+      "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+          "Condition_Moderate": {
+            "actions": {
+              "SendModerateAlert": {
+                "inputs": {
+                  "body": templatefile("${path.module}/templates/activeconnections-moderate-slack-alert-body.tftpl", {
+                    rg_name = data.azurerm_resource_group.rg.name,
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = azapi_resource.activeconnectionsalert_la.name,
+                    la_id = azapi_resource.activeconnectionsalert_la.id
+                  }),
+                  "headers": {
+                    "Content-Type": "application/json"
                   },
-                  "method" : "POST",
-                  "uri"    : "@{body('Get alerting webhook')?['value']}"
+                  "method": "POST",
+                  "uri": "@{body('Get alerting webhook')?['value']}"
                 },
-                "runAfter" : {},
-                "type"     : "Http"
+                "runAfter": {},
+                "type": "Http"
               }
             },
-            "expression" : {
-              "equals" : [
+            "expression": {
+              "equals": [
                 "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
                 85
               ]
             },
-            "runAfter" : {
-              "Get alerting webhook" : [
+            "runAfter": {
+              "Get alerting webhook": [
                 "Succeeded"
               ]
             },
-            "type" : "If"
+            "type": "If"
           },
-          "Condition_Severe" : {
-            "actions"    : {
-              "SendSevereAlert" : {
-                "inputs" : {
-                  "body"    : templatefile("${path.module}/templates/activeconnections-moderate-slack-alert-body.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
-                  "headers" : {
-                    "Content-Type" : "application/json"
+          "Condition_Severe": {
+            "actions": {
+              "SendSevereAlert": {
+                "inputs": {
+                  "body": templatefile("${path.module}/templates/activeconnections-severe-slack-alert-body.tftpl", {
+                    rg_name = data.azurerm_resource_group.rg.name,
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = azapi_resource.activeconnectionsalert_la.name,
+                    la_id = azapi_resource.activeconnectionsalert_la.id
+                  }),
+                  "headers": {
+                    "Content-Type": "application/json"
                   },
-                  "method" : "POST",
-                  "uri"    : "@{body('Get alerting webhook')?['value']}"
+                  "method": "POST",
+                  "uri": "@{body('Get alerting webhook')?['value']}"
                 },
-                "runAfter" : {},
-                "type"     : "Http"
+                "runAfter": {},
+                "type": "Http"
               }
             },
-            "expression" : {
-              "equals" : [
+            "expression": {
+              "equals": [
                 "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
                 98
               ]
             },
-            "runAfter" : {
-              "Condition_Moderate" : [
+            "runAfter": {
+              "Condition_Moderate": [
                 "Failed",
                 "Skipped",
                 "Succeeded"
               ]
             },
-            "type" : "If"
+            "type": "If"
           },
-          "Get alerting webhook" : {
-            "inputs" : {
-              "host" : {
-                "connection" : {
-                  "name" : "@parameters('$connections')['keyvault']['connectionId']"
+          "Get alerting webhook": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "name": "@parameters('$connections')['keyvault']['connectionId']"
                 }
               },
-              "method" : "get",
-              "path"   : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+              "method": "get",
+              "path": "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
             },
-            "runAfter" : {},
-            "type"     : "ApiConnection"
+            "runAfter": {},
+            "type": "ApiConnection"
           }
         },
-        "contentVersion" : "1.0.0.0",
-        "parameters"     : {
-          "$connections" : {
-            "value" : {
-              "keyvault" : {
-                "connectionId" : azapi_resource.keyvault_con.id,
-                "connectionName" : azapi_resource.keyvault_con.name,
-                "id" : data.azurerm_managed_api.kv.id,
-                "connectionProperties" : {
-                  "authentication" : {
-                    "type" : "ManagedServiceIdentity"
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+          "$connections": {
+            "value": {
+              "keyvault": {
+                "connectionId": azapi_resource.keyvault_con.id,
+                "connectionName": azapi_resource.keyvault_con.name,
+                "id": data.azurerm_managed_api.kv.id,
+                "connectionProperties": {
+                  "authentication": {
+                    "type": "ManagedServiceIdentity"
                   }
                 }
               }
             }
           }
         },
-        "triggers" : {
-            "manual" : {
-                "type" : "Request",
-                "kind" : "Http",
-                "inputs" : {
-                "schema" : templatefile("${path.module}/schema/common-alert-schema.json", {})
-                }
-            }
-            },
-    "parameters" : {
-      "$connections" : {
-        "value" : {
-          "keyvault" : {
-            "connectionId" : azapi_resource.keyvault_con.id,
-            "connectionName" : azapi_resource.keyvault_con.name,
-            "id": data.azurerm_managed_api.kv.id,
-            "connectionProperties" : {
-              "authentication" : {
-                "type" : "ManagedServiceIdentity"
-              }
+        "triggers": {
+          "manual": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+              "schema": templatefile("${path.module}/schema/common-alert-schema.json", {})
             }
           }
         }
@@ -137,7 +133,7 @@ data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {
   resource_id = "${azapi_resource.activeconnectionsalert_la.id}/triggers/manual"
   action      = "listCallbackUrl"
   type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
-  depends_on = [
+  depends_on  = [
     azapi_resource.activeconnectionsalert_la
   ]
   response_export_values = ["value"]
