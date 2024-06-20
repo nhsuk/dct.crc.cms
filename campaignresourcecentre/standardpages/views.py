@@ -1,5 +1,6 @@
 from io import StringIO
 import sys
+import threading
 
 from logging import getLogger
 
@@ -96,6 +97,14 @@ def clear_cache(request):
     return HttpResponse("Cache has been cleared")
 
 
+class UpdateIndexThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        call_command("update_index")
+
+
 @require_http_methods(["GET"])
 def update_index(request):
     if request.headers.get("Authorization", None):
@@ -103,7 +112,28 @@ def update_index(request):
             raise PermissionDenied
     elif not request.user.is_superuser:
         raise PermissionDenied
-    return spawn_command("update_index")
+    UpdateIndexThread().start()
+    return HttpResponse("Index update started")
+
+
+@require_http_methods(["GET"])
+def debug_az_search(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    result_limit = request.GET.get("limit", 1000)
+
+    azure_search = AzureSearchBackend({})
+    json_result = azure_search.azure_search(
+        "", {}, {}, None, results_per_page=result_limit
+    )
+
+    if not json_result.get("ok"):
+        return JsonResponse({})
+
+    results = json_result["search_content"]["value"]
+    content = [r["content"]["resource"] for r in results]
+    return JsonResponse(content, safe=False)
 
 
 @require_http_methods(["GET"])
