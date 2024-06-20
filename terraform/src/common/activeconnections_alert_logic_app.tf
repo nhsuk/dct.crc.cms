@@ -20,7 +20,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "actions"    : {
               "SendModerateAlert" : {
                 "inputs" : {
-                  "body"    : templatefile("${path.module}/templates/activeconnections-slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
+                  "body"    : templatefile("${path.module}/templates/activeconnections-severe-slack-alert-body.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
                   "headers" : {
                     "Content-Type" : "application/json"
                   },
@@ -48,7 +48,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "actions"    : {
               "SendSevereAlert" : {
                 "inputs" : {
-                  "body"    : templatefile("${path.module}/templates/activeconnections-slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
+                  "body"    : templatefile("${path.module}/templates/activeconnections-moderate-slack-alert-body.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
                   "headers" : {
                     "Content-Type" : "application/json"
                   },
@@ -106,97 +106,14 @@ resource "azapi_resource" "activeconnectionsalert_la" {
           }
         },
         "triggers" : {
-          "manual" : {
-            "inputs" : {
-              "schema" : {
-                "properties" : {
-                  "data" : {
-                    "properties" : {
-                      "alertContext" : {
-                        "properties" : {
-                          "condition" : {
-                            "properties" : {
-                              "allOf" : {
-                                "items" : {
-                                  "properties" : {
-                                    "metricValue" : {
-                                      "type" : "number"
-                                    }
-                                  },
-                                  "required" : [
-                                    "metricValue"
-                                  ]
-                                },
-                                "type" : "array"
-                              }
-                            }
-                          }
-                        },
-                        "type" : "object"
-                      },
-                      "essentials" : {
-                        "properties" : {
-                          "alertContextVersion" : {
-                            "type" : "string"
-                          },
-                          "alertId" : {
-                            "type" : "string"
-                          },
-                          "alertRule" : {
-                            "type" : "string"
-                          },
-                          "alertTargetIDs" : {
-                            "items" : {
-                              "type" : "string"
-                            },
-                            "type" : "array"
-                          },
-                          "description" : {
-                            "type" : "string"
-                          },
-                          "essentialsVersion" : {
-                            "type" : "string"
-                          },
-                          "firedDateTime" : {
-                            "type" : "string"
-                          },
-                          "monitorCondition" : {
-                            "type" : "string"
-                          },
-                          "monitoringService" : {
-                            "type" : "string"
-                          },
-                          "originAlertId" : {
-                            "type" : "string"
-                          },
-                          "resolvedDateTime" : {
-                            "type" : "string"
-                          },
-                          "severity" : {
-                            "type" : "string"
-                          },
-                          "signalType" : {
-                            "type" : "string"
-                          }
-                        },
-                        "type" : "object"
-                      }
-                    },
-                    "type" : "object"
-                  },
-                  "schemaId" : {
-                    "type" : "string"
-                  }
-                },
-                "type" : "object"
-              }
+            "manual" : {
+                "type" : "Request",
+                "kind" : "Http",
+                "inputs" : {
+                "schema" : templatefile("${path.module}/schema/common-alert-schema.json", {})
+                }
+            }
             },
-            "kind" : "Http",
-            "type" : "Request"
-          }
-        }
-      }
-    },
     "parameters" : {
       "$connections" : {
         "value" : {
