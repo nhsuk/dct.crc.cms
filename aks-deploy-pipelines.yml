@@ -116,6 +116,10 @@ stages:
               configfile: '$(Build.SourcesDirectory)/pre-commit/git-secrets/nhsd-gitleaks-config.toml'
               redact: false
               reportformat: 'json'
+          - bash: |
+              pip3 install black==23.12.1
+              black --check ./ --config 'poetry/pyproject.toml'
+            displayName: Installs Black & Checks if the python scripts are formatted properly with black
           - template: azure-pipeline-templates/test.yml
   - stage: Build
     displayName: Build
