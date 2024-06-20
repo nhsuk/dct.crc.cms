@@ -22,9 +22,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                 "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-moderate-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,
-                    rg_id = data.azurerm_resource_group.rg.id,
-                    la_name = azapi_resource.activeconnectionsalert_la.name,
-                    la_id = azapi_resource.activeconnectionsalert_la.id
+                    rg_id = data.azurerm_resource_group.rg.id
                   }),
                   "headers": {
                     "Content-Type": "application/json"
@@ -55,9 +53,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                 "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-severe-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,
-                    rg_id = data.azurerm_resource_group.rg.id,
-                    la_name = azapi_resource.activeconnectionsalert_la.name,
-                    la_id = azapi_resource.activeconnectionsalert_la.id
+                    rg_id = data.azurerm_resource_group.rg.id
                   }),
                   "headers": {
                     "Content-Type": "application/json"
