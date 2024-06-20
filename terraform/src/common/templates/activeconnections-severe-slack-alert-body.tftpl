@@ -1,0 +1,25 @@
+{
+  "blocks": [
+      {
+          "text": {
+              "text": "Severe Alert: @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']} active connections currently",
+              "type": "plain_text"
+          },
+          "type": "header"
+      },
+      {
+          "text": {
+              "text": "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource/subscriptions/07748954-52d6-46ce-95e6-2701bfc715b4/resourceGroups/dct-crccms-rg-dev-uks/providers/Microsoft.Logic/workflows/dct-crccms-activeconnectionalert-la-dev-uks|dct-crccms-activeconnectionalert-la-dev-uks>",
+              "type": "mrkdwn"
+          },
+          "type": "section"
+      },
+      {
+          "text": {
+              "text": "*SQL Server*\n <https://portal.azure.com/#@nhschoices.net/resource/subscriptions/07748954-52d6-46ce-95e6-2701bfc715b4/resourceGroups/nhsuk-dct-rg-dev-uks/providers/Microsoft.DBforPostgreSQL/servers/campaigns-cms-psql-dev-uks/overview|campaigns-cms-psql-dev-uks>",
+              "type": "mrkdwn"
+          },
+          "type": "section"
+      }
+  ]
+}
