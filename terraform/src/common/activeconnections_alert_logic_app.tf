@@ -10,86 +10,86 @@ resource "azapi_resource" "activeconnectionsalert_la" {
   }
 
   body = jsonencode({
-    properties : {
-      parameters : {},
-      state      : "Enabled",
-      definition : {
+    "properties" : {
+      "parameters" : {},
+      "state"      : "Enabled",
+      "definition" : {
         "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-        actions   : {
-          Condition_Moderate : {
-            actions    : {
-              SendModerateAlert : {
-                inputs : {
-                  body    : templatefile("${path.module}/templates/activeconnections-slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
-                  headers : {
+        "actions"   : {
+          "Condition_Moderate" : {
+            "actions"    : {
+              "SendModerateAlert" : {
+                "inputs" : {
+                  "body"    : templatefile("${path.module}/templates/activeconnections-slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
+                  "headers" : {
                     "Content-Type" : "application/json"
                   },
-                  method : "POST",
-                  uri    : "@{body('Get alerting webhook')?['value']}"
+                  "method" : "POST",
+                  "uri"    : "@{body('Get alerting webhook')?['value']}"
                 },
-                runAfter : {},
-                type     : "Http"
+                "runAfter" : {},
+                "type"     : "Http"
               }
             },
-            expression : {
-              equals : [
+            "expression" : {
+              "equals" : [
                 "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
                 85
               ]
             },
-            runAfter : {
+            "runAfter" : {
               "Get alerting webhook" : [
                 "Succeeded"
               ]
             },
-            type : "If"
+            "type" : "If"
           },
-          Condition_Severe : {
-            actions    : {
-              SendSevereAlert : {
-                inputs : {
-                  body    : templatefile("${path.module}/templates/activeconnections-slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
-                  headers : {
+          "Condition_Severe" : {
+            "actions"    : {
+              "SendSevereAlert" : {
+                "inputs" : {
+                  "body"    : templatefile("${path.module}/templates/activeconnections-slack-alert-body.json.tftpl", { rg_name = data.azurerm_resource_group.rg.name, rg_id = data.azurerm_resource_group.rg.id, la_name = azapi_resource.activeconnectionsalert_la.name, la_id = azapi_resource.activeconnectionsalert_la.id }),
+                  "headers" : {
                     "Content-Type" : "application/json"
                   },
-                  method : "POST",
-                  uri    : "@{body('Get alerting webhook')?['value']}"
+                  "method" : "POST",
+                  "uri"    : "@{body('Get alerting webhook')?['value']}"
                 },
-                runAfter : {},
-                type     : "Http"
+                "runAfter" : {},
+                "type"     : "Http"
               }
             },
-            expression : {
-              equals : [
+            "expression" : {
+              "equals" : [
                 "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
                 98
               ]
             },
-            runAfter : {
-              Condition_Moderate : [
+            "runAfter" : {
+              "Condition_Moderate" : [
                 "Failed",
                 "Skipped",
                 "Succeeded"
               ]
             },
-            type : "If"
+            "type" : "If"
           },
           "Get alerting webhook" : {
-            inputs : {
-              host : {
-                connection : {
-                  name : "@parameters('$connections')['keyvault']['connectionId']"
+            "inputs" : {
+              "host" : {
+                "connection" : {
+                  "name" : "@parameters('$connections')['keyvault']['connectionId']"
                 }
               },
-              method : "get",
-              path   : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+              "method" : "get",
+              "path"   : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
             },
-            runAfter : {},
-            type     : "ApiConnection"
+            "runAfter" : {},
+            "type"     : "ApiConnection"
           }
         },
-        contentVersion : "1.0.0.0",
-        parameters     : {
+        "contentVersion" : "1.0.0.0",
+        "parameters"     : {
           "$connections" : {
             "value" : {
               "keyvault" : {
@@ -105,105 +105,105 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             }
           }
         },
-        triggers : {
-          manual : {
-            inputs : {
-              schema : {
-                properties : {
-                  data : {
-                    properties : {
-                      alertContext : {
-                        properties : {
-                          condition : {
-                            properties : {
-                              allOf : {
-                                items : {
-                                  properties : {
-                                    metricValue : {
-                                      type : "number"
+        "triggers" : {
+          "manual" : {
+            "inputs" : {
+              "schema" : {
+                "properties" : {
+                  "data" : {
+                    "properties" : {
+                      "alertContext" : {
+                        "properties" : {
+                          "condition" : {
+                            "properties" : {
+                              "allOf" : {
+                                "items" : {
+                                  "properties" : {
+                                    "metricValue" : {
+                                      "type" : "number"
                                     }
                                   },
-                                  required : [
+                                  "required" : [
                                     "metricValue"
                                   ]
                                 },
-                                type : "array"
+                                "type" : "array"
                               }
                             }
                           }
                         },
-                        type : "object"
+                        "type" : "object"
                       },
-                      essentials : {
-                        properties : {
-                          alertContextVersion : {
-                            type : "string"
+                      "essentials" : {
+                        "properties" : {
+                          "alertContextVersion" : {
+                            "type" : "string"
                           },
-                          alertId : {
-                            type : "string"
+                          "alertId" : {
+                            "type" : "string"
                           },
-                          alertRule : {
-                            type : "string"
+                          "alertRule" : {
+                            "type" : "string"
                           },
-                          alertTargetIDs : {
-                            items : {
-                              type : "string"
+                          "alertTargetIDs" : {
+                            "items" : {
+                              "type" : "string"
                             },
-                            type : "array"
+                            "type" : "array"
                           },
-                          description : {
-                            type : "string"
+                          "description" : {
+                            "type" : "string"
                           },
-                          essentialsVersion : {
-                            type : "string"
+                          "essentialsVersion" : {
+                            "type" : "string"
                           },
-                          firedDateTime : {
-                            type : "string"
+                          "firedDateTime" : {
+                            "type" : "string"
                           },
-                          monitorCondition : {
-                            type : "string"
+                          "monitorCondition" : {
+                            "type" : "string"
                           },
-                          monitoringService : {
-                            type : "string"
+                          "monitoringService" : {
+                            "type" : "string"
                           },
-                          originAlertId : {
-                            type : "string"
+                          "originAlertId" : {
+                            "type" : "string"
                           },
-                          resolvedDateTime : {
-                            type : "string"
+                          "resolvedDateTime" : {
+                            "type" : "string"
                           },
-                          severity : {
-                            type : "string"
+                          "severity" : {
+                            "type" : "string"
                           },
-                          signalType : {
-                            type : "string"
+                          "signalType" : {
+                            "type" : "string"
                           }
                         },
-                        type : "object"
+                        "type" : "object"
                       }
                     },
-                    type : "object"
+                    "type" : "object"
                   },
-                  schemaId : {
-                    type : "string"
+                  "schemaId" : {
+                    "type" : "string"
                   }
                 },
-                type : "object"
+                "type" : "object"
               }
             },
-            kind : "Http",
-            type : "Request"
+            "kind" : "Http",
+            "type" : "Request"
           }
         }
       }
     },
-    parameters : {
+    "parameters" : {
       "$connections" : {
         "value" : {
           "keyvault" : {
             "connectionId" : azapi_resource.keyvault_con.id,
             "connectionName" : azapi_resource.keyvault_con.name,
-            "id" : data.azurerm_managed_api.kv.id,
+            "id": data.azurerm_managed_api.kv.id,
             "connectionProperties" : {
               "authentication" : {
                 "type" : "ManagedServiceIdentity"
