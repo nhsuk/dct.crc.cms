@@ -1,21 +1,18 @@
 pool:
   vmImage: 'ubuntu-latest'
 
-trigger: none
-pr: none
-
-# trigger:
-#   batch: true
-#   branches:
-#     include:
-#       - 'review/*'
-#       - 'refs/tags/*'
-#       - 'main'
-#     exclude:
-#       - 'refs/tags/tf-*'
-#   paths:
-#     exclude:
-#       - 'terraform'
+trigger:
+  batch: true
+  branches:
+    include:
+      - 'review/*'
+      - 'refs/tags/*'
+      - 'main'
+    exclude:
+      - 'refs/tags/tf-*'
+  paths:
+    exclude:
+      - 'terraform'
 
 parameters:
    # Dry run changes
