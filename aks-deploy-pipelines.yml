@@ -4,19 +4,18 @@ pool:
 trigger: none
 pr: none
 
-# TODO: revert triggers back to default
-# trigger:
-#   batch: true
-#   branches:
-#     include:
-#       - 'review/*'
-#       - 'refs/tags/*'
-#       - 'main'
-#     exclude:
-#       - 'refs/tags/tf-*'
-#   paths:
-#     exclude:
-#       - 'terraform'
+trigger:
+  batch: true
+  branches:
+    include:
+      - 'review/*'
+      - 'refs/tags/*'
+      - 'main'
+    exclude:
+      - 'refs/tags/tf-*'
+  paths:
+    exclude:
+      - 'terraform'
 
 parameters:
    # Dry run changes
@@ -109,7 +108,6 @@ stages:
           - bash: |
               echo "##vso[task.logissue type=error]Running in dryrun mode."
               echo "##vso[task.complete result=SucceededWithIssues;]"
-              exit 1
             displayName: 'Dry Run: ${{ parameters.dryRun }}'
       - job: test
         displayName: 'Test'
