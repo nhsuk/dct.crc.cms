@@ -37,7 +37,7 @@ parameters:
     type: boolean
     default: false
   - name: deployDr 
-    displayName: Force Deploy DiasterRecovery
+    displayName: Force Deploy DisasterRecovery
     type: boolean
     default: false
   # end dryrun
