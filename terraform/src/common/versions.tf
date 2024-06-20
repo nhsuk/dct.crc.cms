@@ -4,5 +4,8 @@ terraform {
     azapi = {
       source = "Azure/azapi"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+    }
   }
 }
