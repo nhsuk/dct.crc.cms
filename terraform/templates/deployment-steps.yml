@@ -40,13 +40,6 @@ steps:
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
 
-  - task: ManualValidation@0
-    displayName: 'Manual Intervention - Review Terraform Plan'
-    inputs:
-      instructions: 'Please review the Terraform plan output and approve to proceed with apply.'
-      onTimeout: 'reject'
-      timeout: '720m' 
-      
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform apply'
     inputs:
