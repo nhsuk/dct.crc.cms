@@ -104,9 +104,11 @@ stages:
       - job: dryRun
         displayName: 'Dry Run'
         condition: eq('${{ parameters.dryRun }}', 'True')
+        continueOnError: true
         steps:
           - bash: |
               echo "##vso[task.logissue type=error]Running in dryrun mode."
+              echo "##vso[task.complete result=SucceededWithIssues;]"
               exit 1
             displayName: 'Dry Run: ${{ parameters.dryRun }}'
       - job: test
