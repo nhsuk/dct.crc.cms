@@ -16,7 +16,7 @@ data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {
 resource "azurerm_monitor_action_group" "activeconnections_alert" {  
   name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-ag-")  
   resource_group_name = data.azurerm_resource_group.rg.name  
-  short_name          = "ActiveConnections"
+  short_name          = "ActiveConnAl"
 
   logic_app_receiver {  
     name                    = "active_connections_slack_alert"  
