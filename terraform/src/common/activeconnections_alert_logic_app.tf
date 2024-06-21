@@ -101,28 +101,28 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "type": "ApiConnection"  
           }  
         },  
-        "parameters": {  
-          "$connections": {  
-            "value": {  
-              "keyvault": {  
-                "connectionId": azapi_resource.keyvault_con.id,  
-                "connectionName": azapi_resource.keyvault_con.name,  
-                "id": data.azurerm_managed_api.kv.id,  
-                "connectionProperties": {  
-                  "authentication": {  
-                    "type": "ManagedServiceIdentity"  
-                  }  
-                }  
-              }  
-            }  
-          }  
-        },  
         "triggers": {  
           "manual": {  
             "type": "Request",  
             "kind": "Http",  
             "inputs": {  
               "schema": templatefile("${path.module}/schema/common-alert-schema.json", {})  
+            }  
+          }  
+        }  
+      },
+      "parameters": {  
+        "$connections": {  
+          "value": {  
+            "keyvault": {  
+              "connectionId": azapi_resource.keyvault_con.id,  
+              "connectionName": azapi_resource.keyvault_con.name,  
+              "id": data.azurerm_managed_api.kv.id,  
+              "connectionProperties": {  
+                "authentication": {  
+                  "type": "ManagedServiceIdentity"  
+                }  
+              }  
             }  
           }  
         }  
