@@ -3,6 +3,16 @@ data "azurerm_postgresql_server" "postgres_server" {
   resource_group_name = data.azurerm_resource_group.rg.name  
 }
 
+data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {
+  resource_id = "${azapi_resource.activeconnectionsalert_la.id}/triggers/manual"
+  action      = "listCallbackUrl"
+  type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
+  depends_on  = [
+    azapi_resource.activeconnectionsalert_la
+  ]
+  response_export_values = ["value"]
+}
+
 resource "azurerm_monitor_action_group" "activeconnections_alert" {  
   name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-ag-")  
   resource_group_name = data.azurerm_resource_group.rg.name  
