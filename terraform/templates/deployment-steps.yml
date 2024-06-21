@@ -54,6 +54,10 @@ steps:
           workingDirectory: ${{ parameters.artifactPath }}
           resourceAddress: ${{ split(resourceDetails, '|')[0] }}
           resourceId: ${{ split(resourceDetails, '|')[1] }}
+          commandOptions: >
+            -var resource_group=${{ parameters.resourceGroup }}
+            -var environment=${{ parameters.environment }}
+            -var tfstate_account_name=${{ parameters.tfStorageAccount }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
