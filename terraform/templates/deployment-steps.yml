@@ -1,9 +1,11 @@
 parameters:
-  artifactPath:           '' # working directory
-  environment:            '' # env name for resource tags
-  azureSubscription:      '' # the service connection in the pipeline
-  resourceGroup:          '' # name of the resource group which contains the TF resources
-  tfStorageAccount:       '' # name of the storage account which stores the TF state
+  artifactPath:       '' # working directory
+  environment:        '' # env name for resource tags
+  azureSubscription:  '' # the service connection in the pipeline
+  resourceGroup:      '' # name of the resource group which contains the TF resources
+  tfStorageAccount:   '' # name of the storage account which stores the TF state
+  importArgs:         '' # comma separated list of resources to import in 'azurerm_instance.tf_name <instance id>, ...' form
+
 
 steps:
 
@@ -27,7 +29,17 @@ steps:
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform validate'
     inputs:
-      workingDirectory: ${{ parameters.artifactPath }}
+      workingDirectory: ${{ parameters.artifactPath }}      
+  
+  - ${{ if ne(parameters.importArgs, '') }}:
+    - ${{ each resourceDetails in split(variables.importArgs, ',')}}:
+      - task: TerraformCLI@0
+        displayName: 'terraform import state'
+        inputs:
+          command: import
+          workingDirectory: ${{ parameters.artifactPath }}
+          resourceAddress: ${{ split(resourceDetails, ' ')[0] }}
+          resourceId: ${{ split(resourceDetails, ' ')[1] }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'

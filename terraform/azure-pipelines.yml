@@ -17,6 +17,11 @@ variables:
   - name: ARTIFACT_NAME
     value: drop
 
+parameters:
+  - name: importArgs
+    displayName: Terraform import args (azurerm_instance.tf_name /subscriptions/000.../id)
+    default: ""
+
 stages:
   - stage: Build
     jobs:
@@ -69,6 +74,7 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  importArgs: ${{ parameters.importArgs }}
 
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
