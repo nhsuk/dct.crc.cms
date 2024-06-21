@@ -1,3 +1,7 @@
+variables:
+  - name: hostUrl
+    value: 'campaignresources.dhsc.gov.uk'
+    
 steps:
   - task: DownloadSecureFile@1
     displayName: 'Download username/password secret file'
