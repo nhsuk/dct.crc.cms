@@ -48,12 +48,12 @@ steps:
   - ${{ if and(ne(parameters.importArgs, ''), ne(parameters.importArgs, ' ')) }}:
     - ${{ each resourceDetails in split(replace(parameters.importArgs, ' ', ''), ',')}}:
       - task: TerraformCLI@0
-        displayName: 'terraform import state'
+        displayName: "terraform import state for ${{ split(resourceDetails, '|')[0] }}"
         inputs:
           command: import
           workingDirectory: ${{ parameters.artifactPath }}
-            echo "resourceAddress: ${{ split(resourceDetails, '|')[0] }}"
-            echo "resourceId: ${{ split(resourceDetails, '|')[1] }}"
+          resourceAddress: ${{ split(resourceDetails, '|')[0] }}
+          resourceId: ${{ split(resourceDetails, '|')[1] }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
