@@ -15,6 +15,13 @@ resource "azapi_resource" "activeconnectionsalert_la" {
       "state": "Enabled",
       "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+          "$connections": {
+            "defaultValue": {},
+            "type": "Object"
+          }
+        },
         "actions": {
           "Condition_Moderate": {
             "actions": {
@@ -94,7 +101,6 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "type": "ApiConnection"
           }
         },
-        "contentVersion": "1.0.0.0",
         "parameters": {
           "$connections": {
             "value": {
