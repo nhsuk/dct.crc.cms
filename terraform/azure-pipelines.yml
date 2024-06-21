@@ -19,7 +19,7 @@ variables:
 
 parameters:
   - name: importArgs
-    displayName: Terraform import args (azurerm_instance.tf_name /subscriptions/000.../id)
+    displayName: Terraform import args (azurerm_instance.tf_name:/subscriptions/000.../id,...)
     default: ' '
 
 stages:
