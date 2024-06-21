@@ -52,6 +52,7 @@ steps:
         inputs:
           command: import
           workingDirectory: ${{ parameters.artifactPath }}
+          environmentServiceName: ${{ parameters.azureSubscription }}
           resourceAddress: ${{ split(resourceDetails, '|')[0] }}
           resourceId: ${{ split(resourceDetails, '|')[1] }}
           commandOptions: >
