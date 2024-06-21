@@ -13,3 +13,7 @@ variable "tfstate_account_name" {
   description = "Terraform tfstate storage"
 }
 
+variable "postgresql_server" {
+  description = "Name of the PostgreSQL server."
+  type        = string
+}

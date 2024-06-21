@@ -4,6 +4,7 @@ parameters:
   azureSubscription:      '' # the service connection in the pipeline
   resourceGroup:          '' # name of the resource group which contains the TF resources
   tfStorageAccount:       '' # name of the storage account which stores the TF state
+  postgresqlServer:       '' # name of the PostgreSQL server
 
 steps:
 
@@ -39,6 +40,7 @@ steps:
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+        -var postgresql_server=${{ parameters.postgresqlServer }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform apply'

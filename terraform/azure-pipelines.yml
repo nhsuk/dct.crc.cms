@@ -69,6 +69,7 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
 
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
