@@ -130,13 +130,3 @@ resource "azapi_resource" "activeconnectionsalert_la" {
     }  
   })  
 }
-
-data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {  
-  resource_id = "${azapi_resource.activeconnectionsalert_la.id}/triggers/manual"  
-  action      = "listCallbackUrl"  
-  type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"  
-  depends_on  = [  
-    azapi_resource.activeconnectionsalert_la  
-  ]  
-  response_export_values = ["value"]  
-}
