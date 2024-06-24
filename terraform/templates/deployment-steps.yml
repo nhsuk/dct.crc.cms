@@ -66,21 +66,22 @@ steps:
       command: plan
       workingDirectory: ${{ parameters.artifactPath }}
       environmentServiceName: ${{ parameters.azureSubscription }}
+      publishPlanResults: "deployment_plan"
       commandOptions: >
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+        -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
+        -detailed-exitcode
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform apply'
+    condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
     inputs:
       command: apply
       workingDirectory: ${{ parameters.artifactPath }}
       environmentServiceName: ${{ parameters.azureSubscription }}
-      commandOptions: >
-        -var resource_group=${{ parameters.resourceGroup }}
-        -var environment=${{ parameters.environment }}
-        -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+      commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
   - task: AzureCLI@2
     displayName: Azure CLI check secrets
