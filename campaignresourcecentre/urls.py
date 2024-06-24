@@ -58,6 +58,7 @@ private_urlpatterns = [
     path("crc-admin/password_reset/", user_admin_views.PasswordResetView.as_view()),
     path("crc-admin/clear_cache/", clear_cache, name="clear_cache"),
     path("crc-admin/update_index/", update_index, name="update_index"),
+    path("crc-admin/update_index/", update_index, name="update_index"),
     path("crc-admin/dump_az_search_index/", debug_az_search, name="debug_az_index"),
     path("crc-admin/search_orphans/", search_orphans, name="search_orphans"),
     path("crc-admin/manage_files/", manage_files, name="manage_files"),
