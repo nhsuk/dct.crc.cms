@@ -1,7 +1,5 @@
 name: $(BuildId)
 
-pr: none
-
 trigger:
   batch: true
   branches:
