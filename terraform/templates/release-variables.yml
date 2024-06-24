@@ -12,4 +12,4 @@ variables:
 - name: POSTGRESQL_SERVER
   value: campaigns-cms-psql-${{ parameters.releaseEnvironment }}-${{ parameters.location }}
 - name: POSTGRESQL_RESOURCE_GROUP
-  value: dct-crccms-rg-${{ parameters.releaseEnvironment }}-${{ parameters.location }}
+  value: nhsuk-dct-rg-${{ parameters.releaseEnvironment }}-${{ parameters.location }}
