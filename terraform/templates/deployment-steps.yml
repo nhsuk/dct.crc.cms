@@ -61,13 +61,6 @@ steps:
             -var environment=${{ parameters.environment }}
             -var tfstate_account_name=${{ parameters.tfStorageAccount }}
 
-  - bash: |
-      if [[ '${{ parameters.dryrun }}' == 'True' ]]; then
-        echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
-        echo "##vso[task.complete result=SucceededWithIssues;]"
-      fi
-    displayName: 'Dry Run: ${{ parameters.dryrun }}'
-
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
     inputs:
@@ -82,14 +75,21 @@ steps:
         -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
         -detailed-exitcode
 
-  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-    displayName: 'terraform apply'
-    condition: ${{ and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne(parameters.dryrun, 'true')) }}
-    inputs:
-      command: apply
-      workingDirectory: ${{ parameters.artifactPath }}
-      environmentServiceName: ${{ parameters.azureSubscription }}
-      commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+  - ${{ if eq(parameters.dryrun, 'true') }}
+    - bash: |
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      displayName: 'Dry Run - skipping apply'
+
+  - ${{ if ne(parameters.dryrun, 'true') }}
+    - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+      displayName: 'terraform apply'
+      condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+      inputs:
+        command: apply
+        workingDirectory: ${{ parameters.artifactPath }}
+        environmentServiceName: ${{ parameters.azureSubscription }}
+        commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
   - task: AzureCLI@2
     displayName: Azure CLI check secrets
