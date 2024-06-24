@@ -1,11 +1,25 @@
 parameters:
-  artifactPath:       '' # working directory
-  environment:        '' # env name for resource tags
-  azureSubscription:  '' # the service connection in the pipeline
-  resourceGroup:      '' # name of the resource group which contains the TF resources
-  tfStorageAccount:   '' # name of the storage account which stores the TF state
-  importArgs:         ' ' # comma separated list of resources to import in 'azurerm_instance.tf_name | <instance id>, ...' form
-  dryrun:             false # skip apply stage
+  - name: artifactPath # working directory
+    type: string
+    default: ''
+  - name: environment # env name for resource tags
+    type: string
+    default: ''
+  - name: azureSubscription # the service connection in the pipeline
+    type: string
+    default: ''
+  - name: resourceGroup # name of the resource group which contains the TF resources
+    type: string
+    default: ''
+  - name: tfStorageAccount # name of the storage account which stores the TF state
+    type: string
+    default: ''
+  - name: importArgs # comma separated list of resources to import in 'azurerm_instance.tf_name | <instance id>, ...' form
+    type: string
+    default: ' '
+  - name: dryrun # skip apply stage
+    type: boolean
+    default: false
 
 
 steps:

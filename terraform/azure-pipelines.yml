@@ -23,6 +23,7 @@ parameters:
     default: ' '
   - name: dryrun
     displayName: Dry Run
+    type: boolean
     default: false
 
 stages:
