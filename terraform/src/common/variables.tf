@@ -17,3 +17,8 @@ variable "postgresql_server" {
   description = "Name of the PostgreSQL server."
   type        = string
 }
+
+variable "postgresql_resource_group" {
+  description = "The name of the resource group containing the PostgreSQL server"
+  type        = string
+}
