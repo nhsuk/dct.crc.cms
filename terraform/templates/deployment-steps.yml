@@ -75,13 +75,13 @@ steps:
         -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
         -detailed-exitcode
 
-  - ${{ if eq(parameters.dryrun, 'true') }}
+  - ${{ if eq(parameters.dryrun, 'true') }}:
     - bash: |
         echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
         echo "##vso[task.complete result=SucceededWithIssues;]"
       displayName: 'Dry Run - skipping apply'
 
-  - ${{ if ne(parameters.dryrun, 'true') }}
+  - ${{ if ne(parameters.dryrun, 'true') }}:
     - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
       displayName: 'terraform apply'
       condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
