@@ -61,6 +61,13 @@ steps:
             -var environment=${{ parameters.environment }}
             -var tfstate_account_name=${{ parameters.tfStorageAccount }}
 
+  - bash: |
+      if [[ '${{ parameters.dryrun }}' == 'True' ]]; then
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      fi
+    displayName: 'Dry Run: ${{ parameters.dryrun }}'
+
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
     inputs:
@@ -77,7 +84,7 @@ steps:
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform apply'
-    condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne(parameters.dryrun, 'true'))
+    condition: ${{ and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne(parameters.dryrun, 'true')) }}
     inputs:
       command: apply
       workingDirectory: ${{ parameters.artifactPath }}
