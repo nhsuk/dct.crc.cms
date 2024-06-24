@@ -70,6 +70,7 @@ stages:
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
+                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
 
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
