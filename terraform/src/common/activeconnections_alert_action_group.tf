@@ -39,7 +39,7 @@ resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert" {
   criteria {
     metric_namespace = "Microsoft.DBforPostgreSQL/servers"
     metric_name      = "active_connections"
-    aggregation      = "Total"
+    aggregation      = "Maximum"
     operator         = "GreaterThanOrEqual"
     threshold        = 85
   }
