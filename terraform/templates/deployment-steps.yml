@@ -54,3 +54,5 @@ steps:
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+        -var postgresql_server=${{ parameters.postgresqlServer }}
+        -var postgresql_resource_group=${{ parameters.postgresqlResourceGroup }}
