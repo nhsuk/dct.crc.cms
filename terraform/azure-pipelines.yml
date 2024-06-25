@@ -112,6 +112,8 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  importArgs: ${{ parameters.importArgs }}
+                  dryrun: ${{ parameters.dryrun }}
 
   - stage: terraformStaging
     displayName: 'Terraform Staging Env'
@@ -144,6 +146,8 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  importArgs: ${{ parameters.importArgs }}
+                  dryrun: ${{ parameters.dryrun }}
   
   - stage: terraformProduction
     displayName: 'Terraform Production Env'
@@ -178,6 +182,8 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  importArgs: ${{ parameters.importArgs }}
+                  dryrun: ${{ parameters.dryrun }}
 
   - stage: terraformDR
     displayName: 'Terraform DR Env'
@@ -212,3 +218,5 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  importArgs: ${{ parameters.importArgs }}
+                  dryrun: ${{ parameters.dryrun }}
