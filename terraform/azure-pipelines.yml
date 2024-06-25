@@ -76,10 +76,10 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
-                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
+                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
 
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
@@ -114,6 +114,8 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
+                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
 
   - stage: terraformStaging
     displayName: 'Terraform Staging Env'
@@ -148,6 +150,8 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
+                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
   
   - stage: terraformProduction
     displayName: 'Terraform Production Env'
@@ -184,6 +188,8 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
+                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
 
   - stage: terraformDR
     displayName: 'Terraform DR Env'
@@ -220,3 +226,5 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
+                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
