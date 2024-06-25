@@ -50,7 +50,6 @@ steps:
   - ${{ if and(ne(parameters.importArgs, ''), ne(parameters.importArgs, ' ')) }}:
     - ${{ each resourceDetails in split(replace(parameters.importArgs, ' ', ''), ',')}}:
       - task: Bash@3
-        name: ShowImports
         displayName: 'Check import inputs'
         inputs:
           targetType: 'inlineScript'
