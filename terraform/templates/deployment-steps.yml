@@ -78,6 +78,8 @@ steps:
             -var resource_group=${{ parameters.resourceGroup }}
             -var environment=${{ parameters.environment }}
             -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+            -var postgresql_server=${{ parameters.postgresqlServer }}
+            -var postgresql_resource_group=${{ parameters.postgresqlResourceGroup }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
@@ -101,17 +103,15 @@ steps:
         echo "##vso[task.complete result=SucceededWithIssues;]"
       displayName: 'Dry Run - skipping apply'
 
-  - ${{ if ne(parameters.dryrun, 'true') }}:        -var postgresql_server=${{ parameters.postgresqlServer }}
-        -var postgresql_resource_group=${{ parameters.postgresqlResourceGroup }}
-
-  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-    displayName: 'terraform apply'
-    condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
-    inputs:
-      command: apply
-      workingDirectory: ${{ parameters.artifactPath }}
-      environmentServiceName: ${{ parameters.azureSubscription }}
-      commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+  - ${{ if ne(parameters.dryrun, 'true') }}:
+    - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+      displayName: 'terraform apply'
+      condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+      inputs:
+        command: apply
+        workingDirectory: ${{ parameters.artifactPath }}
+        environmentServiceName: ${{ parameters.azureSubscription }}
+        commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
   - task: AzureCLI@2
     displayName: Azure CLI check secrets
