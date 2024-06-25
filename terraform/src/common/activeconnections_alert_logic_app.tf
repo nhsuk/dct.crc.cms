@@ -31,7 +31,9 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                     rg_name = data.azurerm_resource_group.rg.name,  
                     rg_id = data.azurerm_resource_group.rg.id,
                     la_name = local.activeconnections_logic_app_name,
-                    la_id = local.activeconnections_logic_app_id 
+                    la_id = local.activeconnections_logic_app_id,
+                    postgresql_server_name = local.postgresql_server_name,
+                    postgresql_server_url = local.postgresql_server_url
                   }),  
                   "headers": {  
                     "Content-Type": "application/json"  

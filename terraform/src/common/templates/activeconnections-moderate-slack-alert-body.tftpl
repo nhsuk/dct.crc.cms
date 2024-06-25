@@ -2,7 +2,7 @@
   "blocks": [
       {
           "text": {
-              "text": "Moderate Alert: @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']} active connections currently",
+              "text": "Moderate Alert: @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']} active connections to ${postgresql_server_name}",
               "type": "plain_text"
           },
           "type": "header"
@@ -16,7 +16,7 @@
       },
       {
           "text": {
-              "text": "*SQL Server*\n <https://portal.azure.com/#@nhschoices.net/resource/subscriptions/07748954-52d6-46ce-95e6-2701bfc715b4/resourceGroups/nhsuk-dct-rg-dev-uks/providers/Microsoft.DBforPostgreSQL/servers/campaigns-cms-psql-dev-uks/overview|campaigns-cms-psql-dev-uks>",
+              "text": "*SQL Server*\n <${postgresql_server_url}|${postgresql_server_name}>",
               "type": "mrkdwn"
           },
           "type": "section"

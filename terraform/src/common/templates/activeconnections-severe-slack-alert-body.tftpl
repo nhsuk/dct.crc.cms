@@ -2,7 +2,7 @@
   "blocks": [
       {
           "text": {
-              "text": "Severe Alert: @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']} active connections currently",
+              "text": "Severe Alert: @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']} active connections to ${postgresql_server_name}",
               "type": "plain_text"
           },
           "type": "header"
