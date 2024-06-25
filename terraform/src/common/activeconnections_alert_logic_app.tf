@@ -1,6 +1,6 @@
 resource "azapi_resource" "activeconnectionsalert_la" {  
   type      = "Microsoft.Logic/workflows@2019-05-01"  
-  name      = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-la-")  
+  name      = local.activeconnections_logic_app_name
   location  = data.azurerm_resource_group.rg.location  
   parent_id = data.azurerm_resource_group.rg.id  
   tags      = local.common_tags
@@ -60,7 +60,9 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                 "inputs": {  
                   "body": templatefile("${path.module}/templates/activeconnections-severe-slack-alert-body.tftpl", {  
                     rg_name = data.azurerm_resource_group.rg.name,  
-                    rg_id = data.azurerm_resource_group.rg.id  
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = local.activeconnections_logic_app_name,
+                    la_id = local.activeconnections_logic_app_id
                   }),  
                   "headers": {  
                     "Content-Type": "application/json"  
