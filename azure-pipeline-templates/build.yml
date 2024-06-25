@@ -1,20 +1,21 @@
 steps:
-- task: Docker@2
-  displayName: 'Docker Build'
-  inputs:
-    containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-    dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-    repository: '$(repository)'
-    command: 'build'
-    arguments: '--build-arg BUILD_ENV="production"'
-    tags: |
-      ${{ parameters.tag }}
-- task: Docker@2
-  displayName: 'Docker Push'
-  inputs:
-    containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-    dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-    repository: '$(repository)'
-    command: 'push'
-    tags: |
-      ${{ parameters.tag }}
+  - task: Docker@2
+    displayName: 'Docker Build'
+    inputs:
+      containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
+      dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+      repository: '$(repository)'
+      command: 'build'
+      arguments: '--build-arg BUILD_ENV="production"'
+      tags: |
+        ${{ parameters.tag }}
+  - task: Docker@2
+    displayName: 'Docker Push'
+    condition: ne('${{ parameters.dryRun }}', 'True')
+    inputs:
+      containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
+      dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+      repository: '$(repository)'
+      command: 'push'
+      tags: |
+        ${{ parameters.tag }}
