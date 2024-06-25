@@ -10,7 +10,7 @@ resource "azapi_resource" "keyvault_con" {
   parent_id                 = data.azurerm_resource_group.rg.id
   schema_validation_enabled = false
   tags                      = local.common_tags
-  body = jsonencode({
+  body = {
     properties = {
       displayName = local.key_vault_name
       parameterValueSet = {
@@ -30,5 +30,11 @@ resource "azapi_resource" "keyvault_con" {
         id          = data.azurerm_managed_api.kv.id
       }
     }
-  })
+  }
+  lifecycle {
+    ignore_changes = [
+      body.properties.api.iconUri,
+      body.properties.api.brandColor
+    ]
+  }
 }

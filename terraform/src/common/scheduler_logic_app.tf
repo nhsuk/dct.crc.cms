@@ -7,6 +7,7 @@ resource "azapi_resource" "scheduler_la" {
   identity {
     type = "SystemAssigned"
   }
+
   body = jsonencode({
     "properties" : {
       "parameters" : {},

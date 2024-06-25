@@ -1,0 +1,14 @@
+displayName: CRCv3 Load Test - 1
+testPlan: crc-j2-test.jmx
+description: Login, download, order, logout
+engineInstances: 1
+testId: CRCv3_logout_download_order_logout_v1
+testType: JMX
+splitAllCSVs: False
+configurationFiles:
+- jmeter.csv
+failureCriteria:
+- percentage(error) > 5
+autoStop:
+  errorPercentage: 90
+  timeWindow: 30

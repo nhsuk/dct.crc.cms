@@ -4,6 +4,7 @@ import logging
 import requests
 
 from html import escape
+
 from django.conf import settings
 from django.db.models.query import QuerySet
 
