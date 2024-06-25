@@ -3,9 +3,7 @@ import re
 import logging
 import requests
 
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
-from azure.search.documents.indexes import SearchIndexClient
+from html import escape
 
 from django.conf import settings
 from django.db.models.query import QuerySet
