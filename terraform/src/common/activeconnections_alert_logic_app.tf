@@ -29,7 +29,9 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                 "inputs": {  
                   "body": templatefile("${path.module}/templates/activeconnections-moderate-slack-alert-body.tftpl", {  
                     rg_name = data.azurerm_resource_group.rg.name,  
-                    rg_id = data.azurerm_resource_group.rg.id  
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = local.activeconnections_logic_app_name,
+                    la_id = local.activeconnections_logic_app_id 
                   }),  
                   "headers": {  
                     "Content-Type": "application/json"  
