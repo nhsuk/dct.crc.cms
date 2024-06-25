@@ -12,4 +12,11 @@ locals {
 
   scheduler_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   key_vault_name           = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
+
+  secret_names = [
+    "alertingWebhook",
+    "pubToken",
+    "pubEndpoint",
+    "searchIndexEndpoint"
+  ]
 }
