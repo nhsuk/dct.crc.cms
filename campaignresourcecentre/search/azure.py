@@ -114,9 +114,10 @@ class AzureSearchRebuilder:
         if self.preexisting_objects:
             # Delete them all
             azure_search = AzureSearchBackend({})
-            for url, search_resources in self.preexisting_objects.items():
-                for search_resource in search_resources:
-                    azure_search.delete_search_resource(search_resource)
+            azure_search.delete_search_resource_bulk(self.preexisting_objects)
+            # for url, search_resources in self.preexisting_objects.items():
+            #     for search_resource in search_resources:
+            #         azure_search.delete_search_resource(search_resource)
         return self.index
 
     def finish(self):
@@ -488,6 +489,59 @@ class AzureSearchBackend(BaseSearchBackend):
                     )
         else:
             logger.error("Invalid response: {}".format(response.get("search_content")))
+
+    def delete_search_resource_bulk(self, resources):
+        delete_objects = [
+            self.get_search_delete_json(resource[0]) for resource in resources.values()
+        ]
+        logger.info(f"Deleting {len(delete_objects)} resources from Azure Search")
+
+        if settings.AZURE_SEARCH_UPDATE:
+            try:
+                response = self._make_delete_request(
+                    json.dumps({"value": delete_objects})
+                )
+                if response.ok:
+                    logger.info(
+                        f"Successfully deleted {len(resources)} resources from Azure Search",
+                        extra={"resources": resources},
+                    )
+                else:
+                    logger.error(
+                        f"Error deleting resources from Azure Search: {response.status_code}",
+                        extra={"response": response.text, "resources": resources},
+                    )
+            except Exception as err:
+                logger.error(
+                    "Exception raised using Azure Search Bulk Delete: %s",
+                    err,
+                    exc_info=True,
+                )
+        else:
+            logger.info(
+                "Search resources deletion noted", extra={"resources": resources}
+            )
+
+    def get_search_delete_json(self, resource):
+        print("------------------------------------------------")
+        print(resource)
+        print("------------------------------------------------")
+        metadata_storage_path = resource.get("metadata_storage_path")
+        return {
+            "@search.action": "delete",
+            "metadata_storage_path": metadata_storage_path,
+        }
+
+    def _make_delete_request(self, data):
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": settings.AZURE_SEARCH["DELETE_API_KEY"],
+        }
+        return requests.post(
+            settings.AZURE_SEARCH["DELETE_API_HOST"],
+            data=data,
+            headers=headers,
+        )
 
     def delete_search_resource(self, search_resource):
         try:
