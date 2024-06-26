@@ -68,7 +68,7 @@ stages:
   - stage: terraformReview
     displayName: 'Terraform Review Env'
     dependsOn: Build
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), {{ parameters.deployReview }})
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), ${{ parameters.deployReview }})
     pool:
       vmImage: windows-2022
     variables:
@@ -103,7 +103,7 @@ stages:
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
     dependsOn: Build
-    condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), {{ parameters.deployIntegration }})
+    condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
     pool:
       vmImage: windows-2022
     variables:
@@ -138,7 +138,7 @@ stages:
   - stage: terraformStaging
     displayName: 'Terraform Staging Env'
     dependsOn: Build
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), {{ parameters.deployStaging }})
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
     pool:
       vmImage: windows-2022
     variables:
@@ -173,7 +173,7 @@ stages:
   - stage: terraformProduction
     displayName: 'Terraform Production Env'
     dependsOn: terraformStaging
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), {{ parameters.deployProduction }})
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployProduction }})
     pool:
       vmImage: windows-2022
     variables:
@@ -210,7 +210,7 @@ stages:
   - stage: terraformDR
     displayName: 'Terraform DR Env'
     dependsOn: terraformProduction
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), {{ parameters.deployDr }})
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployDr }})
     pool:
       vmImage: windows-2022
     variables:
