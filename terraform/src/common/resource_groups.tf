@@ -9,5 +9,5 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_resource_group" "postgresql_rg" {
-  name = var.postgresql_resource_group
+  name = local.postgresql_resource_group
 }

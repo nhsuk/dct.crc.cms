@@ -1,6 +1,6 @@
 data "azurerm_postgresql_server" "postgres_server" {
-  name                = var.postgresql_server
-  resource_group_name = data.azurerm_resource_group.postgresql_rg.name
+  name                = local.postgresql_server_name
+  resource_group_name = local.postgresql_resource_group
 }
 
 data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {

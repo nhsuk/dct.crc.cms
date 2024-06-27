@@ -13,12 +13,6 @@ variable "tfstate_account_name" {
   description = "Terraform tfstate storage"
 }
 
-variable "postgresql_server" {
-  description = "Name of the PostgreSQL server."
-  type        = string
-}
-
-variable "postgresql_resource_group" {
-  description = "The name of the resource group containing the PostgreSQL server"
-  type        = string
+variable "location" {
+  description = "Azure region where the resources will be created."
 }

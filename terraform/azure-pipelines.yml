@@ -97,8 +97,7 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
-                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
-                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
+                  location: ${{ variables.LOCATION }}
 
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
@@ -132,8 +131,7 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
-                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
-                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
+                  location: ${{ variables.LOCATION }}
 
   - stage: terraformStaging
     displayName: 'Terraform Staging Env'
@@ -167,8 +165,7 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
-                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
-                  postgresqlResourceGroup: dct-cms-postgres-rg-stag-uksouth
+                  location: ${{ variables.LOCATION }}
   
   - stage: terraformProduction
     displayName: 'Terraform Production Env'
@@ -204,8 +201,7 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
-                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
-                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
+                  location: ${{ variables.LOCATION }}
 
   - stage: terraformDR
     displayName: 'Terraform DR Env'
@@ -241,5 +237,4 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
-                  postgresqlServer: ${{ variables.POSTGRESQL_SERVER }}
-                  postgresqlResourceGroup: ${{ variables.POSTGRESQL_RESOURCE_GROUP }}
+                  location: ${{ variables.LOCATION }}
