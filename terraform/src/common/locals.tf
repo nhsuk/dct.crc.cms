@@ -22,14 +22,12 @@ locals {
     production   = module.nhsuk-production
   }
 
-  valid_environment = contains(keys(local.environment_map), var.environment)
+  selected_environment = lookup(local.environment_map, var.environment)[0]
 
-  selected_environment = local.valid_environment ? local.environment_map[var.environment][0] : null
-
-  postgresql_server_resource_id = local.selected_environment != null ? local.selected_environment.postgresql_server_id : ""
-  postgresql_server_name        = local.selected_environment != null ? local.selected_environment.postgresql_server_name : ""
-  postgresql_resource_group     = local.selected_environment != null ? local.selected_environment.postgresql_resource_group : ""
-  postgresql_server_url         = local.selected_environment != null ? "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview" : ""
+  postgresql_server_resource_id = local.selected_environment.postgresql_server_id
+  postgresql_server_name        = local.selected_environment.postgresql_server_name
+  postgresql_resource_group     = local.selected_environment.postgresql_resource_group
+  postgresql_server_url         = "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview"
 
   secret_names = [  
     "alertingWebhook",

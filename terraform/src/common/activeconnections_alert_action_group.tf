@@ -24,7 +24,7 @@ resource "azurerm_monitor_action_group" "activeconnections_alert" {
 resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_85" {
   name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnections-metricalert-85-")
   resource_group_name = data.azurerm_resource_group.rg.name
-  scopes              = [module.nhsuk[0].postgresql_server_id]
+  scopes              = [local.selected_environment.postgresql_server_id]
   description         = "Alert when active connections are greater than or equal to 85."
   severity            = 3
   frequency           = "PT1M"
@@ -47,7 +47,7 @@ resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_85" {
 resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_98" {
   name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnections-metricalert-98-")
   resource_group_name = data.azurerm_resource_group.rg.name
-  scopes              = [module.nhsuk[0].postgresql_server_id]
+  scopes              = [local.selected_environment.postgresql_server_id]
   description         = "Alert when active connections are greater than or equal to 98."
   severity            = 2
   frequency           = "PT1M"
