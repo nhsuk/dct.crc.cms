@@ -8,10 +8,3 @@ terraform {
     }
   }
 }
-
-provider "azurerm" {
-  alias = "azurerm"
-}
-
-provider "azapi" {
-}
