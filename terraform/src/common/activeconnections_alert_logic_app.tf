@@ -47,8 +47,8 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()['data']['alertContext']['condition']['allOf'][0]['metricValue']",  
-                85  
+                "@triggerBody()['data']['essentials']['severity']",  
+                "Sev3"  
               ]  
             },  
             "runAfter": {  
@@ -82,8 +82,8 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()['data']['alertContext']['condition']['allOf'][0]['metricValue']",  
-                98  
+                "@triggerBody()['data']['essentials']['severity']",  
+                "Sev1"  
               ]  
             },  
             "runAfter": {  
