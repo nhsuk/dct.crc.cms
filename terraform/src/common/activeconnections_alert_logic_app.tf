@@ -1,201 +1,189 @@
-resource "azapi_resource" "activeconnectionsalert_la" {  
-  type      = "Microsoft.Logic/workflows@2019-05-01"  
+resource "azapi_resource" "activeconnectionsalert_la" {
+  type      = "Microsoft.Logic/workflows@2019-05-01"
   name      = local.activeconnections_logic_app_name
-  location  = data.azurerm_resource_group.rg.location  
-  parent_id = data.azurerm_resource_group.rg.id  
+  location  = data.azurerm_resource_group.rg.location
+  parent_id = data.azurerm_resource_group.rg.id
   tags      = local.common_tags
 
-  identity {  
-    type = "SystemAssigned"  
+  identity {
+    type = "SystemAssigned"
   }
 
-  body = jsonencode({  
-    "properties": {  
-      "state": "Enabled",  
-      "parameters" : {},
-      "definition": {  
-        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",  
-        "contentVersion": "1.0.0.0",  
-        "parameters": {  
-          "$connections": {  
-            "defaultValue": {},  
-            "type": "Object"  
+  body = jsonencode({
+    "properties": {
+      "state": "Enabled",
+      "parameters": {},
+      "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+          "$connections": {
+            "defaultValue": {},
+            "type": "Object"
           }
         },
-        "actions": {  
-          "Condition_Moderate": {  
-            "actions": {  
-              "SendModerateAlert": {  
-                "inputs": {  
+        "actions": {
+          "Condition_Moderate": {
+            "actions": {
+              "SendModerateAlert": {
+                "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
-                    rg_name = data.azurerm_resource_group.rg.name,  
-                    rg_id = data.azurerm_resource_group.rg.id,
-                    la_name = local.activeconnections_logic_app_name,
-                    la_id = local.activeconnections_logic_app_id,
-                    postgresql_server_name = local.postgresql_server_name,
-                    postgresql_server_url = local.postgresql_server_url
-                  }),  
-                  "headers": {  
-                    "Content-Type": "application/json"  
-                  },  
-                  "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')['value']}"  
-                },  
-                "runAfter": {},  
-                "type": "Http"  
-              }  
-            },  
+                    rg_name                  = data.azurerm_resource_group.rg.name,
+                    rg_id                    = data.azurerm_resource_group.rg.id,
+                    la_name                  = local.activeconnections_logic_app_name,
+                    la_id                    = local.activeconnections_logic_app_id,
+                    postgresql_server_name   = local.postgresql_server_name,
+                    postgresql_server_url    = local.postgresql_server_url
+                  }),
+                  "headers": {
+                    "Content-Type": "application/json"
+                  },
+                  "method": "POST",
+                  "uri": "@{body('Get alerting webhook')?['value']}"
+                },
+                "runAfter": {},
+                "type": "Http"
+              }
+            },
             "expression": {
-              "and": [
-                {
-                  "equals": [
-                    "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
-                    85
-                  ]
-                },
-                {
-                  "equals": [
-                    "@triggerBody()?['data']?['essentials']['monitorCondition']",
-                    "Fired"
-                  ]
-                }
-              ]
-            },  
-            "runAfter": {  
-              "Get alerting webhook": [  
-                "Succeeded"  
-              ]  
-            },  
-            "type": "If"  
-          },  
-          "Condition_Severe": {  
-            "actions": {  
-              "SendSevereAlert": {  
-                "inputs": {  
-                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
-                    rg_name = data.azurerm_resource_group.rg.name,  
-                    rg_id = data.azurerm_resource_group.rg.id,
-                    la_name = local.activeconnections_logic_app_name,
-                    la_id = local.activeconnections_logic_app_id,
-                    postgresql_server_name = local.postgresql_server_name,
-                    postgresql_server_url = local.postgresql_server_url
-                  }),  
-                  "headers": {  
-                    "Content-Type": "application/json"  
-                  },  
-                  "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')['value']}"  
-                },  
-                "runAfter": {},  
-                "type": "Http"  
-              }  
-            },  
-            "expression": {  
-              "and": [
-                {
-                  "equals": [
-                    "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
-                    98
-                  ]
-                },
-                {
-                  "equals": [
-                    "@triggerBody()?['data']?['essentials']['monitorCondition']",
-                    "Fired"
-                  ]
-                }
-              ]  
-            },  
-            "runAfter": {  
-              "Condition_Moderate": [  
-                "Failed",  
-                "Skipped",  
-                "Succeeded"  
-              ]  
-            },  
-            "type": "If"  
-          },  
-          "Condition_Resolved": {  
-            "actions": {  
-              "SendResolvedAlert": {  
-                "inputs": {  
-                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
-                    rg_name = data.azurerm_resource_group.rg.name,  
-                    rg_id = data.azurerm_resource_group.rg.id,
-                    la_name = local.activeconnections_logic_app_name,
-                    la_id = local.activeconnections_logic_app_id,
-                    postgresql_server_name = local.postgresql_server_name,
-                    postgresql_server_url = local.postgresql_server_url
-                  }),  
-                  "headers": {  
-                    "Content-Type": "application/json"  
-                  },  
-                  "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')['value']}"  
-                },  
-                "runAfter": {},  
-                "type": "Http"  
-              }  
-            },  
-            "expression": {  
-              "less": [
+              "equals": [
                 "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
-                50
-              ],
+                85
+              ]
+            },
+            "runAfter": {
+              "Get alerting webhook": [
+                "Succeeded"
+              ]
+            },
+            "type": "If"
+          },
+          "Condition_Severe": {
+            "actions": {
+              "SendSevereAlert": {
+                "inputs": {
+                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
+                    rg_name                  = data.azurerm_resource_group.rg.name,
+                    rg_id                    = data.azurerm_resource_group.rg.id,
+                    la_name                  = local.activeconnections_logic_app_name,
+                    la_id                    = local.activeconnections_logic_app_id,
+                    postgresql_server_name   = local.postgresql_server_name,
+                    postgresql_server_url    = local.postgresql_server_url
+                  }),
+                  "headers": {
+                    "Content-Type": "application/json"
+                  },
+                  "method": "POST",
+                  "uri": "@{body('Get alerting webhook')?['value']}"
+                },
+                "runAfter": {},
+                "type": "Http"
+              }
+            },
+            "expression": {
+              "equals": [
+                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
+                98
+              ]
+            },
+            "runAfter": {
+              "Condition_Moderate": [
+                "Failed",
+                "Skipped",
+                "Succeeded"
+              ]
+            },
+            "type": "If"
+          },
+          "Condition_Resolved": {
+            "actions": {
+              "Condition_MetricValue_Less": {
+                "actions": {
+                  "SendResolvedAlert": {
+                    "inputs": {
+                      "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
+                        rg_name                  = data.azurerm_resource_group.rg.name,
+                        rg_id                    = data.azurerm_resource_group.rg.id,
+                        la_name                  = local.activeconnections_logic_app_name,
+                        la_id                    = local.activeconnections_logic_app_id,
+                        postgresql_server_name   = local.postgresql_server_name,
+                        postgresql_server_url    = local.postgresql_server_url
+                      }),
+                      "headers": {
+                        "Content-Type": "application/json"
+                      },
+                      "method": "POST",
+                      "uri": "@{body('Get alerting webhook')?['value']}"
+                    },
+                    "runAfter": {},
+                    "type": "Http"
+                  }
+                },
+                "expression": {
+                  "less": [
+                    "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
+                    50
+                  ]
+                },
+                "runAfter": {},
+                "type": "If"
+              }
+            },
+            "expression": {
               "equals": [
                 "@triggerBody()?['data']?['essentials']['monitorCondition']",
                 "Resolved"
               ]
             },
-            "runAfter": {  
-              "Condition_Severe": [  
-                "Failed",  
-                "Skipped",  
-                "Succeeded"  
-              ]  
-            },  
-            "type": "If"  
-          },  
-          "Get alerting webhook": {  
-            "inputs": {  
-              "host": {  
-                "connection": {  
-                  "name": "@parameters('$connections')['keyvault']['connectionId']"  
-                }  
-              },  
-              "method": "get",  
-              "path": "/secrets/@{encodeURIComponent('alertingWebhook')}/value"  
-            },  
-            "runAfter": {},  
-            "type": "ApiConnection"  
-          }  
-        },  
-        "triggers": {  
-          "manual": {  
-            "type": "Request",  
-            "kind": "Http",  
-            "inputs": {  
-              "schema": templatefile("${path.module}/schema/common-alert-schema.json", {})  
-            }  
-          }  
-        }  
+            "runAfter": {
+              "Condition_Severe": [
+                "Failed",
+                "Skipped",
+                "Succeeded"
+              ]
+            },
+            "type": "If"
+          },
+          "Get alerting webhook": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "name": "@parameters('$connections')['keyvault']['connectionId']"
+                }
+              },
+              "method": "get",
+              "path": "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+            },
+            "runAfter": {},
+            "type": "ApiConnection"
+          }
+        },
+        "triggers": {
+          "manual": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+              "schema": templatefile("${path.module}/schema/common-alert-schema.json", {})
+            }
+          }
+        }
       },
-      "parameters": {  
-        "$connections": {  
-          "value": {  
-            "keyvault": {  
-              "connectionId": azapi_resource.keyvault_con.id,  
-              "connectionName": azapi_resource.keyvault_con.name,  
-              "id": data.azurerm_managed_api.kv.id,  
-              "connectionProperties": {  
-                "authentication": {  
-                  "type": "ManagedServiceIdentity"  
-                }  
-              }  
-            }  
-          }  
-        }  
+      "parameters": {
+        "$connections": {
+          "value": {
+            "keyvault": {
+              "connectionId": azapi_resource.keyvault_con.id,
+              "connectionName": azapi_resource.keyvault_con.name,
+              "id": data.azurerm_managed_api.kv.id,
+              "connectionProperties": {
+                "authentication": {
+                  "type": "ManagedServiceIdentity"
+                }
+              }
+            }
+          }
+        }
       }
-    }  
-  })  
+    }
+  })
 }
