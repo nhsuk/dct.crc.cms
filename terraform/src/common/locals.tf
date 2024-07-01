@@ -18,8 +18,8 @@ locals {
   environment_map = {
     development  = module.nhsuk
     integration  = module.nhsuk-integration
-    staging      = module.nhsuk-staging
-    production   = module.nhsuk-production
+    staging      = module.nhsuk
+    production   = module.nhsuk
   }
 
   selected_environment = lookup(local.environment_map, var.environment)[0]

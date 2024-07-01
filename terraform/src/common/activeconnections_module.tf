@@ -1,5 +1,5 @@
 module "nhsuk" {  
-  count       = var.environment == "development" ? 1 : 0  
+  count       = var.environment != "integration" ? 1 : 0
   source      = "./modules/activeconnectionsalert"  
   environment = var.environment  
   location    = var.location  
