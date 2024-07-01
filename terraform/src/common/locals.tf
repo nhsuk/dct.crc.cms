@@ -17,6 +17,7 @@ locals {
   secret_names = [
     "alertingWebhook",
     "pubToken",
-    "pubEndpoint"
+    "pubEndpoint",
+    "searchIndexEndpoint"
   ]
 }

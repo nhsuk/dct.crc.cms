@@ -136,26 +136,6 @@ def debug_az_search(request):
     return JsonResponse(content, safe=False)
 
 
-@require_http_methods(["GET"])
-def debug_az_search(request):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-
-    result_limit = request.GET.get("limit", 1000)
-
-    azure_search = AzureSearchBackend({})
-    json_result = azure_search.azure_search(
-        "", {}, {}, None, results_per_page=result_limit
-    )
-
-    if not json_result.get("ok"):
-        return JsonResponse({})
-
-    results = json_result["search_content"]["value"]
-    content = [r["content"]["resource"] for r in results]
-    return JsonResponse(content, safe=False)
-
-
 def spawn_command(command, params=None):
     params = params or {}
     with StringIO() as responseFile:
