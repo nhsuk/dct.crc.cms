@@ -47,8 +47,8 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
-                85  
+                "@triggerBody()?['data']?['essentials']['severity']",  
+                3  
               ]  
             },  
             "runAfter": {  
@@ -82,8 +82,8 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
-                98  
+                "@triggerBody()?['data']?['essentials']['severity']",  
+                2  
               ]  
             },  
             "runAfter": {  
@@ -97,42 +97,30 @@ resource "azapi_resource" "activeconnectionsalert_la" {
           },  
           "Condition_Resolved": {  
             "actions": {  
-              "Condition_MetricValue_Less": {  
-                "actions": {  
-                  "SendResolvedAlert": {  
-                    "inputs": {  
-                      "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
-                        rg_name                  = data.azurerm_resource_group.rg.name,  
-                        rg_id                    = data.azurerm_resource_group.rg.id,  
-                        la_name                  = local.activeconnections_logic_app_name,  
-                        la_id                    = local.activeconnections_logic_app_id,  
-                        postgresql_server_name   = local.postgresql_server_name,  
-                        postgresql_server_url    = local.postgresql_server_url  
-                      }),  
-                      "headers": {  
-                        "Content-Type": "application/json"  
-                      },  
-                      "method": "POST",  
-                      "uri": "@{body('Get alerting webhook')?['value']}"  
-                    },  
-                    "runAfter": {},  
-                    "type": "Http"  
-                  }  
-                },  
-                "expression": {  
-                  "less": [  
-                    "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
-                    50  
-                  ]  
+              "SendResolvedAlert": {  
+                "inputs": {  
+                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
+                    rg_name                  = data.azurerm_resource_group.rg.name,  
+                    rg_id                    = data.azurerm_resource_group.rg.id,  
+                    la_name                  = local.activeconnections_logic_app_name,  
+                    la_id                    = local.activeconnections_logic_app_id,  
+                    postgresql_server_name   = local.postgresql_server_name,  
+                    postgresql_server_url    = local.postgresql_server_url  
+                  }),  
+                  "headers": {  
+                    "Content-Type": "application/json"  
+                  },  
+                  "method": "POST",  
+                  "uri": "@{body('Get alerting webhook')?['value']}"  
                 },  
                 "runAfter": {},  
-                "type": "If"  
+                "type": "Http"  
               }  
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['essentials']['monitorCondition']",  
-                "Resolved"  
+                "@triggerBody()?['data']?['essentials']['severity']",  
+                0  
               ]  
             },  
             "runAfter": {  

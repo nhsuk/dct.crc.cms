@@ -67,3 +67,26 @@ resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_98" {
   }
 }
 
+resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_resolved" {  
+  name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnections-metricalert-resolved-")  
+  resource_group_name = data.azurerm_resource_group.rg.name  
+  scopes              = [local.selected_environment.postgresql_server_id]  
+  description         = "Alert when active connections drop below 50"  
+  severity            = 0 
+  frequency           = "PT1M"  
+  window_size         = "PT5M"  
+  enabled             = true
+
+  criteria {  
+    metric_namespace = "Microsoft.DBforPostgreSQL/servers"  
+    metric_name      = "active_connections"  
+    aggregation      = "Maximum"  
+    operator         = "LessThan"  
+    threshold        = 50  
+  }
+
+  action {  
+    action_group_id = azurerm_monitor_action_group.activeconnections_alert.id  
+  }  
+}
+
