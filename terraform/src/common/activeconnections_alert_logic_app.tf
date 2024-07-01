@@ -47,7 +47,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
           },
           "Condition_Moderate": {
             "actions": {
-              "SendAlert": {
+              "SendModerateAlert": {
                 "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,
@@ -82,7 +82,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
           },
           "Condition_Severe": {
             "actions": {
-              "SendAlert": {
+              "SendSevereAlert": {
                 "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,
