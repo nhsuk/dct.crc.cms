@@ -39,7 +39,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                     "Content-Type": "application/json"  
                   },  
                   "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')?['value']}"  
+                  "uri": "@{body('Get alerting webhook')['value']}"  
                 },  
                 "runAfter": {},  
                 "type": "Http"  
@@ -47,7 +47,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
+                "@triggerBody()['data']['alertContext']['condition']['allOf'][0]['metricValue']",  
                 85  
               ]  
             },  
@@ -74,7 +74,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                     "Content-Type": "application/json"  
                   },  
                   "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')?['value']}"  
+                  "uri": "@{body('Get alerting webhook')['value']}"  
                 },  
                 "runAfter": {},  
                 "type": "Http"  
@@ -82,7 +82,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
+                "@triggerBody()['data']['alertContext']['condition']['allOf'][0]['metricValue']",  
                 98  
               ]  
             },  
@@ -111,7 +111,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                     "Content-Type": "application/json"  
                   },  
                   "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')?['value']}"  
+                  "uri": "@{body('Get alerting webhook')['value']}"  
                 },  
                 "runAfter": {},  
                 "type": "Http"  
@@ -119,7 +119,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['essentials']['monitorCondition']",  
+                "@triggerBody()['data']['essentials']['monitorCondition']",  
                 "Resolved"  
               ]  
             },  
