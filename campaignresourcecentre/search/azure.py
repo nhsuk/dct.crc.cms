@@ -70,8 +70,12 @@ class AzureEmptySearchResults(AzureSearchResults):
 
 class AzureSearchRebuilder:
     def __init__(self, index):
+        self.preexisting_objects = []
         logger.info("Initiating search rebuild for '%s' index", index)
         self.index = index
+
+        self.azure_search = AzureSearchBackend({})
+        self.az_storage = index._storage
 
     def _extract_result_urls(self, json_result, result):
         search_content = json_result["search_content"]
@@ -97,7 +101,7 @@ class AzureSearchRebuilder:
         if ok:
             try:
                 self._extract_result_urls(json_result, result)
-                logger.info(f"Current result URLs: {len (result)}")
+                logger.info(f"Current result URLs: {len(result)}")
             except Exception as e:
                 logger.error("Couldn't interpret search result: %s", e)
                 raise
@@ -111,13 +115,11 @@ class AzureSearchRebuilder:
         logger.info(
             "URLs of indexed objects at start: %d", len(self.preexisting_objects)
         )
-        if self.preexisting_objects:
-            # Delete them all
-            azure_search = AzureSearchBackend({})
-            azure_search.delete_search_resource_bulk(self.preexisting_objects)
-            # for url, search_resources in self.preexisting_objects.items():
-            #     for search_resource in search_resources:
-            #         azure_search.delete_search_resource(search_resource)
+
+        logger.info("Clearing old records from blob storage")
+        self.az_storage.cleanup_blob_storage()
+        logger.info("Finished clearing blob storage")
+
         return self.index
 
     def finish(self):
@@ -151,6 +153,15 @@ class AzureSearchRebuilder:
             logger.error(
                 "%d item(s) indexed but not added", len(indexed_and_not_added_urls)
             )
+
+            orphaned_records = [
+                item
+                for url in indexed_and_not_added_urls
+                for item in postexisting_objects[url]
+            ]
+
+            self._delete_orphan_documents(orphaned_records)
+
             self.index._storage.add_json_file(
                 f"orphans_{self.index.name}.json",
                 {url: postexisting_objects[url] for url in indexed_and_not_added_urls},
@@ -161,7 +172,16 @@ class AzureSearchRebuilder:
                 if entries > 1:
                     logger.error("%s instances of url %s in index", entries, url)
 
-        return
+    def _delete_orphan_documents(self, orphans):
+        for item in orphans:
+            metadata_storage_path = item["metadata_storage_path"]
+            url = item["content"]["resource"]["object_url"]
+            self.azure_search.delete_search_resource_by_metadata(metadata_storage_path)
+            logger.info(
+                "Deleted orphaned record: Url: %s | metadata_storage_path:%s",
+                url,
+                metadata_storage_path,
+            )
 
 
 class AzureIndex:
@@ -490,57 +510,32 @@ class AzureSearchBackend(BaseSearchBackend):
         else:
             logger.error("Invalid response: {}".format(response.get("search_content")))
 
-    def delete_search_resource_bulk(self, resources):
-        delete_objects = [
-            self.get_search_delete_json(resource[0]) for resource in resources.values()
-        ]
-        logger.info(f"Deleting {len(delete_objects)} resources from Azure Search")
-
-        if settings.AZURE_SEARCH_UPDATE:
-            try:
-                response = self._make_delete_request(
-                    json.dumps({"value": delete_objects})
-                )
-                if response.ok:
-                    logger.info(
-                        f"Successfully deleted {len(resources)} resources from Azure Search",
-                        extra={"resources": resources},
-                    )
-                else:
-                    logger.error(
-                        f"Error deleting resources from Azure Search: {response.status_code}",
-                        extra={"response": response.text, "resources": resources},
-                    )
-            except Exception as err:
-                logger.error(
-                    "Exception raised using Azure Search Bulk Delete: %s",
-                    err,
-                    exc_info=True,
-                )
-        else:
-            logger.info(
-                "Search resources deletion noted", extra={"resources": resources}
-            )
-
-    def get_search_delete_json(self, resource):
-        print("------------------------------------------------")
-        print(resource)
-        print("------------------------------------------------")
-        metadata_storage_path = resource.get("metadata_storage_path")
-        return {
-            "@search.action": "delete",
-            "metadata_storage_path": metadata_storage_path,
-        }
-
     def _make_delete_request(self, data):
         headers = {
             "Content-Type": "application/json",
-            "api-key": settings.AZURE_SEARCH["DELETE_API_KEY"],
+            "Subscription-Key": settings.AZURE_SEARCH["API_KEY"],
         }
+        query_string = f"api-version={settings.AZURE_SEARCH['DELETE_API_VERSION']}"
+        url = f"{settings.AZURE_SEARCH['DELETE_API_HOST']}?{query_string}"
+
         return requests.post(
-            settings.AZURE_SEARCH["DELETE_API_HOST"],
+            url,
             data=data,
             headers=headers,
+        )
+
+    def delete_search_resource_by_metadata(self, metadata_storage_path):
+        return self._make_delete_request(
+            json.dumps(
+                {
+                    "value": [
+                        {
+                            "@search.action": "delete",
+                            "metadata_storage_path": metadata_storage_path,
+                        }
+                    ]
+                }
+            )
         )
 
     def delete_search_resource(self, search_resource):
@@ -548,50 +543,28 @@ class AzureSearchBackend(BaseSearchBackend):
             resource_url = search_resource["content"]["resource"]["object_url"]
         except KeyError:
             resource_url = "unknown URL"
-        query_string = "api-version={}".format(
-            settings.AZURE_SEARCH["DELETE_API_VERSION"]
-        )
-        url = "{}?{}".format(settings.AZURE_SEARCH["DELETE_API_HOST"], query_string)
+
         metadata_storage_path = search_resource.get("metadata_storage_path")
-        delete_json = json.dumps(
-            {
-                "value": [
-                    {
-                        "@search.action": "delete",
-                        "metadata_storage_path": metadata_storage_path,
-                    }
-                ]
-            }
-        )
-        headers = {
-            "Subscription-Key": settings.AZURE_SEARCH["API_KEY"],
-            "Content-Type": "application/json",
-        }
+
         if settings.AZURE_SEARCH_UPDATE:
             try:
-                response = requests.post(url, headers=headers, data=delete_json)
+                response = self.delete_search_resource_by_metadata(
+                    metadata_storage_path
+                )
                 if response.ok:
                     logger.info(
-                        "Search resource deleted successfully for: {}".format(
-                            resource_url
-                        )
+                        f"Search resource deleted successfully for: {resource_url}"
                     )
                 else:
                     logger.info(
-                        "Error deleting the search resource {} using {}: {}".format(
-                            resource_url, url, response.content
-                        )
+                        f"Error deleting the search resource {resource_url}: {response.content}"
                     )
             except Exception as err:
                 logger.error(
-                    "Exception raised using %s - Azure Search Delete: %s", url, err
+                    "Exception raised trying to delete data on azure search: %s", err
                 )
         else:
-            logger.info(
-                "Search resource deletion noted for {} using {}".format(
-                    resource_url, url
-                )
-            )
+            logger.info(f"Search resource deletion noted for {resource_url}")
 
     def _create_azure_search_url_and_query(
         self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
