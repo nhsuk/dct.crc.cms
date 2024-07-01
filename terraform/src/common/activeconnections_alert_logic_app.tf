@@ -45,11 +45,21 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                 "type": "Http"  
               }  
             },  
-            "expression": {  
-              "equals": [  
-                "@triggerBody()['data']['essentials']['severity']",  
-                "Sev3"  
-              ]  
+            "expression": {
+              "and": [
+                {
+                  "equals": [
+                    "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
+                    85
+                  ]
+                },
+                {
+                  "equals": [
+                    "@triggerBody()?['data']?['essentials']['monitorCondition']",
+                    "Fired"
+                  ]
+                }
+              ]
             },  
             "runAfter": {  
               "Get alerting webhook": [  
@@ -81,9 +91,19 @@ resource "azapi_resource" "activeconnectionsalert_la" {
               }  
             },  
             "expression": {  
-              "equals": [  
-                "@triggerBody()['data']['essentials']['severity']",  
-                "Sev1"  
+              "and": [
+                {
+                  "equals": [
+                    "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
+                    98
+                  ]
+                },
+                {
+                  "equals": [
+                    "@triggerBody()?['data']?['essentials']['monitorCondition']",
+                    "Fired"
+                  ]
+                }
               ]  
             },  
             "runAfter": {  
@@ -118,11 +138,15 @@ resource "azapi_resource" "activeconnectionsalert_la" {
               }  
             },  
             "expression": {  
-              "equals": [  
-                "@triggerBody()['data']['essentials']['monitorCondition']",  
-                "Resolved"  
-              ]  
-            },  
+              "less": [
+                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",
+                50
+              ],
+              "equals": [
+                "@triggerBody()?['data']?['essentials']['monitorCondition']",
+                "Resolved"
+              ]
+            },
             "runAfter": {  
               "Condition_Severe": [  
                 "Failed",  

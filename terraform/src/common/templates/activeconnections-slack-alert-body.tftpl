@@ -2,7 +2,7 @@
   "blocks": [
       {
           "text": {
-              "text": "@{if(equals(triggerBody()['data']['essentials']['severity'], 'Sev1'), 'Severe:', 'Moderate:')} @{triggerBody()['data']['alertContext']['condition']['allOf'][0]['metricValue']} active connections to ${postgresql_server_name} - Alert @{triggerBody()['data']['essentials']['monitorCondition']}",
+              "text": "@{if(greaterOrEquals(triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue'], 98), 'Severe:', 'Moderate:')} @{triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue']} active connections to ${postgresql_server_name} - Alert @{triggerBody()?['data']?['essentials']?['monitorCondition']}",
               "type": "plain_text"
           },
           "type": "header"
