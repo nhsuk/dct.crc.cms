@@ -1,6 +1,6 @@
 resource "azapi_resource" "activeconnectionsalert_la" {  
   type      = "Microsoft.Logic/workflows@2019-05-01"  
-  name      = local.activeconnections_logic_app_name  
+  name      = local.activeconnections_logic_app_name
   location  = data.azurerm_resource_group.rg.location  
   parent_id = data.azurerm_resource_group.rg.id  
   tags      = local.common_tags
@@ -8,11 +8,11 @@ resource "azapi_resource" "activeconnectionsalert_la" {
   identity {  
     type = "SystemAssigned"  
   }
-  
+
   body = jsonencode({  
     "properties": {  
       "state": "Enabled",  
-      "parameters": {},  
+      "parameters" : {},
       "definition": {  
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",  
         "contentVersion": "1.0.0.0",  
@@ -20,20 +20,21 @@ resource "azapi_resource" "activeconnectionsalert_la" {
           "$connections": {  
             "defaultValue": {},  
             "type": "Object"  
-          }  
-        },  
+          }
+        },
         "actions": {  
-          "Condition_Severe": {  
+          "Condition_Moderate": {  
             "actions": {  
-              "SendSevereAlert": {  
+              "SendModerateAlert": {  
                 "inputs": {  
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
-                    rg_name                  = data.azurerm_resource_group.rg.name,  
-                    rg_id                    = data.azurerm_resource_group.rg.id,  
-                    la_name                  = local.activeconnections_logic_app_name,  
-                    la_id                    = local.activeconnections_logic_app_id,  
-                    postgresql_server_name   = local.postgresql_server_name,  
-                    postgresql_server_url    = local.postgresql_server_url  
+                    rg_name = data.azurerm_resource_group.rg.name,  
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = local.activeconnections_logic_app_name,
+                    la_id = local.activeconnections_logic_app_id,
+                    postgresql_server_name = local.postgresql_server_name,
+                    postgresql_server_url = local.postgresql_server_url,
+                    alert_message = "Moderate Alert: 85 active connections to ${local.postgresql_server_name}"
                   }),  
                   "headers": {  
                     "Content-Type": "application/json"  
@@ -47,8 +48,8 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['essentials']['severity']",  
-                2  
+                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
+                85  
               ]  
             },  
             "runAfter": {  
@@ -58,17 +59,18 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "type": "If"  
           },  
-          "Condition_Moderate": {  
+          "Condition_Severe": {  
             "actions": {  
-              "SendModerateAlert": {  
+              "SendSevereAlert": {  
                 "inputs": {  
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
-                    rg_name                  = data.azurerm_resource_group.rg.name,  
-                    rg_id                    = data.azurerm_resource_group.rg.id,  
-                    la_name                  = local.activeconnections_logic_app_name,  
-                    la_id                    = local.activeconnections_logic_app_id,  
-                    postgresql_server_name   = local.postgresql_server_name,  
-                    postgresql_server_url    = local.postgresql_server_url  
+                    rg_name = data.azurerm_resource_group.rg.name,  
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = local.activeconnections_logic_app_name,
+                    la_id = local.activeconnections_logic_app_id,
+                    postgresql_server_name = local.postgresql_server_name,
+                    postgresql_server_url = local.postgresql_server_url,
+                    alert_message = "Severe Alert Fired: 98 active connections to ${local.postgresql_server_name}"
                   }),  
                   "headers": {  
                     "Content-Type": "application/json"  
@@ -82,54 +84,12 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "expression": {  
               "equals": [  
-                "@triggerBody()?['data']?['essentials']['severity']",  
-                3  
-              ]  
-            },  
-            "runAfter": {  
-              "Condition_Severe": [  
-                "Failed",  
-                "Skipped",  
-                "Succeeded"  
-              ]  
-            },  
-            "type": "If"  
-          },  
-          "Condition_Resolved": {  
-            "actions": {  
-              "SendResolvedAlert": {  
-                "inputs": {  
-                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
-                    rg_name                  = data.azurerm_resource_group.rg.name,  
-                    rg_id                    = data.azurerm_resource_group.rg.id,  
-                    la_name                  = local.activeconnections_logic_app_name,  
-                    la_id                    = local.activeconnections_logic_app_id,  
-                    postgresql_server_name   = local.postgresql_server_name,  
-                    postgresql_server_url    = local.postgresql_server_url  
-                  }),  
-                  "headers": {  
-                    "Content-Type": "application/json"  
-                  },  
-                  "method": "POST",  
-                  "uri": "@{body('Get alerting webhook')?['value']}"  
-                },  
-                "runAfter": {},  
-                "type": "Http"  
-              }  
-            },  
-            "expression": {  
-              "equals": [  
-                "@triggerBody()?['data']?['essentials']['severity']",  
-                0  
+                "@triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']",  
+                98  
               ]  
             },  
             "runAfter": {  
               "Condition_Moderate": [  
-                "Failed",  
-                "Skipped",  
-                "Succeeded"  
-              ],  
-              "Condition_Severe": [  
                 "Failed",  
                 "Skipped",  
                 "Succeeded"  
@@ -160,7 +120,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             }  
           }  
         }  
-      },  
+      },
       "parameters": {  
         "$connections": {  
           "value": {  
@@ -176,7 +136,17 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             }  
           }  
         }  
-      }  
+      }
     }  
-  })
+  })  
+}
+
+data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {
+  resource_id = "${azapi_resource.activeconnectionsalert_la.id}/triggers/manual"
+  action      = "listCallbackUrl"
+  type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
+  depends_on  = [
+    azapi_resource.activeconnectionsalert_la
+  ]
+  response_export_values = ["value"]
 }
