@@ -22,10 +22,32 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "type": "Object"
           }
         },
+        "triggers": {
+          "manual": {
+            "type": "Request",
+            "kind": "Http",
+            "inputs": {
+              "schema": templatefile("${path.module}/schema/common-alert-schema.json", {})
+            }
+          }
+        },
         "actions": {
+          "Get alerting webhook": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "name": "@parameters('$connections')['keyvault']['connectionId']"
+                }
+              },
+              "method": "get",
+              "path": "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+            },
+            "runAfter": {},
+            "type": "ApiConnection"
+          },
           "Condition_Moderate": {
             "actions": {
-              "SendModerateAlert": {
+              "SendAlert": {
                 "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,
@@ -33,8 +55,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                     la_name = local.activeconnections_logic_app_name,
                     la_id = local.activeconnections_logic_app_id,
                     postgresql_server_name = local.postgresql_server_name,
-                    postgresql_server_url = local.postgresql_server_url,
-                    alert_message = "Moderate Alert: 85 active connections to ${local.postgresql_server_name}"
+                    postgresql_server_url = local.postgresql_server_url
                   }),
                   "headers": {
                     "Content-Type": "application/json"
@@ -61,7 +82,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
           },
           "Condition_Severe": {
             "actions": {
-              "SendSevereAlert": {
+              "SendAlert": {
                 "inputs": {
                   "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,
@@ -69,8 +90,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
                     la_name = local.activeconnections_logic_app_name,
                     la_id = local.activeconnections_logic_app_id,
                     postgresql_server_name = local.postgresql_server_name,
-                    postgresql_server_url = local.postgresql_server_url,
-                    alert_message = "Severe Alert Fired: 98 active connections to ${local.postgresql_server_name}"
+                    postgresql_server_url = local.postgresql_server_url
                   }),
                   "headers": {
                     "Content-Type": "application/json"
@@ -94,28 +114,6 @@ resource "azapi_resource" "activeconnectionsalert_la" {
               ]
             },
             "type": "If"
-          },
-          "Get alerting webhook": {
-            "inputs": {
-              "host": {
-                "connection": {
-                  "name": "@parameters('$connections')['keyvault']['connectionId']"
-                }
-              },
-              "method": "get",
-              "path": "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
-            },
-            "runAfter": {},
-            "type": "ApiConnection"
-          }
-        },
-        "triggers": {
-          "manual": {
-            "type": "Request",
-            "kind": "Http",
-            "inputs": {
-              "schema": templatefile("${path.module}/schema/common-alert-schema.json", {})
-            }
           }
         }
       },
