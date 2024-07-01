@@ -53,7 +53,7 @@ services:
       PHE_PARTNERSHIPS_EMAIL: ${PHE_PARTNERSHIPS_EMAIL}
       REPORTING_ENDPOINT: ${REPORTING_ENDPOINT}
       REPORTING_ENABLED: ${REPORTING_ENABLED}
-    command: bash -c "python manage.py test --keepdb -k TestAzureSearchRebuilder"
+    command: bash -c "python manage.py migrate && python manage.py test --keepdb"
     ports:
       - 8000:8000 # runserver
       - 4000:4000 # debugger
