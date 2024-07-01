@@ -8,9 +8,6 @@ from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 
 from campaignresourcecentre.azurestore.utils import AzureStorage
-from campaignresourcecentre.core.management.commands.searchorphans import (
-    Command as SearchOrphanCommand,
-)
 from campaignresourcecentre.search.azure import AzureSearchBackend
 
 

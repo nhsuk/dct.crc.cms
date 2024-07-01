@@ -13,9 +13,6 @@ from campaignresourcecentre.search.azure import (
     AzureIndex,
 )
 
-from campaignresourcecentre.core.management.commands.searchorphans import (
-    process_orphans,
-)
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
 from campaignresourcecentre.search.test_data import (
     azure_response,
@@ -146,7 +143,6 @@ MOCKED_CURRENT_SEARCH_OBJECTS = {
     ]
 }
 
-
 MOCKED_ORPHANS_RESULT = [
     (
         f"resource {DUMMY_URL}",
@@ -179,10 +175,10 @@ class TestAzureSearchRebuilder(TestCase):
         self.backend = AzureSearchBackend({})
         self.index = AzureIndex(self.storage)
         self.rebuilder = AzureSearchRebuilder(self.index)
+        self.rebuilder.azure_search = AzureSearchBackend({})
 
     def test_retrieve_current_search_objects(self):
         # Can't seem to mock these objects, so mock the result from the search
-        self.rebuilder.azure_search = AzureSearchBackend({})
         mocked_response = Response()
         mocked_response._content = json.dumps(
             {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
@@ -197,17 +193,32 @@ class TestAzureSearchRebuilder(TestCase):
             repr(MOCKED_CURRENT_SEARCH_OBJECTS),
         )
 
-    def test_process_orphans(self):
-        results = []
+    @patch(
+        "campaignresourcecentre.search.azure.AzureSearchBackend.delete_search_resource_by_metadata"
+    )
+    def test_delete_orphan_documents(self, mock_delete):
+        orphans = [
+            {
+                "metadata_storage_path": "path1",
+                "content": {"resource": {"object_url": "url1"}},
+            },
+            {
+                "metadata_storage_path": "path2",
+                "content": {"resource": {"object_url": "url2"}},
+            },
+        ]
+        self.rebuilder._delete_orphan_documents(orphans)
+        self.assertEqual(mock_delete.call_count, 2)
+        mock_delete.assert_any_call("path1")
+        mock_delete.assert_any_call("path2")
 
-        def mocked_process_dup(label, orphan):
-            results.append((label, orphan))
-
-        process_orphans(MOCKED_CURRENT_SEARCH_OBJECTS, None, mocked_process_dup)
-        self.assertEqual(
-            repr(results),
-            repr(MOCKED_ORPHANS_RESULT),
-        )
+    @patch(
+        "campaignresourcecentre.search.azure.AzureSearchBackend.delete_search_resource_by_metadata"
+    )
+    def test_delete_orphan_documents_empty(self, mock_delete):
+        orphans = []
+        self.rebuilder._delete_orphan_documents(orphans)
+        mock_delete.assert_not_called()
 
 
 class TestDatabaseSearch(TestCase):
