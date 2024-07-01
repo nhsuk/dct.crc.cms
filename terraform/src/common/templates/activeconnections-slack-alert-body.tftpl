@@ -1,10 +1,10 @@
 {  
-  "blocks": [
+  "blocks": [  
     {  
       "type": "header",  
       "text": {  
         "type": "plain_text",  
-        "text": "@{if(equals(triggerBody()?['data']?['essentials']['monitorCondition'], 'Resolved'), 'Alert Resolved: <50 active connections to ${postgresql_server_name}', if(equals(triggerBody()?['data']?['essentials']['severity'], 2), 'Severe Alert Fired: 98 active connections to ${postgresql_server_name}', if(equals(triggerBody()?['data']?['essentials']['severity'], 3), 'Moderate Alert Fired: 85 active connections to ${postgresql_server_name}', 'Unknown Alert Severity to ${postgresql_server_name}')))}"
+        "text": "@{if(equals(triggerBody()?['data']?['essentials']['monitorCondition'], 'Resolved'), 'Alert Resolved: < 50 active connections to ${postgresql_server_name}', if(equals(triggerBody()?['data']?['essentials']['severity'], 2), 'Severe Alert Fired: 98 active connections to ${postgresql_server_name}', if(equals(triggerBody()?['data']?['essentials']['severity'], 3), 'Moderate Alert Fired: 85 active connections to ${postgresql_server_name}', 'Unknown Alert Severity to ${postgresql_server_name}')))}"
       }  
     },  
     {
