@@ -2,7 +2,7 @@
   "blocks": [
       {
           "text": {
-              "text": "Moderate Alert: @{triggerBody()?['data']?['alertContext']['condition']['allOf'][0]['metricValue']} active connections to ${postgresql_server_name}",
+              "text": "@{if(equals(triggerBody()?['data']?['essentials']?['severity'], 'Severe'), 'Severe:', 'Moderate:')} @{triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue']} active connections to ${postgresql_server_name} - Alert @{triggerBody()?['data']?['essentials']?['monitorCondition']}",
               "type": "plain_text"
           },
           "type": "header"

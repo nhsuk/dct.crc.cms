@@ -11,6 +11,6 @@ module "nhsuk-integration" {
   environment = var.environment  
   location    = var.location  
   providers = {  
-    azurerm = azurerm.nhsuk-integration  
+    azurerm = azurerm.nhsuk-development
   }  
 }

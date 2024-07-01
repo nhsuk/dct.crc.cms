@@ -27,7 +27,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "actions": {  
               "SendModerateAlert": {  
                 "inputs": {  
-                  "body": templatefile("${path.module}/templates/activeconnections-moderate-slack-alert-body.tftpl", {  
+                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,  
                     rg_id = data.azurerm_resource_group.rg.id,
                     la_name = local.activeconnections_logic_app_name,
@@ -62,7 +62,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "actions": {  
               "SendSevereAlert": {  
                 "inputs": {  
-                  "body": templatefile("${path.module}/templates/activeconnections-severe-slack-alert-body.tftpl", {  
+                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {
                     rg_name = data.azurerm_resource_group.rg.name,  
                     rg_id = data.azurerm_resource_group.rg.id,
                     la_name = local.activeconnections_logic_app_name,
@@ -88,6 +88,43 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             },  
             "runAfter": {  
               "Condition_Moderate": [  
+                "Failed",  
+                "Skipped",  
+                "Succeeded"  
+              ]  
+            },  
+            "type": "If"  
+          },  
+          "Condition_Resolved": {  
+            "actions": {  
+              "SendResolvedAlert": {  
+                "inputs": {  
+                  "body": templatefile("${path.module}/templates/activeconnections-slack-alert-body.tftpl", {  
+                    rg_name = data.azurerm_resource_group.rg.name,  
+                    rg_id = data.azurerm_resource_group.rg.id,
+                    la_name = local.activeconnections_logic_app_name,
+                    la_id = local.activeconnections_logic_app_id,
+                    postgresql_server_name = local.postgresql_server_name,
+                    postgresql_server_url = local.postgresql_server_url
+                  }),  
+                  "headers": {  
+                    "Content-Type": "application/json"  
+                  },  
+                  "method": "POST",  
+                  "uri": "@{body('Get alerting webhook')?['value']}"  
+                },  
+                "runAfter": {},  
+                "type": "Http"  
+              }  
+            },  
+            "expression": {  
+              "equals": [  
+                "@triggerBody()?['data']?['essentials']['monitorCondition']",  
+                "Resolved"  
+              ]  
+            },  
+            "runAfter": {  
+              "Condition_Severe": [  
                 "Failed",  
                 "Skipped",  
                 "Succeeded"  
