@@ -91,8 +91,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
             "runAfter": {  
               "Condition_Moderate": [  
                 "Failed",  
-                "Skipped",  
-                "Succeeded"  
+                "Skipped"  
               ]  
             },  
             "type": "If"  
