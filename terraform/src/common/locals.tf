@@ -16,18 +16,18 @@ locals {
   activeconnections_logic_app_id = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
   
   environment_map = {
-    development  = module.nhsuk
+    development  = module.nhsuk # will change to null after testing
     integration  = module.nhsuk-integration
     staging      = module.nhsuk
     production   = module.nhsuk
   }
 
-  selected_environment = lookup(local.environment_map, var.environment)[0]
+  selected_environment = lookup(local.environment_map, var.environment, null)
 
-  postgresql_server_resource_id = local.selected_environment.postgresql_server_id
-  postgresql_server_name        = local.selected_environment.postgresql_server_name
-  postgresql_resource_group     = local.selected_environment.postgresql_resource_group
-  postgresql_server_url         = "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview"
+  postgresql_server_resource_id = local.selected_environment != null ? local.selected_environment[0].postgresql_server_id : null
+  postgresql_server_name        = local.selected_environment != null ? local.selected_environment[0].postgresql_server_name : null
+  postgresql_resource_group     = local.selected_environment != null ? local.selected_environment[0].postgresql_resource_group : null
+  postgresql_server_url         = local.selected_environment != null ? "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview" : null
 
   secret_names = [  
     "alertingWebhook",
