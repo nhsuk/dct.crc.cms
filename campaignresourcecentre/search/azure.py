@@ -116,9 +116,7 @@ class AzureSearchRebuilder:
             "URLs of indexed objects at start: %d", len(self.preexisting_objects)
         )
 
-        logger.info("Clearing old records from blob storage")
         self.az_storage.cleanup_blob_storage()
-        logger.info("Finished clearing blob storage")
 
         return self.index
 
@@ -176,7 +174,7 @@ class AzureSearchRebuilder:
         for item in orphans:
             metadata_storage_path = item["metadata_storage_path"]
             url = item["content"]["resource"]["object_url"]
-            self.azure_search.delete_search_resource_by_metadata(metadata_storage_path)
+            self.azure_search._delete_search_resource_by_metadata(metadata_storage_path)
             logger.info(
                 "Deleted orphaned record: Url: %s | metadata_storage_path:%s",
                 url,
@@ -510,32 +508,28 @@ class AzureSearchBackend(BaseSearchBackend):
         else:
             logger.error("Invalid response: {}".format(response.get("search_content")))
 
-    def _make_delete_request(self, data):
+    def _delete_search_resource_by_metadata(self, metadata_storage_path):
         headers = {
             "Content-Type": "application/json",
             "Subscription-Key": settings.AZURE_SEARCH["API_KEY"],
         }
         query_string = f"api-version={settings.AZURE_SEARCH['DELETE_API_VERSION']}"
         url = f"{settings.AZURE_SEARCH['DELETE_API_HOST']}?{query_string}"
+        data = json.dumps(
+            {
+                "value": [
+                    {
+                        "@search.action": "delete",
+                        "metadata_storage_path": metadata_storage_path,
+                    }
+                ]
+            }
+        )
 
         return requests.post(
             url,
             data=data,
             headers=headers,
-        )
-
-    def delete_search_resource_by_metadata(self, metadata_storage_path):
-        return self._make_delete_request(
-            json.dumps(
-                {
-                    "value": [
-                        {
-                            "@search.action": "delete",
-                            "metadata_storage_path": metadata_storage_path,
-                        }
-                    ]
-                }
-            )
         )
 
     def delete_search_resource(self, search_resource):
@@ -548,7 +542,7 @@ class AzureSearchBackend(BaseSearchBackend):
 
         if settings.AZURE_SEARCH_UPDATE:
             try:
-                response = self.delete_search_resource_by_metadata(
+                response = self._delete_search_resource_by_metadata(
                     metadata_storage_path
                 )
                 if response.ok:

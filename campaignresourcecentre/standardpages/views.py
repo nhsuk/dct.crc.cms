@@ -117,7 +117,7 @@ def update_index(request):
 
 
 @require_http_methods(["GET"])
-def debug_az_search(request):
+def dump_az_search_index(request):
     if not request.user.is_superuser:
         raise PermissionDenied
 

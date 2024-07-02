@@ -95,7 +95,6 @@ class AzureStorage:
 
     def cleanup_blob_storage(self):
         files = self._storage.list_all()
-        logger.info("Deleting %d files from blob storage", len(files))
         for file in files:
             self._storage.delete(file)
             logger.info("Blob deleted: %s", file)
