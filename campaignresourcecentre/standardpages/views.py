@@ -109,9 +109,9 @@ class UpdateIndexThread(threading.Thread):
 def update_index(request):
     if request.headers.get("Authorization", None):
         if not verify_pubtoken(request):
-            raise PermissionDenied
+            return HttpResponse("Unauthorized", status=401)
     elif not request.user.is_superuser:
-        raise PermissionDenied
+        return HttpResponse("Unauthorized", status=401)
     UpdateIndexThread().start()
     return HttpResponse("Index update started")
 

@@ -193,7 +193,7 @@ class TestAzureSearchRebuilder(TestCase):
         )
 
     @patch(
-        "campaignresourcecentre.search.azure.AzureSearchBackend.delete_search_resource_by_metadata"
+        "campaignresourcecentre.search.azure.AzureSearchBackend._delete_search_resource_by_metadata"
     )
     def test_delete_orphan_documents(self, mock_delete):
         orphans = [
@@ -212,7 +212,7 @@ class TestAzureSearchRebuilder(TestCase):
         mock_delete.assert_any_call("path2")
 
     @patch(
-        "campaignresourcecentre.search.azure.AzureSearchBackend.delete_search_resource_by_metadata"
+        "campaignresourcecentre.search.azure.AzureSearchBackend._delete_search_resource_by_metadata"
     )
     def test_delete_orphan_documents_empty(self, mock_delete):
         orphans = []
