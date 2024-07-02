@@ -15,14 +15,14 @@ locals {
   activeconnections_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-la-")
   activeconnections_logic_app_id = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
   
-  environment_map = {
-    development  = module.nhsuk
-    integration  = module.nhsuk-integration
-    staging      = module.nhsuk
-    production   = module.nhsuk
+  activeconnectionsalert_environment_map = {
+    development  = module.activeconnectionsalert
+    integration  = module.activeconnectionsalert-integration
+    staging      = module.activeconnectionsalert
+    production   = module.activeconnectionsalert
   }
 
-  selected_environment = lookup(local.environment_map, var.environment, null)
+  selected_environment = lookup(local.activeconnectionsalert_environment_map, var.environment, null)
 
   postgresql_server_resource_id = local.selected_environment != null ? local.selected_environment[0].postgresql_server_id : null
   postgresql_server_name        = local.selected_environment != null ? local.selected_environment[0].postgresql_server_name : null
