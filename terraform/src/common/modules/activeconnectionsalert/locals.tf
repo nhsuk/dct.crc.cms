@@ -4,7 +4,7 @@ locals {
     integration_uks  = "nhsuk-dct-rg-dev-uks"
     staging_uks = "dct-cms-postgres-rg-stag-uksouth"
     production_uks = "nhsuk-dct-rg-prod-uks"
-    production_ukw = "nhsuk-dct-rg-prod-ukw"
+    production_ukw = "nhsuk-dct-rg-prod-uks"
   }
 
   postgresql_server_names = {

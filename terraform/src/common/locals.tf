@@ -22,12 +22,11 @@ locals {
     production   = module.activeconnectionsalert
   }
 
-  selected_environment = lookup(local.activeconnectionsalert_environment_map, var.environment, null)
+  selected_environment = lookup(local.activeconnectionsalert_environment_map, var.environment)[0]
 
-  postgresql_server_resource_id = local.selected_environment != null ? local.selected_environment[0].postgresql_server_id : null
-  postgresql_server_name        = local.selected_environment != null ? local.selected_environment[0].postgresql_server_name : null
-  postgresql_resource_group     = local.selected_environment != null ? local.selected_environment[0].postgresql_resource_group : null
-  postgresql_server_url         = local.selected_environment != null ? "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview" : null
+  postgresql_server_resource_id = local.selected_environment.postgresql_server_id
+  postgresql_server_name        = local.selected_environment.postgresql_server_name
+  postgresql_server_url         = "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview"
 
   secret_names = [  
     "alertingWebhook",
