@@ -16,7 +16,7 @@ locals {
   activeconnections_logic_app_id = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
   
   environment_map = {
-    development  = module.nhsuk # will change to null after testing
+    development  = module.nhsuk
     integration  = module.nhsuk-integration
     staging      = module.nhsuk
     production   = module.nhsuk

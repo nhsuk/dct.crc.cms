@@ -1,5 +1,4 @@
 resource "azapi_resource" "activeconnectionsalert_la" {
-  count     = local.selected_environment != null ? 1 : 0
   type      = "Microsoft.Logic/workflows@2019-05-01"
   name      = local.activeconnections_logic_app_name
   location  = data.azurerm_resource_group.rg.location
@@ -12,7 +11,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
 
   body = jsonencode({
     "properties": {
-      "state": "Enabled",
+      "state": var.environment == "development" ? "Disabled" : "Enabled",
       "parameters": {},
       "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
@@ -92,8 +91,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
 }
 
 data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {
-  count               = local.selected_environment != null ? 1 : 0
-  resource_id = "${azapi_resource.activeconnectionsalert_la[0].id}/triggers/manual"
+  resource_id = "${azapi_resource.activeconnectionsalert_la.id}/triggers/manual"
   action      = "listCallbackUrl"
   type        = "Microsoft.Logic/workflows/triggers@2018-07-01-preview"
   depends_on  = [
