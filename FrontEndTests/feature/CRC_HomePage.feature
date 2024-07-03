@@ -269,8 +269,8 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify OHID link is accessible
     Then verify what guides us sections are working
 
-  # For this test to run, a Wagtail admin user has been created called 'frontendtester'. This test may time out which could indicate a permissions issue. This test requires the ability to read the order of pages within 'Campaigns', but does NOT require any other permissions such as editing, deleting or publishing.
-  @CRCV3-030 @Smoke
+  # For this test to run, a Wagtail admin user has been created called 'frontendtester' in a specific group called 'Automation test'. This test requires the ability to read the order of pages within 'Campaigns', but does NOT require any other permissions such as editing, deleting or publishing. If this test times out, it could indicate a permissions issue. 
+  @CRCV3-030 @Match
   Scenario: verify custom admin and frontend campaign page order match
     Given I log in to the admin panel
     And I capture the order of the campaign titles in wagtail
