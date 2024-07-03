@@ -13,3 +13,6 @@ variable "tfstate_account_name" {
   description = "Terraform tfstate storage"
 }
 
+variable "location" {
+  description = "Azure region where the resources will be created."
+}

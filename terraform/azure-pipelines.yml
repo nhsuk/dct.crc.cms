@@ -23,6 +23,26 @@ parameters:
     displayName: Dry Run
     type: boolean
     default: false
+  - name: deployReview
+    displayName: Force Deploy Review
+    type: boolean
+    default: false
+  - name: deployIntegration
+    displayName: Force Deploy Integration
+    type: boolean
+    default: false
+  - name: deployStaging
+    displayName: Force Deploy Staging
+    type: boolean
+    default: false
+  - name: deployProduction
+    displayName: Force Deploy Production
+    type: boolean
+    default: false
+  - name: deployDr 
+    displayName: Force Deploy DisasterRecovery
+    type: boolean
+    default: false
 
 stages:
   - stage: Build
@@ -48,7 +68,7 @@ stages:
   - stage: terraformReview
     displayName: 'Terraform Review Env'
     dependsOn: Build
-    condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/')
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), ${{ parameters.deployReview }})
     pool:
       vmImage: windows-2022
     variables:
@@ -63,7 +83,6 @@ stages:
     jobs:
       - deployment: 'terraformDev'
         displayName: 'Terraform Review'
-        condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/')
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
           runOnce:
@@ -78,11 +97,12 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  location: ${{ variables.LOCATION }}
 
   - stage: terraformIntegration
     displayName: 'Terraform Integration Env'
     dependsOn: Build
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
     pool:
       vmImage: windows-2022
     variables:
@@ -97,7 +117,6 @@ stages:
     jobs:
       - deployment: 'terraformInt'
         displayName: 'Terraform Integration'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
           runOnce:
@@ -112,11 +131,12 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  location: ${{ variables.LOCATION }}
 
   - stage: terraformStaging
     displayName: 'Terraform Staging Env'
     dependsOn: Build
-    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
     pool:
       vmImage: windows-2022
     variables:
@@ -131,7 +151,6 @@ stages:
     jobs:
       - deployment: 'terraformStag'
         displayName: 'Terraform Staging'
-        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
           runOnce:
@@ -146,11 +165,12 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  location: ${{ variables.LOCATION }}
   
   - stage: terraformProduction
     displayName: 'Terraform Production Env'
     dependsOn: terraformStaging
-    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployProduction }})
     pool:
       vmImage: windows-2022
     variables:
@@ -167,7 +187,6 @@ stages:
         environment: ${{ variables.ENVIRONMENT }}
       - deployment: 'terraformProd'
         displayName: 'Terraform Production'
-        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
           runOnce:
@@ -182,11 +201,12 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  location: ${{ variables.LOCATION }}
 
   - stage: terraformDR
     displayName: 'Terraform DR Env'
     dependsOn: terraformProduction
-    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployDr }})
     pool:
       vmImage: windows-2022
     variables:
@@ -203,7 +223,6 @@ stages:
         environment: ${{ variables.ENVIRONMENT }}
       - deployment: 'terraformDr'
         displayName: 'Terraform DR'
-        condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         environment: ${{ variables.ENVIRONMENT }}
         strategy:
           runOnce:
@@ -218,3 +237,4 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
+                  location: ${{ variables.LOCATION }}

@@ -9,3 +9,5 @@ variables:
   value: dct-crccms-rg-${{ parameters.releaseEnvironment }}
 - name: TF_STORAGE_ACCOUNT
   value: crccmstf${{ parameters.releaseEnvironment }}${{ parameters.location }}
+- name: LOCATION
+  value: ${{ parameters.location }}
