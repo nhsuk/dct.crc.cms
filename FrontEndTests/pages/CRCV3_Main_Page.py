@@ -592,20 +592,19 @@ class CRCV3MainPage(BasePage):
         )
 
     def capture_admin_campaign_titles(self):
-        live_campaign_links = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located(
-                (
-                    By.CSS_SELECTOR,
-                    "a.w-status.w-status--primary[title='Visit the live page']",
-                )
-            )
+        title_wrappers = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.title-wrapper"))
         )
+
         self.admin_campaign_titles = [
-            link.find_element(
-                By.XPATH, ".//ancestor::tr//div[contains(@class,'title-wrapper')]/a"
-            ).text.strip()
-            for link in live_campaign_links[:5]
-        ]
+            wrapper.text.strip()
+            for wrapper in title_wrappers
+            if "live"
+            in wrapper.find_element(By.XPATH, ".//ancestor::tr")
+            .find_element(By.CSS_SELECTOR, "span.w-status, a.w-status")
+            .text.strip()
+            .lower()
+        ][:5]
 
     def capture_search_results_heading(self):
         heading = (
