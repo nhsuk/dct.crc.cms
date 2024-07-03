@@ -31,7 +31,6 @@ class CRCV3Config(AppConfig):
             logger.info("Cache: %s" % settings.CACHES)
             logger.info("File storage: %s", settings.DEFAULT_FILE_STORAGE)
             logger.info("Search storage: %s", settings.SEARCH_STORAGE_CLASS)
-            logger.info("Updating Azure search: %s", settings.AZURE_SEARCH_UPDATE)
             logger.info("Wagtail 2FA required: %s", settings.WAGTAIL_2FA_REQUIRED)
             logger.info("GOV notify enabled: %s", not settings.NOTIFY_DEBUG)
             # If using runserver we must force CONN_MAX_AGE to zero or

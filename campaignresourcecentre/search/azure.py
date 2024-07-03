@@ -540,25 +540,18 @@ class AzureSearchBackend(BaseSearchBackend):
 
         metadata_storage_path = search_resource.get("metadata_storage_path")
 
-        if settings.AZURE_SEARCH_UPDATE:
-            try:
-                response = self._delete_search_resource_by_metadata(
-                    metadata_storage_path
+        try:
+            response = self._delete_search_resource_by_metadata(metadata_storage_path)
+            if response.ok:
+                logger.info(f"Search resource deleted successfully for: {resource_url}")
+            else:
+                logger.info(
+                    f"Error deleting the search resource {resource_url}: {response.content}"
                 )
-                if response.ok:
-                    logger.info(
-                        f"Search resource deleted successfully for: {resource_url}"
-                    )
-                else:
-                    logger.info(
-                        f"Error deleting the search resource {resource_url}: {response.content}"
-                    )
-            except Exception as err:
-                logger.error(
-                    "Exception raised trying to delete data on azure search: %s", err
-                )
-        else:
-            logger.info(f"Search resource deletion noted for {resource_url}")
+        except Exception as err:
+            logger.error(
+                "Exception raised trying to delete data on azure search: %s", err
+            )
 
     def _create_azure_search_url_and_query(
         self, search_value, fields_queryset, facets_queryset, sort_by, results_per_page
