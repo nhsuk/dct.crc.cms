@@ -6,7 +6,7 @@ steps:
       SecretsFilter: '*'
       RunAsPreJob: false
   # Assign values to values.yaml file for helm deployment
- 
+
   - bash: |
       echo "
         imageName: $(imageName)
@@ -65,7 +65,6 @@ steps:
           AZURE_SEARCH_CONTAINER: $(azureSearchContainer)
           AZURE_SEARCH_ACCESS_KEY: $(azureSearchAccessKey)
           AZURE_SEARCH_STORAGE_ACCOUNT_NAME: $(azureSearchStorageAccountName)
-          AZURE_SEARCH_UPDATE: $(azureSearchUpdate)
           AZURE_SEARCH_PREFIX: $(azureSearchPrefix)
           AZURE_SEARCH_API_HOST: $(azureSearchApiHost)
           AZURE_SEARCH_API_VERSION: $(azureSearchApiVersion)
@@ -123,7 +122,7 @@ steps:
       " > helm/extra-values.yaml
 
       cat helm/extra-values.yaml
-      
+
   - task: HelmInstaller@1
     inputs:
       helmVersionToInstall: '3.2.0'

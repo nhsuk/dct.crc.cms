@@ -11,6 +11,7 @@ locals {
   }
 
   scheduler_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
+  search_reindex_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-search-reindex-la-")
   key_vault_name           = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
   activeconnections_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-la-")
   activeconnections_logic_app_id = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
@@ -31,6 +32,7 @@ locals {
   secret_names = [  
     "alertingWebhook",
     "pubToken",
-    "pubEndpoint"
-  ]  
+    "pubEndpoint",
+    "searchIndexEndpoint"
+  ]
 }

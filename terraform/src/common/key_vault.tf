@@ -45,6 +45,14 @@ resource "azurerm_key_vault" "kv" {
   }
 
   access_policy {
+    tenant_id = azapi_resource.search_reindex_la.identity[0].tenant_id
+    object_id = azapi_resource.search_reindex_la.identity[0].principal_id
+    secret_permissions = [
+      "Get", "List"
+    ]
+  }
+
+  access_policy {
     tenant_id = azapi_resource.activeconnectionsalert_la.identity[0].tenant_id
     object_id = azapi_resource.activeconnectionsalert_la.identity[0].principal_id
     secret_permissions = [

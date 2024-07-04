@@ -1,22 +1,18 @@
 import json
-from unittest.mock import MagicMock, patch
-from requests import Response, utils
 from html import escape
+from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
 from django.http import HttpRequest
+from django.test import TestCase
+from requests import Response, utils
 
+from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
 from campaignresourcecentre.search.azure import (
     AzureSearchBackend,
     AzureSearchRebuilder,
     AzureStorage,
     AzureIndex,
 )
-
-from campaignresourcecentre.core.management.commands.searchorphans import (
-    process_orphans,
-)
-from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
 from campaignresourcecentre.search.test_data import (
     azure_response,
 )
@@ -146,7 +142,6 @@ MOCKED_CURRENT_SEARCH_OBJECTS = {
     ]
 }
 
-
 MOCKED_ORPHANS_RESULT = [
     (
         f"resource {DUMMY_URL}",
@@ -179,10 +174,10 @@ class TestAzureSearchRebuilder(TestCase):
         self.backend = AzureSearchBackend({})
         self.index = AzureIndex(self.storage)
         self.rebuilder = AzureSearchRebuilder(self.index)
+        self.rebuilder.azure_search = AzureSearchBackend({})
 
     def test_retrieve_current_search_objects(self):
         # Can't seem to mock these objects, so mock the result from the search
-        self.rebuilder.azure_search = AzureSearchBackend({})
         mocked_response = Response()
         mocked_response._content = json.dumps(
             {"value": [MOCKED_RESULT_VALUE, MOCKED_RESULT_VALUE]}
@@ -197,17 +192,32 @@ class TestAzureSearchRebuilder(TestCase):
             repr(MOCKED_CURRENT_SEARCH_OBJECTS),
         )
 
-    def test_process_orphans(self):
-        results = []
+    @patch(
+        "campaignresourcecentre.search.azure.AzureSearchBackend._delete_search_resource_by_metadata"
+    )
+    def test_delete_orphan_documents(self, mock_delete):
+        orphans = [
+            {
+                "metadata_storage_path": "path1",
+                "content": {"resource": {"object_url": "url1"}},
+            },
+            {
+                "metadata_storage_path": "path2",
+                "content": {"resource": {"object_url": "url2"}},
+            },
+        ]
+        self.rebuilder._delete_orphan_documents(orphans)
+        self.assertEqual(mock_delete.call_count, 2)
+        mock_delete.assert_any_call("path1")
+        mock_delete.assert_any_call("path2")
 
-        def mocked_process_dup(label, orphan):
-            results.append((label, orphan))
-
-        process_orphans(MOCKED_CURRENT_SEARCH_OBJECTS, None, mocked_process_dup)
-        self.assertEqual(
-            repr(results),
-            repr(MOCKED_ORPHANS_RESULT),
-        )
+    @patch(
+        "campaignresourcecentre.search.azure.AzureSearchBackend._delete_search_resource_by_metadata"
+    )
+    def test_delete_orphan_documents_empty(self, mock_delete):
+        orphans = []
+        self.rebuilder._delete_orphan_documents(orphans)
+        mock_delete.assert_not_called()
 
 
 class TestDatabaseSearch(TestCase):
@@ -312,3 +322,89 @@ class TestDatabaseSearch(TestCase):
         self.campaign_hub_page.from_database(request)
 
         mock_logger.error.assert_called()
+
+
+class TestAzureIndex(TestCase):
+    def setUp(self):
+        self.storage_mock = MagicMock()
+        self.index = AzureIndex(self.storage_mock)
+
+    def test_is_indexable(self):
+        item_mock = MagicMock()
+        item_mock.search_indexable.return_value = True
+        self.assertTrue(self.index.is_indexable(item_mock))
+
+        item_mock.search_indexable.return_value = False
+        self.assertFalse(self.index.is_indexable(item_mock))
+
+        item_mock.search_indexable.side_effect = AttributeError
+        self.assertFalse(self.index.is_indexable(item_mock))
+
+    @patch("campaignresourcecentre.search.azure.AzureSearchBackend")
+    def test_delete_from_azure_search(self, mock_azure_search_backend):
+        item_mock = MagicMock()
+        item_mock.search_indexable.return_value = True
+        self.index._delete_from_azure_search(item_mock)
+        mock_azure_search_backend.return_value.delete_search.assert_called_once_with(
+            item_mock
+        )
+
+    @patch("campaignresourcecentre.search.azure.get_terms_from_terms_json")
+    @patch("campaignresourcecentre.search.azure.get_vocabs_from_terms_json")
+    def test_format_taxonomy_for_storage(self, mock_get_vocabs, mock_get_terms):
+        mock_get_terms.return_value = ["term1", "term2"]
+        mock_get_vocabs.return_value = ["vocab1", "vocab2"]
+        taxonomy_data = {"some": "data"}
+        expected_output = {"vocabs": ["vocab1", "vocab2"], "terms": ["term1", "term2"]}
+        self.assertEqual(
+            self.index._format_taxonomy_for_storage(taxonomy_data), expected_output
+        )
+
+    @patch("campaignresourcecentre.search.azure.AzureIndex.get_taxonomy_terms")
+    @patch(
+        "campaignresourcecentre.search.azure.AzureIndex._taxonomy_dict_from_page_terms"
+    )
+    def test_add_az_index_item(self, mock_taxonomy_dict, mock_get_taxonomy_terms):
+        mock_page = MagicMock()
+        mock_page.live = True
+        mock_page.id = 1
+        mock_page.get_az_item.return_value = {"title": "Test Resource"}
+        mock_page.taxonomy_json = '{"terms": [{"code": "TERM1"}]}'
+        mock_taxonomy_dict.return_value = {"VOCAB1": ["TERM1"]}
+        mock_get_taxonomy_terms.return_value = {
+            "terms": {"TERM1": {"vocabCode": "VOCAB1", "indexPath": "TERM1"}}
+        }
+
+        self.index.add_az_index_item(mock_page)
+
+        self.storage_mock.add_resource.assert_called_once_with(
+            1, {"resource": {"title": "Test Resource", "id": 1, "VOCAB1": ["TERM1"]}}
+        )
+
+    @patch("campaignresourcecentre.search.azure.AzureIndex.get_taxonomy_terms")
+    def test_add_az_index_item_not_live(self, mock_get_taxonomy_terms):
+        mock_page = MagicMock()
+        mock_page.live = False
+
+        self.index.add_az_index_item(mock_page)
+        mock_get_taxonomy_terms.assert_not_called()
+
+    @patch("campaignresourcecentre.search.azure.AzureIndex._delete_from_azure_search")
+    def test_delete_item(self, mock_delete_from_azure_search):
+        mock_item = MagicMock()
+        mock_item.search_indexable.return_value = True
+
+        self.index.delete_item(mock_item)
+        mock_delete_from_azure_search.assert_called_once_with(mock_item)
+        self.storage_mock.delete_resource.assert_called_once_with(mock_item)
+
+    @patch("campaignresourcecentre.search.azure.AzureIndex._delete_from_azure_search")
+    def test_delete_item_not_indexable(self, mock_delete_from_azure_search):
+        mock_item = MagicMock()
+        mock_item.search_indexable.return_value = False
+
+        result = self.index.delete_item(mock_item)
+
+        self.assertTrue(result)
+        mock_delete_from_azure_search.assert_not_called()
+        self.storage_mock.delete_resource.assert_not_called()

@@ -93,6 +93,12 @@ class AzureStorage:
         files = self._storage.listdir(self._storage.azure_container)
         print("Index files", files)
 
+    def cleanup_blob_storage(self):
+        files = self._storage.list_all()
+        for file in files:
+            self._storage.delete(file)
+            logger.info("Blob deleted: %s", file)
+
     def add_json_file(self, name, data):
         json_file = ContentFile(json.dumps(data, indent=2).encode())
         self._storage.delete(name)

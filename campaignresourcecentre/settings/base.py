@@ -228,6 +228,7 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 WAGTAILSEARCH_BACKENDS = {
     "default": {"BACKEND": "wagtail.search.backends.database"},
+    "azure": {"BACKEND": "campaignresourcecentre.search.azure"},
 }
 
 
@@ -339,8 +340,6 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     AZURE_SEARCH_CONTAINER = env["AZURE_SEARCH_CONTAINER"]
     AZURE_SEARCH_ACCESS_KEY = env["AZURE_SEARCH_ACCESS_KEY"]
     AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
-    # AZURE_SEARCH_UPDATE determines whether search resources are indexed as updates are made
-    AZURE_SEARCH_UPDATE = getenv_bool("AZURE_SEARCH_UPDATE", True)
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
     # 2MB max memory spooled to memory before writing to disk
     AZURE_BLOB_MAX_MEMORY_SIZE = 2 * 1024 * 1024
@@ -353,7 +352,6 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
     SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
-    AZURE_SEARCH_UPDATE = False
     FILE_UPLOAD_HANDLERS.append(
         "django.core.files.uploadhandler.TemporaryFileUploadHandler"
     )
