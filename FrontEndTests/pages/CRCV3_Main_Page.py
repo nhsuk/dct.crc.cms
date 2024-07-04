@@ -600,9 +600,10 @@ class CRCV3MainPage(BasePage):
                 )
             )
         )
+
         self.admin_campaign_titles = [
             link.find_element(
-                By.XPATH, ".//ancestor::tr//div[contains(@class,'title-wrapper')]/a"
+                By.XPATH, ".//ancestor::tr//div[contains(@class,'title-wrapper')]"
             ).text.strip()
             for link in live_campaign_links[:5]
         ]
