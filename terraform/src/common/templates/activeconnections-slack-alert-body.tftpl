@@ -1,0 +1,25 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Resolved'), 'Alert Resolved:', if(equals(triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue'], 98), 'Severe Alert Fired:', 'Moderate Alert Fired:'))} @{triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue']} active connections to ${postgresql_server_name}"
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Logic App*\n <https://portal.azure.com/#@nhschoices.net/resource${la_id}|${la_name}>"
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*SQL Server*\n <${postgresql_server_url}|${postgresql_server_name}>"
+      }
+    }
+  ]
+}

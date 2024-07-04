@@ -20,7 +20,9 @@ parameters:
   - name: dryrun # skip apply stage
     type: boolean
     default: false
-
+  - name: location # location of the resources
+    type: string
+    default: ''
 
 steps:
 
@@ -73,6 +75,7 @@ steps:
             -var resource_group=${{ parameters.resourceGroup }}
             -var environment=${{ parameters.environment }}
             -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+            -var location=${{ parameters.location }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
@@ -85,6 +88,7 @@ steps:
         -var resource_group=${{ parameters.resourceGroup }}
         -var environment=${{ parameters.environment }}
         -var tfstate_account_name=${{ parameters.tfStorageAccount }}
+        -var location=${{ parameters.location }}
         -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
         -detailed-exitcode
 
