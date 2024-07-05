@@ -16,7 +16,7 @@ resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_85" {
   resource_group_name = data.azurerm_resource_group.rg.name
   scopes              = [local.postgresql_server_resource_id]
   description         = "Alert when active connections are greater than or equal to 85."
-  severity            = 3
+  severity            = 2
   frequency           = "PT1M"
   window_size         = "PT5M"
   enabled             = true
@@ -39,7 +39,7 @@ resource "azurerm_monitor_metric_alert" "activeconnections_metric_alert_98" {
   resource_group_name = data.azurerm_resource_group.rg.name
   scopes              = [local.postgresql_server_resource_id]
   description         = "Alert when active connections are greater than or equal to 98."
-  severity            = 2
+  severity            = 0
   frequency           = "PT1M"
   window_size         = "PT5M"
   enabled             = true
