@@ -4,7 +4,7 @@
       "type": "header",
       "text": {
         "type": "plain_text",
-        "text": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Resolved'), 'Alert Resolved:', if(equals(triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue'], 98), 'Severe Alert Fired:', 'Moderate Alert Fired:'))} @{triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue']} active connections to ${postgresql_server_name}"
+        "text": "@{if(equals(triggerBody()?['data']?['essentials']?['monitorCondition'], 'Resolved'), 'Alert Resolved:', if(equals(triggerBody()?['data']?['essentials']?['severity'], '0'), 'Severe Alert Fired:', if(equals(triggerBody()?['data']?['essentials']?['severity'], '2'), 'Moderate Alert Fired:', 'Unknown Alert Level')))} @{triggerBody()?['data']?['alertContext']?['condition']?['allOf'][0]?['metricValue']} active connections to ${postgresql_server_name}"
       }
     },
     {
