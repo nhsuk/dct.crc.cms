@@ -27,7 +27,7 @@ steps:
       sudo apt-get install trivy
 
       junitTemplate=$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl
-      trivy image --severity HIGH,CRITICAL --format template --template "$(junitTemplate)" -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
+      trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
     displayName: 'trivy - bash'
     condition: ne('${{ parameters.dryRun }}', 'True')
   - task: PublishTestResults@2
