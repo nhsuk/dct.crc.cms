@@ -2787,20 +2787,20 @@ wagtail = ">=1.0"
 
 [[package]]
 name = "wagtail-django-recaptcha"
-version = "1.0"
+version = "2.1.1"
 description = "A simple recaptcha field for Wagtail Form Pages."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "wagtail-django-recaptcha-1.0.tar.gz", hash = "sha256:fc177e75da966e9db1dfd9a566c40d30567518d9280b5db4fec4d50a8c853154"},
+    {file = "wagtail-django-recaptcha-2.1.1.tar.gz", hash = "sha256:ae6cf07b1b6e30827bfba5db03f310df45d63ea28694959c886f5cb1d3c31fb9"},
 ]
 
 [package.dependencies]
-django-recaptcha = "*"
+django-recaptcha = ">=4"
 
 [package.extras]
-testing = ["coverage (>=4.1.0,<4.2)", "flake8 (>=3.2.0,<3.3)", "isort (==4.2.5)", "tox (>=2.3.1,<2.4)", "wagtail (==2.0)"]
+testing = ["coverage (>=6.5.0,<6.6)", "flake8 (>=5.0.4,<5.1)", "isort (>=5.10.1)", "tox (>=3.26.0,<3.27)", "wagtail (>=4.1)"]
 
 [[package]]
 name = "wagtail-factories"
@@ -3027,4 +3027,4 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "03bd05f690c9883883450cda6e160d58352ddebc74903162f81bd8c30389b35d"
+content-hash = "28df98da165849d071e1a45be2fb8b17aab61b08a9f62c98dea81a9274b3f499"
