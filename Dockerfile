@@ -1,4 +1,4 @@
-FROM node:14-alpine as frontend
+FROM node:14-alpine AS frontend
 
 # Make build & post-install scripts behave as if we were in a CI environment (e.g. for logging verbosity purposes).
 ARG CI=true
@@ -16,7 +16,7 @@ RUN npm run build:prod
 # ones becase they use a different C compiler. Debian images also come with
 # all useful packages required for image manipulation out of the box. They
 # however weight a lot, approx. up to 1.5GiB per built image.
-FROM python:3.10-alpine as backend
+FROM python:3.12-alpine AS backend
 RUN apk update
 RUN apk add curl postgresql-dev bash py3-pip
 RUN pip3 install --upgrade pip setuptools
