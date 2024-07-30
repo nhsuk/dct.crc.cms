@@ -1,8 +1,4 @@
 steps:
-- task: Docker@2
-  inputs:
-    containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-    command: 'login'
 - script: |
     docker-compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
