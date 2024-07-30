@@ -18,7 +18,7 @@ RUN npm run build:prod
 # however weight a lot, approx. up to 1.5GiB per built image.
 FROM python:3.10-alpine as backend
 RUN apk update
-RUN apk add curl postgresql-dev bash python3-pip
+RUN apk add curl postgresql-dev bash py3-pip
 RUN pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
