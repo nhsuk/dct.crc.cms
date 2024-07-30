@@ -19,3 +19,16 @@ steps:
       command: 'push'
       tags: |
         ${{ parameters.tag }}
+  - bash: |
+      apt install trivy
+      trivy image --severity HIGH,CRITICAL  --output $(Build.ArtifactStagingDirectory)/${{ parameters.tag }}-scan.txt --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
+    displayName: 'trivy - bash'
+    condition: ne('${{ parameters.dryRun }}', 'True')
+  # - task: trivy@1
+  #   displayName: 'trivy - task'
+  #   condition: and(succeededOrFailed(), ne('${{ parameters.dryRun }}', 'True'))
+  #   inputs:
+  #     image: nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
+  #     # Needed to access private repo 
+  #     loginDockerConfig: true
+  #     severities: HIGH,CRITICAL
