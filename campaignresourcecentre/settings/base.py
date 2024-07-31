@@ -90,7 +90,6 @@ INSTALLED_APPS = [
     "wagtail",
     "modelcluster",
     "taggit",
-    "captcha",
     "wagtailcaptcha",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -695,7 +694,7 @@ COOKIE_DECLARATION = env.get("COOKIE_DECLARATION")
 
 # Silence system checks.
 
-SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
+SILENCED_SYSTEM_CHECKS = ["django_recaptcha.recaptcha_test_key_error"]
 
 
 # How long after a page is reviewed that it should be reviewed again.
