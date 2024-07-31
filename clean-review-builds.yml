@@ -91,6 +91,7 @@ steps:
             echo "DRYRUN - Deleting release tag: $tag"
           else
             echo "Deleting release tag: $tag"
+            az acr repository delete --name nhsuk --image dct/crc-v3:$tag --yes
           fi
         fi
       done
@@ -110,6 +111,7 @@ steps:
               echo "DRYRUN - Deleting review tag: $tag"
             else
               echo "Deleting review tag: $tag"
+              az acr repository delete --name nhsuk --image dct/crc-v3:$tag --yes
             fi
           fi
       done
