@@ -79,7 +79,7 @@ steps:
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
       fi
 
-      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}" | awk '{print $1}')
+      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}$" | awk '{print $1}')
       numberOfTagsToKeep=3
 
       index=0
@@ -97,7 +97,6 @@ steps:
         fi
       done
 
-      PREFIX="review-"
       reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-" | awk '{print $1}')
 
       echo "Keeping review tags for existing branches, deleting the rest:"
