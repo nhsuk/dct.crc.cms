@@ -62,56 +62,56 @@ steps:
         echo "##vso[task.complete result=SucceededWithIssues;]"
       fi
 
-- task: AzureCLI@2
-  displayName: Remove old images tags
-  inputs:
-    azureSubscription: 'nhsuk acr-dct.campaign-resource-centre-v3'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e # fail script if any sub commands fail
+# - task: AzureCLI@2
+#   displayName: Remove old images tags
+#   inputs:
+#     azureSubscription: 'nhsuk acr-dct.campaign-resource-centre-v3'
+#     scriptType: 'bash'
+#     scriptLocation: 'inlineScript'
+#     inlineScript: |
+#       set -e # fail script if any sub commands fail
       
-      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
-        echo "##vso[task.logissue type=warning;]Running in dryrun mode"
-      fi
+#       if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+#         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
+#       fi
 
-      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}")
-      numberOfTagsToKeep=3
+#       releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}")
+#       numberOfTagsToKeep=3
 
-      echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
-      for index in "${!releaseTags[@]}"; do
-        tag=${releaseTags[$index]}
-        if (( $index < $numberOfTagsToKeep )); then
-          echo "Keeping release tag: $tag"
-        else
-          if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
-            echo "DRYRUN - Deleting release tag: $tag"
-          else
-            echo "Deleting release tag: $tag"
-          fi
-        fi
-      done
+#       echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
+#       for index in "${!releaseTags[@]}"; do
+#         tag=${releaseTags[$index]}
+#         if (( $index < $numberOfTagsToKeep )); then
+#           echo "Keeping release tag: $tag"
+#         else
+#           if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+#             echo "DRYRUN - Deleting release tag: $tag"
+#           else
+#             echo "Deleting release tag: $tag"
+#           fi
+#         fi
+#       done
 
-      PREFIX="review-"
-      reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-")
+#       PREFIX="review-"
+#       reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-")
 
-      echo "Keeping review tags for existing branches, deleting the rest:"
-      for tag in $reviewTags; do
-          # Remove the 'review-' prefix to just get the review branch
-          reviewBranch=${tag#"review-"}
+#       echo "Keeping review tags for existing branches, deleting the rest:"
+#       for tag in $reviewTags; do
+#           # Remove the 'review-' prefix to just get the review branch
+#           reviewBranch=${tag#"review-"}
 
-          git show-ref --verify --quiet "refs/remotes/origin/review/$reviewBranch"
-          if [[ $? -eq 0 ]]; then
-              echo "Keeping review tag: $tag"
-          else
-            if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
-              echo "DRYRUN - Deleting review tag: $tag"
-            else
-              echo "Deleting review tag: $tag"
-            fi
-          fi
-      done
+#           git show-ref --verify --quiet "refs/remotes/origin/review/$reviewBranch"
+#           if [[ $? -eq 0 ]]; then
+#               echo "Keeping review tag: $tag"
+#           else
+#             if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+#               echo "DRYRUN - Deleting review tag: $tag"
+#             else
+#               echo "Deleting review tag: $tag"
+#             fi
+#           fi
+#       done
 
-      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
-        echo "##vso[task.complete result=SucceededWithIssues;]"
-      fi
+#       if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+#         echo "##vso[task.complete result=SucceededWithIssues;]"
+#       fi
