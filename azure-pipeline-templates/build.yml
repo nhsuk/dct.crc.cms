@@ -9,6 +9,15 @@ steps:
       arguments: '--build-arg BUILD_ENV="production"'
       tags: |
         ${{ parameters.tag }}
+  - bash: |
+      sudo apt-get install wget apt-transport-https gnupg
+      wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+      echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+      sudo apt-get update
+      sudo apt-get install trivy
+
+      junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
+      trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln $(repository):${{ parameters.tag }}
   - task: Docker@2
     displayName: 'Docker Push'
     condition: ne('${{ parameters.dryRun }}', 'True')
@@ -19,15 +28,6 @@ steps:
       command: 'push'
       tags: |
         ${{ parameters.tag }}
-  - bash: |
-      sudo apt-get install wget apt-transport-https gnupg
-      wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-      echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-      sudo apt-get update
-      sudo apt-get install trivy
-
-      junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
-      trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
     displayName: 'trivy - bash'
     condition: ne('${{ parameters.dryRun }}', 'True')
   - task: PublishTestResults@2
