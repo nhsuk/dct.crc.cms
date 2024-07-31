@@ -18,6 +18,8 @@ steps:
 
       junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
       trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln $(repository):${{ parameters.tag }}
+    displayName: 'Run Trivy Image Scan'
+    condition: ne('${{ parameters.dryRun }}', 'True')
   - task: Docker@2
     displayName: 'Docker Push'
     condition: ne('${{ parameters.dryRun }}', 'True')
@@ -28,10 +30,8 @@ steps:
       command: 'push'
       tags: |
         ${{ parameters.tag }}
-    displayName: 'trivy - bash'
-    condition: ne('${{ parameters.dryRun }}', 'True')
   - task: PublishTestResults@2
-    displayName: "Publish Test Results"
+    displayName: "Publish Scan Results"
     inputs:
       testResultsFiles: "**/trivy-scan.xml"
       testRunTitle: "${{ parameters.tag }} image scan"
