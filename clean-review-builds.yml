@@ -30,15 +30,10 @@ steps:
     inlineScript: |
 
       echo $(git branch -la)
-      # fail script if any sub commands fail
-      set -x
 
       # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
-        DRY_RUN="client"
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
-      else
-        DRY_RUN="none"
       fi
 
       # Authenticate with dev cluster to fetch all namespaces
@@ -53,11 +48,15 @@ steps:
 
           git show-ref --verify --quiet "refs/remotes/origin/review/$BRANCH_NAME"
           if [[ $? -eq 0 ]]; then
-              echo "Keeping namespace: $namespance"
+              echo "Keeping namespace: $namespace"
           else
-              echo "Deleting namespase: $namespace"
-              echo $(kubectl delete --dry-run=$DRY_RUN namespace $namespace)
-              echo "Deleted namespase: $namespace"
+              if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
+                echo "DRYRUN - Deleting namespace: $namespace"
+                echo $(kubectl delete --dry-run=client namespace $namespace)
+              else
+                echo "Deleting namespace: $namespace"
+                echo $(kubectl delete namespace $namespace)
+              fi
           fi
       done
 
@@ -74,8 +73,6 @@ steps:
     inlineScript: |
 
       echo $(git branch -la)
-      # fail script if any sub commands fail
-      set -x
       
       # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
