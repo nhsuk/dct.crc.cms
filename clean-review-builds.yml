@@ -10,6 +10,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+  - name: Dryrun
+    type: boolean
+    default: false
+
 
 steps:
 - checkout: self
@@ -22,6 +27,14 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
+      # Support a dry-run mode
+      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+        DRY_RUN="client"
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode"
+      else
+        DRY_RUN="none"
+      fi
+
       az aks get-credentials --admin --name nhsuk-platforms-aks-dev-uksouth --resource-group nhsuk-platforms-rg-dev-uksouth
       PREFIX="crc-v3-review-"
 
@@ -36,12 +49,16 @@ steps:
 
           git show-ref --verify --quiet "refs/remotes/origin/review/$BRANCH_NAME"
           if [[ $? -eq 1 ]]; then
-              echo $(kubectl delete namespace $namespace)
+              echo $(kubectl delete --dry-run=$DRY_RUN namespace $namespace)
               echo "Deleted namespase: $namespace"
           else
              echo "Branch 'review/$BRANCH_NAME' exists!"
           fi
       done
+
+      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      fi
 
 - task: AzureCLI@2
   displayName: Remove old images tags
@@ -50,6 +67,10 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
+      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode"
+      fi
+
       releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}")
       numberOfTagsToKeep=3
 
@@ -59,7 +80,11 @@ steps:
         if (( $index < $numberOfTagsToKeep )); then
           echo "Keeping release tag: $tag"
         else
-          echo "Deleting release tag: $tag"
+          if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+            echo "DRYRUN - Deleting release tag: $tag"
+          else
+            echo "Deleting release tag: $tag"
+          fi
         fi
       done
 
@@ -75,6 +100,14 @@ steps:
           if [[ $? -eq 0 ]]; then
               echo "Keeping review tag: $tag"
           else
+            if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+              echo "DRYRUN - Deleting review tag: $tag"
+            else
               echo "Deleting review tag: $tag"
+            fi
           fi
       done
+
+      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      fi
