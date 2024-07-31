@@ -82,13 +82,14 @@ steps:
       releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}" | awk '{print $1}')
       numberOfTagsToKeep=3
 
+      index=0
       echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
-      for index in "${!releaseTags[@]}"; do
-        tag=${releaseTags[$index]}
+      for tag in $releaseTags; do
         if (( $index < $numberOfTagsToKeep )); then
+          index=$index+1
           echo "Keeping release tag: $tag"
         else
-          if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+          if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
             echo "DRYRUN - Deleting release tag: $tag"
           else
             echo "Deleting release tag: $tag"
@@ -108,7 +109,7 @@ steps:
           if [[ $? -eq 0 ]]; then
               echo "Keeping review tag: $tag"
           else
-            if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+            if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
               echo "DRYRUN - Deleting review tag: $tag"
             else
               echo "Deleting review tag: $tag"
