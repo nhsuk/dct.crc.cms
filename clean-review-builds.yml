@@ -19,6 +19,7 @@ parameters:
 steps:
 - checkout: self
   persistCredentials: true
+  fetchDepth: 0
 
 - task: AzureCLI@2
   displayName: Remove old namespaces
@@ -28,6 +29,7 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
 
+      echo $(git branch -la)
       # fail script if any sub commands fail
       set -x
 
@@ -71,6 +73,7 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
 
+      echo $(git branch -la)
       # fail script if any sub commands fail
       set -x
       
