@@ -27,7 +27,10 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      set -e # fail script if any sub commands fail
+
+      # fail script if any sub commands fail
+      set -e
+      set -x
 
       # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
@@ -39,9 +42,8 @@ steps:
 
       # Authenticate with dev cluster to fetch all namespaces
       az aks get-credentials --admin --name nhsuk-platforms-aks-dev-uksouth --resource-group nhsuk-platforms-rg-dev-uksouth
-      PREFIX="dct-crc-v3-review-"
 
-      ALL_K8S_NAMESPACES=$(kubectl get ns --no-headers | grep "^$PREFIX" | awk '{print $1}')
+      ALL_K8S_NAMESPACES=$(kubectl get ns --no-headers | grep "^dct-crc-v3-review-" | awk '{print $1}')
 
       # For each namespace, make sure the git branch still exists. If not, delete the namespace
       for namespace in $ALL_K8S_NAMESPACES; do
@@ -69,8 +71,12 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      set -e # fail script if any sub commands fail
+
+      # fail script if any sub commands fail
+      set -e
+      set -x
       
+      # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
       fi
