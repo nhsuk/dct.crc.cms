@@ -11,12 +11,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 
-
 steps:
 - checkout: self
   persistCredentials: true
 
 - task: AzureCLI@2
+  displayName: Remove old namespaces
   inputs:
     azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth-dct.campaigns-cms'
     scriptType: 'bash'
@@ -40,5 +40,41 @@ steps:
               echo "Deleted namespase: $namespace"
           else
              echo "Branch 'review/$BRANCH_NAME' exists!"
+          fi
+      done
+
+- task: AzureCLI@2
+  displayName: Remove old images tags
+  inputs:
+    azureSubscription: 'nhsuk acr-dct.campaign-resource-centre-v3'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}")
+      numberOfTagsToKeep=3
+
+      echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
+      for index in "${!releaseTags[@]}"; do
+        tag=${releaseTags[$index]}
+        if (( $index < $numberOfTagsToKeep )); then
+          echo "Keeping release tag: $tag"
+        else
+          echo "Deleting release tag: $tag"
+        fi
+      done
+
+      PREFIX="review-"
+      reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-")
+
+      echo "Keeping review tags for existing branches, deleting the rest:"
+      for tag in $reviewTags; do
+          # Remove the 'review-' prefix to just get the review branch
+          reviewBranch=${tag#"review-"}
+
+          git show-ref --verify --quiet "refs/remotes/origin/review/$reviewBranch"
+          if [[ $? -eq 0 ]]; then
+              echo "Keeping review tag: $tag"
+          else
+              echo "Deleting review tag: $tag"
           fi
       done
