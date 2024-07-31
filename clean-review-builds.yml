@@ -29,8 +29,6 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
 
-      echo $(git branch -la)
-
       # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
