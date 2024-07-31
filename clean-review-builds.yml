@@ -23,10 +23,12 @@ steps:
 - task: AzureCLI@2
   displayName: Remove old namespaces
   inputs:
-    azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth-dct.campaigns-cms'
+    azureSubscription: 'dct-nhsuk-platforms-rg-dev-uksouth-dct.campaign-resource-centre-v3'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
+      set -e # fail script if any sub commands fail
+
       # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
         DRY_RUN="client"
@@ -35,20 +37,20 @@ steps:
         DRY_RUN="none"
       fi
 
+      # Authenticate with dev cluster to fetch all namespaces
       az aks get-credentials --admin --name nhsuk-platforms-aks-dev-uksouth --resource-group nhsuk-platforms-rg-dev-uksouth
-      PREFIX="crc-v3-review-"
+      PREFIX="dct-crc-v3-review-"
 
       ALL_K8S_NAMESPACES=$(kubectl get ns --no-headers | grep "^$PREFIX" | awk '{print $1}')
 
       # For each namespace, make sure the git branch still exists. If not, delete the namespace
       for namespace in $ALL_K8S_NAMESPACES; do
           # Remove the prefix and postfix from namespace to just get the review name
-          REVIEW_NAME=$(echo $namespace | sed 's/dct-campaigns-cms-review-\(.*\)-ns$/\1/')
-          NAME_EDIT=${REVIEW_NAME#"${PREFIX}"}
-          BRANCH_NAME="$(echo $NAME_EDIT | sed 's/-ns$//g')"
+          BRANCH_NAME=$(echo $namespace | sed 's/dct-crc-v3-review-\(.*\)-ns$/\1/')
 
           git show-ref --verify --quiet "refs/remotes/origin/review/$BRANCH_NAME"
           if [[ $? -eq 1 ]]; then
+              echo "Deleting namespase: $namespace"
               echo $(kubectl delete --dry-run=$DRY_RUN namespace $namespace)
               echo "Deleted namespase: $namespace"
           else
@@ -67,6 +69,8 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
+      set -e # fail script if any sub commands fail
+      
       if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
       fi
