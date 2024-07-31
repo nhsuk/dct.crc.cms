@@ -29,7 +29,6 @@ steps:
     inlineScript: |
 
       # fail script if any sub commands fail
-      set -e
       set -x
 
       # Support a dry-run mode
@@ -73,7 +72,6 @@ steps:
     inlineScript: |
 
       # fail script if any sub commands fail
-      set -e
       set -x
       
       # Support a dry-run mode
