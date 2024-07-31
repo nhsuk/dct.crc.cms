@@ -35,11 +35,3 @@ steps:
       testResultsFiles: "**/trivy-scan.xml"
       testRunTitle: "${{ parameters.tag }} image scan"
     condition: succeededOrFailed()
-  # - task: trivy@1
-  #   displayName: 'trivy - task'
-  #   condition: and(succeededOrFailed(), ne('${{ parameters.dryRun }}', 'True'))
-  #   inputs:
-  #     image: nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
-  #     # Needed to access private repo 
-  #     loginDockerConfig: true
-  #     severities: HIGH,CRITICAL
