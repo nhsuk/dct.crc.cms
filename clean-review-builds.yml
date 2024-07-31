@@ -32,7 +32,7 @@ steps:
       set -x
 
       # Support a dry-run mode
-      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+      if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
         DRY_RUN="client"
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
       else
@@ -59,7 +59,7 @@ steps:
           fi
       done
 
-      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+      if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
         echo "##vso[task.complete result=SucceededWithIssues;]"
       fi
 
@@ -75,11 +75,11 @@ steps:
       set -x
       
       # Support a dry-run mode
-      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+      if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
       fi
 
-      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}")
+      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}" | awk '{print $1}')
       numberOfTagsToKeep=3
 
       echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
@@ -97,7 +97,7 @@ steps:
       done
 
       PREFIX="review-"
-      reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-")
+      reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-" | awk '{print $1}')
 
       echo "Keeping review tags for existing branches, deleting the rest:"
       for tag in $reviewTags; do
@@ -116,6 +116,6 @@ steps:
           fi
       done
 
-      if [[ "${{ parameters.Dryrun }}" == "true" ]]; then
+      if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
         echo "##vso[task.complete result=SucceededWithIssues;]"
       fi
