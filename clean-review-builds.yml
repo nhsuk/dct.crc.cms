@@ -50,12 +50,12 @@ steps:
           BRANCH_NAME=$(echo $namespace | sed 's/dct-crc-v3-review-\(.*\)-ns$/\1/')
 
           git show-ref --verify --quiet "refs/remotes/origin/review/$BRANCH_NAME"
-          if [[ $? -eq 1 ]]; then
+          if [[ $? -eq 0 ]]; then
+              echo "Keeping namespace: $namespance"
+          else
               echo "Deleting namespase: $namespace"
               echo $(kubectl delete --dry-run=$DRY_RUN namespace $namespace)
               echo "Deleted namespase: $namespace"
-          else
-             echo "Branch 'review/$BRANCH_NAME' exists!"
           fi
       done
 
@@ -86,7 +86,7 @@ steps:
       echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
       for tag in $releaseTags; do
         if (( $index < $numberOfTagsToKeep )); then
-          index=$index+1
+          index=$((index + 1))
           echo "Keeping release tag: $tag"
         else
           if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
