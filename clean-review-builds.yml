@@ -15,7 +15,6 @@ parameters:
     type: boolean
     default: false
 
-
 steps:
 - checkout: self
   persistCredentials: true
@@ -70,31 +69,10 @@ steps:
     scriptLocation: 'inlineScript'
     inlineScript: |
 
-      echo $(git branch -la)
-      
       # Support a dry-run mode
       if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
         echo "##vso[task.logissue type=warning;]Running in dryrun mode"
       fi
-
-      releaseTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^[0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}$" | awk '{print $1}')
-      numberOfTagsToKeep=3
-
-      index=0
-      echo "Keeping $numberOfTagsToKeep most recent release tags, deleting the rest:"
-      for tag in $releaseTags; do
-        if (( $index < $numberOfTagsToKeep )); then
-          index=$((index + 1))
-          echo "Keeping release tag: $tag"
-        else
-          if [[ "${{ parameters.Dryrun }}" == "True" ]]; then
-            echo "DRYRUN - Deleting release tag: $tag"
-          else
-            echo "Deleting release tag: $tag"
-            az acr repository delete --name nhsuk --image dct/crc-v3:$tag --yes
-          fi
-        fi
-      done
 
       reviewTags=$(az acr repository show-tags -n nhsuk --repository dct/crc-v3 --orderby time_desc | jq -r '.[]' | grep "^review-" | awk '{print $1}')
 
