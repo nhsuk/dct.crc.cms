@@ -28,7 +28,7 @@ steps:
       failTaskOnFailedTests: true
   - task: Docker@2
     displayName: 'Docker Push'
-    condition: ne('${{ parameters.dryRun }}', 'True')
+    condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
     inputs:
       containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
       dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
