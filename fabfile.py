@@ -32,13 +32,13 @@ LOCAL_DATABASE_USERNAME = "campaignresourcecentre"
 
 def dexec(cmd, service="web"):
     return local(
-        "docker-compose exec -T {} bash -c {}".format(quote(service), quote(cmd))
+        "docker compose exec -T {} bash -c {}".format(quote(service), quote(cmd))
     )
 
 
 def sudexec(cmd, service="web"):
     return local(
-        "docker-compose exec --user=root -T {} bash -c {}".format(
+        "docker compose exec --user=root -T {} bash -c {}".format(
             quote(service), quote(cmd)
         )
     )
@@ -53,11 +53,11 @@ def build(c):
     local("mkdir -p media database_dumps campaignresourcecentre/static_compiled")
     local("chmod -R 775 media database_dumps campaignresourcecentre/static_compiled")
     if FRONTEND == "local":
-        local("docker-compose up -d --build web")
+        local("docker compose up -d --build web")
     else:
-        local("docker-compose up -d --build web frontend")
+        local("docker compose up -d --build web frontend")
         dexec("npm ci", service="frontend")
-    local("docker-compose stop")
+    local("docker compose stop")
     print("Project built: now run 'fab start'")
 
 
@@ -67,9 +67,9 @@ def start(c):
     Start the development environment
     """
     if FRONTEND == "local":
-        local("docker-compose up -d web")
+        local("docker compose up -d web")
     else:
-        local("docker-compose up -d web frontend")
+        local("docker compose up -d web frontend")
 
     print("Use `fab sh` to enter the web container and run `djrun`")
     if FRONTEND != "local":
@@ -81,7 +81,7 @@ def stop(c):
     """
     Stop the development environment
     """
-    local("docker-compose stop")
+    local("docker compose stop")
 
 
 @task
@@ -98,7 +98,7 @@ def destroy(c):
     """
     Destroy development environment containers (database will lost!)
     """
-    local("docker-compose down")
+    local("docker compose down")
 
 
 @task
@@ -106,7 +106,7 @@ def sh(c):
     """
     Run bash in the local web container
     """
-    subprocess.run(["docker-compose", "exec", "web", "bash"])
+    subprocess.run(["docker compose", "exec", "web", "bash"])
 
 
 @task
@@ -114,7 +114,7 @@ def sh_root(c):
     """
     Run bash as root in the local web container
     """
-    subprocess.run(["docker-compose", "exec", "--user=root", "web", "bash"])
+    subprocess.run(["docker compose", "exec", "--user=root", "web", "bash"])
 
 
 @task
@@ -126,7 +126,7 @@ def npm(c, command, daemonise=False):
     if daemonise:
         exec_args.append("-d")
     subprocess.run(
-        ["docker-compose", "exec"] + exec_args + ["frontend", "npm"] + split(command)
+        ["docker compose", "exec"] + exec_args + ["frontend", "npm"] + split(command)
     )
 
 
@@ -137,7 +137,7 @@ def psql(c):
     """
     subprocess.run(
         [
-            "docker-compose",
+            "docker compose",
             "exec",
             "db",
             "psql",
@@ -207,7 +207,7 @@ def delete_docker_database(c, local_database_name=LOCAL_DATABASE_NAME):
 
 @task
 def upload_file(c, local_path, remote_path, service):
-    command = "docker-compose cp {} {}:{}".format(
+    command = "docker compose cp {} {}:{}".format(
         quote(local_path), quote(service), quote(remote_path)
     )
     return local(command)
@@ -215,7 +215,7 @@ def upload_file(c, local_path, remote_path, service):
 
 @task
 def download_file(c, local_path, remote_path, service):
-    command = "docker-compose cp {}:{} {}".format(
+    command = "docker compose cp {}:{} {}".format(
         quote(service), quote(remote_path), quote(local_path)
     )
     return local(command)
@@ -409,7 +409,7 @@ def run_test(c):
     """
     subprocess.call(
         [
-            "docker-compose",
+            "docker compose",
             "exec",
             "web",
             "python",

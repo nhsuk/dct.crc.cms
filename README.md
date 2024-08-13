@@ -71,7 +71,7 @@ The recommended approach is to use **VSCode** and its **Dev Containers extension
 ### Pre-reqs
 
 - Docker Desktop:
-  - This now contains both the Docker Engine and docker-compose
+  - This now contains both the Docker Engine and docker compose
   - See https://docs.docker.com/desktop/ for documentation and download links
 - Visual Studio Code:
   - The IDE needed for development of this project

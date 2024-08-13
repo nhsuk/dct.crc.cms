@@ -7,24 +7,11 @@ trigger:
 
 stages:
 - stage: Test
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+
   displayName: Test
   jobs:
-  - job: test
-    displayName: 'Test'
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-        command: 'login'
-    # Run CMS Test Coverage using pytest
-    - script: |
-        docker-compose -f ./docker-compose-test.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test
-      displayName: 'Run Coverage Test'
-      enabled: true
-    - task: Gitleaks@2
-      inputs:
-        scanlocation: '$(Build.SourcesDirectory)'
-        configtype: 'custom'
-        configfile: '$(Build.SourcesDirectory)/pre-commit/git-secrets/nhsd-gitleaks-config.toml'
-        redact: false
-        reportformat: 'json'
+    - job: test
+      displayName: 'Test'
+      steps:
+        - template: azure-pipeline-templates/test.yml
