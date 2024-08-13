@@ -1,8 +1,14 @@
-steps:
+steps: 
+- task: DockerCompose@1
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerComposeFile: './docker-compose-test-coverage.yml'
+    action: 'Run a Docker Compose command'
+    dockerComposeCommand: 'up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage'
+  displayName: 'Run Coverage Test'
 - script: |
     docker-compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
-  enabled: true
 - task: PublishTestResults@2
   displayName: "Publish Test Results"
   inputs:
