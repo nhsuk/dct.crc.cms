@@ -1,12 +1,19 @@
-steps:
-- task: Docker@2
+
+steps:                     
+- task: Gitleaks@2
   inputs:
-    containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-    command: 'login'
+    scanlocation: '$(Build.SourcesDirectory)'
+    configtype: 'custom'
+    configfile: '$(Build.SourcesDirectory)/pre-commit/git-secrets/nhsd-gitleaks-config.toml'
+    redact: false
+    reportformat: 'json'
+- bash: |
+    pip3 install black==23.12.1
+    black --check ./ --config 'poetry/pyproject.toml'
+  displayName: Installs Black & Checks if the python scripts are formatted properly with black
 - script: |
-    docker-compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
+    docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
-  enabled: true
 - task: PublishTestResults@2
   displayName: "Publish Test Results"
   inputs:
