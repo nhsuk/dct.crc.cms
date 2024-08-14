@@ -89,6 +89,9 @@ class MockStorage:
     def get_available_name(self, name):
         return name
 
+    def get_valid_name(self, name):
+        return name
+
 
 class MockClient:
     def get_blob_client(self, _):
