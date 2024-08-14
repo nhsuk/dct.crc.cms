@@ -106,7 +106,7 @@ def sh(c):
     """
     Run bash in the local web container
     """
-    subprocess.run(["docker compose", "exec", "web", "bash"])
+    subprocess.run(["docker", "compose", "exec", "web", "bash"])
 
 
 @task
@@ -114,7 +114,7 @@ def sh_root(c):
     """
     Run bash as root in the local web container
     """
-    subprocess.run(["docker compose", "exec", "--user=root", "web", "bash"])
+    subprocess.run(["docker", "compose", "exec", "--user=root", "web", "bash"])
 
 
 @task
@@ -126,7 +126,7 @@ def npm(c, command, daemonise=False):
     if daemonise:
         exec_args.append("-d")
     subprocess.run(
-        ["docker compose", "exec"] + exec_args + ["frontend", "npm"] + split(command)
+        ["docker", "compose", "exec"] + exec_args + ["frontend", "npm"] + split(command)
     )
 
 
@@ -137,7 +137,8 @@ def psql(c):
     """
     subprocess.run(
         [
-            "docker compose",
+            "docker",
+            "compose",
             "exec",
             "db",
             "psql",
@@ -409,7 +410,7 @@ def run_test(c):
     """
     subprocess.call(
         [
-            "docker compose",
+            "docker" "compose",
             "exec",
             "web",
             "python",
