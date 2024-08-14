@@ -11,7 +11,7 @@ from campaignresourcecentre.custom_storages.custom_azure_file import (
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.uploadhandler import FileUploadHandler
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class AzureBlobUploadHandler(FileUploadHandler):
     ):
         valid_file_name = self.storage.get_valid_name(file_name)
 
-        self.upload_start_time = datetime.now(datetime.UTC)
+        self.upload_start_time = datetime.now(timezone.utc)
         super().new_file(
             field_name,
             valid_file_name,
@@ -85,7 +85,7 @@ class AzureBlobUploadHandler(FileUploadHandler):
         # Returns None implicitly to signal that no later handler need process the file
 
     def file_complete(self, file_size):
-        upload_temp_time = datetime.utcnow()
+        upload_temp_time = datetime.now(timezone.utc)
         self.blob_file.close()
         logger.info(
             "All %d chunk(s) received, total %d byte(s)", self.chunks, file_size
