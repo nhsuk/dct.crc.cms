@@ -41,6 +41,12 @@ class AzureMediaStorage(AzureStorage):
             name = content.name
         available_name = self.get_available_name(name, max_length=max_length)
 
+        logger.info(
+            "TRACE: Saving %s as %s in blob storage",
+            name,
+            available_name,
+        )
+
         if name.startswith("documents/"):
             temp_blob_name = name[len("documents/") :]
             if self.exists(temp_blob_name):
