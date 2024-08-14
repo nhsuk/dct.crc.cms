@@ -11,8 +11,6 @@ from campaignresourcecentre.custom_storages.custom_azure_file import (
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.uploadhandler import FileUploadHandler
-
-
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -58,17 +56,19 @@ class AzureBlobUploadHandler(FileUploadHandler):
         charset=None,
         content_type_extra=None,
     ):
-        self.upload_start_time = datetime.utcnow()
+        valid_file_name = self.storage.get_valid_name(file_name)
+
+        self.upload_start_time = datetime.now(datetime.UTC)
         super().new_file(
             field_name,
-            file_name,
+            valid_file_name,
             content_type,
             content_length,
             charset=charset,
             content_type_extra=content_type_extra,
         )
 
-        end_blob_name = self.storage.get_available_name(f"documents/{file_name}")
+        end_blob_name = self.storage.get_available_name(f"documents/{self.file_name}")
         self.blob_name = end_blob_name[len("documents/") :]
         logger.info(
             "New file %s for AzureBlobUploadHander, temp blob name is %s, final blob name will be %s",
