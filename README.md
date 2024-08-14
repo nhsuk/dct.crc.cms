@@ -71,7 +71,7 @@ The recommended approach is to use **VSCode** and its **Dev Containers extension
 ### Pre-reqs
 
 - Docker Desktop:
-  - This now contains both the Docker Engine and docker-compose
+  - This now contains both the Docker Engine and docker compose
   - See https://docs.docker.com/desktop/ for documentation and download links
 - Visual Studio Code:
   - The IDE needed for development of this project
@@ -112,11 +112,11 @@ https://digitaltools.phe.org.uk/confluence/display/CRC/Developing+CRCv3+with+a+d
 
 To have the locally running website populated with pages and resources (like those you see in the live site) you will need to run the sync-db command (you can proceed without this step and you will see a very basic, empty form of the website).
 
-This command takes the environment you want to sync with as its only argument, the choices being "staging", "integration" or "review".
+This command takes the environment you want to sync with, the choices being "staging", "integration" or "review". It also requires the storage key for the "digitalcampaignsstorage" storage account which stores the database dump files.
 
 To run this command, in the terminal made available by VSCode, enter the following command:
 
-`fab sync-db <environment>`
+`fab sync-db <environment> <storage-key>`
 
 For more details on syncing your local database see the following Confluence page:  
 https://digitaltools.phe.org.uk/confluence/display/CRC/Local+Database+Sync

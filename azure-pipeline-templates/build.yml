@@ -9,9 +9,26 @@ steps:
       arguments: '--build-arg BUILD_ENV="production"'
       tags: |
         ${{ parameters.tag }}
+  - bash: |
+      sudo apt-get install wget apt-transport-https gnupg
+      wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+      echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+      sudo apt-get update
+      sudo apt-get install trivy
+
+      junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
+      trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
+    displayName: 'Run Trivy Scan'
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: "Publish Scan Results"
+    inputs:
+      testResultsFiles: "**/trivy-scan.xml"
+      testRunTitle: "${{ parameters.tag }} image scan"
+      failTaskOnFailedTests: true
   - task: Docker@2
     displayName: 'Docker Push'
-    condition: ne('${{ parameters.dryRun }}', 'True')
+    condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
     inputs:
       containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
       dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
