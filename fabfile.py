@@ -410,7 +410,8 @@ def run_test(c):
     """
     subprocess.call(
         [
-            "docker" "compose",
+            "docker",
+            "compose",
             "exec",
             "web",
             "python",
