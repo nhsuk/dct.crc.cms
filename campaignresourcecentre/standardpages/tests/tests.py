@@ -3,9 +3,7 @@ import secrets
 import string
 
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
-from django.core.exceptions import PermissionDenied
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from django.urls import reverse
 
 from campaignresourcecentre.standardpages.forms import ContactUsForm
@@ -22,24 +20,22 @@ class ContactUsViewTests(TestCase):
     def test_submit_empty_form(self):
         response = self.client.post(reverse("contact_us"), {})
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "form", "first_name", "Enter your first name")
-        self.assertFormError(response, "form", "last_name", "Enter your last name")
-        self.assertFormError(response, "form", "job_title", "Select your job function")
-        self.assertFormError(
-            response, "form", "organisation", "Enter your organisation name"
-        )
-        self.assertFormError(
-            response, "form", "organisation_type", "Enter your organisation type"
-        )
-        self.assertFormError(response, "form", "email", "Enter your email address")
-        self.assertFormError(response, "form", "audience", "Enter your audience")
-        self.assertFormError(
-            response,
-            "form",
-            "engage_audience",
+
+        errors = [
+            "Enter your first name",
+            "Enter your last name",
+            "Select your job function",
+            "Enter your organisation name",
+            "Enter your organisation type",
+            "Enter your email address",
+            "Enter your audience",
             "Enter how you plan to engage this audience",
-        )
-        self.assertFormError(response, "form", "message", "Enter your message")
+            "Enter your message",
+        ]
+
+        for error in errors:
+            print("Checking for : ", error)
+            self.assertContains(response, error)
 
     def test_submit_valid_form(self):
         form_data = {

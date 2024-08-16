@@ -12,6 +12,7 @@ from campaignresourcecentre.custom_storages.custom_azure_file import (
 from campaignresourcecentre.custom_storages.custom_azure_storage import (
     AzureMediaStorage,
 )
+from django.core.files.storage import default_storage
 
 
 TEST_CONTENT = b"test_content"
@@ -89,6 +90,9 @@ class MockStorage:
     def get_available_name(self, name):
         return name
 
+    def get_valid_name(self, name):
+        return default_storage.get_valid_name(name)
+
 
 class MockClient:
     def get_blob_client(self, _):
@@ -148,6 +152,75 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
         self.assertEqual(self.handler.file_name, self.file_name)
         self.assertIsInstance(self.handler.blob_file, AzureBlobStorageFile)
         self.assertEqual(self.handler.chunks, 0)
+
+    def test_file_name_with_special_characters_are_cleaned(self):
+        invalid_file_names = [
+            {"name": "file with spaces.txt", "expected": "file_with_spaces.txt"},
+            {"name": "file:with:colons.pdf", "expected": "filewithcolons.pdf"},
+            {"name": "file*with*asterisks.jpg", "expected": "filewithasterisks.jpg"},
+            {"name": "file?with?questions.png", "expected": "filewithquestions.png"},
+            {"name": "file<with>brackets.xls", "expected": "filewithbrackets.xls"},
+            {"name": 'file"with"quotes.csv', "expected": "filewithquotes.csv"},
+            {"name": "file|with|pipes.zip", "expected": "filewithpipes.zip"},
+            {"name": "file@with@at.mp3", "expected": "filewithat.mp3"},
+            {"name": "file#with#hash.mp4", "expected": "filewithhash.mp4"},
+            {"name": "file%with%percent.docx", "expected": "filewithpercent.docx"},
+            {"name": "file^with^caret.pptx", "expected": "filewithcaret.pptx"},
+            {"name": "file&with&ersand.odt", "expected": "filewithersand.odt"},
+            {"name": "file+with+plus.ods", "expected": "filewithplus.ods"},
+            {"name": "file=with=equals.odp", "expected": "filewithequals.odp"},
+            {
+                "name": "file[with]square_brackets.txt",
+                "expected": "filewithsquare_brackets.txt",
+            },
+            {
+                "name": "file{with}curly_braces.doc",
+                "expected": "filewithcurly_braces.doc",
+            },
+            {
+                "name": "file(with)parentheses.pdf",
+                "expected": "filewithparentheses.pdf",
+            },
+            {"name": "file~with~tilde.jpg", "expected": "filewithtilde.jpg"},
+            {"name": "file`with`backticks.png", "expected": "filewithbackticks.png"},
+            {
+                "name": "file!with!exclamation.xls",
+                "expected": "filewithexclamation.xls",
+            },
+            {"name": "file$with$dollar.csv", "expected": "filewithdollar.csv"},
+            {
+                "name": "file_with_backslash\\.zip",
+                "expected": "file_with_backslash.zip",
+            },
+            {"name": "file_with_§_section.mp3", "expected": "file_with__section.mp3"},
+            {"name": "file_with_¶_pilcrow.mp4", "expected": "file_with__pilcrow.mp4"},
+            {
+                "name": "file_with_©_copyright.docx",
+                "expected": "file_with__copyright.docx",
+            },
+            {
+                "name": "file_with_®_registered.pptx",
+                "expected": "file_with__registered.pptx",
+            },
+            {
+                "name": "file_with_™_trademark.odt",
+                "expected": "file_with__trademark.odt",
+            },
+        ]
+
+        for invalid_file_name in invalid_file_names:
+            file_name = invalid_file_name["name"]
+            expected_file_name = invalid_file_name["expected"]
+            self.handler.new_file(
+                self.field_name,
+                file_name,
+                self.content_type,
+                self.content_length,
+                self.charset,
+                self.content_type_extra,
+            )
+            print(f"Testing file name: {file_name}")
+            self.assertEqual(self.handler.file_name, expected_file_name)
 
     def test_receive_data_chunk(self):
         self.handler.blob_file = MagicMock()
