@@ -22,14 +22,14 @@ resource "azapi_resource" "search_reindex_la" {
         },
 
         "triggers" : {
-          "Recurrence": {
-            "type": "Recurrence",
-            "recurrence": {
-              "interval": 1,
-              "frequency": "Day",
-              "timeZone": "GMT Standard Time",
-              "schedule": {
-                "hours": [
+          "Recurrence" : {
+            "type" : "Recurrence",
+            "recurrence" : {
+              "interval" : 1,
+              "frequency" : "Day",
+              "timeZone" : "GMT Standard Time",
+              "schedule" : {
+                "hours" : [
                   "4"
                 ]
               }
@@ -71,9 +71,9 @@ resource "azapi_resource" "search_reindex_la" {
               },
               "Trigger Re-Index" : {
                 "inputs" : {
-                  "authentication": {
-                    "type": "Raw",
-                    "value": "Bearer @{body('Get Token')?['value']}"
+                  "authentication" : {
+                    "type" : "Raw",
+                    "value" : "Bearer @{body('Get Token')?['value']}"
                   }
                   "method" : "GET",
                   "queries" : {},
@@ -85,9 +85,9 @@ resource "azapi_resource" "search_reindex_la" {
                   ]
                 },
                 "type" : "Http",
-                "runtimeConfiguration": {
-                  "contentTransfer": {
-                    "transferMode": "Chunked"
+                "runtimeConfiguration" : {
+                  "contentTransfer" : {
+                    "transferMode" : "Chunked"
                   }
                 }
               }
@@ -96,18 +96,18 @@ resource "azapi_resource" "search_reindex_la" {
             "type" : "Scope"
           },
           "Check" : {
-            "type": "If",
-            "expression": {
-              "and": [
+            "type" : "If",
+            "expression" : {
+              "and" : [
                 {
-                  "equals": [
+                  "equals" : [
                     "@outputs('Trigger Re-Index')?['statusCode']",
                     200
                   ]
                 }
               ]
             },
-            "actions": {
+            "actions" : {
               "Terminate Success" : {
                 "inputs" : {
                   "runStatus" : "Succeeded"
@@ -117,56 +117,56 @@ resource "azapi_resource" "search_reindex_la" {
               }
             },
             "else" : {
-              "actions": {
-                 "Get alerting webhook" : {
-                    "inputs" : {
-                      "host" : {
-                        "connection" : {
-                          "name" : "@parameters('$connections')['keyvault']['connectionId']"
-                        }
-                      },
-                      "method" : "get",
-                      "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
+              "actions" : {
+                "Get alerting webhook" : {
+                  "inputs" : {
+                    "host" : {
+                      "connection" : {
+                        "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                      }
                     },
-                    "runAfter" : {},
-                    "type" : "ApiConnection"
+                    "method" : "get",
+                    "path" : "/secrets/@{encodeURIComponent('alertingWebhook')}/value"
                   },
-                  "Send slack alert" : {
-                    "inputs" : {
-                      "body" : templatefile(
-                          "${path.module}/templates/slack-alert-reindex.json.tftpl",
-                          { 
-                            rg_name = data.azurerm_resource_group.rg.name, 
-                            rg_id = data.azurerm_resource_group.rg.id, 
-                          }),
-                      "headers" : {
-                        "Content-Type" : "application/json"
-                      },
-                      "method" : "POST",
-                      "uri" : "@{body('Get alerting webhook')?['value']}"
+                  "runAfter" : {},
+                  "type" : "ApiConnection"
+                },
+                "Send slack alert" : {
+                  "inputs" : {
+                    "body" : templatefile(
+                      "${path.module}/templates/slack-alert-reindex.json.tftpl",
+                      {
+                        rg_name = data.azurerm_resource_group.rg.name,
+                        rg_id   = data.azurerm_resource_group.rg.id,
+                    }),
+                    "headers" : {
+                      "Content-Type" : "application/json"
                     },
-                
-                    "type" : "Http", 
-                    "runAfter": {
-                      "Get alerting webhook" : [
-                        "Succeeded"
-                      ]
-                    }
+                    "method" : "POST",
+                    "uri" : "@{body('Get alerting webhook')?['value']}"
                   },
-                  "Terminate with error" : {
-                    "inputs" : {
-                      "runError" : {
-                        "message" : "Publishing scheduled pages failed"
-                      },
-                      "runStatus" : "Failed"
-                    },
-                    "runAfter" : {
-                      "Send slack alert": [
-                        "SUCCEEDED"
-                      ]
-                    },
-                    "type" : "Terminate"
+
+                  "type" : "Http",
+                  "runAfter" : {
+                    "Get alerting webhook" : [
+                      "Succeeded"
+                    ]
                   }
+                },
+                "Terminate with error" : {
+                  "inputs" : {
+                    "runError" : {
+                      "message" : "Publishing scheduled pages failed"
+                    },
+                    "runStatus" : "Failed"
+                  },
+                  "runAfter" : {
+                    "Send slack alert" : [
+                      "SUCCEEDED"
+                    ]
+                  },
+                  "type" : "Terminate"
+                }
               }
             },
             "runAfter" : {
