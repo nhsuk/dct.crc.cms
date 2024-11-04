@@ -7,11 +7,11 @@ steps:
       KeyVaultName: ${{ parameters.singleServerVaultName }}
       SecretsFilter: saPassword
   - task: AzureKeyVault@2
-    displayName: Get old server user password
+    displayName: Get old server user
     inputs:
       azureSubscription: ${{ parameters.singleServerVaultAzureSubscription }}
       KeyVaultName: ${{ parameters.appVaultName }}
-      SecretsFilter: dbPass
+      SecretsFilter: dbName,dbPass
   - task: AzureKeyVault@2
     displayName: Get new server secrets
     inputs:
@@ -41,6 +41,7 @@ steps:
         MIGRATION_OPTION: ValidateAndMigrate
       SINGLE_SERVER_ADMIN_PASSWORD: $(saPassword)
       FLEX_SERVER_ADMIN_PASSWORD: $(postgresqlAdminPassword)
+      DATABASE: $(dbName)
       CRC_PASSWORD: $(dbPass)
   - task: ShellScript@2
     displayName: Run data validation
@@ -52,3 +53,4 @@ steps:
       ENVIRONMENT: ${{ parameters.env }}
       SINGLE_SERVER_ADMIN_PASSWORD: $(saPassword)
       FLEX_SERVER_ADMIN_PASSWORD: $(postgresqlAdminPassword)
+      DATABASE: $(dbName)

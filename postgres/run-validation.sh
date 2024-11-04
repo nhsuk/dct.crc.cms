@@ -7,7 +7,7 @@
 set -e
 
 # Check environment variables are set
-required_env_vars=("ENVIRONMENT" "FLEX_SERVER_ADMIN_PASSWORD" "SINGLE_SERVER_ADMIN_PASSWORD")
+required_env_vars=("ENVIRONMENT" "FLEX_SERVER_ADMIN_PASSWORD" "SINGLE_SERVER_ADMIN_PASSWORD" "DATABASE")
 for var in "${required_env_vars[@]}"; do
   if [[ -z "${!var}" ]]; then
     echo "'$var' is not set"
@@ -35,8 +35,6 @@ if [ "$ENVIRONMENT" == "prod" ]; then
 else
   SINGLE_SERVER_ADMIN_USERNAME="betterhealth"
 fi
-
-DATABASE="crcv3${ENVIRONMENT}"
 
 echo "Cleaning up any containers..."
 docker container rm --force new-validation old-validation

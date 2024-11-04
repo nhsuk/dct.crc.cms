@@ -7,7 +7,7 @@
 set -e
 
 # Check environment variables are set
-required_env_vars=("MIGRATION_ID" "SUBSCRIPTION" "ENVIRONMENT" "SINGLE_SERVER_ADMIN_PASSWORD" "FLEX_SERVER_ADMIN_PASSWORD" "CRC_PASSWORD" "MIGRATION_OPTION")
+required_env_vars=("MIGRATION_ID" "SUBSCRIPTION" "ENVIRONMENT" "SINGLE_SERVER_ADMIN_PASSWORD" "FLEX_SERVER_ADMIN_PASSWORD" "DATABASE" "CRC_PASSWORD" "MIGRATION_OPTION")
 for var in "${required_env_vars[@]}"; do
   if [[ -z "${!var}" ]]; then
     echo "'$var' is not set"
@@ -28,8 +28,6 @@ if [[ "$ENVIRONMENT" == "stag" ]]; then
 else
   SOURCE_RG="nhsuk-dct-rg-$SOURCE_ENVIRONMENT-uks"
 fi
-
-DATABASE="crcv3${ENVIRONMENT}"
 
 echo "Creating properties from template and env..."
 
@@ -77,12 +75,12 @@ docker run --env PGPASSWORD=$FLEX_SERVER_ADMIN_PASSWORD postgres psql \
   --command "
     DO \$\$
     BEGIN
-      IF NOT EXISTS (SELECT FROM pg_user WHERE usename = 'crc') THEN
-        CREATE USER crc WITH ENCRYPTED PASSWORD '$CRC_PASSWORD';
+      IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$DATABASE') THEN
+        CREATE USER $DATABASE WITH ENCRYPTED PASSWORD '$CRC_PASSWORD';
       END IF;
     END \$\$;
-    GRANT crc TO cmsadmin;
-    ALTER DATABASE $DATABASE OWNER TO crc;
-    REASSIGN OWNED BY cmsadmin TO crc;
+    GRANT $DATABASE TO cmsadmin;
+    ALTER DATABASE $DATABASE OWNER TO $DATABASE;
+    REASSIGN OWNED BY cmsadmin TO $DATABASE;
   " \
   $DATABASE
