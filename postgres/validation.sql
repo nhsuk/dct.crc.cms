@@ -29,6 +29,7 @@ BEGIN
     FOR r IN (SELECT table_schema, table_name
               FROM information_schema.tables
               WHERE table_schema = 'public'
+              AND table_name != 'wagtailsearch_indexentry' -- this table will always be out of sync
               AND table_type = 'BASE TABLE' ORDER BY table_name)
     LOOP
         -- Dynamically build the SQL query for each table
