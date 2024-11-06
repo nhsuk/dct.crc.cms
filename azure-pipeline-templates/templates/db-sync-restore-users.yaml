@@ -12,7 +12,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' DROP CONSTRAINT '||constraint_name||';'
         FROM (
@@ -40,7 +40,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||on_delete||' '||def||';'
         FROM (
@@ -87,7 +87,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||def||';'
         FROM (
@@ -113,7 +113,7 @@ steps:
         AS add_constraints)
         to '/psql_commands_scripts/add_original_user_constraints.csv' csv;"
   displayName: 'Make add original constraints script'
-  
+
 - task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
@@ -126,7 +126,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/drop_user_constraints.csv"
   displayName: 'Drop user based constraints'
 
@@ -142,7 +142,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/add_modified_user_constraints.csv"
   displayName: 'Add modified user based constraints'
 
@@ -157,7 +157,7 @@ steps:
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'
 
@@ -173,7 +173,7 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/drop_user_constraints.csv"
   displayName: 'Drop user based constraints again'
 
@@ -189,8 +189,8 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
-      postgres:11 \
-      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump 
+      postgres:16 \
+      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump
   displayName: 'Restore ${{parameters.dumpPrefix}} users to target database'
 
 - task: AzureCLI@2
@@ -205,6 +205,6 @@ steps:
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
-      postgres:11 \
+      postgres:16 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
   displayName: 'Re-add original user based constraints'

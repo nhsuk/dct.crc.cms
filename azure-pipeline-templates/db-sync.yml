@@ -3,12 +3,12 @@ pool:
 
 trigger: none
 
-# daily midnight backup midnight - this will not run any of the syncing jobs, only the backup 
+# daily midnight backup midnight - this will not run any of the syncing jobs, only the backup
 schedules:
 - cron: '0 0 * * *'
   displayName: Daily midnight build
   branches:
-    include: 
+    include:
     - main
 
 parameters:
@@ -85,6 +85,7 @@ stages:
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks
               environment: "review"
+              env: dev
 
   - stage: CopyToIntegrationDB
     displayName: "Copy to Integration Database"
@@ -102,8 +103,9 @@ stages:
               Server: campaigns-cms-psql-dev-uks
               ResourceGroup: nhsuk-dct-rg-dev-uks
               environment: "integration"
+              env: int
 
-  - stage: CopyToStagingDB 
+  - stage: CopyToStagingDB
     displayName: "Copy to Staging Database"
     dependsOn:
       - CopyFromProdDB
@@ -121,3 +123,4 @@ stages:
               Server: campaigns-cms-psql-stag-uks
               ResourceGroup: dct-cms-postgres-rg-stag-uksouth
               environment: "staging"
+              env: stag
