@@ -21,40 +21,12 @@ locals {
   postgresql_server_name        = module.activeconnectionsalert.postgresql_server_name
   postgresql_server_url         = "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview"
 
-  database_skus = {
-    development = "GP_Standard_D2s_v3" # General Purpose, 2 vCores, 8 GiB RAM
-    integration = "GP_Standard_D2s_v3" # General Purpose, 2 vCores, 8 GiB RAM
-    staging     = "GP_Standard_D2s_v3" # General Purpose, 2 vCores, 8 GiB RAM
-    production  = "GP_Standard_D2s_v3" # General Purpose, 2 vCores, 8 GiB RAM
-  }
-
-  database_sku = local.database_skus[var.environment]
-
-  database_firewall_rules = {
-    AllowAllAzure = {
-      start_ip = "0.0.0.0"
-      end_ip   = "0.0.0.0"
-    }
-  }
-
-  database_replicas = {
-    production = {
-      name           = "dct-crccms-psql-prod-ukw"
-      resource_group = "dct-crccms-rg-prod-ukw"
-      location       = "ukwest"
-    }
-  }
-
-  database_replica = lookup(local.database_replicas, var.environment, null)
-
-  databases = [
-    "crc"
-  ]
-
   secret_names = [
     "alertingWebhook",
     "pubToken",
     "pubEndpoint",
     "searchIndexEndpoint"
   ]
+
+  deploy_database = var.location == "uks" # Only deploy database module for primary regions (replica will be deployed to dr)
 }
