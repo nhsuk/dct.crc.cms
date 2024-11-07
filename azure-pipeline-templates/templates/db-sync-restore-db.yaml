@@ -44,7 +44,7 @@ steps:
       -e PGPASSWORD \
       postgres:16 \
       psql -d "$(DBName)" \
-      -c "ALTER SCHEMA public OWNER TO crcv3review;"
+      -c "ALTER SCHEMA public OWNER TO $(DBUser);"
   displayName: Change schema ownership
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
