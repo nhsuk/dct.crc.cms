@@ -21,12 +21,13 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az postgres db delete \
-      --name "$(DBName)" \
-      --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}" \
-      --yes \
-      --debug
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(postgresqlAdminPassword)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      postgres:16 \
+      dropdb --if-exists $(DBName)
   displayName: 'Delete target database'
 
 - task: AzureCLI@2
@@ -35,11 +36,13 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az postgres db create \
-      --name "$(DBName)" \
-      --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}" \
-      --debug
+      set -e
+      docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGPASSWORD="$(AdminPassword)" \
+      -e PGUSER="$(AdminUser)" \
+      postgres:16 \
+      createdb --owner=$(DBUser) $(DBName)
   displayName: 'Recreate target database'
 
 - task: DownloadPipelineArtifact@2
