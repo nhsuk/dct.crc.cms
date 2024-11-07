@@ -1,5 +1,5 @@
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: ubuntu-latest
 
 trigger: none
 
@@ -34,24 +34,24 @@ resources:
 
 stages:
   - stage: CopyFromProdDB
-    displayName: "Copy Production Database"
+    displayName: Copy Production Database
     jobs:
       - job: ProdDBCopy
         steps:
           - task: AzureKeyVault@1
             displayName: 'Azure Key Vault: dct-crc-v3-vlt-prod-uks'
             inputs:
-              azureSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              KeyVaultName: "dct-crc-v3-vlt-prod-uks"
+              azureSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
+              KeyVaultName: dct-crc-v3-vlt-prod-uks
               SecretsFilter: DBPass, DBName, DBHost, DBUser
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              azureStorageSubscription: "nhsuk-dct-rg-prod"
-              dumpPrefix: "prod"
+              azureStorageSubscription: nhsuk-dct-rg-prod
+              dumpPrefix: prod
               publishDump: true
 
   - stage: UploadProdDumpToBlob
-    displayName: "Backup Production Database"
+    displayName: Backup Production Database
     dependsOn:
       - CopyFromProdDB
     condition: and(succeeded(), eq('${{ parameters.backupProduction }}', 'true'))
@@ -60,17 +60,17 @@ stages:
         steps:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
-              azureVaultSubscription: "dct-production-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-prod"
-              VaultId: "dct-crc-v3-vlt-prod-uks"
+              azureVaultSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
+              azureStorageSubscription: nhsuk-dct-rg-prod
+              VaultId: dct-crc-v3-vlt-prod-uks
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
               useArtifact: true
-              dumpPrefix: "prod"
+              dumpPrefix: prod
 
   - stage: CopyToReviewDB
-    displayName: "Copy to Review Database"
+    displayName: Copy to Review Database
     dependsOn:
       - CopyFromProdDB
     condition: and(succeeded(), eq('${{ parameters.syncToReview }}', true))
@@ -79,16 +79,14 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
-              VaultId: "dct-crc-v3-vlt-rev-uks"
-              Server: campaigns-cms-psql-dev-uks
-              ResourceGroup: nhsuk-dct-rg-dev-uks
-              environment: "review"
+              azureVaultSubscription: dct-development-vault-uks-dct.campaign-resource-centre-v3
+              azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
+              VaultId: dct-crc-v3-vlt-rev-uks
+              environment: review
               env: dev
 
   - stage: CopyToIntegrationDB
-    displayName: "Copy to Integration Database"
+    displayName: Copy to Integration Database
     dependsOn:
       - CopyFromProdDB
     condition: and(succeeded(), eq('${{ parameters.syncToIntegration }}', true))
@@ -97,16 +95,14 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: "dct-development-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3"
-              VaultId: "dct-crc-v3-vlt-int-uks"
-              Server: campaigns-cms-psql-dev-uks
-              ResourceGroup: nhsuk-dct-rg-dev-uks
-              environment: "integration"
+              azureVaultSubscription: dct-development-vault-uks-dct.campaign-resource-centre-v3
+              azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
+              VaultId: dct-crc-v3-vlt-int-uks
+              environment: integration
               env: int
 
   - stage: CopyToStagingDB
-    displayName: "Copy to Staging Database"
+    displayName: Copy to Staging Database
     dependsOn:
       - CopyFromProdDB
     condition: and(succeeded(), eq('${{ parameters.syncToStaging }}', true))
@@ -117,10 +113,8 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: "dct-staging-vault-uks-dct.campaign-resource-centre-v3"
-              azureStorageSubscription: "dct-cms-postgres-rg-stag"
-              VaultId: "dct-crc-v3-vlt-stag-uks"
-              Server: campaigns-cms-psql-stag-uks
-              ResourceGroup: dct-cms-postgres-rg-stag-uksouth
-              environment: "staging"
+              azureVaultSubscription: dct-staging-vault-uks-dct.campaign-resource-centre-v3
+              azureStorageSubscription: dct-cms-postgres-rg-stag
+              VaultId: dct-crc-v3-vlt-stag-uks
+              environment: staging
               env: stag
