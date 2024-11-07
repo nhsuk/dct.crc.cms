@@ -1,37 +1,27 @@
 steps:
-- task: AzureCLI@2
-  condition: ${{ eq(parameters.usersOnly, True) }}
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -x
-      set -e
-      docker run \
+- script: |
+    set -x
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:16 \
       pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
+  condition: ${{ eq(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
 
-- task: AzureCLI@2
-  condition: ${{ ne(parameters.usersOnly, True) }}
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -x
-      set -e
-      docker run \
+- script: |
+    set -x
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       postgres:16 \
       pg_dump -Fc "$(DBName)" > ${{parameters.dumpPrefix}}-db-dump.dump
+  condition: ${{ ne(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
 

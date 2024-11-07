@@ -15,26 +15,20 @@ steps:
 
 - template: ./db-sync-download-dump.yaml
   parameters:
-    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    dumpPrefix: "${{ parameters.environment }}_users"
+    dumpPrefix: ${{ parameters.environment }}_users
     usersOnly: True
 
 - template: ./db-sync-restore-db.yaml
   parameters:
-    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    Server: ${{ parameters.Server }}
-    ResourceGroup: ${{ parameters.ResourceGroup }}
-    dumpPrefix: "prod"
+    dumpPrefix: prod
     useArtifact: true
 
 - template: ./db-sync-restore-users.yaml
   parameters:
-    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    dumpPrefix: "${{ parameters.environment }}_users"
+    dumpPrefix: ${{ parameters.environment }}_users
 
 - template: ./db-sync-download-dump.yaml
   parameters:
-    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
     dumpPrefix: ${{ parameters.environment }}
 
 - template: ./db-sync-upload-blob.yaml

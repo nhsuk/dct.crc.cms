@@ -1,13 +1,8 @@
 steps:
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      mkdir psql_commands_scripts
-      set -e
-      docker run \
+- script: |
+    mkdir psql_commands_scripts
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
@@ -27,15 +22,10 @@ steps:
         to '/psql_commands_scripts/drop_user_constraints.csv' csv;"
   displayName: 'Make drop user constraints script'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      mkdir psql_commands_scripts
-      set -e
-      docker run \
+- script: |
+    mkdir psql_commands_scripts
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
@@ -74,15 +64,10 @@ steps:
         to '/psql_commands_scripts/add_modified_user_constraints.csv' csv;"
   displayName: 'Make add modified constraints script'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      mkdir psql_commands_scripts
-      set -e
-      docker run \
+- script: |
+    mkdir psql_commands_scripts
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
@@ -114,14 +99,9 @@ steps:
         to '/psql_commands_scripts/add_original_user_constraints.csv' csv;"
   displayName: 'Make add original constraints script'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
@@ -130,14 +110,9 @@ steps:
       psql -d "$(DBName)" -f "/psql_commands_scripts/drop_user_constraints.csv"
   displayName: 'Drop user based constraints'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
@@ -146,14 +121,9 @@ steps:
       psql -d "$(DBName)" -f "/psql_commands_scripts/add_modified_user_constraints.csv"
   displayName: 'Add modified user based constraints'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
@@ -161,50 +131,35 @@ steps:
       psql -d "$(DBName)" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/drop_user_constraints.csv"
-  displayName: 'Drop user based constraints again'
+  displayName: Drop user based constraints again
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:16 \
       pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump
-  displayName: 'Restore ${{parameters.dumpPrefix}} users to target database'
+  displayName: Restore ${{parameters.dumpPrefix}} users to target database
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
       -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
       psql -d "$(DBName)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
-  displayName: 'Re-add original user based constraints'
+  displayName: Re-add original user based constraints
