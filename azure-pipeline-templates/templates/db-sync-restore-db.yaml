@@ -3,19 +3,21 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD \
       postgres:16 \
       psql -d "$(DBName)" \
       -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(DBName)' AND pid <> pg_backend_pid();"
   displayName: End connections to target database
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
 
 - script: |
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD \
       -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
       postgres:16 \
       dropdb --if-exists $(DBName)
   displayName: Delete target database
@@ -26,27 +28,42 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD \
       -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
       postgres:16 \
       createdb --owner=$(DBUser) $(DBName)
   displayName: Recreate target database
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
 
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      psql -d "$(DBName)" \
+      -c "ALTER SCHEMA public OWNER TO crcv3review;"
+  displayName: Change schema ownership
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
+
 - task: DownloadPipelineArtifact@2
   condition: ${{ eq(parameters.useArtifact, True) }}
   inputs:
-    artifact: '${{parameters.dumpPrefix}}-db.dump'
+    artifact: ${{parameters.dumpPrefix}}-db.dump
     path: $(Build.SourcesDirectory)
 
 - script: |
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:16 \
       pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.dumpPrefix}}-db.dump
   displayName: Copy ${{parameters.dumpPrefix}} to target database
+  env:
+    PGPASSWORD: $(DBPass)
