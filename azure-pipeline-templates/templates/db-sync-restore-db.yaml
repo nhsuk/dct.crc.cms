@@ -14,21 +14,25 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(postgresqlAdminPassword)" \
+      -e PGPASSWORD \
       -e PGUSER="$(postgresqlAdminUser)" \
       postgres:16 \
       dropdb --if-exists $(DBName)
   displayName: Delete target database
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
 
 - script: |
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(postgresqlAdminPassword)" \
+      -e PGPASSWORD \
       -e PGUSER="$(postgresqlAdminUser)" \
       postgres:16 \
       createdb --owner=$(DBUser) $(DBName)
   displayName: Recreate target database
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
 
 - task: DownloadPipelineArtifact@2
   condition: ${{ eq(parameters.useArtifact, True) }}
