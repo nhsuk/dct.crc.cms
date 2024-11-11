@@ -3,7 +3,7 @@ steps:
     date=`date "+%d-%m-%Y_%H:%M:%S"`
     echo $date
     echo "##vso[task.setvariable variable=Datestamp;isOutput=True]$date"
-  name: 'currentDatestamp'
+  name: currentDatestamp
 
 - bash: |
     root=""
@@ -15,19 +15,19 @@ steps:
       echo "##vso[task.setvariable variable=folder;isOutput=True]${{parameters.dumpPrefix}}/"
       echo "using ${{parameters.dumpPrefix}} folder"
     fi
-  name: 'environment'
+  name: environment
 
 - task: DownloadPipelineArtifact@2
   condition: ${{ eq(parameters.useArtifact, True) }}
   inputs:
-    artifact: '${{parameters.dumpPrefix}}-db.dump'
+    artifact: ${{parameters.dumpPrefix}}-db.dump
     path: $(Build.SourcesDirectory)
 
 - task: AzureCLI@2
   inputs:
     azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
+    scriptType: bash
+    scriptLocation: inlineScript
     inlineScript: |
       set -x
       set -e
@@ -42,5 +42,5 @@ steps:
         --container-name ${{parameters.BlobStorageContainerNameDbDump}} \
         --file db-dump-$(currentDatestamp.Datestamp).dump \
         --name $(environment.folder)db-dump-$(currentDatestamp.Datestamp).dump
-  name: 'BlobStorageBackup'
-  displayName: 'Backup to Blob Storage'
+  name: BlobStorageBackup
+  displayName: Backup to Blob Storage

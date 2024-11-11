@@ -1,65 +1,69 @@
 steps:
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
-      postgres:11 \
+      -e PGPASSWORD \
+      postgres:16 \
       psql -d "$(DBName)" \
       -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(DBName)' AND pid <> pg_backend_pid();"
-  displayName: 'End connections to target database'
+  displayName: End connections to target database
+  env:
+    PGPASSWORD: $(DBPass)
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az postgres db delete \
-      --name "$(DBName)" \
-      --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}" \
-      --yes \
-      --debug
-  displayName: 'Delete target database'
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      dropdb --if-exists $(DBName)
+  displayName: Delete target database
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az postgres db create \
-      --name "$(DBName)" \
-      --resource-group "${{parameters.ResourceGroup}}" \
-      --server-name "${{parameters.Server}}" \
-      --debug
-  displayName: 'Recreate target database'
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      createdb --owner=$(DBUser) $(DBName)
+  displayName: Recreate target database
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
+
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      psql -d "$(DBName)" \
+      -c "ALTER SCHEMA public OWNER TO $(DBUser);"
+  displayName: Change schema ownership
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
 
 - task: DownloadPipelineArtifact@2
   condition: ${{ eq(parameters.useArtifact, True) }}
   inputs:
-    artifact: '${{parameters.dumpPrefix}}-db.dump'
+    artifact: ${{parameters.dumpPrefix}}-db.dump
     path: $(Build.SourcesDirectory)
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: ${{parameters.azureStorageSubscription}}
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      set -e
-      docker run \
+- script: |
+    set -e
+    docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
       -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
-      postgres:11 \
+      postgres:16 \
       pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.dumpPrefix}}-db.dump
-  displayName: 'Copy ${{parameters.dumpPrefix}} to target database'
+  displayName: Copy ${{parameters.dumpPrefix}} to target database
+  env:
+    PGPASSWORD: $(DBPass)
