@@ -7,7 +7,7 @@ authors = ["Torchbox <hello@torchbox.com>"]
 [tool.poetry.dependencies]
 python = "~3.12"
 django = "~5.0"
-wagtail = "~5.2"
+wagtail = "~6.0"
 psycopg2 = "2.9.5"
 gunicorn = {version = "22.0", optional = true}
 wagtail-django-recaptcha = "2.1.1"
@@ -23,7 +23,7 @@ wagtail-accessibility = "~0.2"
 coverage = "^5.4"
 wagtail-factories = "^2.0.1"
 freezegun = "^1.1.0"
-wagtail-reacttaxonomy = {git = "https://github.com/nhsuk/wagtail-reacttaxonomy", branch = "wagtail4"}
+wagtail-reacttaxonomy = {git = "https://github.com/dylan8902/wagtail-reacttaxonomy", branch = "wagtail6"}
 django-gov-notify = "^0.6.0"
 azure-storage-blob = "^12.0"
 azure-storage-file = "^2.1"
