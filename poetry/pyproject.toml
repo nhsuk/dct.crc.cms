@@ -35,7 +35,7 @@ instana = "1.38.0 "
 django-cprofile-middleware = "1.0.5"
 django-debug-toolbar = "~3.2"
 redis = "~4.1"
-wagtail-2fa = "^1.6.9"
+wagtail-2fa = {git = "https://github.com/torchbox-forks/wagtail-2fa", branch = "support/wagtail-62"}
 azure-search-documents = "^11.3.0"
 azure-search = "^1.0.0b2"
 wagtail-modeladmin = "^2.0.0"
