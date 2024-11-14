@@ -5,7 +5,7 @@ trigger: none
 pr: none
 
 parameters:
-  - name: dryrun
+  - name: dryRun
     displayName: Dry Run
     type: boolean
     default: false
@@ -114,11 +114,11 @@ stages:
                     --source-account-name $PROD_ACCOUNT \
                     --source-account-key $PROD_ACCOUNT_KEY \
                     --source-container $PROD_CONTAINER \
-                    --source-blob $blob \
+                    --source-blob "$blob" \
                     --account-name $ACCOUNT \
                     --account-key $ACCOUNT_KEY \
                     --destination-container $CONTAINER \
-                    --destination-blob $blob \
+                    --destination-blob "$blob" \
                     --only-show-errors
                 done <production_to_staging.log
             env:
