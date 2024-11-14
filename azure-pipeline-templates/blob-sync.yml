@@ -24,7 +24,7 @@ parameters:
 
 stages:
   - stage: production
-    displayName: Get production blobs
+    displayName: List production blobs
     jobs:
       - job: Production
         steps:
@@ -57,9 +57,10 @@ stages:
               ACCOUNT: campaignscrcv3produks
               CONTAINER: campaign-resource-centre-v3-production
           - task: PublishPipelineArtifact@1
+            displayName: Publish production blobs
             inputs:
               targetPath: ./production.log
-              artifactName: prod_blobs
+              artifactName: production.log
 
   - stage: staging
     dependsOn: production
@@ -70,9 +71,9 @@ stages:
         steps:
           - checkout: none
           - task: DownloadPipelineArtifact@2
+            displayName: Download production blobs
             inputs:
-              artifactName: prod_blobs
-              targetPath: ./production.log
+              artifactName: production.log
           - task: AzureKeyVault@2
             displayName:
             inputs:
@@ -128,10 +129,12 @@ stages:
               ${{ if eq(parameters.dryRun, true) }}:
                 DRY_RUN: true
           - task: PublishPipelineArtifact@1
+            displayName: Publish staging blobs
             inputs:
               targetPath: ./staging.log
-              artifactName: staging_blobs
+              artifactName: staging.log
           - task: PublishPipelineArtifact@1
+            displayName: Publish staging diff
             inputs:
               targetPath: ./production_to_staging.log
-              artifactName: production_to_staging_blobs
+              artifactName: production_to_staging.log
