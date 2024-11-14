@@ -74,6 +74,7 @@ stages:
             displayName: Download production blobs
             inputs:
               artifactName: production.log
+              targetPath: $(System.DefaultWorkingDirectory)
           - task: AzureKeyVault@2
             displayName:
             inputs:
