@@ -150,6 +150,6 @@ stages:
             env:
               ACCOUNT: campaignsstrgstaguks
               CONTAINER: campaign-resource-centre-v3-staging
-              PROD_ACCOUNT_KEY: ${storageAccountKey}
+              PROD_ACCOUNT_KEY: $(storageAccountKey)
               PROD_ACCOUNT: campaignscrcv3produks
               PROD_CONTAINER: campaign-resource-centre-v3-production
