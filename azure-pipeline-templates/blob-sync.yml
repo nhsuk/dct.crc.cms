@@ -89,7 +89,7 @@ stages:
               inlineScript: |
                 set -e
                 ACCOUNT_KEY=$(az storage account keys list \
-                  --account-name ${account} \
+                  --account-name ${ACCOUNT} \
                   --query "[0].value" \
                   --output tsv)
                 az storage blob list \
