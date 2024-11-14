@@ -74,3 +74,16 @@ stages:
               env: stag
               environment: staging
               dryRun: ${{ parameters.dryRun }}
+
+  - stage: integration
+    dependsOn: production
+    condition: ${{ parameters.integration }}
+    displayName: Update integration blobs
+    jobs:
+      - job: Integration
+        steps:
+          - template: templates/blob-sync-steps.yml
+            parameters:
+              env: int
+              environment: integration
+              dryRun: ${{ parameters.dryRun }}
