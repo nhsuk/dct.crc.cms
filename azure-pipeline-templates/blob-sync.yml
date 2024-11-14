@@ -83,13 +83,13 @@ stages:
               SecretsFilter: storageAccountKey
               RunAsPreJob: false
           - task: AzureCLI@2
-            name: QueryStaging
+            displayName: Get staging diff
             inputs:
               azureSubscription: campaigns-apps-rg-stag
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                set -e
+                set -ex
                 ACCOUNT_KEY=$(az storage account keys list \
                   --account-name ${ACCOUNT} \
                   --query "[0].value" \
@@ -104,11 +104,37 @@ stages:
                   --output tsv \
                 > staging.log  2>&1
                 comm -23 production.log staging.log > production_to_staging.log
-                if [ -z "$DRY_RUN" ]; then
-                  echo "##vso[task.logissue type=warning;]Running in dryrun mode"
-                  echo "##vso[task.complete result=SucceededWithIssues;]"
-                  exit
-                fi
+            env:
+              ACCOUNT: campaignsstrgstaguks
+              CONTAINER: campaign-resource-centre-v3-staging
+          - task: PublishPipelineArtifact@1
+            displayName: Publish staging blobs
+            inputs:
+              targetPath: ./staging.log
+              artifactName: staging.log
+          - task: PublishPipelineArtifact@1
+            displayName: Publish staging diff
+            inputs:
+              targetPath: ./production_to_staging.log
+              artifactName: production_to_staging.log
+          - bash: |
+              echo "##vso[task.logissue type=warning;]Running in dryrun mode"
+              echo "##vso[task.complete result=SucceededWithIssues;]"
+            condition: ${{ eq(parameters.dryRun, true) }}
+            displayName: Dry Run
+          - task: AzureCLI@2
+            condition: ${{ ne(parameters.dryRun, true) }}
+            displayName: Upload staging diff
+            inputs:
+              azureSubscription: campaigns-apps-rg-stag
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -ex
+                ACCOUNT_KEY=$(az storage account keys list \
+                  --account-name ${ACCOUNT} \
+                  --query "[0].value" \
+                  --output tsv)
                 while read blob; do
                   az storage blob copy start \
                     --source-account-name $PROD_ACCOUNT \
@@ -127,15 +153,3 @@ stages:
               PROD_ACCOUNT_KEY: ${storageAccountKey}
               PROD_ACCOUNT: campaignscrcv3produks
               PROD_CONTAINER: campaign-resource-centre-v3-production
-              ${{ if eq(parameters.dryRun, true) }}:
-                DRY_RUN: true
-          - task: PublishPipelineArtifact@1
-            displayName: Publish staging blobs
-            inputs:
-              targetPath: ./staging.log
-              artifactName: staging.log
-          - task: PublishPipelineArtifact@1
-            displayName: Publish staging diff
-            inputs:
-              targetPath: ./production_to_staging.log
-              artifactName: production_to_staging.log
