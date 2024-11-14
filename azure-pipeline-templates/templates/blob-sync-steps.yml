@@ -5,8 +5,16 @@ parameters:
     type: string
   - name: azureSubscription
     type: string
+  - name: containerPrefix
+    type: string
+    default: ''
   - name: dryRun
     type: boolean
+
+# To support typos in resource names
+variables:
+  - name: container
+    value: ${{ coalesce(parameters.containerPrefix, 'campaign-resource-centre-v3') }}-${{ parameters.environment }}
 
 steps:
   - checkout: none
@@ -48,7 +56,7 @@ steps:
         comm -23 production.log ${{ parameters.environment }}.log > production_to_${{ parameters.environment }}.log
     env:
       ACCOUNT: campaignsstrg${{ parameters.env }}uks
-      CONTAINER: campaign-resource-centre-v3-${{ parameters.environment }}
+      CONTAINER: ${{ variables.container }}
 
   - task: PublishPipelineArtifact@1
     displayName: Publish ${{ parameters.environment }} blobs
@@ -95,7 +103,7 @@ steps:
         done <production_to_${{ parameters.environment }}.log
     env:
       ACCOUNT: campaignsstrg${{ parameters.env }}uks
-      CONTAINER: campaign-resource-centre-v3-${{ parameters.environment }}
+      CONTAINER: ${{ variables.container }}
       PROD_ACCOUNT_KEY: $(storageAccountKey)
       PROD_ACCOUNT: campaignscrcv3produks
       PROD_CONTAINER: campaign-resource-centre-v3-production

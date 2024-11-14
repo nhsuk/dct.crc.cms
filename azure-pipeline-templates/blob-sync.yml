@@ -88,4 +88,5 @@ stages:
               env: int
               environment: integration
               azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
+              containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
               dryRun: ${{ parameters.dryRun }}
