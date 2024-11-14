@@ -90,3 +90,18 @@ stages:
               azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
               containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
               dryRun: ${{ parameters.dryRun }}
+
+  - stage: review
+    dependsOn: production
+    condition: ${{ parameters.review }}
+    displayName: Update review blobs
+    jobs:
+      - job: Review
+        steps:
+          - template: templates/blob-sync-steps.yml
+            parameters:
+              env: int # Review is in int
+              environment: review
+              azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
+              containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
+              dryRun: ${{ parameters.dryRun }}
