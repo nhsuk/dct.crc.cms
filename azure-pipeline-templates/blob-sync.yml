@@ -73,6 +73,7 @@ stages:
             parameters:
               env: stag
               environment: staging
+              azureSubscription: campaigns-apps-rg-stag
               dryRun: ${{ parameters.dryRun }}
 
   - stage: integration
@@ -86,4 +87,5 @@ stages:
             parameters:
               env: int
               environment: integration
+              azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
               dryRun: ${{ parameters.dryRun }}
