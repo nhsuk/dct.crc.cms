@@ -23,7 +23,6 @@ wagtail-accessibility = "~0.2"
 coverage = "^5.4"
 wagtail-factories = "^2.0.1"
 freezegun = "^1.1.0"
-wagtail-reacttaxonomy = {git = "https://github.com/dylan8902/wagtail-reacttaxonomy", branch = "wagtail6"}
 django-gov-notify = "^0.6.0"
 azure-storage-blob = "^12.0"
 azure-storage-file = "^2.1"
