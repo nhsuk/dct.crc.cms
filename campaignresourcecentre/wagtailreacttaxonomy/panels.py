@@ -103,7 +103,7 @@ class PermissionsPanel(FieldPanel):
         permission_actions,
         permission_type,
         *args,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(field_name, *args, **kwargs)
         self.permission_terms_id = permission_terms_id
