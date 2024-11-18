@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     "campaignresourcecentre.standardpages",
     "campaignresourcecentre.users",
     "campaignresourcecentre.utils",
-    "wagtailreacttaxonomy",
+    "campaignresourcecentre.wagtailreacttaxonomy",
     "wagtailnhsukfrontend",
     "wagtail_modeladmin",
     "wagtail.contrib.settings",

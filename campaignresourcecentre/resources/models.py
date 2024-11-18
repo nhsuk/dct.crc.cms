@@ -21,9 +21,6 @@ from wagtail.documents import get_document_model_string
 from wagtail.images import get_image_model_string
 from wagtail.search import index
 
-from wagtailreacttaxonomy.panels import TaxonomyPanel
-from wagtailreacttaxonomy.models import TaxonomyMixin
-
 import campaignresourcecentre
 from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
@@ -31,6 +28,8 @@ from campaignresourcecentre.utils.models import BasePage
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 from campaignresourcecentre.paragon_users.helpers.token_signing import sign
+from campaignresourcecentre.wagtailreacttaxonomy.panels import TaxonomyPanel
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyMixin
 
 logger = getLogger()
 

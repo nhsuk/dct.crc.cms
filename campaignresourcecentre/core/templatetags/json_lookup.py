@@ -1,7 +1,8 @@
 from django import template
 import json
-from wagtailreacttaxonomy.models import TaxonomyTerms
 import logging
+
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 
 register = template.Library()
 logger = logging.getLogger(__name__)
