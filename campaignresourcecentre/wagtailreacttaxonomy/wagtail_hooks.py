@@ -20,10 +20,10 @@ class GeneralFooterAdmin(ModelAdmin):
 modeladmin_register(GeneralFooterAdmin)
 
 
-@hooks.register("insert_editor_css")
+@hooks.register("insert_global_admin_css")
 def add_wagtail_react_taxonomy_css():
     return format_html(
-        '<link rel="stylesheet" href="{}">',
+        '\n\t<link rel="stylesheet" href="{}">',
         static("wagtailadmin/css/wagtail-react-taxonomy.css"),
     )
 
