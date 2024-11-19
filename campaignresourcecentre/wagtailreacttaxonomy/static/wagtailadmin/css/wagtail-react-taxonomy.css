@@ -27,12 +27,12 @@
     top: unset !important;
     position: unset;
   }
-  
+
   #react-taxonomy-permissions label {
     font-size: 1rem !important;
     font-weight: bold !important;
   }
-  
+
   #react-taxonomy-permissions input[type="button"] {
     width: unset;
     border: 1px solid #007d7e;
@@ -45,12 +45,12 @@
     color: #007d7e;
     background-color: transparent;
   }
-  
+
   #react-taxonomy-permissions input[type="button"]:hover {
     color: #ffffff;
     background-color: #007d7e;
   }
-  
+
   #react-taxonomy-permissions input[type="checkbox"],
   #react-taxonomy input[type="checkbox"] {
     background: none;
@@ -58,29 +58,28 @@
     margin: 0;
     padding: 0;
   }
-  
+
   #react-taxonomy-permissions input[type="radio"]::before {
     top: 14px;
   }
-  
+
   #react-taxonomy-permissions input[type="radio"] {
     background: none;
     width: 40px;
     margin-right: 0;
     padding-right: 0;
   }
-  
+
   #react-taxonomy-permissions .page-chooser {
     margin-left: 40px;
     margin-top: 8px;
   }
-  
+
   #react-taxonomy-permissions .page-chooser .unchosen::before,
   #react-taxonomy-permissions .page-chooser .chosen::before {
     color: #a3a4a5;
   }
-  
+
   #react-taxonomy-permissions .page-chooser .chosen .title {
     padding-left: 0;
   }
-  

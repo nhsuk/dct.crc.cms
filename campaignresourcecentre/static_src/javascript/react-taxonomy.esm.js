@@ -169,6 +169,7 @@ var styles = function styles(theme) {
         padding: 0,
         listStyle: 'none',
         background: '#fff',
+        color: '#000',
         fontFamily: 'sans-serif',
         '&.selected-term': {
           border: 'solid thin #333',

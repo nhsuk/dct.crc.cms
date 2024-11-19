@@ -461,7 +461,6 @@ var useStyles$2 = createUseStyles({
         flex: '1 1 auto',
         padding: [0, '1em'],
         whitespace: 'nowrap',
-        background: '#fff'
       }
     }
   }
