@@ -286,20 +286,19 @@ class SystemMessagesSettings(BaseSiteSetting):
     )
 
     banner_enabled = models.BooleanField("Enabled", default=False)
-    green_banner = models.TextField(
-        "Green banner",
-        default="",
-        blank=True
-    )
-    red_banner = models.TextField(
-        "Red banner",
-        default="",
-        blank=True
-    )
+    green_banner = models.TextField("Green banner", default="", blank=True)
+    red_banner = models.TextField("Red banner", default="", blank=True)
 
     panels = [
         MultiFieldPanel([FieldPanel("title_404"), FieldPanel("body_404")], "404 page"),
-        MultiFieldPanel([FieldPanel("banner_enabled"), FieldPanel("green_banner"), FieldPanel("red_banner")], "Admin Site Banner")
+        MultiFieldPanel(
+            [
+                FieldPanel("banner_enabled"),
+                FieldPanel("green_banner"),
+                FieldPanel("red_banner"),
+            ],
+            "Admin Site Banner",
+        ),
     ]
 
 
