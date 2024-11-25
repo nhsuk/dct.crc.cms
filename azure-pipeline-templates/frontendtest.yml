@@ -1,3 +1,7 @@
+parameters:
+- name: authorize
+  default: "None"
+
 steps:
   - task: DownloadSecureFile@1
     displayName: 'Download username/password secret file'
@@ -16,4 +20,5 @@ steps:
       IMAGE_TAG: $(imageTag)
       PARALLEL: 4
       SCENARIOS: parallel
+      AUTHORIZE: ${{ parameters.authorize }}
     displayName: 'Run Frontend tests in Docker container'
