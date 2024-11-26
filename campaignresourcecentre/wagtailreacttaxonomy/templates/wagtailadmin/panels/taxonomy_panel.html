@@ -1,0 +1,38 @@
+{% load wagtailadmin_tags %}
+
+{% if taxonomy_terms_error_message %}
+    <fieldset>
+        <div class="help-block help-critical">
+            {{ taxonomy_terms_error_message }}
+        </div>
+    </fieldset>
+{% else %}
+    <fieldset>
+        <ul class="fields">
+            <li>
+                <div class="field {{ field|fieldtype }} {{ field|widgettype }} {{ field_classes }}">
+                    <div class="field-content">
+                        <div class="input {{ input_classes }} ">
+                            {% block form_field %}
+                                {{ field|render_with_errors }}
+                            {% endblock %}
+                            <span></span>
+                        </div>
+
+                        {% if field|has_unrendered_errors %}
+                            <p class="error-message">
+                                {% for error in field.errors %}
+                                    <span>{{ error|escape }}</span>
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div id="react-taxonomy">
+            <div class="help-block">React Taxonomy Component cannot be loaded</div>
+        </div>
+    </fieldset>
+    <textarea id="taxonomy-terms-json">{{taxonomy_terms_json|safe}}</textarea>
+{% endif %}

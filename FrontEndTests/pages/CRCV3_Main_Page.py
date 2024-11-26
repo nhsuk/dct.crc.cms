@@ -573,7 +573,7 @@ class CRCV3MainPage(BasePage):
             EC.visibility_of_element_located((By.NAME, "otp_token"))
         )
 
-        assert otp_code is not None, "TOTP code not provided."
+        assert otp_code is not None, "OTP code not provided."
 
         self.driver.find_element(By.NAME, "otp_token").send_keys(otp_code)
         self.driver.find_element(
@@ -581,7 +581,7 @@ class CRCV3MainPage(BasePage):
         ).click()
 
         WebDriverWait(self.driver, 5).until(
-            EC.visibility_of_element_located((By.ID, "header-title"))
+            EC.visibility_of_element_located((By.XPATH, "//h2[text()='Site summary']"))
         )
 
     def navigate_to_admin_campaigns_sort(self):

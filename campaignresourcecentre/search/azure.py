@@ -9,12 +9,6 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 
 from wagtail.models import Page, PageQuerySet
-
-from wagtailreacttaxonomy.models import (
-    TaxonomyTerms,
-    get_terms_from_terms_json,
-    get_vocabs_from_terms_json,
-)
 from wagtail.search.backends.base import (
     BaseSearchBackend,
     BaseSearchResults,
@@ -23,6 +17,11 @@ from wagtail.search.backends.base import (
 from wagtail.search.query import PlainText
 
 from campaignresourcecentre.azurestore.utils import AzureStorage, CacheStorage
+from campaignresourcecentre.wagtailreacttaxonomy.models import (
+    TaxonomyTerms,
+    get_terms_from_terms_json,
+    get_vocabs_from_terms_json,
+)
 
 logger = logging.getLogger(__name__)
 

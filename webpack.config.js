@@ -7,13 +7,15 @@ const postcssCustomProperties = require('postcss-custom-properties');
 const sass = require('sass');
 
 const projectRoot = 'campaignresourcecentre';
+const jsSrcDir = `./${projectRoot}/static_src/javascript`;
 
 const options = {
     entry: {
         // multiple entries can be added here
-        main: `./${projectRoot}/static_src/javascript/main.js`,
-        nhsuk: `./${projectRoot}/static_src/javascript/nhsuk.js`,
-        event: `./${projectRoot}/static_src/javascript/event.js`,
+        main: `${jsSrcDir}/main.js`,
+        nhsuk: `${jsSrcDir}/nhsuk.js`,
+        event: `${jsSrcDir}/event.js`,
+        taxonomy: `${jsSrcDir}/wagtail-react-taxonomy.entry.js`
     },
     output: {
         path: path.resolve(`./${projectRoot}/static_compiled/`),

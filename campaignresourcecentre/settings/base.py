@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "campaignresourcecentre.standardpages",
     "campaignresourcecentre.users",
     "campaignresourcecentre.utils",
+    "campaignresourcecentre.wagtailreacttaxonomy",
     "wagtailnhsukfrontend",
     "wagtail_modeladmin",
     "wagtail.contrib.settings",
@@ -102,7 +103,6 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "pattern_library",
     "wagtailaccessibility",
-    "wagtailreacttaxonomy",
     "wagtail_2fa",
     "django_otp",
     "django_otp.plugins.otp_totp",
@@ -647,7 +647,7 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
 WAGTAILDOCS_DOCUMENT_MODEL = "documents.CustomDocument"
 
 
-PASSWORD_REQUIRED_TEMPLATE = "wagtail/password_required.html"
+WAGTAIL_PASSWORD_REQUIRED_TEMPLATE = "wagtail/password_required.html"
 
 
 # Default size of the pagination used on the front-end.

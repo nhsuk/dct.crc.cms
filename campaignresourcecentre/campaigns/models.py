@@ -19,10 +19,10 @@ from wagtail.admin.panels import (
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable
 from wagtail.images import get_image_model_string
-from wagtailreacttaxonomy.panels import TaxonomyPanel
-from wagtailreacttaxonomy.models import TaxonomyMixin
-from wagtailreacttaxonomy.models import TaxonomyTerms
 
+from campaignresourcecentre.wagtailreacttaxonomy.panels import TaxonomyPanel
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyMixin
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 from campaignresourcecentre.page_lifecycle.forms import PageLifecycleForm
 from campaignresourcecentre.page_lifecycle.models import PageLifecycleMixin
 from campaignresourcecentre.resources.models import ResourcePage

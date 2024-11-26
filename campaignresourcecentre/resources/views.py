@@ -3,9 +3,10 @@ import logging
 
 from django.template.response import TemplateResponse
 from django.shortcuts import render
-from wagtailreacttaxonomy.models import TaxonomyTerms
-from campaignresourcecentre.search.azure import AzureSearchBackend
 from django.views.decorators.http import require_http_methods
+
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
+from campaignresourcecentre.search.azure import AzureSearchBackend
 
 logger = logging.getLogger(__name__)
 

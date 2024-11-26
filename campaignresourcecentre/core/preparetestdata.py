@@ -14,10 +14,10 @@ from django.db.models import Model
 
 from wagtail.models import Page, Site
 from wagtail.documents import get_document_model
-from wagtailreacttaxonomy.models import TaxonomyTerms
 
 from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage, ResourceItem
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 
 from campaignresourcecentre.core.assetdata import (
     TAXONOMY_TERMS_ID,
