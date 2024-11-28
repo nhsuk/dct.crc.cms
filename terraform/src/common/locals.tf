@@ -17,10 +17,6 @@ locals {
   activeconnections_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-la-")
   activeconnections_logic_app_id   = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
 
-  postgresql_server_resource_id = module.activeconnectionsalert.postgresql_server_id
-  postgresql_server_name        = module.activeconnectionsalert.postgresql_server_name
-  postgresql_server_url         = "https://portal.azure.com/#@nhschoices.net/resource${local.postgresql_server_resource_id}/overview"
-
   secret_names = [
     "alertingWebhook",
     "pubToken",

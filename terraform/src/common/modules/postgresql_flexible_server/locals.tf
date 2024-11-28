@@ -25,6 +25,8 @@ locals {
 
   database_replica = lookup(local.database_replicas, var.environment, null)
 
+  replica_firewall_rules = local.database_replica != null ? local.database_firewall_rules : {}
+
   databases = [
     "crc"
   ]

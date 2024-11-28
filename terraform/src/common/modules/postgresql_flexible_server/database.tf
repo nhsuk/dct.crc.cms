@@ -93,3 +93,11 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall_rules" {
   start_ip_address = each.value.start_ip
   end_ip_address   = each.value.end_ip
 }
+
+resource "azurerm_postgresql_flexible_server_firewall_rule" "replica_firewall_rules" {
+  for_each         = local.replica_firewall_rules
+  name             = each.key
+  server_id        = azurerm_postgresql_flexible_server.replica[0].id
+  start_ip_address = each.value.start_ip
+  end_ip_address   = each.value.end_ip
+}
