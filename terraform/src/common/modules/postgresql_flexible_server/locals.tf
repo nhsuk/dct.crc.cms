@@ -21,9 +21,17 @@ locals {
       resource_group = "dct-crccms-rg-prod-ukw"
       location       = "ukwest"
     }
+
+    development = {
+      name           = "dct-crccms-psql-dev-replica-uks"
+      resource_group = "dct-crccms-rg-dev-uks"
+      location       = "uksouth"
+    }
   }
 
   database_replica = lookup(local.database_replicas, var.environment, null)
+
+  replica_firewall_rules = local.database_replica != null ? local.database_firewall_rules : {}
 
   databases = [
     "crc"
