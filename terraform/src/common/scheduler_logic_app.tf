@@ -133,7 +133,7 @@ resource "azapi_resource" "scheduler_la" {
               "Publish scheduled pages request" : {
                 "inputs" : {
                   "headers" : {
-                    "Authorization" : "Bearer @{body('Get publishing token')?['value']}"
+                    "AdminToken" : "@{body('Get publishing token')?['value']}"
                   },
                   "method" : "GET",
                   "queries" : {},
