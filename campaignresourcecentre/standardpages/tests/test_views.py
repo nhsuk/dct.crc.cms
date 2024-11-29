@@ -36,7 +36,7 @@ class UpdateIndexTestCases(WagtailPageTests):
         thread.run()
         mock_call_command.assert_called_once_with("update_index")
 
-    def test_user_not_logged_in_and_no_auth_headers(self):
+    def test_user_not_logged_in_and_no_admintoken_header(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 401)
 
@@ -46,30 +46,30 @@ class UpdateIndexTestCases(WagtailPageTests):
         self.assertEqual(response.status_code, 401)
 
     @override_settings(PUBTOKEN="correct")
-    def test_has_authorization_header_with_wrong_pubtoken(self):
+    def test_has_admintoken_header_with_wrong_token(self):
         auth_headers = {
-            "HTTP_AUTHORIZATION": "Bearer incorrect",
+            "headers": {"AdminToken": "incorrect"},
         }
         response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 401)
 
     @patch("campaignresourcecentre.standardpages.views.call_command")
     @override_settings(PUBTOKEN="correct")
-    def test_has_authorization_header_with_correct_pubtoken(self, mock_call_command):
+    def test_has_admintoken_header_with_correct_pubtoken(self, mock_call_command):
         auth_headers = {
-            "HTTP_AUTHORIZATION": "Bearer correct",
+            "headers": {"AdminToken": "correct"},
         }
         response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 200)
         mock_call_command.assert_called_once_with("update_index")
 
-    def test_no_authorization_header_logged_in_without_superuser(self):
+    def test_no_admintoken_header_logged_in_without_superuser(self):
         self.client.login(username="regular", password="testpass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 401)
 
     @patch("campaignresourcecentre.standardpages.views.call_command")
-    def test_no_authorization_header_logged_in_with_superuser(self, mock_call_command):
+    def test_no_admintoken_header_logged_in_with_superuser(self, mock_call_command):
         self.client.login(username="admin", password="testpass123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
