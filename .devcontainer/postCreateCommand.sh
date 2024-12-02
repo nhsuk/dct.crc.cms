@@ -25,8 +25,6 @@ az config set extension.use_dynamic_install=yes_without_prompt
 # Install requirements for operating the devcontainer
 # (the application requirements will be installed in the application Dockerfile)
 pip install -r ./.devcontainer/devrequirements.txt --user
-# Packages that create commands need their aliases fixing in case they are factory-fitted
-pipx upgrade black
 
 # Install pre-commit hooks
 pre-commit install
