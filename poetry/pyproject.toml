@@ -50,11 +50,11 @@ stellar = "~0.4"
 responses = "^0.13.3"
 
 # Linters etc.
-black = "23.12.1"
+black = "22.8.0"
 detect-secrets = "~0.14"
 flake8 = "3.8.3"
 isort = "5.7.0"
-pre-commit = "~3.8.0"
+pre-commit = "~2.11"
 ptvsd = "^4.3.2"
 
 # Documentation
