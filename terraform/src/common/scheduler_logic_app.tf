@@ -130,8 +130,29 @@ resource "azapi_resource" "scheduler_la" {
                 },
                 "type" : "ApiConnection"
               },
+              "Get Stag Auth" : var.environment == "staging" ? {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('stagAuth')}/value"
+                },
+                "runAfter" : {
+                  "Get publishing token" : [
+                    "Succeeded"
+                  ]
+                },
+                "type" : "ApiConnection"
+              } : {},
               "Publish scheduled pages request" : {
                 "inputs" : {
+                  "authentication" : var.environment == "staging" ? {
+                    "type" : "Raw",
+                    "value" : "Basic @{body('Get Stag Auth')?['value']}"
+                  } : {},
                   "headers" : {
                     "AdminToken" : "@{body('Get publishing token')?['value']}"
                   },
@@ -140,7 +161,7 @@ resource "azapi_resource" "scheduler_la" {
                   "uri" : "@{body('Get publishing endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get publishing token" : [
+                  "Get Stag Auth" : [
                     "Succeeded"
                   ]
                 },

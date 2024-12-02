@@ -69,8 +69,29 @@ resource "azapi_resource" "search_reindex_la" {
                 },
                 "type" : "ApiConnection"
               },
+              "Get Stag Auth" : var.environment == "staging" ? {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('stagAuth')}/value"
+                },
+                "runAfter" : {
+                  "Get Token" : [
+                    "Succeeded"
+                  ]
+                },
+                "type" : "ApiConnection"
+              } : {},
               "Trigger Re-Index" : {
                 "inputs" : {
+                  "authentication" : var.environment == "staging" ? {
+                    "type" : "Raw",
+                    "value" : "Basic @{body('Get Stag Auth')?['value']}"
+                  } : {},
                   "headers" : {
                     "AdminToken" : "@{body('Get Token')?['value']}"
                   }
