@@ -14,9 +14,9 @@ class ScheduledTasksTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
     @override_settings(PUBTOKEN="correct")
-    def test_publish_pages_wrong_pubtoken(self):
+    def test_publish_pages_wrong_token(self):
         auth_headers = {
-            "HTTP_AUTHORIZATION": "Bearer incorrect",
+            "headers": {"AdminToken": "incorrect"},
         }
         response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 403)
@@ -24,7 +24,7 @@ class ScheduledTasksTestCase(TestCase):
     @override_settings(PUBTOKEN="correct")
     def test_publish_pages_correct_pubtoken(self):
         auth_headers = {
-            "HTTP_AUTHORIZATION": "Bearer correct",
+            "headers": {"AdminToken": "correct"},
         }
         response = self.client.get(self.url, **auth_headers)
         self.assertEqual(response.status_code, 202)

@@ -71,9 +71,8 @@ resource "azapi_resource" "search_reindex_la" {
               },
               "Trigger Re-Index" : {
                 "inputs" : {
-                  "authentication" : {
-                    "type" : "Raw",
-                    "value" : "Bearer @{body('Get Token')?['value']}"
+                  "headers" : {
+                    "AdminToken" : "@{body('Get Token')?['value']}"
                   }
                   "method" : "GET",
                   "queries" : {},

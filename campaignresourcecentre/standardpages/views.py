@@ -107,7 +107,7 @@ class UpdateIndexThread(threading.Thread):
 
 @require_http_methods(["GET"])
 def update_index(request):
-    if request.headers.get("Authorization", None):
+    if "AdminToken" in request.headers or "Authorization" in request.headers:
         if not verify_pubtoken(request):
             return HttpResponse("Unauthorized", status=401)
     elif not request.user.is_superuser:
