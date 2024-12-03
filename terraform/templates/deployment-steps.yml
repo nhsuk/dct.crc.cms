@@ -14,9 +14,6 @@ parameters:
   - name: tfStorageAccount # name of the storage account which stores the TF state
     type: string
     default: ''
-  - name: importArgs # comma separated list of resources to import in 'azurerm_instance.tf_name | <instance id>, ...' form
-    type: string
-    default: ' '
   - name: dryrun # skip apply stage
     type: boolean
     default: false
@@ -47,35 +44,6 @@ steps:
     displayName: 'terraform validate'
     inputs:
       workingDirectory: ${{ parameters.artifactPath }}
-
-
-  - ${{ if and(ne(parameters.importArgs, ''), ne(parameters.importArgs, ' ')) }}:
-    - ${{ each resourceDetails in split(replace(parameters.importArgs, ' ', ''), ',')}}:
-      - task: Bash@3
-        displayName: 'Check import inputs'
-        inputs:
-          targetType: 'inlineScript'
-          script: |
-            echo "importArgs: ${{ parameters.importArgs }}"
-            echo "resourceDetails: ${{ resourceDetails }}"
-            echo "resourceAddress: ${{ split(resourceDetails, '|')[0] }}"
-            echo "resourceId: ${{ split(resourceDetails, '|')[1] }}"
-
-  - ${{ if and(ne(parameters.importArgs, ''), ne(parameters.importArgs, ' ')) }}:
-    - ${{ each resourceDetails in split(replace(parameters.importArgs, ' ', ''), ',')}}:
-      - task: TerraformCLI@0
-        displayName: "terraform import state for ${{ split(resourceDetails, '|')[0] }}"
-        inputs:
-          command: import
-          workingDirectory: ${{ parameters.artifactPath }}
-          environmentServiceName: ${{ parameters.azureSubscription }}
-          resourceAddress: ${{ split(resourceDetails, '|')[0] }}
-          resourceId: ${{ split(resourceDetails, '|')[1] }}
-          commandOptions: >
-            -var resource_group=${{ parameters.resourceGroup }}
-            -var environment=${{ parameters.environment }}
-            -var tfstate_account_name=${{ parameters.tfStorageAccount }}
-            -var location=${{ parameters.location }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     displayName: 'terraform plan'
@@ -121,7 +89,7 @@ steps:
         emptySecrets=""
 
         for secretId in ${secretIds[@]};
-        do  
+        do
           secretName=$(echo $secretId | awk -F'/' '{print $NF}')
           secretValue=$(az keyvault secret show --id $secretId --query value)
           secretValue=$(echo $secretValue | awk '{gsub(/"/,"")}1')
@@ -133,7 +101,7 @@ steps:
             echo "SUCCESS: $secretName has a value"
           fi
         done
-        
+
         if [[ $emptySecrets != '' ]];
         then
           echo "##vso[task.logissue type=warning;]Empty secrets found in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}: [$emptySecrets ]"

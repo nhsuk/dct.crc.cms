@@ -130,8 +130,29 @@ resource "azapi_resource" "scheduler_la" {
                 },
                 "type" : "ApiConnection"
               },
+              "Get Basic Auth" : {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('basicAuth')}/value"
+                },
+                "runAfter" : {
+                  "Get publishing token" : [
+                    "Succeeded"
+                  ]
+                },
+                "type" : "ApiConnection"
+              },
               "Publish scheduled pages request" : {
                 "inputs" : {
+                  "authentication" : {
+                    "type" : "Raw",
+                    "value" : "Basic @{base64(body('Get Basic Auth')?['value'])}"
+                  },
                   "headers" : {
                     "AdminToken" : "@{body('Get publishing token')?['value']}"
                   },
@@ -140,7 +161,7 @@ resource "azapi_resource" "scheduler_la" {
                   "uri" : "@{body('Get publishing endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get publishing token" : [
+                  "Get Basic Auth" : [
                     "Succeeded"
                   ]
                 },

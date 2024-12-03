@@ -69,8 +69,29 @@ resource "azapi_resource" "search_reindex_la" {
                 },
                 "type" : "ApiConnection"
               },
+              "Get Basic Auth" : {
+                "inputs" : {
+                  "host" : {
+                    "connection" : {
+                      "name" : "@parameters('$connections')['keyvault']['connectionId']"
+                    }
+                  },
+                  "method" : "get",
+                  "path" : "/secrets/@{encodeURIComponent('basicAuth')}/value"
+                },
+                "runAfter" : {
+                  "Get Token" : [
+                    "Succeeded"
+                  ]
+                },
+                "type" : "ApiConnection"
+              },
               "Trigger Re-Index" : {
                 "inputs" : {
+                  "authentication" : {
+                    "type" : "Raw",
+                    "value" : "Basic @{base64(body('Get Basic Auth')?['value'])}"
+                  },
                   "headers" : {
                     "AdminToken" : "@{body('Get Token')?['value']}"
                   }
@@ -79,7 +100,7 @@ resource "azapi_resource" "search_reindex_la" {
                   "uri" : "@{body('Get Endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get Token" : [
+                  "Get Basic Auth" : [
                     "Succeeded"
                   ]
                 },

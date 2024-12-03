@@ -21,7 +21,8 @@ locals {
     "alertingWebhook",
     "pubToken",
     "pubEndpoint",
-    "searchIndexEndpoint"
+    "searchIndexEndpoint",
+    "basicAuth"
   ]
 
   deploy_database = var.location == "uks" # Only deploy database module for primary regions (replica will be deployed to dr)

@@ -13,14 +13,11 @@ trigger:
     include:
     - 'terraform'
 
-variables: 
+variables:
   - name: ARTIFACT_NAME
     value: drop
 
 parameters:
-  - name: importArgs
-    displayName: Terraform import args (azurerm_instance.tf_name | /subscriptions/000.../id, ...)
-    default: ' '
   - name: dryrun
     displayName: Dry Run
     type: boolean
@@ -41,7 +38,7 @@ parameters:
     displayName: Force Deploy Production
     type: boolean
     default: false
-  - name: deployDr 
+  - name: deployDr
     displayName: Force Deploy DisasterRecovery
     type: boolean
     default: false
@@ -97,7 +94,6 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
 
@@ -131,7 +127,6 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
 
@@ -165,10 +160,9 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
-  
+
   - stage: terraformProduction
     displayName: 'Terraform Production Env'
     dependsOn: terraformStaging
@@ -201,7 +195,6 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
 
@@ -237,6 +230,5 @@ stages:
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
-                  importArgs: ${{ parameters.importArgs }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
