@@ -161,7 +161,7 @@ resource "azapi_resource" "scheduler_la" {
                   "uri" : "@{body('Get publishing endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get Stag Auth" : [
+                  "Get Basic Auth" : [
                     "Succeeded"
                   ]
                 },

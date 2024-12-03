@@ -100,7 +100,7 @@ resource "azapi_resource" "search_reindex_la" {
                   "uri" : "@{body('Get Endpoint')?['value']}"
                 },
                 "runAfter" : {
-                  "Get Token" : [
+                  "Get Basic Auth" : [
                     "Succeeded"
                   ]
                 },
