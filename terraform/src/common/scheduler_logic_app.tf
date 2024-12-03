@@ -130,7 +130,7 @@ resource "azapi_resource" "scheduler_la" {
                 },
                 "type" : "ApiConnection"
               },
-              "Get Stag Auth" : var.environment == "staging" ? {
+              "Get Basic Auth" : {
                 "inputs" : {
                   "host" : {
                     "connection" : {
@@ -138,7 +138,7 @@ resource "azapi_resource" "scheduler_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('stagAuth')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('basicAuth')}/value"
                 },
                 "runAfter" : {
                   "Get publishing token" : [
@@ -146,13 +146,13 @@ resource "azapi_resource" "scheduler_la" {
                   ]
                 },
                 "type" : "ApiConnection"
-              } : {},
+              },
               "Publish scheduled pages request" : {
                 "inputs" : {
-                  "authentication" : var.environment == "staging" ? {
+                  "authentication" : {
                     "type" : "Raw",
-                    "value" : "Basic @{body('Get Stag Auth')?['value']}"
-                  } : {},
+                    "value" : "Basic @{body('Get Basic Auth')?['value']}"
+                  },
                   "headers" : {
                     "AdminToken" : "@{body('Get publishing token')?['value']}"
                   },

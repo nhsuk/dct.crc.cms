@@ -69,7 +69,7 @@ resource "azapi_resource" "search_reindex_la" {
                 },
                 "type" : "ApiConnection"
               },
-              "Get Stag Auth" : var.environment == "staging" ? {
+              "Get Basic Auth" : {
                 "inputs" : {
                   "host" : {
                     "connection" : {
@@ -77,7 +77,7 @@ resource "azapi_resource" "search_reindex_la" {
                     }
                   },
                   "method" : "get",
-                  "path" : "/secrets/@{encodeURIComponent('stagAuth')}/value"
+                  "path" : "/secrets/@{encodeURIComponent('basicAuth')}/value"
                 },
                 "runAfter" : {
                   "Get Token" : [
@@ -85,13 +85,13 @@ resource "azapi_resource" "search_reindex_la" {
                   ]
                 },
                 "type" : "ApiConnection"
-              } : {},
+              },
               "Trigger Re-Index" : {
                 "inputs" : {
-                  "authentication" : var.environment == "staging" ? {
+                  "authentication" : {
                     "type" : "Raw",
-                    "value" : "Basic @{body('Get Stag Auth')?['value']}"
-                  } : {},
+                    "value" : "Basic @{body('Get Basic Auth')?['value']}"
+                  },
                   "headers" : {
                     "AdminToken" : "@{body('Get Token')?['value']}"
                   }
