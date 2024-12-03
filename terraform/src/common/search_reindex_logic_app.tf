@@ -90,7 +90,7 @@ resource "azapi_resource" "search_reindex_la" {
                 "inputs" : {
                   "authentication" : {
                     "type" : "Raw",
-                    "value" : "Basic @{body('Get Basic Auth')?['value']}"
+                    "value" : "Basic @{base64(body('Get Basic Auth')?['value'])}"
                   },
                   "headers" : {
                     "AdminToken" : "@{body('Get Token')?['value']}"
