@@ -429,3 +429,21 @@ stages:
               keyVaultName: 'dct-crc-v3-vlt-dr-ukw'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
+  - stage: DailyBuildAlert
+    displayName: Daily Build alerting
+    dependsOn:
+      - Build
+      - Deploy
+    condition: and(eq(variables['Build.Reason'], 'Schedule'), ne(variables.notificationSlackWebhook, ''), or(failed('Build'), failed('Deploy')))
+    variables:
+      - group: alerting
+    jobs:
+      - job: Alert
+        displayName: Daily Build Slack Alert
+        steps:
+          - script: |
+              echo "Sending slack alert for daily build failure"
+              messageText=":warning: *CRC - Daily Build Failure*\nSee the <$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&_a=summary|build pipeline run> for details"
+              body="{\"text\": \"$messageText\", \"mrkdwn\": true}"
+              curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
+            displayName: Send Slack Alert
