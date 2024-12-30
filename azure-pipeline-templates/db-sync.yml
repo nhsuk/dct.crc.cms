@@ -2,14 +2,16 @@ pool:
   vmImage: ubuntu-latest
 
 trigger: none
+pr: none
 
 # daily midnight backup midnight - this will not run any of the syncing jobs, only the backup
 schedules:
-- cron: '0 0 * * *'
-  displayName: Daily midnight build
-  branches:
-    include:
-    - main
+  - cron: '0 0 * * *'
+    displayName: Daily midnight build
+    always: true
+    branches:
+      include:
+        - main
 
 parameters:
   - name: backupProduction
