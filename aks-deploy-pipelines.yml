@@ -14,6 +14,14 @@ trigger:
     exclude:
       - 'terraform'
 
+schedules:
+  - cron: '0 4 * * *'
+    displayName: Daily build
+    always: true
+    branches:
+      include:
+        - main
+
 parameters:
    # Dry run changes
   - name: dryRun
@@ -376,8 +384,6 @@ stages:
             value: ${{ parameters.tags }}
           - name: imageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
@@ -415,8 +421,6 @@ stages:
           workers: ${{ parameters.workers }}
           gunicornArgs: ${{ parameters.gunicornArgs }}
           azureSearchUpdate: true
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
