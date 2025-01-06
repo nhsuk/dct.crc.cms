@@ -1,5 +1,5 @@
 
-steps:                     
+steps:
 - task: Gitleaks@2
   inputs:
     scanlocation: '$(Build.SourcesDirectory)'

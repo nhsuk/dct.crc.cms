@@ -1,17 +1,23 @@
 pool:
-  vmImage: 'ubuntu-latest'
-trigger:
+  vmImage: ubuntu-latest
+
+trigger: none
+
+pr:
   branches:
     include:
-    - "refs/pull/*/head"
+      - main
+  paths:
+    exclude:
+      - terraform
 
 stages:
-- stage: Test
-  condition: eq(variables['Build.Reason'], 'PullRequest')
+  - stage: Test
+    condition: eq(variables['Build.Reason'], 'PullRequest')
 
-  displayName: Test
-  jobs:
-    - job: test
-      displayName: 'Test'
-      steps:
-        - template: azure-pipeline-templates/test.yml
+    displayName: Test
+    jobs:
+      - job: test
+        displayName: Test
+        steps:
+          - template: azure-pipeline-templates/test.yml
