@@ -22,7 +22,7 @@ RUN apk add curl postgresql-dev bash py3-pip
 RUN pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.3.2
+ARG POETRY_VERSION=1.8.5
 
 RUN adduser campaignresourcecentre -D && mkdir /app && chown campaignresourcecentre /app
 
@@ -49,7 +49,7 @@ ENV PATH=$PATH:${POETRY_HOME}/bin \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     DJANGO_SETTINGS_MODULE=campaignresourcecentre.settings.production \
-    PORT=8000 
+    PORT=8000
 
 ARG BUILD_ENV
 
