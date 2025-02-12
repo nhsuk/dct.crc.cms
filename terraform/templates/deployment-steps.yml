@@ -26,7 +26,7 @@ parameters:
 
 steps:
 
-  - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@2
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
     displayName: 'Install latest Terraform'
     inputs:
       terraformVersion: latest
