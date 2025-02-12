@@ -6,17 +6,17 @@ variables:
 - name: RESOURCE_GROUP
   value: dct-crccms-rg-${{ parameters.releaseEnvironment }}-${{ parameters.location }}
 - name: AZURE_SUBSCRIPTION
-  ${{ if eq(parameters.environment, 'dev') }}:
+  ${{ if eq(parameters.releaseEnvironment, 'dev') }}:
     value: dct-crccms-${{ parameters.releaseEnvironment }}
   ${{ else }}:
     value: dct-crccms-rg-${{ parameters.releaseEnvironment }}
 - name: TF_STORAGE_ACCOUNT
-  ${{ if eq(parameters.environment, 'dev') }}:
+  ${{ if eq(parameters.releaseEnvironment, 'dev') }}:
     value: crccmstfst${{ parameters.releaseEnvironment }}${{ parameters.location }}
   ${{ else }}:
     value: crccmstf${{ parameters.releaseEnvironment }}${{ parameters.location }}
 - name: TF_RESOURCE_GROUP
-  ${{ if eq(parameters.environment, 'dev') }}:
+  ${{ if eq(parameters.releaseEnvironment, 'dev') }}:
     value: dct-crccms-platform-rg-${{ parameters.releaseEnvironment }}-${{ parameters.location }}
   ${{ else }}:
     value: dct-crccms-rg-${{ parameters.releaseEnvironment }}-${{ parameters.location }}
