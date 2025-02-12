@@ -11,6 +11,9 @@ parameters:
   - name: resourceGroup # name of the resource group which contains the TF resources
     type: string
     default: ''
+  - name: tfResourceGroup # name of the resource group which stores the TF state
+    type: string
+    default: ''
   - name: tfStorageAccount # name of the storage account which stores the TF state
     type: string
     default: ''
@@ -35,7 +38,7 @@ steps:
       workingDirectory: ${{ parameters.artifactPath }}
       backendType: azurerm
       backendServiceArm: ${{ parameters.azureSubscription }}
-      backendAzureRmResourceGroupName: ${{ parameters.resourceGroup }}
+      backendAzureRmResourceGroupName: ${{ parameters.tfResourceGroup }}
       backendAzureRmStorageAccountName: ${{ parameters.tfStorageAccount }}
       backendAzureRmContainerName: tfstate
       backendAzureRmKey: terraform.tfstate

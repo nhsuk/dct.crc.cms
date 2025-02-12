@@ -93,6 +93,7 @@ stages:
                   environment: ${{ variables.ENVIRONMENT }}
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
@@ -126,6 +127,7 @@ stages:
                   environment: ${{ variables.ENVIRONMENT }}
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
@@ -159,6 +161,7 @@ stages:
                   environment: ${{ variables.ENVIRONMENT }}
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
@@ -194,6 +197,7 @@ stages:
                   environment: ${{ variables.ENVIRONMENT }}
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
@@ -229,6 +233,7 @@ stages:
                   environment: ${{ variables.ENVIRONMENT }}
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
                   resourceGroup: ${{ variables.RESOURCE_GROUP }}
+                  tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
                   location: ${{ variables.LOCATION }}
