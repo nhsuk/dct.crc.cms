@@ -11,6 +11,9 @@ parameters:
   - name: resourceGroup # name of the resource group which contains the TF resources
     type: string
     default: ''
+  - name: tfResourceGroup # name of the resource group which stores the TF state
+    type: string
+    default: ''
   - name: tfStorageAccount # name of the storage account which stores the TF state
     type: string
     default: ''
@@ -23,29 +26,27 @@ parameters:
 
 steps:
 
-  - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
     displayName: 'Install latest Terraform'
     inputs:
       terraformVersion: latest
 
-  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
     displayName: 'terraform init'
     inputs:
       command: init
       workingDirectory: ${{ parameters.artifactPath }}
       backendType: azurerm
       backendServiceArm: ${{ parameters.azureSubscription }}
-      backendAzureRmResourceGroupName: ${{ parameters.resourceGroup }}
+      backendAzureRmResourceGroupName: ${{ parameters.tfResourceGroup }}
       backendAzureRmStorageAccountName: ${{ parameters.tfStorageAccount }}
-      backendAzureRmContainerName: tfstate
-      backendAzureRmKey: terraform.tfstate
 
-  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
     displayName: 'terraform validate'
     inputs:
       workingDirectory: ${{ parameters.artifactPath }}
 
-  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
     displayName: 'terraform plan'
     inputs:
       command: plan
@@ -67,7 +68,7 @@ steps:
       displayName: 'Dry Run - skipping apply'
 
   - ${{ if ne(parameters.dryrun, 'true') }}:
-    - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+    - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
       displayName: 'terraform apply'
       condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
       inputs:
