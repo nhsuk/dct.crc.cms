@@ -6,7 +6,7 @@ labelOrg: dct
 
 imagePullPolicy: Always
 imageName: nhsuk.azurecr.io/dct/crc-v3
-redisImageName: redis:5.0.3-alpine
+redisImageName: nhsuk.azurecr.io/redis:4.0.14-alpine
 imageTag: review-aks-deploy
 
 namespace: ""
