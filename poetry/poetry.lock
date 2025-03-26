@@ -712,14 +712,14 @@ files = [
 
 [[package]]
 name = "django"
-version = "5.0.10"
+version = "5.0.13"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "Django-5.0.10-py3-none-any.whl", hash = "sha256:c8fab2c553750933c8e7f5f95e5507e138e6acf6c2b4581cb691e70fe3ed747b"},
-    {file = "Django-5.0.10.tar.gz", hash = "sha256:0f6cbc56cc298b0451d20a5120c6a8731e9073330fb5d84295c23c151a1eb300"},
+    {file = "Django-5.0.13-py3-none-any.whl", hash = "sha256:b983238dfa2eb2e6b27ebb815e14f0741cf186606eb7bcd857e740174017c50e"},
+    {file = "Django-5.0.13.tar.gz", hash = "sha256:f9d4b7b87a9dae248d5f20cec940cf7290e07d508d6d8432e3c2cabf09b3b0ff"},
 ]
 
 [package.dependencies]
