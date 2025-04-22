@@ -44,7 +44,7 @@ gunicorn = ["gunicorn"]
 
 [tool.poetry.dev-dependencies]
 unittest-xml-reporting = "^3.2.0"
-Werkzeug = "~0.16"
+Werkzeug = "~3.0"
 fabric = "~2.5"
 stellar = "~0.4"
 responses = "^0.13.3"
