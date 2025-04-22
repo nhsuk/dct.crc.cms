@@ -34,7 +34,7 @@ instana = "1.38.0 "
 django-cprofile-middleware = "1.0.5"
 django-debug-toolbar = "~3.2"
 redis = "~4.1"
-wagtail-2fa = {git = "https://github.com/torchbox-forks/wagtail-2fa", branch = "support/wagtail-62"}
+wagtail-2fa = {git = "https://github.com/torchbox-forks/wagtail-2fa", tag = "1.7.1+tbx"}
 azure-search-documents = "^11.3.0"
 azure-search = "^1.0.0b2"
 wagtail-modeladmin = "^2.0.0"
@@ -56,9 +56,6 @@ flake8 = "3.8.3"
 isort = "5.7.0"
 pre-commit = "~2.11"
 ptvsd = "^4.3.2"
-
-# Documentation
-pymdown-extensions = "~8.1"
 
 [build-system]
 requires = ["poetry>=1,<2"]
