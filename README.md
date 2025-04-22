@@ -4,16 +4,16 @@
 
 The campaign resource centre (CRC) is a government site responsible for providing resources associated with various NHS digital campaigns as well as "how to guides" to assist users planning their own marketing campaigns.
 
-The live site can be found here:  
+The live site can be found here:
 https://campaignresources.dhsc.gov.uk/
 
 Online documentation for CRC can be accessed on Confluence (using your nhs.net email address) and a couple of helpful links are provided below.
 
-Current version 'homepage':  
-https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3
+Current version 'homepage':
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460136/CRC+V3
 
-Development related documentation:  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Dev+CRC+V3
+Development related documentation:
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460263/Dev+CRC+V3
 
 ## Table of Contents
 
@@ -33,12 +33,12 @@ https://digitaltools.phe.org.uk/confluence/display/CRC/Dev+CRC+V3
 ## Architecture
 
 CRC operates using three servers:
-1. Web application server:  
+1. Web application server:
     * Python/ Django/ Wagtail
     * Most of this repo is devoted to this
-2. Redis server:  
+2. Redis server:
     * Used for caching
-3. Database server (Postgres):  
+3. Database server (Postgres):
     * Stores most of the persistent application data
 
 The remaining persistent data fall into two categories:
@@ -51,18 +51,16 @@ The remaining persistent data fall into two categories:
 
 For further details, diagrams and external dependencies see the designated pages in Confluence:
 
-https://digitaltools.phe.org.uk/confluence/display/CRC/Development+vs+Production+Architecture
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170485138/Development+vs+Production+Architecture
 
 #### Diagrams:
-https://digitaltools.phe.org.uk/confluence/display/CRC/Technical+Architecture+Diagram  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Monitoring  
-https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3+sequence+diagrams  
-https://digitaltools.phe.org.uk/confluence/display/CRC/CRC+V3+user+flow  
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460297/Technical+Architecture+Diagram
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460682/Monitoring
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460305/CRC+V3+sequence+diagrams
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460784/CRC+V3+user+flow
 
-#### External Dependencies: 
-https://digitaltools.phe.org.uk/confluence/display/CRC/Discovery+docs+-+Torchbox  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Wagtail+deployment  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Parkhouse+documentation+-+Solution+overview  
+#### External Dependencies:
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460340/Paragon+DCX+API
 
 ## Running the project
 
@@ -82,7 +80,7 @@ The recommended approach is to use **VSCode** and its **Dev Containers extension
 
 ### Configuration
 
-CRCv3 uses .env files to store local configuration settings. 
+CRCv3 uses .env files to store local configuration settings.
 
 ```
 ./.env
@@ -90,8 +88,8 @@ CRCv3 uses .env files to store local configuration settings.
 
 This file is excluded from git and won't be included in your cloned repo because it will contain secrets. Instead, you should obtain your .env securely from a colleague.
 
-Further details of some of the environment variables set within the .env file can be found here in Confluence:  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Environment+Variables+-+the+.env+file
+Further details of some of the environment variables set within the .env file can be found here in Confluence:
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460795/Environment+Variables+-+the+.env+file
 
 ### Dev Container setup:
 
@@ -105,10 +103,10 @@ This creates and runs (or attaches to if already created) a Docker container tha
 
 Continue your setup and later development in a terminal window (or windows) you can open in the running devcontainer using the VSCode Terminal menu. Your host folder where you checked out the CRC repository is mounted into the default folder of the dev container terminal sessions.
 
-To read further on using Dev Containers with CRC see the following Confluence page:  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Developing+CRCv3+with+a+devcontainer
+To read further on using Dev Containers with CRC see the following Confluence page:
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460684/Developing+CRCv3+with+a+devcontainer
 
-### Local database sync 
+### Local database sync
 
 To have the locally running website populated with pages and resources (like those you see in the live site) you will need to run the sync-db command (you can proceed without this step and you will see a very basic, empty form of the website).
 
@@ -118,8 +116,8 @@ To run this command, in the terminal made available by VSCode, enter the followi
 
 `fab sync-db <environment> <storage-key>`
 
-For more details on syncing your local database see the following Confluence page:  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Local+Database+Sync
+For more details on syncing your local database see the following Confluence page:
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460607/Database+Sync+to+local+environment
 
 ### Boot up the website for the first time
 
@@ -149,28 +147,28 @@ After starting the containers as above and running `djrun`, in a new terminal se
 
 ## Front-end testing
 
-Containers are also used for running front-end tests locally since they too have complex dependencies. The tests are all defined in the FrontEndTests folder and get built into a docker image called "acceptancetests" that is stored in the "dctimages.azurecr.io" docker image repository. The version of the tests being run is dictated by the Image Tag the test container is using so make sure you are providing the up to date tag. The construction of the image is detailed here in  a separate GitHub repository:  
+Containers are also used for running front-end tests locally since they too have complex dependencies. The tests are all defined in the FrontEndTests folder and get built into a docker image called "acceptancetests" that is stored in the "dctimages.azurecr.io" docker image repository. The version of the tests being run is dictated by the Image Tag the test container is using so make sure you are providing the up to date tag. The construction of the image is detailed here in  a separate GitHub repository:
 <https://github.com/nhsuk/dct-frontend-testing-framework>
 
 ### Configuration
 
 Configuration related to testing focusses on accessing and specifying the aforementioned "acceptancetests" docker image:
 
-* REPO_USERNAME and REPO_PASSWORD:  
-credentials used to access the "dctimages.azurecr.io" docker image repository.  
+* REPO_USERNAME and REPO_PASSWORD:
+credentials used to access the "dctimages.azurecr.io" docker image repository.
 
-* SECRETS_FILE:  
-CSV file containing details of registered users of the CRC site (your email address, your CRC password).  
+* SECRETS_FILE:
+CSV file containing details of registered users of the CRC site (your email address, your CRC password).
 
-* IMAGE_TAG:  
+* IMAGE_TAG:
 The version of the "acceptancetests" build to use (e.g. 1.1.1) - leave empty to run "latest".
 
-* TAGS:  
-Used to determine which subset of tests to run (e.g. "@Smoke") - leave empty to run all tests. 
+* TAGS:
+Used to determine which subset of tests to run (e.g. "@Smoke") - leave empty to run all tests.
 
 ### In the build pipeline
 
-The "smoke" tests are automatically run within this build pipeline whenever a review branch is created or modified:  
+The "smoke" tests are automatically run within this build pipeline whenever a review branch is created or modified:
 https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?definitionId=1071&_a=summary
 
 From here you can click "Edit", then "Variables" and provide REPO_USERNAME REPO_PASSWORD and IMAGE_TAG (named FRONTEND_TEST_CONTAINER_IMAGE_TAG in the pipeline variables). The other variable secrets file and tags are specified within the pipeline itself.
@@ -213,15 +211,15 @@ then start a second terminal window to run the tests:
 
 ## Performance testing
 
-Performance testing was required at the start of the project to demonstrate the suitability of the design but it still remains a good idea to aim to have it run monthly to ensure the high performance of the project is maintained. 
+Performance testing was required at the start of the project to demonstrate the suitability of the design but it still remains a good idea to aim to have it run monthly to ensure the high performance of the project is maintained.
 
 ### In a pipeline
 
-Performance testing can be run from within a pipeline found here:  
+Performance testing can be run from within a pipeline found here:
 https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?definitionId=1074&_a=summary
 
-For more information, see this page in Confluence:  
-https://digitaltools.phe.org.uk/confluence/display/CRC/Performance+testing+framework
+For more information, see this page in Confluence:
+https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460025/Performance+testing+framework
 
 ### Testing locally
 
@@ -233,17 +231,17 @@ https://digitaltools.phe.org.uk/confluence/display/CRC/Performance+testing+frame
 
 ## Versioning
 
-Versioning methods would ideally be standardised and consistent across projects. The common page detailing versioning methods is here in Confluence:  
-https://digitaltools.phe.org.uk/confluence/display/DTB/Versioning+Standards
+Versioning methods would ideally be standardised and consistent across projects. The common page detailing versioning methods is here in Confluence:
+https://ukhsa.atlassian.net/wiki/spaces/DTB/pages/167177802/D001+-+Product+Tool+versioning+and+tagging+approach.
 
 ## Development branches
 
-Branching would ideally be standardised and consistent across projets. The common page detailing the use of branches for development is here in Confluence:  
-https://digitaltools.phe.org.uk/confluence/display/DTB/Development+branching
+Branching would ideally be standardised and consistent across projets. The common page detailing the use of branches for development is here in Confluence:
+https://ukhsa.atlassian.net/wiki/spaces/DTB/pages/167176554/Branching+Strategy
 
 ## Build pipelines
 
-All of the build pipelines for this project can be found here:  
+All of the build pipelines for this project can be found here:
 https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?view=folders
 
 The main pipeline for building and deploying a CRC instance is here:
@@ -262,5 +260,5 @@ When DEBUG is false Django is run with the Gunicorn server, when true with the D
 
 ## Release process
 
-The release process would ideally be standardised and consistent across projects. The common page detailing the release process is here in Confluence:  
-https://digitaltools.phe.org.uk/confluence/display/DTB/7.+Release+Process
+The release process would ideally be standardised and consistent across projects. The common page detailing the release process is here in Confluence:
+https://ukhsa.atlassian.net/wiki/spaces/DTB/pages/167185908/DCT+Product+Release+Process
