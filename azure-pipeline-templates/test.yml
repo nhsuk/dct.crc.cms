@@ -8,8 +8,8 @@ steps:
     redact: false
     reportformat: 'json'
 - bash: |
-    pip3 install black==23.12.1
-    black --check ./ --config 'poetry/pyproject.toml'
+    pip3 install black==24.3.0
+    black --check ./ --config poetry/pyproject.toml
   displayName: Installs Black & Checks if the python scripts are formatted properly with black
 - script: |
     docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage

@@ -97,9 +97,9 @@ class AzureBlobStorageFile(AzureStorageFile):
                 self._write_block()
             block_remaining = self.block_size - self.block_offset
             block_to_use = min(block_remaining, len(data) - data_used)
-            self.block_buffer[
-                self.block_offset : self.block_offset + block_to_use
-            ] = data[data_used : data_used + block_to_use]
+            self.block_buffer[self.block_offset : self.block_offset + block_to_use] = (
+                data[data_used : data_used + block_to_use]
+            )
             self.block_offset += block_to_use
             data_used += block_to_use
         self.position += len(data)

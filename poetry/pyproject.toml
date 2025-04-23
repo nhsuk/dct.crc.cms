@@ -50,7 +50,7 @@ stellar = "~0.4"
 responses = "^0.13.3"
 
 # Linters etc.
-black = "22.8.0"
+black = "24.3.0"
 detect-secrets = "~0.14"
 flake8 = "3.8.3"
 isort = "5.7.0"
