@@ -61,13 +61,15 @@ const options = {
                         loader: 'postcss-loader',
                         options: {
                             sourceMap: true,
-                            plugins: () => [
-                                autoprefixer(),
-                                postcssCustomProperties(),
-                                cssnano({
-                                    preset: 'default',
-                                }),
-                            ],
+                            postcssOptions: {
+                                plugins: [
+                                    autoprefixer(),
+                                    postcssCustomProperties(),
+                                    cssnano({
+                                        preset: 'default',
+                                    }),
+                                ],
+                            }
                         },
                     },
                     {
