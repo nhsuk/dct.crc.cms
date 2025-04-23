@@ -254,9 +254,9 @@ def login(request):
         if request.META.get("HTTP_REFERER") is not None:
             login_form = LoginForm(
                 initial={
-                    "previous_page": next_url
-                    if next_url
-                    else request.META.get("HTTP_REFERER")
+                    "previous_page": (
+                        next_url if next_url else request.META.get("HTTP_REFERER")
+                    )
                 }
             )
         else:
@@ -630,6 +630,6 @@ def order_history(request):
     return render(
         request,
         "users/order_history.html",
-        {"data": data, "sort": sort}
+        {"data": data, "sort": sort},
         # We pass the sort back into the template to ensure the current sort option is the default on page load
     )

@@ -120,9 +120,11 @@ class Basket:
         if self._has_errors is None:
             error_count = sum(
                 (
-                    1
-                    if (item[1].get("no_quantity") or item[1].get("bad_quantity"))
-                    else 0
+                    (
+                        1
+                        if (item[1].get("no_quantity") or item[1].get("bad_quantity"))
+                        else 0
+                    )
                     for item in self.contents.items()
                 )
             )

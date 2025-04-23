@@ -1,5 +1,5 @@
 poetry==1.8.5
 pre-commit==3.0.2
 fabric==3.2.2
-black==23.1.0
+black==24.3.0
 invoke==2.2.0

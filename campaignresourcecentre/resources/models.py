@@ -139,9 +139,11 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             "description": self.description,
             "summary": self.summary,
             "taxonomy_json": self.taxonomy_json,
-            "last_published_at": datetime.timestamp(self.last_published_at)
-            if self.last_published_at
-            else None,
+            "last_published_at": (
+                datetime.timestamp(self.last_published_at)
+                if self.last_published_at
+                else None
+            ),
             "code": self.slug,
             "permission_role": self.permission_role,
         }
