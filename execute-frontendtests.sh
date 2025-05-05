@@ -11,8 +11,6 @@
 
 # BASE_URL: URL of the deployment to be tested (https:// + domain)
 # SECRETS_FILE: Path to CSV file containing username/password pair(s)
-# REPO_USERNAME: Username for the Docker repository with the Front End test image
-# REPO_PASSWORD: Password "
 # IMAGE_TAG: Tag for required version of the Front End test image
 # PARALLEL - number of parallel runs to execute (default 1)
 # SCENARIOS - how to run scenarios (sequential/parallel, default sequential)
@@ -43,8 +41,7 @@ cp -r FrontEndTests $WORK
 mkdir $WORK/work
 cd $WORK/work
 
-echo "### Running docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
-docker login dctimages.azurecr.io -u ${REPO_USERNAME:?No username for the Docker repo (REPO_USERNAME)} -p ${REPO_PASSWORD:?No password for the Docker repo (REPO_PASSWORD)}
+echo "### Building docker container image ${IMAGE_TAG:?No image tag specified (IMAGE_TAG)}"
 docker build --build-arg IMAGE_TAG=${IMAGE_TAG} -t my-acceptancetests:${IMAGE_TAG} -f $REPO_ROOT/Dockerfile-FrontendTests .
 
 printf  'Docker Build completed'
