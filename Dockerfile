@@ -12,13 +12,14 @@ COPY ./campaignresourcecentre/static_src/ ./campaignresourcecentre/static_src/
 RUN npm run build:prod
 
 
-# We use Debian images because they are considered more stable than the alpine
-# ones becase they use a different C compiler. Debian images also come with
-# all useful packages required for image manipulation out of the box. They
-# however weight a lot, approx. up to 1.5GiB per built image.
 FROM python:3.12-alpine AS backend
 RUN apk update
 RUN apk add curl postgresql-dev bash py3-pip
+
+# Temporary fix for CVE-2025-29087. Remove when Alpine updates it's SQlite version to >= 3.49.1
+RUN apk --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
+    add sqlite-libs=3.49.1-r1 sqlite-dev=3.49.1-r1
+
 RUN pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry

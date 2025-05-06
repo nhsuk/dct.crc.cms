@@ -147,15 +147,14 @@ After starting the containers as above and running `djrun`, in a new terminal se
 
 ## Front-end testing
 
-Containers are also used for running front-end tests locally since they too have complex dependencies. The tests are all defined in the FrontEndTests folder and get built into a docker image called "acceptancetests" that is stored in the "dctimages.azurecr.io" docker image repository. The version of the tests being run is dictated by the Image Tag the test container is using so make sure you are providing the up to date tag. The construction of the image is detailed here in  a separate GitHub repository:
+Containers are also used for running front-end tests locally since they too have complex dependencies. The tests are all defined in the FrontEndTests folder and get built into a docker image called "acceptancetests" that is stored in the "dctcampaignsacrproduks.azurecr.io" docker image repository. The version of the tests being run is dictated by the Image Tag the test container is using so make sure you are providing the up to date tag. The construction of the image is detailed here in  a separate GitHub repository:
 <https://github.com/nhsuk/dct-frontend-testing-framework>
+
+You must have AcrPull permissions on `dctcampaignsacrproduks` and then setup docker auth with `az acr login --name dctcampaignsacrproduks` to be able to pull the image.
 
 ### Configuration
 
 Configuration related to testing focusses on accessing and specifying the aforementioned "acceptancetests" docker image:
-
-* REPO_USERNAME and REPO_PASSWORD:
-credentials used to access the "dctimages.azurecr.io" docker image repository.
 
 * SECRETS_FILE:
 CSV file containing details of registered users of the CRC site (your email address, your CRC password).
@@ -171,7 +170,7 @@ Used to determine which subset of tests to run (e.g. "@Smoke") - leave empty to 
 The "smoke" tests are automatically run within this build pipeline whenever a review branch is created or modified:
 https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_build?definitionId=1071&_a=summary
 
-From here you can click "Edit", then "Variables" and provide REPO_USERNAME REPO_PASSWORD and IMAGE_TAG (named FRONTEND_TEST_CONTAINER_IMAGE_TAG in the pipeline variables). The other variable secrets file and tags are specified within the pipeline itself.
+From here you can click "Edit", then "Variables" and provide IMAGE_TAG (named FRONTEND_TEST_CONTAINER_IMAGE_TAG in the pipeline variables). The other variable secrets file and tags are specified within the pipeline itself.
 
 The results for the front end tests run in the build pipeline can be found in the "Deploy" stage or the "Deploy Review" job under the "Run Frontend tests in Docker container" task.
 
@@ -187,11 +186,9 @@ An example test_env.sh:
 
 ```
 export BASE_URL=http://localhost:8000
-export REPO_USERNAME=**************
-export REPO_PASSWORD=************************************
 # Note that secrets file requires absolute path because it will be mounted into the container
 export SECRETS_FILE=$PWD/crcv3-1-user.csv
-export IMAGE_TAG=1.0.0
+export IMAGE_TAG=1.1.1
 ```
 
 To run the tests, first get your local CRC instance running in a terminal window:

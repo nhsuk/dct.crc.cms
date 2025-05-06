@@ -8,6 +8,13 @@ steps:
     name: CSVFile # The name with which to reference the secure file’s path on the agent, like $(CSVFile.secureFilePath)
     inputs:
       secureFile: crcv3-user.csv # A secret file in the pipeline library with a Parkhouse test API username/password value
+  - task: AzureCLI@2
+    displayName: Docker Login (dctcampaignsacrproduks)
+    inputs:
+      azureSubscription: dct-crccms-dev
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: az acr login --name dctcampaignsacrproduks
   - bash: ./execute-frontendtests.sh
     env:
       WORK: $(System.DefaultWorkingDirectory)
