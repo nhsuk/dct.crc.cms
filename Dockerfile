@@ -18,7 +18,7 @@ RUN apk add curl postgresql-dev bash py3-pip
 
 # Temporary fix for CVE-2025-29087. Remove when Alpine updates it's SQlite version to >= 3.49.1
 RUN apk --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
-    add sqlite-libs=3.49.1-r1 sqlite-dev=3.49.1-r1
+    add sqlite-libs=3.49.2-r0 sqlite-dev=3.49.2-r0
 
 RUN pip3 install --upgrade pip setuptools
 
