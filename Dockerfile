@@ -14,7 +14,7 @@ RUN npm run build:prod
 
 FROM python:3.12-alpine AS backend
 RUN apk update
-RUN apk add curl postgresql-dev bash py3-pip
+RUN apk add curl postgresql-dev bash py3-pip linux-headers
 
 RUN pip3 install --upgrade pip setuptools
 
