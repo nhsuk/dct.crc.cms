@@ -5,6 +5,7 @@ resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   retention_in_days   = 30
+  daily_quota_gb      = 100
 }
 
 resource "azurerm_application_insights" "aks_app_insights" {
