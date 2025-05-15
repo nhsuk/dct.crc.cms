@@ -84,6 +84,9 @@ steps:
           WAGTAIL_USER: $(wagtailUser)
           WAGTAIL_PASSWORD: $(wagtailPassword)
           PUBTOKEN: $(pubToken)
+          APPLICATIONINSIGHTS_CONNECTION_STRING: $(appInsightsInstrumentationKey)
+          OTEL_SERVICE_NAME: crccms
+          OTEL_RESOURCE_ATTRIBUTES: service.namespace=campaigns,service.instance.id=$(appEnv)
         envInitializerVariables:
           PRIMARY_HOST: $(primaryHost)
           DJANGO_SETTINGS_MODULE: $(djangoSettingsModule)

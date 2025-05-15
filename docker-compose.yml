@@ -58,6 +58,9 @@ services:
       WAGTAIL_USER: ${WAGTAIL_USER}
       WAGTAIL_PASSWORD: ${WAGTAIL_PASSWORD}
       PUBTOKEN: ${PUBTOKEN}
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+      OTEL_SERVICE_NAME: crccms
+      OTEL_RESOURCE_ATTRIBUTES: service.namespace=campaigns,service.instance.id=local
 
     command: tail -f /dev/null # do nothing forever - exec commands elsewhere
     ports:
