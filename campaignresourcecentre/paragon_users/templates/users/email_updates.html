@@ -24,21 +24,21 @@
         <div class="govuk-grid-column-two-thirds">
             <form method="POST" class="form-group" novalidate id="signin" autocomplete="off">
                 {% if form.non_field_errors or form.errors %}
-                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert"
-                        data-module="govuk-error-summary">
-                        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
-                        <div class="govuk-error-summary__body">
-                            <ul class="govuk-list govuk-error-summary__list">
-                                {% for field in form %}
-                                    {% for error in field.errors %}
-                                        <li>
-                                            <a href="#{{field.id_for_label}}">{{error}}</a>
-                                        </li>
-                                    {% endfor %}
-                                {% endfor %}
-                            </ul>
-                        </div>
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert"
+                    data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            {% for field in form %}
+                            {% for error in field.errors %}
+                            <li>
+                                <a href="#{{field.id_for_label}}">{{error}}</a>
+                            </li>
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
                     </div>
+                </div>
                 {% endif %}
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -48,24 +48,24 @@
                     </legend>
                     <p>Choose whether you want to receive emails from us with updates about campaigns and resources
                         relevant to you.</p>
-                    <p>You can change your preferences, opt in or opt out of these updates at any time after registering.</p>
+                    <p>You can change your preferences, opt in or opt out of these updates at any time after
+                        registering.</p>
 
                     {% csrf_token %}
                     <div
                         class="govuk-form-group {% if form.email_updates.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
                         {% if form.email_updates.errors %}
-                            <p id="choice-error" class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span>
-                                {% for error in form.email_updates.errors %}
-                                    {{ error}}
-                                {% endfor %}
-                            </p>
+                        <p id="choice-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {% for error in form.email_updates.errors %}
+                            {{ error}}
+                            {% endfor %}
+                        </p>
                         {% endif %}
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 {{ form.email_updates.0.tag }}
-                                <label class="govuk-radios__label"
-                                    for="{{form.email_updates.0.id_for_label}}">
+                                <label class="govuk-radios__label" for="{{form.email_updates.0.id_for_label}}">
                                     {{form.email_updates.0.choice_label}}
                                 </label>
                                 <div id="email-updates-item-hint" class="govuk-hint govuk-radios__hint">
@@ -74,8 +74,7 @@
                             </div>
                             <div class="govuk-radios__item">
                                 {{ form.email_updates.1.tag }}
-                                <label class="govuk-radios__label"
-                                    for="{{form.email_updates.1.id_for_label}}">
+                                <label class="govuk-radios__label" for="{{form.email_updates.1.id_for_label}}">
                                     {{form.email_updates.1.choice_label}}
                                 </label>
                             </div>
