@@ -154,14 +154,20 @@ def signup(request):
 
 @method_decorator(paragon_user_registering, name="dispatch")
 class EmailUpdatesView(FormView):
-    template_name = "users/email_updates.html"
+    # TEMPORARY LOGIC
+    EMAIL_FEATURE_FLAG = True
+    template_name = (
+        "users/email_updates_variant.html"
+        if EMAIL_FEATURE_FLAG
+        else "users/email_updates.html"
+    )
     form_class = EmailUpdatesForm
 
     def form_valid(self, form):
         email_choice = form.cleaned_data.get("email_updates")
-        if email_choice == "yes":
+        if email_choice in ("yes", "health"):
             return redirect("/newsletters")
-        elif email_choice == "no":
+        elif email_choice in ("no", "school", "none"):
             # Delete the registaion session variable
             del self.request.session["registration"]
             return render(
