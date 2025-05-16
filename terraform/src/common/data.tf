@@ -9,6 +9,7 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_log_analytics_workspace" "shared_log_analytics_workspace" {
+  count    = var.environment == "development" ? 1 : 0
   provider = azurerm.law
 
   name                = local.law_name
