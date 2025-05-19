@@ -10,6 +10,9 @@ from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
 )
 
+from wagtail.models import Site
+from campaignresourcecentre.utils.models import FeatureFlags
+
 logger = getLogger(__name__)
 
 JOB_CHOICES = (
@@ -226,8 +229,9 @@ class RegisterForm(forms.Form):
         ]
 
 
-# TEMPORARY LOGIC
-EMAIL_FEATURE_FLAG = True
+EMAIL_FEATURE_FLAG = FeatureFlags.for_site(
+    Site.objects.get(is_default_site=True)
+).sz_email_variant
 
 EMAIL_CHOICES = (
     ("yes", "Get email updates"),

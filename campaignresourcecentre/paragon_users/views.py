@@ -41,6 +41,8 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
+from campaignresourcecentre.utils.models import FeatureFlags
+
 logger = getLogger(__name__)
 
 
@@ -154,14 +156,12 @@ def signup(request):
 
 @method_decorator(paragon_user_registering, name="dispatch")
 class EmailUpdatesView(FormView):
-    # TEMPORARY LOGIC
-    EMAIL_FEATURE_FLAG = True
-    template_name = (
-        "users/email_updates_variant.html"
-        if EMAIL_FEATURE_FLAG
-        else "users/email_updates.html"
-    )
     form_class = EmailUpdatesForm
+
+    def get_template_names(self):
+        if FeatureFlags.for_request(self.request).sz_email_variant:
+            return ["users/email_updates_variant.html"]
+        return ["users/email_updates.html"]
 
     def form_valid(self, form):
         email_choice = form.cleaned_data.get("email_updates")
