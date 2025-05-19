@@ -247,20 +247,25 @@ EMAIL_CHOICES_VARIANT = (
 class EmailUpdatesForm(forms.Form):
     email_updates = forms.ChoiceField(
         widget=forms.RadioSelect(attrs={"class": "govuk-radios__input"}),
-        choices=EMAIL_CHOICES_VARIANT if EMAIL_FEATURE_FLAG else EMAIL_CHOICES,
+        choices=EMAIL_CHOICES,
         required=True,
         error_messages={"required": "Select an option"},
     )
 
     school_resources_types = forms.MultipleChoiceField(
-        choices=(
-            ("primary", "Primary school"),
-            ("secondary", "Secondary school"),
-        ),
+        choices=(("primary", "Primary school"), ("secondary", "Secondary school")),
         widget=forms.CheckboxSelectMultiple(attrs={"class": "govuk-checkboxes__input"}),
         required=False,
         error_messages={"required": "Select an option"},
     )
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop("request", None)
+        super().__init__(*args, **kwargs)
+        flag = FeatureFlags.for_request(request).sz_email_variant
+        self.fields["email_updates"].choices = (
+            EMAIL_CHOICES_VARIANT if flag else EMAIL_CHOICES
+        )
 
     def clean(self):
         cleaned = super().clean()

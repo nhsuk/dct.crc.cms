@@ -163,6 +163,11 @@ class EmailUpdatesView(FormView):
             return ["users/email_updates_variant.html"]
         return ["users/email_updates.html"]
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["request"] = self.request
+        return kwargs
+
     def form_valid(self, form):
         email_choice = form.cleaned_data.get("email_updates")
         if email_choice in ("yes", "health"):
@@ -178,7 +183,7 @@ class EmailUpdatesView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = EmailUpdatesForm()
+        context["form"] = EmailUpdatesForm(request=self.request)
         return context
 
 
