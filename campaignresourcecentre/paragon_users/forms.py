@@ -229,10 +229,6 @@ class RegisterForm(forms.Form):
         ]
 
 
-EMAIL_FEATURE_FLAG = FeatureFlags.for_site(
-    Site.objects.get(is_default_site=True)
-).sz_email_variant
-
 EMAIL_CHOICES = (
     ("yes", "Get email updates"),
     ("no", "I do not want email updates"),
@@ -260,8 +256,9 @@ class EmailUpdatesForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop("request", None)
+        request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
+
         flag = FeatureFlags.for_request(request).sz_email_variant
         self.fields["email_updates"].choices = (
             EMAIL_CHOICES_VARIANT if flag else EMAIL_CHOICES
