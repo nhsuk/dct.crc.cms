@@ -5,6 +5,7 @@ from wagtail.admin.panels import (
     FieldPanel,
     MultiFieldPanel,
     PageChooserPanel,
+    HelpPanel,
 )
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 from wagtail import blocks
@@ -330,3 +331,20 @@ class Tracking(BaseSiteSetting):
     google_tag_manager_id = models.CharField(
         max_length=255, blank="True", help_text="Your Google Tag Manager ID"
     )
+
+
+@register_setting
+class FeatureFlags(BaseSiteSetting):
+    class Meta:
+        verbose_name = "Feature Flags"
+
+    sz_email_variant = models.BooleanField(
+        "School Zone email journey",
+        default=False,
+        help_text="Enable or disable the School Zone email signup journey variant",
+    )
+
+    panels = [
+        HelpPanel(content="Custom feature flags which can be toggled on and off."),
+        FieldPanel("sz_email_variant"),
+    ]
