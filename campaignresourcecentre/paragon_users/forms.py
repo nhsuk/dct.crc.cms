@@ -10,6 +10,9 @@ from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
 )
 
+from wagtail.models import Site
+from campaignresourcecentre.utils.models import FeatureFlags
+
 logger = getLogger(__name__)
 
 JOB_CHOICES = (
@@ -226,17 +229,48 @@ class RegisterForm(forms.Form):
         ]
 
 
+EMAIL_CHOICES = (
+    ("yes", "Get email updates"),
+    ("no", "I do not want email updates"),
+)
+EMAIL_CHOICES_VARIANT = (
+    ("health", "Health resources"),
+    ("school", "School resources"),
+    ("none", "I do not want emails"),
+)
+
+
 class EmailUpdatesForm(forms.Form):
-    EMAIL_UPDATES_CHOICES = (
-        ("yes", "Get email updates"),
-        ("no", "I do not want email updates"),
-    )
     email_updates = forms.ChoiceField(
         widget=forms.RadioSelect(attrs={"class": "govuk-radios__input"}),
-        choices=EMAIL_UPDATES_CHOICES,
+        choices=EMAIL_CHOICES,
         required=True,
         error_messages={"required": "Select an option"},
     )
+
+    school_resources_types = forms.MultipleChoiceField(
+        choices=(("primary", "Primary school"), ("secondary", "Secondary school")),
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "govuk-checkboxes__input"}),
+        required=False,
+        error_messages={"required": "Select an option"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+
+        flag = FeatureFlags.for_request(request).sz_email_variant
+        self.fields["email_updates"].choices = (
+            EMAIL_CHOICES_VARIANT if flag else EMAIL_CHOICES
+        )
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("email_updates") == "school" and not cleaned.get(
+            "school_resources_types"
+        ):
+            self.add_error("school_resources_types", "Select at least one age group")
+        return cleaned
 
 
 class UserAdminForm(forms.Form):

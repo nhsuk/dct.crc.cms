@@ -41,6 +41,8 @@ from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
+from campaignresourcecentre.utils.models import FeatureFlags
+
 logger = getLogger(__name__)
 
 
@@ -154,14 +156,23 @@ def signup(request):
 
 @method_decorator(paragon_user_registering, name="dispatch")
 class EmailUpdatesView(FormView):
-    template_name = "users/email_updates.html"
     form_class = EmailUpdatesForm
+
+    def get_template_names(self):
+        if FeatureFlags.for_request(self.request).sz_email_variant:
+            return ["users/email_updates_variant.html"]
+        return ["users/email_updates.html"]
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["request"] = self.request
+        return kwargs
 
     def form_valid(self, form):
         email_choice = form.cleaned_data.get("email_updates")
-        if email_choice == "yes":
+        if email_choice in ("yes", "health"):
             return redirect("/newsletters")
-        elif email_choice == "no":
+        elif email_choice in ("no", "school", "none"):
             # Delete the registaion session variable
             del self.request.session["registration"]
             return render(
@@ -172,7 +183,7 @@ class EmailUpdatesView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = EmailUpdatesForm()
+        context["form"] = EmailUpdatesForm(request=self.request)
         return context
 
 
