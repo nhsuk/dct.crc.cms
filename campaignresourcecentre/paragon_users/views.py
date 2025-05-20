@@ -182,9 +182,9 @@ class EmailUpdatesView(FormView):
             )
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = EmailUpdatesForm(request=self.request)
-        return context
+        if "form" not in kwargs:
+            kwargs["form"] = EmailUpdatesForm(request=self.request)
+        return super().get_context_data(**kwargs)
 
 
 @paragon_user_logged_in_unverified
