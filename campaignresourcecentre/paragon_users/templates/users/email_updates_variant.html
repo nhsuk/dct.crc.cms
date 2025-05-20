@@ -60,7 +60,7 @@
                             {% endfor %}
                         </p>
                         {% endif %}
-                        <div class="govuk-radios govuk-radios--conditional">
+                        <div class="govuk-radios">
                             <div class="govuk-radios__item">
                                 {{ form.email_updates.0.tag }}
                                 <label class="govuk-radios__label" for="{{ form.email_updates.0.id_for_label }}">
@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                             <div id="conditional-school-resources"
-                                class="govuk-radios__conditional govuk-radios__conditional--hidden">
+                                class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden">
                                 <div class="govuk-checkboxes">
                                     <div class="govuk-hint">Select one or both age groups</div>
                                     {% if form.school_resources_types.errors %}
@@ -121,7 +121,7 @@
 <script>
     const toggle = () => {
         document.getElementById('conditional-school-resources')
-            .classList.toggle('govuk-radios__conditional--hidden',
+            .classList.toggle('govuk-checkboxes__conditional--hidden',
                 document.querySelector('[name=email_updates]:checked')?.value !== 'school'
             );
     };
