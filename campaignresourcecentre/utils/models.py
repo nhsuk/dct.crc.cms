@@ -336,7 +336,7 @@ class Tracking(BaseSiteSetting):
 @register_setting
 class FeatureFlags(BaseSiteSetting):
     class Meta:
-        verbose_name = "Feature Flags"
+        verbose_name = "Feature flags"
 
     sz_email_variant = models.BooleanField(
         "School Zone email journey",
