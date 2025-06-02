@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 NEWSLETTERS = [
     "AllAges",  # 1
     "Pregnancyandyearold",  # 2
@@ -29,17 +31,30 @@ NEWSLETTERS = [
     "MentalHealth",  # 28
     "NHSandSocialCareFluLeads",  # 29
     "Coronavirus",  # 30
+    "PrimaryKS1Y1",  # 31
+    "PrimaryKS1Y2",  # 32
+    "PrimaryKS2Y3",  # 33
+    "PrimaryKS2Y4",  # 34
+    "PrimaryKS2Y5",  # 35
+    "PrimaryKS2Y6",  # 36
+    "SecondaryKS3Y7",  # 37
+    "SecondaryKS3Y8",  # 38
+    "SecondaryKS3Y9",  # 39
+    "SecondaryKS4Y10",  # 40
+    "SecondaryKS4Y11",  # 41
 ]
 
 
 def serialise(newsnumber):
     """
     accepts dictionary based on the newsletter subscription form fields
-    returns a string of 0 & 1, representing boolean values
+    returns a string of 0 & 1, representing boolean values, defaults value to 0 if missing
     """
 
+    preferences = defaultdict(lambda: False, newsnumber)
+
     return "".join(
-        list(map(lambda newsletter: str(int(newsnumber[newsletter])), NEWSLETTERS))
+        list(map(lambda newsletter: str(int(preferences[newsletter])), NEWSLETTERS))
     )
 
 
