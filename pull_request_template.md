@@ -1,6 +1,6 @@
 ## Jira tickets resolved by this PR
 
-- https://jira.collab.test-and-trace.nhs.uk/browse/CV-1234
+- https://ukhsa.atlassian.net/browse/CV-1234
 
 ## Description
 
