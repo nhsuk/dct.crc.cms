@@ -109,10 +109,10 @@
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h2 class="govuk-!-font-size-24">What school resources do you want to know about?</h2>
+                            <h2 class="govuk-!-font-size-24">School resources</h2>
                         </legend>
                         <div class="govuk-checkboxes govuk-checkboxes--small">
-                        <div class="govuk-hint">Select all that apply</div>
+                        <div class="govuk-hint">Resources on health and wellbeing topics</div>
                             {% for field in form %}
                             {% if field.field.widget.attrs|get:"data-group" == schoolzone_data_group %}
                             <div class="govuk-checkboxes__item">
