@@ -344,7 +344,14 @@ class FeatureFlags(BaseSiteSetting):
         help_text="Enable or disable the School Zone email signup journey variant",
     )
 
+    sz_email_year_groups = models.BooleanField(
+        "School Zone email year groups (requires School Zone email journey)",
+        default=False,
+        help_text="Enable or disable the School Zone email year groups feature flag",
+    )
+
     panels = [
         HelpPanel(content="Custom feature flags which can be toggled on and off."),
         FieldPanel("sz_email_variant"),
+        FieldPanel("sz_email_year_groups"),
     ]

@@ -1,6 +1,11 @@
 from campaignresourcecentre.paragon_users.helpers.newsletter import (
     serialise,
     deserialise,
+    map_primary_and_secondary_to_school_years,
+    map_school_years_to_primary_and_secondary,
+    primary_year_groups,
+    secondary_year_groups,
+    school_year_groups,
 )
 import unittest
 
@@ -248,3 +253,67 @@ class TestNewsletter(unittest.TestCase):
             expected = dict_value
             actual = deserialise(str_value)
             self.assertEqual(expected, actual)
+
+    def test_map_school_years_to_primary_and_secondary_with_empty_form(self):
+        actual = map_school_years_to_primary_and_secondary({})
+
+        self.assertFalse(actual["Primary"], f"Primary should be false")
+        self.assertFalse(actual["Secondary"], f"Secondary should be false")
+
+    def test_map_school_years_to_primary_and_secondary_with_y1(self):
+        actual = map_school_years_to_primary_and_secondary({"PrimaryKS1Y1": True})
+
+        self.assertTrue(actual["Primary"], f"Primary should be true")
+        self.assertFalse(actual["Secondary"], f"Secondary should be false")
+
+    def test_map_school_years_to_primary_and_secondary_with_y11(self):
+        actual = map_school_years_to_primary_and_secondary(
+            {"PrimaryKS1Y1": False, "SecondaryKS4Y11": True}
+        )
+
+        self.assertFalse(actual["Primary"], f"Primary should be false")
+        self.assertTrue(actual["Secondary"], f"Secondary should be true")
+
+    def test_map_school_years_to_primary_and_secondary_with_y1_and_y11(self):
+        actual = map_school_years_to_primary_and_secondary(
+            {"PrimaryKS1Y1": True, "SecondaryKS4Y11": True}
+        )
+
+        self.assertTrue(actual["Primary"], f"Primary should be true")
+        self.assertTrue(actual["Secondary"], f"Secondary should be true")
+
+    def test_map_primary_and_secondary_to_school_years_with_empty_form(self):
+        actual = map_primary_and_secondary_to_school_years({})
+
+        for year_group in school_year_groups:
+            self.assertFalse(actual[year_group], f"{year_group} should be false")
+
+    def test_map_primary_and_secondary_to_school_years_with_primary(self):
+        actual = map_primary_and_secondary_to_school_years(
+            {"Primary": True, "Secondary": False}
+        )
+
+        for year_group in primary_year_groups:
+            self.assertTrue(actual[year_group], f"{year_group} should be true")
+        for year_group in secondary_year_groups:
+            self.assertFalse(actual[year_group], f"{year_group} should be false")
+
+    def test_map_primary_and_secondary_to_school_years_with_secondary(self):
+        actual = map_primary_and_secondary_to_school_years(
+            {"Primary": False, "Secondary": True}
+        )
+
+        for year_group in primary_year_groups:
+            self.assertFalse(actual[year_group], f"{year_group} should be false")
+        for year_group in secondary_year_groups:
+            self.assertTrue(actual[year_group], f"{year_group} should be true")
+
+    def test_map_primary_and_secondary_to_school_years_with_both_primary_and_secondary(
+        self,
+    ):
+        actual = map_primary_and_secondary_to_school_years(
+            {"Primary": True, "Secondary": True}
+        )
+
+        for year_group in school_year_groups:
+            self.assertTrue(actual[year_group], f"{year_group} should be true")

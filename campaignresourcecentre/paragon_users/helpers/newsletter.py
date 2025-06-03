@@ -44,6 +44,67 @@ NEWSLETTERS = [
     "SecondaryKS4Y11",  # 41
 ]
 
+primary_year_groups = [
+    "PrimaryKS1Y1",
+    "PrimaryKS1Y2",
+    "PrimaryKS2Y3",
+    "PrimaryKS2Y4",
+    "PrimaryKS2Y5",
+    "PrimaryKS2Y6",
+]
+
+
+secondary_year_groups = [
+    "SecondaryKS3Y7",
+    "SecondaryKS3Y8",
+    "SecondaryKS3Y9",
+    "SecondaryKS4Y10",
+    "SecondaryKS4Y11",
+]
+
+
+school_year_groups = primary_year_groups + secondary_year_groups
+
+
+def map_primary_and_secondary_to_school_years(form):
+    """
+    accepts dictionary based on the newsletter subscription form fields with school years grouped into primary and secondary
+    returns the completed form with school years populated based on school year group provided
+    """
+
+    preferences = defaultdict(lambda: False, form)
+
+    if preferences["Primary"]:
+        for year in primary_year_groups:
+            preferences[year] = True
+
+    if preferences["Secondary"]:
+        for year in secondary_year_groups:
+            preferences[year] = True
+
+    return preferences
+
+
+def map_school_years_to_primary_and_secondary(form):
+    """
+    accepts dictionary based on the newsletter subscription form fields with school years
+    returns dictionary with schools years mapped to primary/secondary
+    """
+
+    preferences = defaultdict(lambda: False, form)
+
+    for year in primary_year_groups:
+        if preferences[year]:
+            preferences["Primary"] = True
+            break
+
+    for year in secondary_year_groups:
+        if preferences[year]:
+            preferences["Secondary"] = True
+            break
+
+    return preferences
+
 
 def serialise(newsnumber):
     """

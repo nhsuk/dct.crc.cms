@@ -36,7 +36,13 @@ from .forms import (
     RegisterForm,
     EmailUpdatesForm,
 )
-from .helpers.newsletter import deserialise, serialise
+from .helpers.newsletter import (
+    deserialise,
+    serialise,
+    map_school_years_to_primary_and_secondary,
+    map_primary_and_secondary_to_school_years,
+    school_year_groups,
+)
 from .helpers.postcodes import get_region
 from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
@@ -537,6 +543,9 @@ class NewslettersView(View):
 
         newsletters = deserialise(client_user["ProductRegistrationVar7"])
 
+        if FeatureFlags.for_request(request).sz_email_year_groups == False:
+            newsletters = map_school_years_to_primary_and_secondary(newsletters)
+
         newsletter_form = NewsLetterPreferencesForm(initial=newsletters)
 
         return self.render_preferences(request, newsletter_form)
@@ -545,6 +554,12 @@ class NewslettersView(View):
         newsletter_form = NewsLetterPreferencesForm(request.POST)
         if newsletter_form.is_valid():
             newsletters_form = dict(newsletter_form.cleaned_data)
+
+            if FeatureFlags.for_request(request).sz_email_year_groups == False:
+                newsletters_form = map_primary_and_secondary_to_school_years(
+                    newsletters_form
+                )
+
             serialised_newsletters = serialise(newsletters_form)
 
             try:
@@ -553,6 +568,12 @@ class NewslettersView(View):
                     or request.session.get("registration"),
                     subscriptions=serialised_newsletters,
                 )
+
+                # If school zone year groups is disabled, remove the specific years
+                if FeatureFlags.for_request(request).sz_email_year_groups == False:
+                    for k in school_year_groups:
+                        del newsletters_form[k]
+
                 # Find all items that haven't changed or have the value of False
                 unchanged_data = [
                     k for k in newsletters_form if newsletters_form.get(k) is False
@@ -565,6 +586,7 @@ class NewslettersView(View):
                     newsletter_form.fields.get(key).label
                     for key in newsletters_form.keys()
                 ]
+
                 return self.render_confirmation(request, newsletters_cleaned)
             except ParagonClientError as PCE:
                 for error in PCE.args:
@@ -588,7 +610,15 @@ class NewslettersView(View):
         return render(
             request,
             "users/newsletter_preferences.html",
-            {"form": newsletter_form},
+            {
+                "form": newsletter_form,
+                "schoolzone": FeatureFlags.for_request(request).sz_email_variant,
+                "schoolzone_data_group": (
+                    "schoolzone-year-groups"
+                    if FeatureFlags.for_request(request).sz_email_year_groups
+                    else "schoolzone"
+                ),
+            },
         )
 
 

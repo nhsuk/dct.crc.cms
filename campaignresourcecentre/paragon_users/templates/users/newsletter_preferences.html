@@ -40,7 +40,7 @@
                 <p>Choose what topics you would like to receive emails about and be first to find out about new resources.</p>
 
                 {% csrf_token %}
-                
+
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -104,6 +104,30 @@
                     </fieldset>
                 </div>
 
+                {% if schoolzone %}
+
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-!-font-size-24">What school resources do you want to know about?</h2>
+                        </legend>
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
+                        <div class="govuk-hint">Select all that apply</div>
+                            {% for field in form %}
+                            {% if field.field.widget.attrs|get:"data-group"  == schoolzone_data_group %}
+                            <div class="govuk-checkboxes__item">
+                                {{field}}
+                                <label class="govuk-label govuk-checkboxes__label"
+                                    for="{{ field.id_for_label }}">{{field.label}}</label>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                </div>
+
+                {% endif %}
+
                 <p><strong>Want to unsubscribe?</strong> Untick all checkboxes to opt out of newsletter emails.</p>
 
                 <div class="govuk-form-group">
@@ -111,7 +135,7 @@
                 </div>
             </form>
         </div>
-    </div>  
+    </div>
 </div>
 
 <script>
@@ -134,7 +158,7 @@
         };
         var allboxes = GetGroup(group.toLowerCase());
         var allchecked = true;
-        for (var i = 1; i < allboxes.length; i++) { 
+        for (var i = 1; i < allboxes.length; i++) {
             if ( (allboxes[i].name !== source.name) && allboxes[i].checked == false){
                 allchecked = false;
             }
