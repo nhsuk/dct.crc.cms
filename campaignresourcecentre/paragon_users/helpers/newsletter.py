@@ -106,6 +106,20 @@ def map_school_years_to_primary_and_secondary(form):
     return preferences
 
 
+def map_registration_school_types_to_school_years(form):
+    """
+    accepts list based on the email updates registration form fields - primary/secondary school types
+    returns the completed form with school years populated based on school type provided
+    """
+
+    return map_school_years_to_primary_and_secondary(
+        {
+            "Primary": "primary" in form,
+            "Secondary": "secondary" in form,
+        }
+    )
+
+
 def serialise(newsnumber):
     """
     accepts dictionary based on the newsletter subscription form fields

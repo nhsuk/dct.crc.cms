@@ -29,6 +29,9 @@
                     <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
                     <div class="govuk-error-summary__body">
                         <ul class="govuk-list govuk-error-summary__list">
+                            {% for error in form.non_field_errors %}
+                            <li>{{error}}</li>
+                            {% endfor %}
                             {% for field in form %}
                             {% for error in field.errors %}
                             <li>
@@ -51,7 +54,7 @@
 
                     {% csrf_token %}
                     <div
-                        class="govuk-form-group {% if form.email_updates.errors or form.non_field_errors or form.school_resources_types.errors %}govuk-form-group--error{% endif %}">
+                        class="govuk-form-group {% if form.email_updates.errors or form.school_resources_types.errors %}govuk-form-group--error{% endif %}">
                         {% if form.email_updates.errors %}
                         <p id="choice-error" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span>
