@@ -737,3 +737,148 @@ class NewsLetterPreferencesForm(forms.Form):
         required=False,
         label="NHS and Social Care Flu Leads",
     )
+
+    # School Zone
+    Primary = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone",
+            }
+        ),
+        required=False,
+        label="Primary school",
+    )
+
+    Secondary = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone",
+            }
+        ),
+        required=False,
+        label="Secondary school",
+    )
+
+    # School Zone Year Groups
+    PrimaryKS1Y1 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Primary - KS1 - Year 1",
+    )
+
+    PrimaryKS1Y2 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Primary - KS1 - Year 2",
+    )
+
+    PrimaryKS2Y3 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Primary - KS2 - Year 3",
+    )
+
+    PrimaryKS2Y4 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Primary - KS2 - Year 4",
+    )
+
+    PrimaryKS2Y5 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Primary - KS2 - Year 5",
+    )
+
+    PrimaryKS2Y6 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Primary - KS2 - Year 6",
+    )
+
+    SecondaryKS3Y7 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Secondary - KS3 - Year 7",
+    )
+
+    SecondaryKS3Y8 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Secondary - KS3 - Year 8",
+    )
+
+    SecondaryKS3Y9 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Secondary - KS3 - Year 9",
+    )
+
+    SecondaryKS4Y10 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Secondary - KS4 - Year 10",
+    )
+
+    SecondaryKS4Y11 = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "govuk-checkboxes__input",
+                "data-group": "schoolzone-year-groups",
+            }
+        ),
+        required=False,
+        label="Secondary - KS4 - Year 11",
+    )
