@@ -112,7 +112,7 @@ def map_registration_school_types_to_school_years(form):
     returns the completed form with school years populated based on school type provided
     """
 
-    return map_school_years_to_primary_and_secondary(
+    return map_primary_and_secondary_to_school_years(
         {
             "Primary": "primary" in form,
             "Secondary": "secondary" in form,
