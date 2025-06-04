@@ -41,6 +41,7 @@ from .helpers.newsletter import (
     serialise,
     map_school_years_to_primary_and_secondary,
     map_primary_and_secondary_to_school_years,
+    map_registration_school_types_to_school_years,
     school_year_groups,
 )
 from .helpers.postcodes import get_region
@@ -175,17 +176,47 @@ class EmailUpdatesView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        email_choice = form.cleaned_data.get("email_updates")
-        if email_choice in ("yes", "health"):
+        cleaned_data = form.cleaned_data
+        email_updates = cleaned_data.get("email_updates")
+
+        if email_updates in ("yes", "health"):
             return redirect("/newsletters")
-        elif email_choice in ("no", "school", "none"):
-            # Delete the registaion session variable
-            del self.request.session["registration"]
-            return render(
-                self.request,
-                "users/confirmation_registration.html",
-                {"email": settings.PHE_PARTNERSHIPS_EMAIL},
-            )
+
+        elif email_updates in ("school"):
+            if FeatureFlags.for_request(self.request).sz_email_variant == False:
+                raise ValueError("email_updates of school is disabled")
+
+            schools = cleaned_data.get("school_resources_types")
+            school_years = map_registration_school_types_to_school_years(schools)
+
+            try:
+                Client().update_user_profile(
+                    user_token=self.request.session.get("registration"),
+                    subscriptions=serialise(school_years),
+                )
+            except ParagonClientError as pce:
+                for error in pce.args:
+                    error_message = parse_error(error)
+                    form.add_error(error_message[0], error_message[1])
+                return render(
+                    self.request,
+                    "users/email_updates_variant.html",
+                    {"form": form},
+                )
+
+        elif email_updates in ("no", "none"):
+            # No need to do anything
+            pass
+
+        else:
+            raise NotImplementedError(f"Unknown email_updates: {email_updates}")
+
+        del self.request.session["registration"]
+        return render(
+            self.request,
+            "users/confirmation_registration.html",
+            {"email": settings.PHE_PARTNERSHIPS_EMAIL},
+        )
 
     def get_context_data(self, **kwargs):
         if "form" not in kwargs:

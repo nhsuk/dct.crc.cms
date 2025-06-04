@@ -3,6 +3,7 @@ from campaignresourcecentre.paragon_users.helpers.newsletter import (
     deserialise,
     map_primary_and_secondary_to_school_years,
     map_school_years_to_primary_and_secondary,
+    map_registration_school_types_to_school_years,
     primary_year_groups,
     secondary_year_groups,
     school_year_groups,
@@ -315,5 +316,31 @@ class TestNewsletter(unittest.TestCase):
             {"Primary": True, "Secondary": True}
         )
 
+        for year_group in school_year_groups:
+            self.assertTrue(actual[year_group], f"{year_group} should be true")
+
+    def test_map_registration_school_types_to_school_years_with_empty_list(self):
+        actual = map_registration_school_types_to_school_years([])
+        for year_group in school_year_groups:
+            self.assertFalse(actual[year_group], f"{year_group} should be false")
+
+    def test_map_registration_school_types_to_school_years_with_primary(self):
+        actual = map_registration_school_types_to_school_years(["primary"])
+        for year_group in primary_year_groups:
+            self.assertTrue(actual[year_group], f"{year_group} should be true")
+        for year_group in secondary_year_groups:
+            self.assertFalse(actual[year_group], f"{year_group} should be false")
+
+    def test_map_registration_school_types_to_school_years_with_secondary(self):
+        actual = map_registration_school_types_to_school_years(["secondary"])
+        for year_group in primary_year_groups:
+            self.assertFalse(actual[year_group], f"{year_group} should be false")
+        for year_group in secondary_year_groups:
+            self.assertTrue(actual[year_group], f"{year_group} should be true")
+
+    def test_map_registration_school_types_to_school_years_with_both_primary_and_secondary(
+        self,
+    ):
+        actual = map_registration_school_types_to_school_years(["primary", "secondary"])
         for year_group in school_year_groups:
             self.assertTrue(actual[year_group], f"{year_group} should be true")
