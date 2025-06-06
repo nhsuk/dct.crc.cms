@@ -1,3 +1,11 @@
+parameters:
+  - name: tag
+    type: string
+    default: latest
+  - name: dryrun
+    type: boolean
+    default: false
+
 steps:
   - task: Docker@2
     displayName: 'Docker Build'
@@ -36,3 +44,27 @@ steps:
       command: 'push'
       tags: |
         ${{ parameters.tag }}
+  # Push to ACA
+    - task: Docker@2
+    displayName: Docker Build (dctcampaignsacrproduks)
+    inputs:
+      dockerfile: $(Build.SourcesDirectory)/Dockerfile
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms #? Is this the correct naming
+      command: build
+      tags: ${{ parameters.tag }},$(Build.SourceVersion)
+  - task: AzureCLI@2
+    displayName: Docker Login (dctcampaignsacrproduks)
+    condition: and(succeeded(), ne('${{ parameters.dryrun }}', 'True'))
+    inputs:
+      azureSubscription: dct-crccms-dev
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: az acr login --name dctcampaignsacrproduks
+  - task: Docker@2
+    displayName: Docker Push (dctcampaignsacrproduks)
+    condition: and(succeeded(), ne('${{ parameters.dryrun }}', 'True'))
+    inputs:
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms
+      command: push
+      tags: ${{ parameters.tag }},$(Build.SourceVersion)
+
