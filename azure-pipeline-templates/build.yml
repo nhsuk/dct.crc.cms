@@ -45,7 +45,7 @@ steps:
       tags: |
         ${{ parameters.tag }}
   # Push to ACA
-    - task: Docker@2
+  - task: Docker@2
     displayName: Docker Build (dctcampaignsacrproduks)
     inputs:
       dockerfile: $(Build.SourcesDirectory)/Dockerfile
