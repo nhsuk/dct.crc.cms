@@ -8,7 +8,7 @@ parameters:
 
 steps:
   - task: Docker@2
-    displayName: 'Docker Build'
+    displayName: 'Docker Build (nhsuk acr-dct.campaign-resource-centre-v3)'
     inputs:
       containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
       dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
@@ -26,7 +26,7 @@ steps:
 
       junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
       trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
-    displayName: 'Run Trivy Scan'
+    displayName: 'Run Trivy Scan (nhsuk acr-dct.campaign-resource-centre-v3)'
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: "Publish Scan Results"
@@ -35,7 +35,7 @@ steps:
       testRunTitle: "${{ parameters.tag }} image scan"
       failTaskOnFailedTests: true
   - task: Docker@2
-    displayName: 'Docker Push'
+    displayName: 'Docker Push (nhsuk acr-dct.campaign-resource-centre-v3) '
     condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
     inputs:
       containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
@@ -44,12 +44,11 @@ steps:
       command: 'push'
       tags: |
         ${{ parameters.tag }}
-  # Push to ACA
   - task: Docker@2
     displayName: Docker Build (dctcampaignsacrproduks)
     inputs:
       dockerfile: $(Build.SourcesDirectory)/Dockerfile
-      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms #? Is this the correct naming
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms 
       command: build
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
   - task: AzureCLI@2
