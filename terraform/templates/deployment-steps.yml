@@ -62,8 +62,7 @@ steps:
       environmentServiceName: ${{ parameters.azureSubscription }}
       publishPlanResults: ${{ parameters.environment }}_deployment_plan
       commandOptions: >
-        -var-file="env/${{ parameters.environment }}.tfvars"
-        -var location=${{ parameters.location }}
+        -var-file="env/${{ parameters.environment }}-${{ parameters.location }}.tfvars"
         -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
         -detailed-exitcode
     ${{ if or(eq(parameters.environment, 'int'), eq(parameters.environment, 'stag')) }}:
