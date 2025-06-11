@@ -26,7 +26,7 @@ steps:
 
       junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
       trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
-    displayName: 'Run Trivy Scan (nhsuk acr-dct.campaign-resource-centre-v3)'
+    displayName: 'Run Trivy Scan'
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: "Publish Scan Results"
