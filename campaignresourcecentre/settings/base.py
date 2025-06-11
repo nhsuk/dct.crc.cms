@@ -536,7 +536,6 @@ origin = os.environ.get("CSRF_TRUSTED_ORIGIN")
 CSRF_TRUSTED_ORIGINS = [origin] if origin else []
 
 
-
 # This will allow the cache to swallow the fact that the website is behind TLS
 # and inform the Django using "X-Forwarded-Proto" HTTP header.
 # https://docs.djangoproject.com/en/stable/ref/settings/#secure-proxy-ssl-header
