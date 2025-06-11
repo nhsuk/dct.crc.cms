@@ -52,7 +52,7 @@ variable "sha_512_password" {
 variable "crc_cms_version" {
   type        = string
   description = "The CRC CMS container image tag to deploy"
-  default     = null
+  default     = "latest"
 }
 
 variable "network_address_space" {
