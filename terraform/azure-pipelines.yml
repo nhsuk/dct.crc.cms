@@ -49,9 +49,7 @@ parameters:
     default: false
 
 variables:
-  - name: ARTIFACT_NAME
-    value: drop
-  - template: templates/release-variables.yml
+  - template: templates/variables.yml
     parameters:
       environment: dev
 
@@ -148,7 +146,7 @@ stages:
     dependsOn: Build
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), ${{ parameters.deployReview }})
     variables:
-      - template: templates/release-variables.yml
+      - template: templates/variables.yml
         parameters:
           environment: dev
     jobs:
@@ -170,7 +168,7 @@ stages:
     dependsOn: Build
     condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
     variables:
-      - template: ./templates/release-variables.yml
+      - template: ./templates/variables.yml
         parameters:
           environment: int
     jobs:
@@ -192,7 +190,7 @@ stages:
     dependsOn: Build
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployStaging }})
     variables:
-      - template: ./templates/release-variables.yml
+      - template: ./templates/variables.yml
         parameters:
           environment: stag
     jobs:
@@ -214,7 +212,7 @@ stages:
     dependsOn: Staging
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployProduction }})
     variables:
-      - template: templates/release-variables.yml
+      - template: templates/variables.yml
         parameters:
           environment: prod
     jobs:
@@ -238,7 +236,7 @@ stages:
     dependsOn: Production
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployDr }})
     variables:
-      - template: templates/release-variables.yml
+      - template: templates/variables.yml
         parameters:
           environment: prod
           location: ukw
