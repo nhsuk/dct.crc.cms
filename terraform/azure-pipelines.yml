@@ -109,7 +109,7 @@ stages:
             inputs:
               path: terraform/src/common
               severities: HIGH,CRITICAL,MEDIUM
-              options: --skip-check-update --scanners vuln,misconfig,secret --tf-vars terraform/src/common/env/dev.tfvars
+              options: --skip-check-update --scanners vuln,misconfig,secret --tf-vars terraform/src/common/tests/test.tfvars
 
           - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
             displayName: Initialise
