@@ -53,8 +53,7 @@ variables:
     value: drop
   - template: templates/release-variables.yml
     parameters:
-      releaseEnvironment: dev
-      location: uks
+      environment: dev
 
 resources:
   repositories:
