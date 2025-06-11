@@ -1,6 +1,14 @@
+parameters:
+  - name: tag
+    type: string
+    default: latest
+  - name: dryrun
+    type: boolean
+    default: false
+
 steps:
   - task: Docker@2
-    displayName: 'Docker Build'
+    displayName: 'Docker Build (nhsuk acr-dct.campaign-resource-centre-v3)'
     inputs:
       containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
       dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
@@ -27,7 +35,7 @@ steps:
       testRunTitle: "${{ parameters.tag }} image scan"
       failTaskOnFailedTests: true
   - task: Docker@2
-    displayName: 'Docker Push'
+    displayName: 'Docker Push (nhsuk acr-dct.campaign-resource-centre-v3) '
     condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
     inputs:
       containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
@@ -36,3 +44,25 @@ steps:
       command: 'push'
       tags: |
         ${{ parameters.tag }}
+  - task: Docker@2
+    displayName: Docker Build (dctcampaignsacrproduks)
+    inputs:
+      dockerfile: $(Build.SourcesDirectory)/Dockerfile
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms 
+      command: build
+      tags: ${{ parameters.tag }},$(Build.SourceVersion)
+  - task: AzureCLI@2
+    displayName: Docker Login (dctcampaignsacrproduks)
+    inputs:
+      azureSubscription: dct-crccms-dev
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: az acr login --name dctcampaignsacrproduks
+  - task: Docker@2
+    displayName: Docker Push (dctcampaignsacrproduks)
+    condition: and(succeeded(), ne('${{ parameters.dryrun }}', 'True'))
+    inputs:
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms
+      command: push
+      tags: ${{ parameters.tag }},$(Build.SourceVersion)
+
