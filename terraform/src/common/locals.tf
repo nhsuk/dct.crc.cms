@@ -35,7 +35,7 @@ locals {
 
   org            = "dct"
   app            = "crccms"
-  short_app_name = "crcms"
+  short_app_name = "crc"
 
   init_secrets = []
   init_config  = {}
