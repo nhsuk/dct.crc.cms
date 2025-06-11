@@ -32,4 +32,12 @@ locals {
 
   law_name                = var.environment != "production" ? "nhsuk-law-nonprod-uks" : "nhsuk-law-prod-uks"
   law_resource_group_name = var.environment != "production" ? "nhsuk-law-rg-nonprod-uks" : "nhsuk-law-rg-prod-uks"
+
+  org            = "dct"
+  app            = "crccms"
+  short_app_name = "crcms"
+
+  init_secrets = []
+  init_config  = {}
+  app_secrets  = []
 }

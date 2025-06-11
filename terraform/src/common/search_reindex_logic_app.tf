@@ -7,7 +7,7 @@ resource "azapi_resource" "search_reindex_la" {
   identity {
     type = "SystemAssigned"
   }
-  body = jsonencode({
+  body = {
     "properties" : {
       "parameters" : {},
       "state" : "${var.environment == "development" ? "Disabled" : "Enabled"}",
@@ -217,5 +217,5 @@ resource "azapi_resource" "search_reindex_la" {
         }
       }
     }
-  })
+  }
 }
