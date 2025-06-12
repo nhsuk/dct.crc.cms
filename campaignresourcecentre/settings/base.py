@@ -528,6 +528,14 @@ if env.get("SECURE_SSL_REDIRECT", "true").strip().lower() == "true":
     SECURE_SSL_REDIRECT = True
 
 
+# A proxy such as Azure Front Door will populate the X-Forwarded headers with the user facing domain
+USE_X_FORWARDED_HOST = True
+
+# Optional, the origin that requests may come from, for example the akamai https://nhs.uk origin
+origin = os.environ.get("CSRF_TRUSTED_ORIGIN")
+CSRF_TRUSTED_ORIGINS = [origin] if origin else []
+
+
 # This will allow the cache to swallow the fact that the website is behind TLS
 # and inform the Django using "X-Forwarded-Proto" HTTP header.
 # https://docs.djangoproject.com/en/stable/ref/settings/#secure-proxy-ssl-header
