@@ -1,0 +1,168 @@
+# Pipeline to deploy transient review environments to dev
+
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: dryRun
+    type: boolean
+    default: false
+  - name: deployReview
+    displayName: Force Deploy Review
+    type: boolean
+    default: true # For fast testing
+  - name: reviewUsername
+    displayName: Review Username
+    type: string
+    default: "nhsuk"
+  - name: reviewPasswordHash
+    displayName: Review SHA-512 Password
+    type: string
+
+variables:
+  - name: azureSubscription
+    value: dct-crccms-dev
+  - name: environment
+    value: dev
+  - name: region
+    value: uks
+  - name: tag
+    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+      value: pr-$(System.PullRequest.PullRequestNumber)
+    ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+      value: $(Build.SourceBranchName)
+    ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+      value: main-$(Build.SourceVersion)
+    ${{ else }}:
+      value: review-$(Build.SourceBranchName)
+  - name: devInstance
+    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+      value: pr-$(System.PullRequest.PullRequestNumber)
+    ${{ else }}:
+      value: $[lower(variables['Build.SourceBranchName'])]
+
+resources:
+  repositories:
+    - repository: wagtail-container-apps
+      type: github
+      name: nhsuk/dct.terraform-modules.wagtail-container-apps
+      endpoint: nhsuk (1)
+
+stages:
+  - stage: Deploy
+    jobs:
+      - job: Review
+        steps:
+          - checkout: self
+            workspaceRepo: true
+
+          - checkout: wagtail-container-apps
+            persistCredentials: true
+            fetchDepth: 1
+
+          - script: |
+              tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.wagtail-container-apps/.git/config >> ~/.gitconfig
+            displayName: Git auth
+
+          - task: AzureKeyVault@2
+            displayName: 'Azure Key Vault: Database'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              KeyVaultName: dct-crc-kv-app-dev-uks
+              SecretsFilter: default--db-name, default--db-host, default--db-user
+
+          - task: AzureKeyVault@2
+            displayName: 'Azure Key Vault: Admin'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              KeyVaultName: dct-crccms-kv-dev-uks
+              SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
+
+          - script: |
+              set -e
+              docker run \
+                -e PGHOST="$(default--db-host)" \
+                -e PGUSER="$(postgresqlAdminUser)" \
+                -e PGPASSWORD \
+                postgres:16 \
+                psql -d "$(default--db-name)" \
+                -v ON_ERROR_STOP=off \
+                -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(default--db-name)' AND pid <> pg_backend_pid();" \
+                -c "CREATE DATABASE \"$(devInstance)\" WITH TEMPLATE $(default--db-name) OWNER $(default--db-user);" \
+                -c "\connect \"$(devInstance)\";"
+            displayName: Create review database
+            env:
+              PGPASSWORD: $(postgresqlAdminPassword)
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
+            displayName: Install latest Terraform
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Initialise
+            inputs:
+              command: init
+              workingDirectory: terraform/src/review
+              backendType: azurerm
+              backendServiceArm: $(azureSubscription)
+              backendAzureRmResourceGroupName: dct-crccms-platform-rg-$(environment)-$(region)
+              backendAzureRmStorageAccountName: crccmstfst$(environment)$(region)
+              backendAzureRmKey: terraform-$(devInstance)-apps.tfstate
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Plan
+            inputs:
+              command: plan
+              workingDirectory: terraform/src/review
+              environmentServiceName: $(azureSubscription)
+              commandOptions: >
+                -var dev_instance=$(devInstance)
+                -var crc_cms_version=latest
+                -var username=${{ parameters.reviewUsername }}
+                -var sha_512_password=${{ parameters.reviewPasswordHash }}
+                -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
+                -detailed-exitcode
+              publishPlanResults: $(environment)_plan
+
+          - ${{ if eq(parameters.dryRun, 'true') }}:
+              - script: |
+                  echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
+                  echo "##vso[task.complete result=SucceededWithIssues;]"
+                displayName: Dry Run - skipping apply
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Apply
+            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne('${{ parameters.dryRun }}', 'True'))
+            inputs:
+              command: apply
+              workingDirectory: terraform/src/review
+              environmentServiceName: $(azureSubscription)
+              commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+
+          - task: AzureCLI@2
+            displayName: Copy default app config
+            condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                SECRET_NAMES=$(az keyvault secret list --vault-name $VAULT_NAME --query "[?starts_with(name,'default--')].name" --output tsv)
+                while read secret
+                do
+                  VALUE=$(az keyvault secret show --vault-name $VAULT_NAME --name $secret --query "value" --output tsv)
+                  if [ -z "${VALUE}" ]; then
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --file /dev/null --query "name"
+                  else
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --value "${VALUE}" --query "name"
+                  fi
+                done <<< "$SECRET_NAMES"
+                az keyvault secret set --vault-name $VAULT_NAME --name "$DEV_INSTANCE--db-name" --value $DEV_INSTANCE --query "name"
+            env:
+              VAULT_NAME: dct-crc-kv-app-dev-uks
+              DEV_INSTANCE: $(devInstance)
+              ENVIRONMENT: $(environment)
+              REGION: $(region)

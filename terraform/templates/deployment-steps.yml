@@ -1,79 +1,87 @@
 parameters:
-  - name: artifactPath # working directory
+  - name: environment # environemnt to deploy to
     type: string
-    default: ''
-  - name: environment # env name for resource tags
-    type: string
-    default: ''
+    values:
+      - dev
+      - int
+      - stag
+      - prod
   - name: azureSubscription # the service connection in the pipeline
     type: string
-    default: ''
-  - name: resourceGroup # name of the resource group which contains the TF resources
-    type: string
-    default: ''
   - name: tfResourceGroup # name of the resource group which stores the TF state
     type: string
-    default: ''
   - name: tfStorageAccount # name of the storage account which stores the TF state
     type: string
-    default: ''
   - name: dryrun # skip apply stage
     type: boolean
     default: false
   - name: location # location of the resources
     type: string
-    default: ''
+    default: uks
+  - name: workingDirectory
+    type: string
+    default: $(Pipeline.Workspace)/terraform
 
 steps:
+  - checkout: network-spoke
+    persistCredentials: true
+    fetchDepth: 1
+
+  - checkout: container-app-env
+    persistCredentials: true
+    fetchDepth: 1
+
+  - checkout: wagtail-container-apps
+    persistCredentials: true
+    fetchDepth: 1
+
+  - script: |
+      tail -n 2 $(Pipeline.Workspace)/s/nhsuk.platform.terraform-modules.network-spoke/.git/config >> ~/.gitconfig
+      tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.container-app-env/.git/config >> ~/.gitconfig
+      tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.wagtail-container-apps/.git/config >> ~/.gitconfig
+    displayName: Git auth
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
-    displayName: 'Install latest Terraform'
-    inputs:
-      terraformVersion: latest
+    displayName: Install latest Terraform
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-    displayName: 'terraform init'
+    displayName: terraform init
     inputs:
       command: init
-      workingDirectory: ${{ parameters.artifactPath }}
+      workingDirectory: ${{ parameters.workingDirectory }}
       backendType: azurerm
       backendServiceArm: ${{ parameters.azureSubscription }}
       backendAzureRmResourceGroupName: ${{ parameters.tfResourceGroup }}
       backendAzureRmStorageAccountName: ${{ parameters.tfStorageAccount }}
 
   - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-    displayName: 'terraform validate'
-    inputs:
-      workingDirectory: ${{ parameters.artifactPath }}
-
-  - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-    displayName: 'terraform plan'
+    displayName: terraform plan
     inputs:
       command: plan
-      workingDirectory: ${{ parameters.artifactPath }}
+      workingDirectory: ${{ parameters.workingDirectory }}
       environmentServiceName: ${{ parameters.azureSubscription }}
-      publishPlanResults: "deployment_plan"
+      publishPlanResults: ${{ parameters.environment }}_deployment_plan
       commandOptions: >
-        -var resource_group=${{ parameters.resourceGroup }}
-        -var environment=${{ parameters.environment }}
-        -var tfstate_account_name=${{ parameters.tfStorageAccount }}
-        -var location=${{ parameters.location }}
+        -var-file="env/${{ parameters.environment }}-${{ parameters.location }}.tfvars"
         -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
         -detailed-exitcode
+    ${{ if or(eq(parameters.environment, 'int'), eq(parameters.environment, 'stag')) }}:
+      env:
+        TF_VAR_sha_512_password: $(SHA_512_PASSWORD)
 
   - ${{ if eq(parameters.dryrun, 'true') }}:
     - bash: |
         echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
         echo "##vso[task.complete result=SucceededWithIssues;]"
-      displayName: 'Dry Run - skipping apply'
+      displayName: Dry Run - skipping apply
 
   - ${{ if ne(parameters.dryrun, 'true') }}:
     - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-      displayName: 'terraform apply'
+      displayName: terraform apply
       condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
       inputs:
         command: apply
-        workingDirectory: ${{ parameters.artifactPath }}
+        workingDirectory: ${{ parameters.workingDirectory }}
         environmentServiceName: ${{ parameters.azureSubscription }}
         commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
@@ -85,7 +93,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        secretIds=$(az keyvault secret list --vault-name ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }} --query [].id)
+        secretIds=$(az keyvault secret list --vault-name dct-crccms-kv-${{ parameters.environment }}-${{ parameters.location }} --query [].id)
         secretIds=$(echo $secretIds | jq -c '.[]' | awk '{gsub(/"/,"")}1')
         emptySecrets=""
 
@@ -105,6 +113,6 @@ steps:
 
         if [[ $emptySecrets != '' ]];
         then
-          echo "##vso[task.logissue type=warning;]Empty secrets found in ${{ replace(parameters.resourceGroup, '-rg-', '-kv-') }}: [$emptySecrets ]"
+          echo "##vso[task.logissue type=warning;]Empty secrets found in dct-crccms-kv-${{ parameters.environment }}-${{ parameters.location }}: [$emptySecrets ]"
           echo "##vso[task.complete result=SucceededWithIssues;]"
         fi

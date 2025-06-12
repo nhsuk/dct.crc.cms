@@ -8,7 +8,7 @@ resource "azapi_resource" "scheduler_la" {
     type = "SystemAssigned"
   }
 
-  body = jsonencode({
+  body = {
     "properties" : {
       "parameters" : {},
       "state" : "${var.environment == "development" ? "Disabled" : "Enabled"}",
@@ -225,5 +225,5 @@ resource "azapi_resource" "scheduler_la" {
         }
       }
     }
-  })
+  }
 }

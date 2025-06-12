@@ -6,7 +6,7 @@ resource "azurerm_monitor_action_group" "activeconnections_alert" {
   logic_app_receiver {
     name                    = "active_connections_slack_alert"
     resource_id             = azapi_resource.activeconnectionsalert_la.id
-    callback_url            = jsondecode(data.azapi_resource_action.activeconnections_alert_la_callbackurl.output).value
+    callback_url            = data.azapi_resource_action.activeconnections_alert_la_callbackurl.output.value
     use_common_alert_schema = true
   }
 }

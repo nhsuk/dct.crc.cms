@@ -9,7 +9,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
     type = "SystemAssigned"
   }
 
-  body = jsonencode({
+  body = {
     "properties" : {
       "state" : var.environment == "development" ? "Disabled" : "Enabled",
       "parameters" : {},
@@ -87,7 +87,7 @@ resource "azapi_resource" "activeconnectionsalert_la" {
         }
       }
     }
-  })
+  }
 }
 
 data "azapi_resource_action" "activeconnections_alert_la_callbackurl" {

@@ -8,8 +8,10 @@ data "azurerm_resource_group" "rg" {
   name = var.resource_group
 }
 
+data "azurerm_client_config" "current" {}
+
 data "azurerm_log_analytics_workspace" "shared_log_analytics_workspace" {
-  count    = var.environment == "development" ? 1 : 0
+  count    = 1
   provider = azurerm.law
 
   name                = local.law_name
