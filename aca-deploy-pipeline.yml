@@ -157,7 +157,7 @@ stages:
                   if [ -z "${VALUE}" ]; then
                     az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --file /dev/null --query "name"
                   else
-                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --value $VALUE --query "name"
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --value "${VALUE}" --query "name"
                   fi
                 done <<< "$SECRET_NAMES"
                 az keyvault secret set --vault-name $VAULT_NAME --name "$DEV_INSTANCE--db-name" --value $DEV_INSTANCE --query "name"
