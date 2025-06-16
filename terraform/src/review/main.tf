@@ -1,5 +1,5 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=0.2.0"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=5d4deb7291cc03e0a4737989457b0bfcf1ae8606"
 
   environment                  = local.environment
   org                          = local.org
@@ -16,6 +16,7 @@ module "aca_wagtail" {
   key_vault_id                 = data.azurerm_key_vault.wagtail.id
   username                     = var.username
   sha_512_password             = var.sha_512_password #gitleaks:allow not actually the password
+  init_args                    = local.init_args
   init_config                  = local.init_config
   init_secrets                 = local.init_secrets
   app_secrets                  = local.app_secrets
