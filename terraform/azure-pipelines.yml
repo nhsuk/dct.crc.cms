@@ -233,7 +233,7 @@ stages:
                   dryrun: ${{ parameters.dryrun }}
 
   - stage: DR
-    dependsOn: Production
+    dependsOn: Staging
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployDr }})
     variables:
       - template: templates/variables.yml
