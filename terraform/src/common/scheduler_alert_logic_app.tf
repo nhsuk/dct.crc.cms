@@ -7,7 +7,7 @@ resource "azapi_resource" "scheduler_alert_la" {
   identity {
     type = "SystemAssigned"
   }
-  body = jsonencode({
+  body = {
     "properties" : {
       "parameters" : {},
       "state" : "Enabled",
@@ -98,7 +98,7 @@ resource "azapi_resource" "scheduler_alert_la" {
         }
       }
     }
-  })
+  }
 }
 
 data "azapi_resource_action" "scheduler_alert_la_callbackurl" {

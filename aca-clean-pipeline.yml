@@ -1,0 +1,120 @@
+# Pipeline to remove ACA review environments when no longer needed
+
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+resources:
+  repositories:
+    - repository: wagtail-container-apps
+      type: github
+      name: nhsuk/dct.terraform-modules.wagtail-container-apps
+      endpoint: nhsuk (1)
+
+stages:
+  - stage: Clean
+    jobs:
+      - job: Clean
+        steps:
+          - checkout: self
+            persistCredentials: true
+            workspaceRepo: true
+            clean: true
+
+          - checkout: wagtail-container-apps
+            persistCredentials: true
+            fetchDepth: 1
+
+          - script: |
+              tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.wagtail-container-apps/.git/config >> ~/.gitconfig
+            displayName: Git auth
+
+          - task: AzureCLI@2
+            displayName: Setup auth
+            inputs:
+              azureSubscription: dct-crccms-dev
+              scriptType: bash
+              scriptLocation: inlineScript
+              addSpnToEnvironment: true
+              inlineScript: |
+                set -e
+                echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(az account show --query 'id' --output tsv)"
+                echo "##vso[task.setvariable variable=ARM_TENANT_ID]$tenantId"
+                echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$servicePrincipalId"
+                echo "##vso[task.setvariable variable=ARM_OIDC_TOKEN]$idToken"
+                echo "##vso[task.setvariable variable=ARM_USE_OIDC]true"
+                echo "##vso[task.setvariable variable=ARM_USE_CLI]false"
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
+            displayName: Install latest Terraform
+
+          - task: AzureCLI@2
+            displayName: Clean old ACA review environment
+            inputs:
+              azureSubscription: dct-crccms-dev
+              scriptType: bash
+              scriptLocation: inlineScript
+              workingDirectory: terraform/src/review
+              inlineScript: |
+                set -e
+                export ENVIRONMENT="dev"
+                export REGION="uks"
+                export STORAGE_ACCOUNT_NAME="crccmstfst${ENVIRONMENT}${REGION}"
+
+                open_prs=$(git ls-remote origin 'refs/pull/*/merge' | awk '{print $2}' | awk -F'/' '{print "pr-"$3}')
+                branches=$(git ls-remote origin 'refs/heads/*' | awk '{print $2}' | awk -F/ '{print tolower($NF)}')
+
+                state_files=$(az storage blob list \
+                  --container-name tfstate \
+                  --account-name $STORAGE_ACCOUNT_NAME \
+                  --auth-mode login \
+                  --query "[?ends_with(name, '-apps.tfstate')].name" \
+                  --output tsv)
+
+                if [[ -z "$state_files" ]]; then
+                  echo "No app terraform state files detected"
+                  exit 0
+                fi
+
+                while read state_file; do
+                  instance=$(echo "$state_file" | sed -E 's/^terraform-(.*)-apps.tfstate$/\1/')
+
+                  if echo "$open_prs" | grep -qxF "${instance}"; then
+                    echo "$instance is still open"
+                    continue
+                  fi
+
+                  if echo "$branches" | grep -qxF "${instance}"; then
+                    echo "$instance is still in use"
+                    continue
+                  fi
+
+                  echo "Can destroy $instance"
+
+                  rm -f .terraform/terraform.tfstate
+                  terraform init \
+                    -backend-config=resource_group_name=dct-campaignscms-platform-rg-$ENVIRONMENT-$REGION \
+                    -backend-config=storage_account_name=$STORAGE_ACCOUNT_NAME \
+                    -backend-config=key=terraform-$instance-apps.tfstate
+
+                  terraform destroy \
+                    -var dev_instance=$instance \
+                    -var crc_cms_version="" \
+                    -auto-approve
+
+                  az storage blob delete \
+                    --name terraform-$instance-apps.tfstate \
+                    --container-name tfstate \
+                    --account-name $STORAGE_ACCOUNT_NAME \
+                    --auth-mode login
+
+                  az postgres flexible-server db delete \
+                    --server-name dct-crccms-psql-$ENVIRONMENT-$REGION \
+                    --resource-group dct-crccms-rg-$ENVIRONMENT-$REGION \
+                    --database-name $instance \
+                    --yes
+
+                  echo "Destroyed $instance"
+                done <<<"$state_files"

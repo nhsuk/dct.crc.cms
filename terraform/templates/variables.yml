@@ -1,0 +1,22 @@
+parameters:
+  - name: environment
+    type: string
+    values:
+      - dev
+      - int
+      - stag
+      - prod
+  - name: location
+    type: string
+    values:
+      - uks
+      - ukw
+    default: uks
+
+variables:
+- name: AZURE_SUBSCRIPTION
+  value: dct-crccms-${{ parameters.environment }}
+- name: TF_STORAGE_ACCOUNT
+  value: crccmstfst${{ parameters.environment }}${{ parameters.location }}
+- name: TF_RESOURCE_GROUP
+  value: dct-crccms-platform-rg-${{ parameters.environment }}-${{ parameters.location }}

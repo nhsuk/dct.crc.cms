@@ -1,21 +1,26 @@
 name: $(BuildId)
 
-pr: none
-
 trigger:
   batch: true
   branches:
     include:
-    - 'review/*'
-    - 'refs/tags/tf-*'
-    - 'main'
+    - review/*
+    - refs/tags/tf-*
+    - main
   paths:
     include:
-    - 'terraform'
+    - terraform
 
-variables:
-  - name: ARTIFACT_NAME
-    value: drop
+pr:
+  branches:
+    include:
+    - '*'
+  paths:
+    include:
+      - terraform
+
+pool:
+  vmImage: ubuntu-latest
 
 parameters:
   - name: dryrun
@@ -39,201 +44,216 @@ parameters:
     type: boolean
     default: false
   - name: deployDr
-    displayName: Force Deploy DisasterRecovery
+    displayName: Force Deploy Disaster Recovery
     type: boolean
     default: false
+
+variables:
+  - template: templates/variables.yml
+    parameters:
+      environment: dev
+
+resources:
+  repositories:
+    - repository: network-spoke
+      type: github
+      name: nhsuk/nhsuk.platform.terraform-modules.network-spoke
+      endpoint: nhsuk (1)
+    - repository: container-app-env
+      type: github
+      name: nhsuk/dct.terraform-modules.container-app-env
+      endpoint: nhsuk (1)
+    - repository: wagtail-container-apps
+      type: github
+      name: nhsuk/dct.terraform-modules.wagtail-container-apps
+      endpoint: nhsuk (1)
 
 stages:
   - stage: Build
     jobs:
-      - job: Publish
-        pool:
-          vmImage: windows-2022
+      - job: Build
+        steps:
+          - checkout: self
+            workspaceRepo: true
+            fetchDepth: 1
+
+          - checkout: network-spoke
+            persistCredentials: true
+            fetchDepth: 1
+
+          - checkout: container-app-env
+            persistCredentials: true
+            fetchDepth: 1
+
+          - checkout: wagtail-container-apps
+            persistCredentials: true
+            fetchDepth: 1
+
+          - script: |
+              tail -n 2 $(Pipeline.Workspace)/s/nhsuk.platform.terraform-modules.network-spoke/.git/config >> ~/.gitconfig
+              tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.container-app-env/.git/config >> ~/.gitconfig
+              tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.wagtail-container-apps/.git/config >> ~/.gitconfig
+            displayName: Git auth
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
+            displayName: Install latest Terraform
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Lint
+            inputs:
+              command: fmt
+              workingDirectory: terraform/src/common
+
+          - task: trivy@1
+            displayName: Trivy scan
+            inputs:
+              path: terraform/src/common
+              severities: HIGH,CRITICAL,MEDIUM
+              options: --skip-check-update --scanners vuln,misconfig,secret --tf-vars terraform/src/common/tests/test.tfvars
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Initialise
+            inputs:
+              command: init
+              workingDirectory: terraform/src/common
+              backendType: azurerm
+              backendServiceArm: ${{ variables.AZURE_SUBSCRIPTION }}
+              backendAzureRmResourceGroupName: ${{ variables.TF_RESOURCE_GROUP }}
+              backendAzureRmStorageAccountName: ${{ variables.TF_STORAGE_ACCOUNT }}
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Validate
+            inputs:
+              command: validate
+              workingDirectory: terraform/src/common
+
+      - job: Publish # Publish to artifacts for deployment stages
         steps:
           - task: CopyFiles@2
-            displayName: 'Copy all terraform files to artifacts'
+            displayName: Copy to artifacts
             inputs:
-              SourceFolder: terraform/src/
-              TargetFolder: '$(Build.ArtifactStagingDirectory)/terraform'
+              SourceFolder: terraform/src/common
+              TargetFolder: $(Build.ArtifactStagingDirectory)
               CleanTargetFolder: true
               OverWrite: true
 
           - task: PublishBuildArtifacts@1
-            displayName: 'Publish Artifact'
+            displayName: Publish artifacts
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: $(ARTIFACT_NAME)
+              ArtifactName: terraform
 
-  - stage: terraformReview
-    displayName: 'Terraform Review Env'
+  - stage: Review
     dependsOn: Build
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), ${{ parameters.deployReview }})
-    pool:
-      vmImage: windows-2022
     variables:
-      - name: ARTIFACT_PATH
-        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-      - template: ./templates/release-variables.yml
+      - template: templates/variables.yml
         parameters:
-          releaseEnvironment: 'dev'
-          location: 'uks'
-      - name: ENVIRONMENT
-        value: 'development'
+          environment: dev
     jobs:
-      - deployment: 'terraformDev'
-        displayName: 'Terraform Review'
-        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: Review
+        environment: Review
         strategy:
           runOnce:
             deploy:
               steps:
-              - template: ./templates/deployment-steps.yml
+              - template: templates/deployment-steps.yml
                 parameters:
-                  artifactPath: ${{ variables.ARTIFACT_PATH }}
-                  environment: ${{ variables.ENVIRONMENT }}
+                  environment: dev
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
-                  location: ${{ variables.LOCATION }}
 
-  - stage: terraformIntegration
-    displayName: 'Terraform Integration Env'
+  - stage: Integration
     dependsOn: Build
     condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
-    pool:
-      vmImage: windows-2022
     variables:
-      - name: ARTIFACT_PATH
-        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-      - template: ./templates/release-variables.yml
+      - template: ./templates/variables.yml
         parameters:
-          releaseEnvironment: 'int'
-          location: 'uks'
-      - name: ENVIRONMENT
-        value: 'integration'
+          environment: int
     jobs:
-      - deployment: 'terraformInt'
-        displayName: 'Terraform Integration'
-        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: Integration
+        environment: Integration
         strategy:
           runOnce:
             deploy:
               steps:
-              - template: ./templates/deployment-steps.yml
+              - template: templates/deployment-steps.yml
                 parameters:
-                  artifactPath: ${{ variables.ARTIFACT_PATH }}
-                  environment: ${{ variables.ENVIRONMENT }}
+                  environment: int
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
-                  location: ${{ variables.LOCATION }}
 
-  - stage: terraformStaging
-    displayName: 'Terraform Staging Env'
+  - stage: Staging
     dependsOn: Build
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
-    pool:
-      vmImage: windows-2022
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployStaging }})
     variables:
-      - name: ARTIFACT_PATH
-        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-      - template: ./templates/release-variables.yml
+      - template: ./templates/variables.yml
         parameters:
-          releaseEnvironment: 'stag'
-          location: 'uks'
-      - name: ENVIRONMENT
-        value: 'staging'
+          environment: stag
     jobs:
-      - deployment: 'terraformStag'
-        displayName: 'Terraform Staging'
-        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: Staging
+        environment: Staging
         strategy:
           runOnce:
             deploy:
               steps:
-              - template: ./templates/deployment-steps.yml
+              - template: templates/deployment-steps.yml
                 parameters:
-                  artifactPath: ${{ variables.ARTIFACT_PATH }}
-                  environment: ${{ variables.ENVIRONMENT }}
+                  environment: stag
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
-                  location: ${{ variables.LOCATION }}
 
-  - stage: terraformProduction
-    displayName: 'Terraform Production Env'
-    dependsOn: terraformStaging
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployProduction }})
-    pool:
-      vmImage: windows-2022
+  - stage: Production
+    dependsOn: Staging
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployProduction }})
     variables:
-      - name: ARTIFACT_PATH
-        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-      - template: ./templates/release-variables.yml
+      - template: templates/variables.yml
         parameters:
-          releaseEnvironment: 'prod'
-          location: 'uks'
-      - name: ENVIRONMENT
-        value: 'production'
+          environment: prod
     jobs:
-      - deployment: approval
-        environment: ${{ variables.ENVIRONMENT }}
-      - deployment: 'terraformProd'
-        displayName: 'Terraform Production'
-        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: Approval
+        environment: Production
+      - deployment: Production
+        environment: Production
         strategy:
           runOnce:
             deploy:
               steps:
-              - template: ./templates/deployment-steps.yml
+              - template: templates/deployment-steps.yml
                 parameters:
-                  artifactPath: ${{ variables.ARTIFACT_PATH }}
-                  environment: ${{ variables.ENVIRONMENT }}
+                  environment: prod
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
-                  location: ${{ variables.LOCATION }}
 
-  - stage: terraformDR
-    displayName: 'Terraform DR Env'
-    dependsOn: terraformProduction
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployDr }})
-    pool:
-      vmImage: windows-2022
+  - stage: DR
+    dependsOn: Staging
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/tf-'), ${{ parameters.deployDr }})
     variables:
-      - name: ARTIFACT_PATH
-        value: '$(Pipeline.Workspace)\$(ARTIFACT_NAME)\terraform\common'
-      - template: ./templates/release-variables.yml
+      - template: templates/variables.yml
         parameters:
-          releaseEnvironment: 'prod'
-          location: 'ukw'
-      - name: ENVIRONMENT
-        value: 'production'
+          environment: prod
+          location: ukw
     jobs:
-      - deployment: approval
-        environment: ${{ variables.ENVIRONMENT }}
-      - deployment: 'terraformDr'
-        displayName: 'Terraform DR'
-        environment: ${{ variables.ENVIRONMENT }}
+      - deployment: Approval
+        environment: Production
+      - deployment: Production
+        environment: Production
         strategy:
           runOnce:
             deploy:
               steps:
               - template: ./templates/deployment-steps.yml
                 parameters:
-                  artifactPath: ${{ variables.ARTIFACT_PATH }}
-                  environment: ${{ variables.ENVIRONMENT }}
+                  environment: prod
                   azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
-                  resourceGroup: ${{ variables.RESOURCE_GROUP }}
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
-                  location: ${{ variables.LOCATION }}
+                  location: ukw
