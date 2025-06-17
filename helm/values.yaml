@@ -54,5 +54,3 @@ database:
   dbUsername: ""
   dbPasswd: ""
   dbAzure: ""
-
-instanaApiKey:
