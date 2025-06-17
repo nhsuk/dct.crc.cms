@@ -29,7 +29,6 @@ steps:
         railsEnv: $(railsEnv)
         appName: $(appName)
         appPort: $(appPort)
-        instanaApiKey: $(instanaApiKey)
         envAppVariables:
           ALLOWED_HOSTS: 127.0.0.1,0.0.0.0,localhost,$(hostUrl),$(intHostUrl)
           MEDIA_DIR: /app/media/

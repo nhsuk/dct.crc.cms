@@ -358,10 +358,8 @@ else:
 
 
 # Logging
-# This logging is configured to be used with Sentry and console logs. Console
+# This logging is configured to be used with console logs. Console
 # logs are widely used by platforms offering Docker deployments, e.g. Heroku.
-# We use Sentry to only send error logs so we're notified about errors that are
-# not Python exceptions.
 # We do not use default mail or file handlers because they are of no use for
 # us.
 # https://docs.djangoproject.com/en/stable/topics/logging/
@@ -408,45 +406,6 @@ LOGGING = {
 # https://docs.djangoproject.com/en/2.1/topics/email/
 
 EMAIL_BACKEND = "django_gov_notify.backends.NotifyEmailBackend"
-
-
-# Sentry configuration.
-# See instructions on the intranet:
-# https://intranet.torchbox.com/delivering-projects/tech/starting-new-project/#sentry
-is_in_shell = len(sys.argv) > 1 and sys.argv[1] in ["shell", "shell_plus"]
-
-if "SENTRY_DSN" in env and not is_in_shell:
-    import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
-    from sentry_sdk.utils import get_default_release
-
-    sentry_kwargs = {"dsn": env["SENTRY_DSN"], "integrations": [DjangoIntegration()]}
-
-    # There's a chooser to toggle between environments at the top right corner on sentry.io
-    # Values are typically 'staging' or 'production' but can be set to anything else if needed.
-    # dokku config:set gosh SENTRY_ENVIRONMENT=staging
-    # heroku config:set SENTRY_ENVIRONMENT=production
-    if "SENTRY_ENVIRONMENT" in env:
-        sentry_kwargs.update({"environment": env["SENTRY_ENVIRONMENT"]})
-
-    release = get_default_release()
-    if release is None:
-        try:
-            # But if it's not, we assume that the commit hash is available in
-            # the GIT_REV environment variable. It's a default environment
-            # variable used on Dokku:
-            # http://dokku.viewdocs.io/dokku/deployment/methods/git/#configuring-the-git_rev-environment-variable
-            release = env["GIT_REV"]
-        except KeyError:
-            try:
-                # Assume this is a Heroku-hosted app with the "runtime-dyno-metadata" lab enabled
-                release = env["HEROKU_RELEASE_VERSION"]
-            except KeyError:
-                # If there's no commit hash, we do not set a specific release.
-                release = None
-
-    sentry_kwargs.update({"release": release})
-    sentry_sdk.init(**sentry_kwargs)
 
 
 # Front-end cache
