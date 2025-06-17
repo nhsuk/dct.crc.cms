@@ -5,11 +5,45 @@ locals {
   environment    = "dev"
   region         = "uks"
 
-  init_config = {
-  }
+  init_args = [
+    "bash",
+    "-c",
+    "bash ./initializer-entrypoint.sh"
+  ]
 
   init_secrets = [
+    "DB_HOST",
+    "DB_NAME",
+    "DB_PASS",
+    "DB_USER",
+    "DEBUG",
+    "DJANGO_SETTINGS_MODULE",
+    "GUNICORN_CMD_ARGS",
+    "NOTIFY_DEBUG",
+    "PARAGON_API_ENDPOINT",
+    "PARAGON_API_KEY",
+    "PARAGON_ENCRYPTION_KEY",
+    "PARAGON_MOCK",
+    "PARAGON_SALT",
+    "PARAGON_SIGN_KEY",
+    "PRIMARY_HOST",
+    "PUBTOKEN",
+    "REDIS_URL",
+    "REPORTING_ENABLED",
+    "REPORTING_ENDPOINT",
+    "SECRET_KEY",
+    "STATIC_DIR",
+    "STATIC_URL",
+    "TWO_FA",
+    "WAGTAIL_PASSWORD",
+    "WAGTAIL_USER",
+    "WEB_CONCURRENCY",
+    "AUTOWRAPT_BOOTSTRAP",
+    "INSTANA_AGENT_HOST"
   ]
+
+  init_config = {
+  }
 
   app_secrets = [
     "ADOBE_TRACKING_URL",

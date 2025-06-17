@@ -1,5 +1,5 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=0.2.0"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=0.3.0"
 
   # dev container apps get deployed separately to allow for many transient environments
   count = var.deploy_container_apps && var.env != "dev" ? 1 : 0
@@ -20,6 +20,7 @@ module "aca_wagtail" {
   key_vault_id                      = module.container_app_env[0].key_vault_id
   username                          = var.username
   sha_512_password                  = var.sha_512_password #gitleaks:allow not actually the password
+  init_args                         = local.init_args
   init_config                       = local.init_config
   init_secrets                      = local.init_secrets
   app_secrets                       = local.app_secrets
