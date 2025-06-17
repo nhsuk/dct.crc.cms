@@ -1,5 +1,5 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=5d4deb7291cc03e0a4737989457b0bfcf1ae8606"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=0.3.0"
 
   environment                  = local.environment
   org                          = local.org
