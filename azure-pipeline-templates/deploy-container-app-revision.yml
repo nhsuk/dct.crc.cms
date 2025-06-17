@@ -1,0 +1,30 @@
+parameters:
+  - name: env
+    type: string
+  - name: region
+    type: string
+    default: uks
+  - name: version
+    type: string
+  - name: dryrun
+    type: boolean
+    default: false
+
+steps:
+  - ${{ if parameters.dryrun }}:
+    - bash: |
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping new container app revision"
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      displayName: "Dry Run Warning"
+  - task: AzureCLI@2
+    condition: ne('${{ parameters.dryrun }}', 'True')
+    displayName: Deploy Wagtail Container App Revision
+    inputs:
+      azureSubscription: dct-crccms-${{ parameters.env }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az containerapp revision copy \
+          --name ca-wagtail-${{ parameters.env }}-${{ parameters.region }} \
+          --resource-group dct-crccms-rg-${{ parameters.env }}-${{ parameters.region }} \
+          --image dctcampaignsacrproduks.azurecr.io/dct/crc-cms:${{ parameters.version }}
