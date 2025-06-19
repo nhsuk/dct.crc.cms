@@ -14,7 +14,6 @@ provider "azurerm" {
 
 provider "azurerm" {
   features {}
-  alias = "hub"
-  # only dev and int mi will access to the shared network hub, so default back to null
-  subscription_id = contains(["dev", "int"], var.env) ? "d535b130-e970-4713-b547-0ba3cd149539" : null
+  alias           = "hub"
+  subscription_id = "d535b130-e970-4713-b547-0ba3cd149539"
 }
