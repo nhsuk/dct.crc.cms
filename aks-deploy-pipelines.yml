@@ -336,6 +336,11 @@ stages:
               keyVaultName: 'dct-crc-v3-vlt-stag-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
+          - template: azure-pipeline-templates/deploy-container-app-revision.yml
+            parameters:
+              env: stag
+              version: $(sourceBranchName)
+              dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
               authorize: STAGING_AUTHORIZATION
