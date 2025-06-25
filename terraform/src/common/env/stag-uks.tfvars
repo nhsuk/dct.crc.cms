@@ -8,3 +8,8 @@ username              = "nhsuk"
 crc_cms_version       = "1.13.0" # initial version to deploy
 
 network_address_space = "10.8.8.0/22"
+
+aks_origin = {
+  firewall_ip_address = "20.49.242.14"
+  origin_host_header  = "staging.campaignresources.dhsc.gov.uk"
+}

@@ -64,3 +64,12 @@ variable "network_address_space" {
     error_message = "Must be valid IPv4 CIDR."
   }
 }
+
+variable "aks_origin" {
+  type = object({
+    firewall_ip_address = string
+    origin_host_header  = string
+  })
+  description = "Optional AKS origin on the Front Door origin group to allow for migration"
+  default     = null
+}
