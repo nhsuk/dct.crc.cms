@@ -1,0 +1,49 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: environment
+    displayName: Environment
+    type: string
+    values:
+      - dev
+      - int
+      - stag
+      - prod
+  - name: region
+    displayName: Region
+    type: string
+    values:
+      - uks
+      - ukw
+    default: uks
+  - name: minReplicas
+    displayName: Min Replicas
+    type: string
+
+stages:
+  - stage: Scale
+    jobs:
+
+      - deployment: approval
+        condition: and(succeeded(), ${{ eq(parameters.environment, 'prod') }})
+        environment: production
+      - job: Scale
+        steps:
+          - checkout: none
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: dct-crccms-${{ parameters.environment }}
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                apps=("redis" "wagtail" "haproxy")
+                for app in "${apps[@]}"; do
+                  az containerapp revision copy \
+                    --name ca-$app-${{ parameters.environment }}-${{ parameters.region }} \
+                    --resource-group dct-crccms-rg-${{ parameters.environment }}-${{ parameters.region }} \
+                    --min-replicas ${{ parameters.minReplicas }}
+                done
