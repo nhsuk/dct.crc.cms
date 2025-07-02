@@ -27,14 +27,14 @@ parameters:
 stages:
   - stage: Scale
     jobs:
-
       - deployment: approval
-        condition: and(succeeded(), ${{ eq(parameters.environment, 'prod') }})
+        condition: and(succeeded(), eq('${{ parameters.environment }}', 'prod'))
         environment: production
       - job: Scale
         steps:
           - checkout: none
           - task: AzureCLI@2
+            displayName: Scale
             inputs:
               azureSubscription: dct-crccms-${{ parameters.environment }}
               scriptType: bash
