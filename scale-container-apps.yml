@@ -9,7 +9,6 @@ parameters:
     displayName: Environment
     type: string
     values:
-      - dev
       - int
       - stag
       - prod
