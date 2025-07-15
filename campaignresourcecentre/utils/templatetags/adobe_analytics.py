@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from json import dumps
 
 register = template.Library()
 """
@@ -29,36 +30,20 @@ def adobe_analytics(page_url):
         sub_category_3 = url_list[3] if len(url_list) > 3 else ""
         sub_category_4 = url_list[4] if len(url_list) > 4 else ""
 
-        return """{
-            "primaryCategory": "%s",
-            "subCategory1":"%s",
-            "subCategory2":"%s",
-            "subCategory3":"%s",
-            "subCategory4":"%s"
-            }""" % (
-            primary_category,
-            sub_category_1,
-            sub_category_2,
-            sub_category_3,
-            sub_category_4,
-        )
+        return {
+            "primaryCategory": primary_category,
+            "subCategory1": sub_category_1,
+            "subCategory2": sub_category_2,
+            "subCategory3": sub_category_3,
+            "subCategory4": sub_category_4,
+        }
 
     def form_adobe_js(url_list):
         categories = get_categories(url_list)
         page_name = get_page_name(url_list)
-        adobe_js = """window.digitalData=
-            {"page": {
-                "pageInfo": {
-                    "pageName": "%s"
-               },
-                "category":
-                    %s
-                },
-               };
-            """ % (
-            page_name,
-            categories,
-        )
+        data = {"page": {"pageInfo": {"pageName": page_name}, "category": categories}}
+
+        adobe_js = "window.digitalData= %s;" % dumps(data)
         return mark_safe(adobe_js)
 
     return form_adobe_js(url_list)
