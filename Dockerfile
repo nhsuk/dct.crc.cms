@@ -13,10 +13,13 @@ RUN npm run build:prod
 
 
 FROM python:3.12-alpine AS backend
-RUN apk update
-RUN apk add curl postgresql-dev bash py3-pip linux-headers
 
-RUN pip3 install --upgrade pip setuptools
+RUN apk update \
+    && apk --no-cache add bash curl postgresql-dev py3-pip linux-headers \
+    && pip3 install --upgrade pip setuptools \
+    # Temporary fix for CVE-2025-6965. Remove when Alpine updates it's SQlite version to >= 3.50.2
+    && apk --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
+    add sqlite=3.50.3-r0 sqlite-libs=3.50.3-r0
 
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.5
@@ -65,7 +68,12 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 
 COPY --chown=campaignresourcecentre ./poetry ./poetry
 
-RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --no-dev --extras gunicorn; fi; cd ../
+WORKDIR /app/poetry
+RUN if [ "$BUILD_ENV" = "dev" ]; \
+    then poetry install --extras gunicorn; \
+    else poetry install --no-dev --extras gunicorn; \
+    fi;
+WORKDIR /app
 
 COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
@@ -90,4 +98,4 @@ USER campaignresourcecentre
 
 # Run the WSGI server. It reads GUNICORN_CMD_ARGS, PORT and WEB_CONCURRENCY
 # environment variable hence we don't specify a lot options below.
-CMD gunicorn campaignresourcecentre.wsgi:application
+CMD ["gunicorn", "campaignresourcecentre.wsgi:application"]
