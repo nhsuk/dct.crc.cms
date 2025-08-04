@@ -12,7 +12,7 @@ locals {
 
   scheduler_logic_app_name         = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   search_reindex_logic_app_name    = replace(data.azurerm_resource_group.rg.name, "-rg-", "-search-reindex-la-")
-  key_vault_name                   = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
+  key_vault_name                   = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv2-")
   log_analytics_workspace_name     = replace(data.azurerm_resource_group.rg.name, "-rg-", "-log-")
   aks_app_insights_name            = replace(data.azurerm_resource_group.rg.name, "-rg-", "-appi-aks-")
   postgres_flex_name               = replace(data.azurerm_resource_group.rg.name, "-rg-", "-psql-")
