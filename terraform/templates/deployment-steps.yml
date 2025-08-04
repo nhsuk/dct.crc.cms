@@ -93,7 +93,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        secretIds=$(az keyvault secret list --vault-name dct-crccms-kv-${{ parameters.environment }}-${{ parameters.location }} --query [].id)
+        secretIds=$(az keyvault secret list --vault-name dct-crccms-kv2-${{ parameters.environment }}-${{ parameters.location }} --query [].id)
         secretIds=$(echo $secretIds | jq -c '.[]' | awk '{gsub(/"/,"")}1')
         emptySecrets=""
 
@@ -113,6 +113,6 @@ steps:
 
         if [[ $emptySecrets != '' ]];
         then
-          echo "##vso[task.logissue type=warning;]Empty secrets found in dct-crccms-kv-${{ parameters.environment }}-${{ parameters.location }}: [$emptySecrets ]"
+          echo "##vso[task.logissue type=warning;]Empty secrets found in dct-crccms-kv2-${{ parameters.environment }}-${{ parameters.location }}: [$emptySecrets ]"
           echo "##vso[task.complete result=SucceededWithIssues;]"
         fi
