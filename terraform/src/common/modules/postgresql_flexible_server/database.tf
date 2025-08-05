@@ -120,7 +120,7 @@ resource "azurerm_monitor_diagnostic_setting" "replica_psql" {
   count                      = local.database_replica != null ? 1 : 0
   name                       = "dct-crc-ds-psql-rp-${var.environment}-${var.resource_group.location}"
   target_resource_id         = azurerm_postgresql_flexible_server.replica[0].id
-  log_analytics_workspace_id = log_analytics_workspace_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
 
   enabled_log {
     category_group = "audit"
