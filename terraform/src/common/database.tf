@@ -5,5 +5,5 @@ module "database" {
   name           = local.postgres_flex_name
   resource_group = data.azurerm_resource_group.rg
   environment    = var.environment
-  key_vault      = azurerm_key_vault.kv_2
+  key_vault      = azurerm_key_vault.kv
 }
