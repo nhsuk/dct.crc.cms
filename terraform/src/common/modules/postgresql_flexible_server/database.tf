@@ -105,7 +105,7 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "replica_firewall_ru
 resource "azurerm_monitor_diagnostic_setting" "psql" {
   name                       = "dct-crc-ds-psql-${var.environment}-${var.resource_group.location}"
   target_resource_id         = azurerm_postgresql_flexible_server.database.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
 
   enabled_log {
     category_group = "audit"
