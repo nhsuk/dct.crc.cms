@@ -10,7 +10,7 @@ steps:
   displayName: 'Azure Key Vault: Admin'
   inputs:
     azureSubscription: dct-crccms-rg-${{parameters.env}}
-    KeyVaultName: dct-crccms-kv-${{parameters.env}}-uks
+    KeyVaultName: dct-crccms-kv2-${{parameters.env}}-uks
     SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
 
 - template: ./db-sync-download-dump.yaml
