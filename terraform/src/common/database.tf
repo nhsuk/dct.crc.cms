@@ -11,5 +11,4 @@ module "database" {
   providers = {
     azurerm.law = azurerm.law
   }
-  
 }
