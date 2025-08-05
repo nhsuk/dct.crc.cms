@@ -8,6 +8,6 @@ module "database" {
   key_vault      = azurerm_key_vault.kv
 
   providers = {
-    law = azurerm.law
+    azurerm.law = azurerm.law
   }
 }
