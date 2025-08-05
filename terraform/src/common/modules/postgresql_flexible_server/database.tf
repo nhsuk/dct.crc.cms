@@ -101,3 +101,32 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "replica_firewall_ru
   start_ip_address = each.value.start_ip
   end_ip_address   = each.value.end_ip
 }
+
+resource "azurerm_monitor_diagnostic_setting" "psql" {
+  name                       = "dct-crc-ds-psql-${var.environment}-${resource_group.location}"
+  target_resource_id         = azurerm_postgresql_flexible_server.database.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace.id
+
+  enabled_log {
+    category_group = "audit"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "replica_psql" {
+  count = local.database_replica != null ? 1 : 0
+  name                       = "dct-crc-ds-psql-rp-${var.environment}-${resource_group.location}"
+  target_resource_id         = azurerm_postgresql_flexible_server.replica[0].id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace.id
+
+  enabled_log {
+    category_group = "audit"
+  }
+
+  enabled_metric {
+    category = "AllMetrics"
+  }
+}

@@ -7,17 +7,3 @@ module "database" {
   environment    = var.environment
   key_vault      = azurerm_key_vault.kv
 }
-
-resource "azurerm_monitor_diagnostic_setting" "psql_logs" {
-  name                       = "${local.prefix}-${local.app}-psql-logs-${var.env}-${local.region}"
-  target_resource_id         = azurerm_postgresql_flexible_server.database.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace.id
-
-  enabled_log {
-    category_group = "audit"
-  }
-
-  enabled_metric {
-    category = "AllMetrics"
-  }
-}
