@@ -31,5 +31,5 @@ variable "key_vault" {
 
 variable "log_analytics_workspace_id" {
   description = "Azure log analytics workspace id"
-  type = string
+  type        = string
 }
