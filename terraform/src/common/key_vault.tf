@@ -45,4 +45,5 @@ resource "azurerm_key_vault_secret" "secrets" {
   lifecycle {
     ignore_changes = [value]
   }
+  depends_on = [azurerm_role_assignment.key_vault_pipeline_identity]
 }
