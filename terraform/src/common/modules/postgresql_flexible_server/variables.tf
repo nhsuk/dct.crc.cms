@@ -28,3 +28,8 @@ variable "key_vault" {
     id = string
   })
 }
+
+variable "log_analytics_workspace_id" {
+  description = "Azure log analytics workspace id"
+  type = string
+}
