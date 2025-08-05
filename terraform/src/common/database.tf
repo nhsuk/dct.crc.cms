@@ -14,11 +14,7 @@ resource "azurerm_monitor_diagnostic_setting" "psql_logs" {
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace.id
 
   enabled_log {
-    category = "AppServiceHTTPLogs"
-  }
-
-  enabled_log {
-    category = "AppServiceAuditLogs"
+    category_group = "audit"
   }
 
   enabled_metric {
