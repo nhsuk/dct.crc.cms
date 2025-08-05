@@ -19,7 +19,7 @@ RUN apk update \
     && pip3 install --upgrade pip setuptools \
     # Temporary fix for CVE-2025-6965. Remove when Alpine updates it's SQlite version to >= 3.50.2
     && apk --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
-    add sqlite=3.50.3-r0 sqlite-libs=3.50.3-r0
+    add sqlite=3.50.4-r0 sqlite-libs=3.50.4-r0
 
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.5
