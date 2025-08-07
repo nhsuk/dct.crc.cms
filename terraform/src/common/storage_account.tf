@@ -1,7 +1,7 @@
 resource "azurerm_storage_account" "crc_cms_storage_account" {
   name                     = var.env == "prod" ? "campaignscrcv3produks" : (var.env == "stag" ? "campaignscrcv3staguks" : "campaignsstrgintuks")
   resource_group_name      = var.resource_group
-  location                 = var.location
+  location                 = var.long_location
   account_tier             = "Standard"
   account_replication_type = "GRS"
   min_tls_version          = "TLS1_2"
