@@ -1,5 +1,10 @@
+import {
+  to = azurerm_storage_account.crc_cms_storage_account
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
+}
+
 resource "azurerm_storage_account" "crc_cms_storage_account" {
-  name                     = var.env == "prod" ? "campaignscrcv3produks" : (var.env == "stag" ? "campaignscrcv3staguks" : "campaignsstrgintuks")
+  name                     = var.storage_account_name
   resource_group_name      = var.resource_group
   location                 = var.long_location
   account_tier             = "Standard"
@@ -9,7 +14,7 @@ resource "azurerm_storage_account" "crc_cms_storage_account" {
 
 #trivy:ignore:avd-azu-0007 Storage container public access should be on because it serves the images for the website
 resource "azurerm_storage_container" "campaigns_crc" {
-  name                  = var.env == "prod" ? "campaign-resource-centre-v3-production" : (var.env == "stag" ? "campaign-resource-centre-v3-staging" : (var.env == "int" ? "campaign-resouce-centre-v3-integration" : "campaign-resouce-centre-v3-review"))
+  name                  = var.storage_account_container
   storage_account_id    = azurerm_storage_account.crc_cms_storage_account.id
   container_access_type = "blob"
 }

@@ -1,8 +1,11 @@
-env            = "stag"
-environment    = "staging"
-location       = "uks"
-long_location  = "uksouth"
-resource_group = "dct-crccms-rg-stag-uks"
+env                       = "stag"
+environment               = "staging"
+location                  = "uks"
+long_location             = "uksouth"
+resource_group            = "dct-crccms-rg-stag-uks"
+subscription_id           = "4a2822f1-f87c-4ce3-8c8c-3ef1ffdde025"
+storage_account_name      = "campaignscrcv3staguks"
+storage_account_container = "campaign-resource-centre-v3-staging"
 
 deploy_container_apps = true
 username              = "nhsuk"

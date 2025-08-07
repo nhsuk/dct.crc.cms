@@ -1,8 +1,11 @@
-env            = "prod"
-environment    = "production"
-location       = "uks"
-long_location  = "uksouth"
-resource_group = "dct-crccms-rg-prod-uks"
+env                       = "prod"
+environment               = "production"
+location                  = "uks"
+long_location             = "uksouth"
+resource_group            = "dct-crccms-rg-prod-uks"
+subscription_id           = "b03d0d19-f998-49c9-938b-d92bb295e28d"
+storage_account_name      = "campaignscrcv3produks"
+storage_account_container = "campaign-resource-centre-v3-production"
 
 deploy_container_apps = false
 network_address_space = "10.12.8.0/22"
