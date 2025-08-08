@@ -753,4 +753,3 @@ else:
 
 # wagtail schedule pub pages token
 PUBTOKEN = env.get("PUBTOKEN")
-
