@@ -697,6 +697,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 # expires cookies after 30 mins
 SESSION_COOKIE_AGE = 3600
+
 # Enabled as it was identified in Pen test as a problem
 # https://docs.djangoproject.com/en/5.2/ref/settings/#session-cookie-httponly
 SESSION_COOKIE_HTTPONLY = True
