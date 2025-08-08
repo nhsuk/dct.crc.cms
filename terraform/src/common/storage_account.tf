@@ -1,6 +1,6 @@
 import {
   to = azurerm_storage_account.crc_cms_storage_account
-  id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
+  id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.storage_resource_group}/providers/Microsoft.Storage/storageAccounts/${var.storage_account_name}"
 }
 
 resource "azurerm_storage_account" "crc_cms_storage_account" {
