@@ -476,10 +476,13 @@ USE_X_FORWARDED_PORT = env.get("USE_X_FORWARDED_PORT", "true").lower().strip() =
 # You can test it using https://securityheaders.com/
 # https://docs.djangoproject.com/en/stable/ref/middleware/#module-django.middleware.security
 
-# Enabling this doesn't have any benefits but will make it harder to make
-# requests from javascript because the csrf cookie won't be easily accessible.
+# Enabled as it was identified in Pen test as a problem
 # https://docs.djangoproject.com/en/stable/ref/settings/#csrf-cookie-httponly
-# CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Set to strict as per outcome of pen testing
+# https://docs.djangoproject.com/en/5.2/ref/settings/#csrf-cookie-samesite
+CSRF_COOKIE_SAMESITE = "Strict"
 
 # Force HTTPS redirect (enabled by default!)
 # https://docs.djangoproject.com/en/stable/ref/settings/#secure-ssl-redirect
