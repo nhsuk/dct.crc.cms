@@ -5,7 +5,7 @@ import {
 
 resource "azurerm_storage_account" "crc_cms_storage_account" {
   name                     = var.storage_account_name
-  resource_group_name      = var.resource_group
+  resource_group_name      = var.storage_resource_group
   location                 = var.long_location
   account_tier             = "Standard"
   account_replication_type = "GRS"

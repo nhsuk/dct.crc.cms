@@ -47,6 +47,10 @@ variable "long_location" {
   }
 }
 
+variable "storage_resource_group" {
+  description = "dct-crccms storage resource group"
+}
+
 variable "storage_account_name" {
   type        = string
   description = "The existing storage account name (campaignscrcv3produks, campaignscrcv3staguks, campaignsstrgintuks)"
