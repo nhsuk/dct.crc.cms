@@ -103,7 +103,7 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "replica_firewall_ru
 }
 
 resource "azurerm_monitor_diagnostic_setting" "psql" {
-  name                       = "dct-crc-ds-psql-${var.environment}-${var.resource_group.location}"
+  name                       = replace(var.resource_group.name, "-rg-", "-ds-psql-")
   target_resource_id         = azurerm_postgresql_flexible_server.database.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
@@ -118,7 +118,7 @@ resource "azurerm_monitor_diagnostic_setting" "psql" {
 
 resource "azurerm_monitor_diagnostic_setting" "replica_psql" {
   count                      = local.database_replica != null ? 1 : 0
-  name                       = "dct-crc-ds-psql-rp-${var.environment}-${var.resource_group.location}"
+  name                       = replace(var.resource_group.name, "-rg-", "-ds-psql-")
   target_resource_id         = azurerm_postgresql_flexible_server.replica[0].id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
