@@ -15,7 +15,7 @@ module "backup" {
     psql = {
       backup_name              = "dct-${local.app}-bkp-psql-${var.environment}"
       retention_period         = "P1M"
-      backup_intervals         = ["R/2024-01-01T00:00:00+00:00/P1D"]
+      backup_intervals         = ["R/2024-01-01T00:00:00+00:00/P1W"]
       server_id                = module.database[0].postgresql_flexible_server_id
       server_resource_group_id = data.azurerm_resource_group.rg.id
     }
