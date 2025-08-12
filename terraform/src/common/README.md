@@ -1,10 +1,8 @@
-# Campaigns CMS Terraform
+# Campaign Resource Centre Terraform
 
-This is the terraform to deploy resources to support the Campaigns CMS.
+This is the terraform to deploy resources to support the Campaign Resource Centre.
 
 The pipeline runs unit tests, validation and a Trivy scan for configuration issues.
-
-There are currently no resources deployed.
 
 ## Plan
 
@@ -13,6 +11,8 @@ To run a local plan, you can initialise and plan for the target environment, for
 ```sh
 export ENVIRONMENT="dev"
 export REGION="uks"
+az account set --subscription "dct-crccms-$ENVIRONMENT"
+export ARM_SUBSCRIPTION_ID=$(az account show | jq -r .id)
 
 terraform init \
   -backend-config=resource_group_name=dct-crccms-platform-rg-$ENVIRONMENT-$REGION \
