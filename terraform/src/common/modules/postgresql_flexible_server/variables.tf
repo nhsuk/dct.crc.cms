@@ -30,7 +30,7 @@ variable "key_vault" {
 }
 
 variable "log_analytics_workspace_id" {
-  description = "Azure log analytics workspace id"
+  description = "ID of Log Analytics Workspace to send audit logs to"
   type        = string
 }
 
