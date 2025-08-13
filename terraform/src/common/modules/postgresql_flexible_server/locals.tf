@@ -33,8 +33,4 @@ locals {
 
   law_name                = var.environment != "prod" ? "nhsuk-law-nonprod-uks" : "nhsuk-law-prod-uks"
   law_resource_group_name = var.environment != "prod" ? "nhsuk-law-rg-nonprod-uks" : "nhsuk-law-rg-prod-uks"
-
-  org            = "dct"
-  app            = "crccms"
-  short_app_name = "crc"
 }
