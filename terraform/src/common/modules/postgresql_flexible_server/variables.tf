@@ -42,14 +42,3 @@ variable "location" {
     error_message = "Valid values for location are (uks or ukw)"
   }
 }
-
-variable "long_location" {
-  type        = string
-  description = "The location to deploy to (uksouth, ukwest)"
-  default     = "uksouth"
-
-  validation {
-    condition     = contains(["uksouth", "ukwest"], var.long_location)
-    error_message = "Valid values for location are (uksouth, ukwest)"
-  }
-}

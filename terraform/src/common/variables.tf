@@ -36,43 +36,6 @@ variable "location" {
   }
 }
 
-variable "long_location" {
-  type        = string
-  description = "The location to deploy to (uksouth, ukwest)"
-  default     = "uksouth"
-
-  validation {
-    condition     = contains(["uksouth", "ukwest"], var.long_location)
-    error_message = "Valid values for location are (uksouth, ukwest)"
-  }
-}
-
-variable "storage_resource_group" {
-  description = "dct-crccms storage resource group"
-}
-
-variable "storage_account_name" {
-  type        = string
-  description = "The existing storage account name (campaignscrcv3produks, campaignscrcv3staguks, campaignsstrgintuks)"
-  default     = "uksouth"
-
-  validation {
-    condition     = contains(["campaignscrcv3produks", "campaignscrcv3staguks", "campaignsstrgintuks"], var.storage_account_name)
-    error_message = "Valid values for location are (campaignscrcv3produks, campaignscrcv3staguks, campaignsstrgintuks)"
-  }
-}
-
-variable "storage_account_container" {
-  type        = string
-  description = "The existing storage account name (campaign-resource-centre-v3-production, campaign-resource-centre-v3-staging, campaign-resouce-centre-v3-integration, campaign-resouce-centre-v3-review)"
-  default     = "uksouth"
-
-  validation {
-    condition     = contains(["campaign-resource-centre-v3-production", "campaign-resource-centre-v3-staging", "campaign-resouce-centre-v3-integration", "campaign-resouce-centre-v3-review"], var.storage_account_container)
-    error_message = "Valid values for location are (campaign-resource-centre-v3-production, campaign-resource-centre-v3-staging, campaign-resouce-centre-v3-integration, campaign-resouce-centre-v3-review)"
-  }
-}
-
 variable "deploy_container_apps" {
   type    = bool
   default = false
