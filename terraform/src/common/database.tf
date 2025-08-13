@@ -7,7 +7,6 @@ module "database" {
   environment                = var.environment
   key_vault                  = azurerm_key_vault.kv
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace[0].id
-  location                   = var.location
 
   providers = {
     azurerm.law = azurerm.law

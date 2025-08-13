@@ -33,12 +33,3 @@ variable "log_analytics_workspace_id" {
   description = "ID of Log Analytics Workspace to send audit logs to"
   type        = string
 }
-
-variable "location" {
-  description = "Azure region where the resources will be created."
-
-  validation {
-    condition     = contains(["uks", "ukw"], var.location)
-    error_message = "Valid values for location are (uks or ukw)"
-  }
-}
