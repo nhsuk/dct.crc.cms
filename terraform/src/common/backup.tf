@@ -14,7 +14,7 @@ module "backup" {
 
   postgresql_flexible_server_backups = {
     psql = {
-      backup_name              = "dct-${local.app}-bkp-psql-${var.environment}"
+      backup_name              = "dct-${local.app}-bkp-psql-${var.env}"
       retention_period         = "P1M"
       backup_intervals         = ["R/2024-01-01T00:00:00+00:00/P1W"]
       server_id                = module.database[0].postgresql_flexible_server_id
