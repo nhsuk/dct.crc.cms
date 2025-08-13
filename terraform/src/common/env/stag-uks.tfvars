@@ -1,8 +1,7 @@
-env             = "stag"
-environment     = "staging"
-location        = "uks"
-resource_group  = "dct-crccms-rg-stag-uks"
-subscription_id = "4a2822f1-f87c-4ce3-8c8c-3ef1ffdde025"
+env            = "stag"
+environment    = "staging"
+location       = "uks"
+resource_group = "dct-crccms-rg-stag-uks"
 
 deploy_container_apps = true
 username              = "nhsuk"

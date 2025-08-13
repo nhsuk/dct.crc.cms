@@ -1,8 +1,7 @@
-env             = "prod"
-environment     = "production"
-location        = "uks"
-resource_group  = "dct-crccms-rg-prod-uks"
-subscription_id = "1e543650-5458-44ea-a3b1-35a6d0d92cc9"
+env            = "prod"
+environment    = "production"
+location       = "uks"
+resource_group = "dct-crccms-rg-prod-uks"
 
 deploy_container_apps = false
 network_address_space = "10.12.8.0/22"

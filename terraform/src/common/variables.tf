@@ -1,10 +1,6 @@
 # ======================================================================================
 # General Variables
 # ======================================================================================
-variable "subscription_id" {
-  description = "subscription id"
-}
-
 variable "resource_group" {
   description = "dct-crccms resource group"
 }
