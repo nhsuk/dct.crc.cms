@@ -21,6 +21,7 @@ locals {
   activeconnections_logic_app_id   = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
   backup_vault_name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-bv-")
   backup_vault_resource_group_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-vault-rg-")
+
   secret_names = [
     "alertingWebhook",
     "pubToken",
