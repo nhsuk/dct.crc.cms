@@ -95,7 +95,7 @@ stages:
 
                   rm -f .terraform/terraform.tfstate
                   terraform init \
-                    -backend-config=resource_group_name=dct-campaignscms-platform-rg-$ENVIRONMENT-$REGION \
+                    -backend-config=resource_group_name=dct-crccms-platform-rg-$ENVIRONMENT-$REGION \
                     -backend-config=storage_account_name=$STORAGE_ACCOUNT_NAME \
                     -backend-config=key=terraform-$instance-apps.tfstate
 
