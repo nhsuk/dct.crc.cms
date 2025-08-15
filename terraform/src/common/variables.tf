@@ -84,17 +84,17 @@ variable "aks_origin" {
 }
 
 variable "imported_storage_subscription_id" {
-  type = string
+  type        = string
   description = "subscription id for imported storage account"
 }
 
 variable "imported_storage_resource_group" {
-  type = string
+  type        = string
   description = "original resource group for imported storage account"
 }
 
 variable "imported_storage_name" {
-  type = string
+  type        = string
   description = "name of imported storage account"
 }
 

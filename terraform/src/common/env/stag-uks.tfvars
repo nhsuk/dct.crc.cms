@@ -16,5 +16,5 @@ aks_origin = {
 }
 
 imported_storage_subscription_id = "4a2822f1-f87c-4ce3-8c8c-3ef1ffdde025"
-imported_storage_resource_group = "dct-search-rg-stag-uks"
-imported_storage_name = "campaignscrcv3staguks"
+imported_storage_resource_group  = "dct-search-rg-stag-uks"
+imported_storage_name            = "campaignscrcv3staguks"
