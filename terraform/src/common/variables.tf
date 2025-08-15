@@ -32,6 +32,15 @@ variable "location" {
   }
 }
 
+variable "long_location" {
+  description = "Azure region where the resources will be created."
+
+  validation {
+    condition     = contains(["uksouth", "ukwest"], var.long_location)
+    error_message = "Valid values for location are (uksouth or ukwest)"
+  }
+}
+
 variable "deploy_container_apps" {
   type    = bool
   default = false
@@ -73,3 +82,19 @@ variable "aks_origin" {
   description = "Optional AKS origin on the Front Door origin group to allow for migration"
   default     = null
 }
+
+variable "imported_storage_subscription_id" {
+  type = string
+  description = "subscription id for imported storage account"
+}
+
+variable "imported_storage_resource_group" {
+  type = string
+  description = "original resource group for imported storage account"
+}
+
+variable "imported_storage_name" {
+  type = string
+  description = "name of imported storage account"
+}
+
