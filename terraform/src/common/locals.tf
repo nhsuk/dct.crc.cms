@@ -39,8 +39,6 @@ locals {
   app            = "crccms"
   short_app_name = "crc"
 
-  should_import = false
-
   init_args = [
     "bash",
     "-c",
