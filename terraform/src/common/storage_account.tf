@@ -1,10 +1,10 @@
 locals {
   locs = {
-    devuks  : ["campaignscrcv3strgdevuks"]
-    intuks  : ["campaignsstrgintuks"]
+    devuks : ["campaignscrcv3strgdevuks"]
+    intuks : ["campaignsstrgintuks"]
     staguks : ["campaignsstrgstaguks"]
     produks : ["campaignscrcv3strgproduks"]
-    produkw : [] 
+    produkw : []
   }
 }
 
