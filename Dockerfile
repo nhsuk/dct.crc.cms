@@ -16,10 +16,7 @@ FROM python:3.12-alpine AS backend
 
 RUN apk update \
     && apk --no-cache add bash curl linux-headers postgresql-dev py3-pip  \
-    && pip3 install --upgrade pip setuptools \
-    # Temporary fix for CVE-2025-6965. Remove when Alpine updates it's SQlite version to >= 3.50.2
-    && apk --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main \
-    add sqlite=3.50.4-r0 sqlite-libs=3.50.4-r0
+    && pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.5
