@@ -1,23 +1,22 @@
 locals {
-  locs = [
-    { "devuks" : "campaignscrcv3strgdevuks" },
-    { "intuks" : "campaignsstrgintuks" },
-    { "staguks" : "campaignsstrgstaguks" },
-    { "produks" : "campaignscrcv3strgproduks" },
-    { "produkw" : "" },
-  ]
+  locs = {
+    devuks  : ["campaignscrcv3strgdevuks"]
+    intuks  : ["campaignsstrgintuks"]
+    staguks : ["campaignsstrgstaguks"]
+    produks : ["campaignscrcv3strgproduks"]
+    produkw : [] 
+  }
 }
 
 import {
-  for_each = local.locs["${var.env}${var.location}"] != "" ? [local.locs["${var.env}${var.location}"]] : []
+  for_each = local.locs
   to       = azurerm_storage_account.crc_cms
-  id       = "${ata.azurerm_resource_group.rg.id}/providers/Microsoft.Storage/storageAccounts/${local.locs["${var.env}${var.location}"]}"
+  id       = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Storage/storageAccounts/each.value"
 }
 
 
 # # Create a storage account
 resource "azurerm_storage_account" "crc_cms" {
-  for_each                 = local.locs["${var.env}${var.location}"] != "" ? [local.locs["${var.env}${var.location}"]] : []
   name                     = "campaignscrcv3strg${var.env}${var.location}"
   resource_group_name      = var.resource_group
   location                 = var.long_location
