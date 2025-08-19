@@ -1,5 +1,5 @@
 locals {
-  locs ={
+  locs = {
     "devuks" : ["campaignscrcv3strgdevuks"]
     "intuks" : ["campaignscrcv3strgintuks"]
     "staguks" : ["campaignscrcv3staguks"]
