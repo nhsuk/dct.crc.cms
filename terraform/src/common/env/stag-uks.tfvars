@@ -14,7 +14,3 @@ aks_origin = {
   firewall_ip_address = "20.49.242.14"
   origin_host_header  = "staging.campaignresources.dhsc.gov.uk"
 }
-
-imported_storage_subscription_id = "4a2822f1-f87c-4ce3-8c8c-3ef1ffdde025"
-imported_storage_resource_group  = "dct-search-rg-stag-uks"
-imported_storage_name            = "campaignscrcv3staguks"

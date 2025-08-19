@@ -1,23 +1,23 @@
 locals {
   locs = [
-    "devuks",
-    "intuks",
-    "staguks",
-    "produks",
-    "produkw"
+    {"devuks": "campaignscrcv3strg${var.env}${var.location}"},
+    {"intuks": "campaignsstrg${var.env}${var.location}"},
+    {"staguks": "campaignsstrg${var.env}${var.location}"},
+    {"produks": "campaignscrcv3strg${var.env}${var.location}"},
+    {"produkw": ""},
   ]
 }
 
-# import doesn't allow count and doesn't currently have a create if don't exist so we need to cycle through using for_each and only import loc/env matches and it's not ukw which currently doesn't exist
 import {
-  for_each = local.locs == "${var.env}${var.location}" && local.locs != "produkw" ? [1] : [0]
+  for_each = local.locs["${var.env}${var.location}"] != "" ? [local.locs["${var.env}${var.location}"]] : []
   to       = azurerm_storage_account.crc_cms
-  id       = "/subscriptions/${var.imported_storage_subscription_id}/resourceGroups/${var.imported_storage_resource_group}/providers/Microsoft.Storage/storageAccounts/${var.imported_storage_name}"
+  id       = "${ata.azurerm_resource_group.rg.id}/providers/Microsoft.Storage/storageAccounts/${local.locs["${var.env}${var.location}"]}"
 }
 
 
 # # Create a storage account
 resource "azurerm_storage_account" "crc_cms" {
+  for_each = local.locs["${var.env}${var.location}"] != "" ? [local.locs["${var.env}${var.location}"]] : []
   name                     = "campaignscrcv3strg${var.env}${var.location}"
   resource_group_name      = var.resource_group
   location                 = var.long_location
