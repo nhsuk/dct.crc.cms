@@ -1,10 +1,10 @@
 locals {
   locs = [
-    {"devuks": "campaignscrcv3strg${var.env}${var.location}"},
-    {"intuks": "campaignsstrg${var.env}${var.location}"},
-    {"staguks": "campaignsstrg${var.env}${var.location}"},
-    {"produks": "campaignscrcv3strg${var.env}${var.location}"},
-    {"produkw": ""},
+    { "devuks" : "campaignscrcv3strgdevuks" },
+    { "intuks" : "campaignsstrgintuks" },
+    { "staguks" : "campaignsstrgstaguks" },
+    { "produks" : "campaignscrcv3strgproduks" },
+    { "produkw" : ""},
   ]
 }
 
