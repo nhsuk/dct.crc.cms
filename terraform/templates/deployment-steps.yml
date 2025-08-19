@@ -64,7 +64,6 @@ steps:
       commandOptions: >
         -var-file="env/${{ parameters.environment }}-${{ parameters.location }}.tfvars"
         -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
-        -detailed-exitcode
         -lock=false
     ${{ if or(eq(parameters.environment, 'int'), eq(parameters.environment, 'stag')) }}:
       env:

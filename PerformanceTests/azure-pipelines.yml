@@ -95,7 +95,6 @@ stages:
                     -var tfstate_account_name=${{ variables.TF_STORAGE_ACCOUNT }}
                     -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
                     -detailed-exitcode
-                    -lock=false
               - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
                 displayName: 'terraform apply'
                 inputs:
