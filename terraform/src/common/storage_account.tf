@@ -17,7 +17,7 @@ import {
 
 # # Create a storage account
 resource "azurerm_storage_account" "crc_cms" {
-  for_each = local.locs["${var.env}${var.location}"] != "" ? [local.locs["${var.env}${var.location}"]] : []
+  for_each                 = local.locs["${var.env}${var.location}"] != "" ? [local.locs["${var.env}${var.location}"]] : []
   name                     = "campaignscrcv3strg${var.env}${var.location}"
   resource_group_name      = var.resource_group
   location                 = var.long_location
