@@ -124,6 +124,7 @@ stages:
                 -var sha_512_password=${{ parameters.reviewPasswordHash }}
                 -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
                 -detailed-exitcode
+                -lock=false
               publishPlanResults: $(environment)_plan
 
           - ${{ if eq(parameters.dryRun, 'true') }}:
