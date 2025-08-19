@@ -4,7 +4,7 @@ locals {
     { "intuks" : "campaignsstrgintuks" },
     { "staguks" : "campaignsstrgstaguks" },
     { "produks" : "campaignscrcv3strgproduks" },
-    { "produkw" : ""},
+    { "produkw" : "" },
   ]
 }
 
