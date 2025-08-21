@@ -32,15 +32,6 @@ variable "location" {
   }
 }
 
-variable "long_location" {
-  description = "Azure region where the resources will be created."
-
-  validation {
-    condition     = contains(["uksouth", "ukwest"], var.long_location)
-    error_message = "Valid values for location are (uksouth or ukwest)"
-  }
-}
-
 variable "deploy_container_apps" {
   type    = bool
   default = false

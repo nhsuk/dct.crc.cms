@@ -1,7 +1,6 @@
 env            = "prod"
 environment    = "production"
 location       = "ukw"
-long_location  = "ukwest"
 resource_group = "dct-crccms-rg-prod-ukw"
 
 deploy_container_apps = false

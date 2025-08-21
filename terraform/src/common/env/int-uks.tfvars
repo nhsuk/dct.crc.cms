@@ -1,7 +1,6 @@
 env            = "int"
 environment    = "integration"
 location       = "uks"
-long_location  = "uksouth"
 resource_group = "dct-crccms-rg-int-uks"
 
 deploy_container_apps = true

@@ -1,7 +1,6 @@
 env            = "stag"
 environment    = "staging"
 location       = "uks"
-long_location  = "uksouth"
 resource_group = "dct-crccms-rg-stag-uks"
 
 deploy_container_apps = true
