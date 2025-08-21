@@ -8,14 +8,13 @@ locals {
   }
 }
 
+# # import storage account
 import {
   for_each = toset(local.locs["${var.env}${var.location}"])
   to       = azurerm_storage_account.crc_cms[each.key]
   id       = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Storage/storageAccounts/${each.value}"
 }
 
-
-# # Create a storage account
 resource "azurerm_storage_account" "crc_cms" {
   for_each                 = toset(local.locs["${var.env}${var.location}"])
   name                     = each.value
