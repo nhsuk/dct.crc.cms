@@ -1,8 +1,8 @@
 locals {
   locs = {
-    "devuks" : ["campaignscrcv3strgdevuks"]
-    "intuks" : ["campaignscrcv3strgintuks"]
-    "staguks" : ["campaignscrcv3staguks"]
+    "devuks" : [""]
+    "intuks" : ["campaignsstrgintuks"]
+    "staguks" : ["campaignsstrgstaguks"]
     "produks" : ["campaignscrcv3produks"]
     "produkw" : []
   }
