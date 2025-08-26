@@ -39,7 +39,7 @@ stages:
           - task: AzureCLI@2
             name: QueryProd
             inputs:
-              azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
+              azureSubscription: dct-crccms-prod
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -68,12 +68,13 @@ stages:
     displayName: Update staging blobs
     jobs:
       - job: Staging
+        timeoutInMinutes: 240
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
               env: stag
               environment: staging
-              azureSubscription: campaigns-apps-rg-stag
+              azureSubscription: dct-crccms-stag
               dryRun: ${{ parameters.dryRun }}
 
   - stage: integration
@@ -82,12 +83,13 @@ stages:
     displayName: Update integration blobs
     jobs:
       - job: Integration
+        timeoutInMinutes: 240
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
               env: int
               environment: integration
-              azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
+              azureSubscription: dct-crccms-int
               containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
               dryRun: ${{ parameters.dryRun }}
 
@@ -97,11 +99,12 @@ stages:
     displayName: Update review blobs
     jobs:
       - job: Review
+        timeoutInMinutes: 240
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
               env: int # Review is in int
               environment: review
-              azureSubscription: campaigns-apps-rg-dev-uks.campaign-resource-centre-v3
+              azureSubscription: dct-crccms-int
               containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
               dryRun: ${{ parameters.dryRun }}
