@@ -68,6 +68,7 @@ stages:
     displayName: Update staging blobs
     jobs:
       - job: Staging
+        timeoutInMinutes: 240
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
@@ -82,6 +83,7 @@ stages:
     displayName: Update integration blobs
     jobs:
       - job: Integration
+        timeoutInMinutes: 240
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
@@ -97,6 +99,7 @@ stages:
     displayName: Update review blobs
     jobs:
       - job: Review
+        timeoutInMinutes: 240
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
