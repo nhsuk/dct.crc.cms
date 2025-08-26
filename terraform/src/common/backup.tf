@@ -5,7 +5,7 @@ module "backup" {
   resource_group_name        = local.backup_vault_resource_group_name
   resource_group_location    = data.azurerm_resource_group.rg.location
   backup_vault_name          = local.backup_vault_name
-  backup_vault_immutability  = "Unlocked"
+  backup_vault_immutability  = (var.env == "stag" || var.env == "prod") ? "Locked" : "Unlocked"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace[0].id
 
   use_extended_retention = true
