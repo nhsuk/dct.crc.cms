@@ -212,7 +212,7 @@ stages:
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
 
-  - stage: Staging DR
+  - stage: StagingDR
     dependsOn: Build
     condition: ${{ parameters.deployStagingDr }}
     variables:
@@ -221,8 +221,8 @@ stages:
           environment: stag
           location: ukw
     jobs:
-      - deployment: Staging DR
-        environment: Staging DR
+      - deployment: StagingDR
+        environment: StagingDR
         strategy:
           runOnce:
             deploy:
