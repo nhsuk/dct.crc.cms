@@ -14,7 +14,7 @@ module "aca_wagtail" {
   resource_group                    = data.azurerm_resource_group.rg.name
   container_app_environment_id      = module.container_app_env[0].container_app_environment_id
   identity_id                       = module.container_app_env[0].identity_id
-  frontdoor_profile                 = module.network_spoke[0].frontdoor
+  frontdoor_profile                 = var.location == "uks" ? module.network_spoke[0].frontdoor : null # only deploy the front door to primary region
   frontdoor_firewall_policy_enabled = true
   frontdoor_firewall_policy_id      = module.network_spoke[0].waf_policy_id
   key_vault_id                      = module.container_app_env[0].key_vault_id

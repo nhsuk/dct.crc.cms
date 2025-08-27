@@ -3,6 +3,7 @@ locals {
     "devuks" : []
     "intuks" : ["campaignsstrgintuks"]
     "staguks" : ["campaignsstrgstaguks"]
+    "stagukw" : []
     "produks" : ["campaignscrcv3produks"]
     "produkw" : []
   }

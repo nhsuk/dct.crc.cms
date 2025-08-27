@@ -1,7 +1,7 @@
 resource "random_uuid" "akamai_guid" {}
 
 module "network_spoke" {
-  source = "git::https://github.com/nhsuk/nhsuk.platform.terraform-modules.network-spoke?ref=0.0.8"
+  source = "git::https://github.com/nhsuk/nhsuk.platform.terraform-modules.network-spoke?ref=0.0.10"
 
   count = var.deploy_container_apps ? 1 : 0
 
@@ -139,10 +139,10 @@ module "network_spoke" {
     }
   }
 
-  create_frontdoor = true
-  enable_waf       = var.env != "dev" # Disbale WAF policy for dev
+  create_frontdoor = var.location == "uks" ? true : false # only deploy the front door to primary region
+  enable_waf       = var.env != "dev" # disable WAF policy for dev
   akamai_guid      = random_uuid.akamai_guid.result
-  peer_hub         = var.env != "dev" # Disbale hub network for dev
+  peer_hub         = var.env != "dev" # disable hub network for dev
 
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.shared_log_analytics_workspace[0].id
 
