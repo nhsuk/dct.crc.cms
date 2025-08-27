@@ -234,6 +234,7 @@ stages:
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
+                  location: ukw
 
   - stage: Production
     dependsOn: Staging
