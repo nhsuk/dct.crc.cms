@@ -128,4 +128,9 @@ locals {
     "OTEL_RESOURCE_ATTRIBUTES",
     "CSRF_TRUSTED_ORIGIN"
   ]
+
+  frontdoor_profile = { # front door is only deployed to primary region
+    name                = "${local.org}-${local.app}-afd-${var.env}",
+    resource_group_name = replace(var.resource_group, "-ukw", "-uks")
+  }
 }
