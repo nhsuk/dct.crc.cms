@@ -1,5 +1,5 @@
 module "container_app_env" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.container-app-env?ref=1.0.2"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.container-app-env?ref=059c2f3e5f2c556c9a19388ffc646d1af3b11546"
 
   count = var.deploy_container_apps ? 1 : 0
 
