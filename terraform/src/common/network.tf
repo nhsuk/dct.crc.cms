@@ -140,7 +140,7 @@ module "network_spoke" {
   }
 
   create_frontdoor = var.location == "uks" ? true : false # only deploy the front door to primary region
-  enable_waf       = var.env != "dev" # disable WAF policy for dev
+  enable_waf       = var.env != "dev"                     # disable WAF policy for dev
   akamai_guid      = random_uuid.akamai_guid.result
   peer_hub         = var.env != "dev" # disable hub network for dev
 
