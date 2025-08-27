@@ -5,6 +5,7 @@ module "aca_wagtail" {
   count = var.deploy_container_apps && var.env != "dev" ? 1 : 0
 
   environment                       = var.env
+  location                          = data.azurerm_resource_group.rg.location
   org                               = local.org
   app                               = local.app
   short_app_name                    = local.short_app_name
