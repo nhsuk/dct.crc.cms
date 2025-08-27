@@ -26,4 +26,5 @@ module "aca_wagtail" {
   init_secrets                      = local.init_secrets
   app_secrets                       = local.app_secrets
   alerts_action_group_id            = module.container_app_env[0].alerts_action_group_id
+  dr_origin                         = var.dr_origin
 }

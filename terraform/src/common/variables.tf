@@ -65,11 +65,8 @@ variable "network_address_space" {
   }
 }
 
-variable "aks_origin" {
-  type = object({
-    firewall_ip_address = string
-    origin_host_header  = string
-  })
-  description = "Optional AKS origin on the Front Door origin group to allow for migration"
+variable "dr_origin" {
+  type        = string
+  description = "The DR origin to configure on the front door in the primary region, for example: https://wagtail-dr.env.containerapps.io/"
   default     = null
 }
