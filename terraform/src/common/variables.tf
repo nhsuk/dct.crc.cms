@@ -65,8 +65,8 @@ variable "network_address_space" {
   }
 }
 
-variable "dr_origin" {
-  type        = string
-  description = "The DR origin to configure on the front door in the primary region, for example: https://wagtail-dr.env.containerapps.io/"
-  default     = null
+variable "dr_deployed" {
+  type        = bool
+  description = "Optional flag in primary region to say there is a DR site that should be added to the front door"
+  default     = false
 }
