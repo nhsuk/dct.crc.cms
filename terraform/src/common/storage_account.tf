@@ -23,6 +23,7 @@ resource "azurerm_storage_account" "crc_cms" {
   account_tier             = "Standard"
   account_replication_type = "RAGRS"
   blob_properties {
+    last_access_time_enabled = true
     delete_retention_policy {
       days = 7
     }
