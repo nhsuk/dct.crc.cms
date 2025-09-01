@@ -12,9 +12,19 @@ module "backup" {
 
   tags = data.azurerm_resource_group.rg.tags
 
+  blob_storage_backups = var.storage != null ? {
+    blob = {
+      backup_name                = "${local.org}-${local.app}-bkp-blob-${var.env}"
+      retention_period           = "P1M"
+      backup_intervals           = ["R/2024-01-01T00:00:00+00:00/P1D"]
+      storage_account_id         = azurerm_storage_account.crc_cms[var.storage.account].id
+      storage_account_containers = [azurerm_storage_container.crc_cms[var.storage.container].name]
+    }
+  } : {}
+
   postgresql_flexible_server_backups = {
     psql = {
-      backup_name              = "dct-${local.app}-bkp-psql-${var.env}"
+      backup_name              = "${local.org}-${local.app}-bkp-psql-${var.env}"
       retention_period         = "P1M"
       backup_intervals         = ["R/2024-01-01T00:00:00+00:00/P1W"]
       server_id                = module.database[0].postgresql_flexible_server_id
