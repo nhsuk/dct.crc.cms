@@ -32,6 +32,15 @@ variable "location" {
   }
 }
 
+variable "storage" {
+  type = object({
+    account   = string
+    container = string
+  })
+  description = "The storage account and container names for hosting CRC content"
+  default     = null
+}
+
 variable "deploy_container_apps" {
   type    = bool
   default = false
