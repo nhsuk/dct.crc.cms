@@ -48,7 +48,6 @@ stages:
               SecretsFilter: DBPass, DBName, DBHost, DBUser
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-prod
               dumpPrefix: prod
               publishDump: true
 
@@ -62,7 +61,7 @@ stages:
         steps:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-prod
+              azureStorageSubscription: dct-crccms-prod
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
