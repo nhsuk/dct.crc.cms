@@ -1,6 +1,6 @@
 
 steps:
-- task: Gitleaks@2
+- task: Gitleaks@3
   inputs:
     scanlocation: '$(Build.SourcesDirectory)'
     configtype: 'custom'
@@ -19,7 +19,7 @@ steps:
   inputs:
     testResultsFiles: "**/testresults.xml"
   condition: succeededOrFailed()
-- task: PublishCodeCoverageResults@1
+- task: PublishCodeCoverageResults@2
   displayName: "Publish code coverage results"
   inputs:
     codeCoverageTool: "Cobertura"
