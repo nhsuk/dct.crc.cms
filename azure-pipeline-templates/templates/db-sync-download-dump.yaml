@@ -1,9 +1,9 @@
 steps:
 - bash: |
-    user=${postgresqlAdminUser:-variables.DBUser}
+    user=${postgresqlAdminUser:-DBUser}
     echo "##vso[task.setvariable variable=PGUSER]$user"
     echo $user
-    pass=$[ coalesce(variables.postgresqlAdminPassword, variables.DBPass) ]
+    pass=${postgresqlAdminPassword:-DBPass}
     echo "##vso[task.setvariable variable=PGPASSWORD]$pass"
   name: '${{parameters.dumpPrefix}}_PGvars'
   
