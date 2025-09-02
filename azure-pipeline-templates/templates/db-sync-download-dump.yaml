@@ -2,7 +2,7 @@ steps:
 - bash: |
     user=$(DBUser)
     adminUser=$(postgresqlAdminUser)
-    pguser=${adminUser:-$user}
+    pguser=${user:-$adminUser}
     echo "##vso[task.setvariable variable=PGUSER]$pguser"
     
     echo $user
@@ -13,7 +13,7 @@ steps:
     
     password=$(DBPass)
     adminPassword=$(postgresqlAdminPassword)
-    pgpassword=${adminPassword:-$password}
+    pgpassword=${password:-$adminPassword}
     echo "##vso[task.setvariable variable=PGPASSWORD]$pgpassword"
   name: '${{parameters.dumpPrefix}}_PGvars'
   
