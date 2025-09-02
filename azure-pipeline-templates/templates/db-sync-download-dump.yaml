@@ -25,7 +25,7 @@ steps:
       -e PGPASSWORD \
       postgres:16 \
       psql -d "$(DBName)" \
-      -c "ALTER ROLE $(DBUser) SUPERUSER;"
+      -c "SELECT * FROM pg_user;"
   displayName: Make $(DBUser) a superuser
   env:
     PGPASSWORD: $(DBPass)
