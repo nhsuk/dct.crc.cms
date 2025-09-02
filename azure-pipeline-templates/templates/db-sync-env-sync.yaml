@@ -15,6 +15,8 @@ steps:
 
 - template: ./db-sync-download-dump.yaml
   parameters:
+    user: $(postgresqlAdminUser)
+    password: $(postgresqlAdminPassword)
     dumpPrefix: ${{ parameters.environment }}_users
     usersOnly: True
 
@@ -29,6 +31,8 @@ steps:
 
 - template: ./db-sync-download-dump.yaml
   parameters:
+    user: $(postgresqlAdminUser)
+    password: $(postgresqlAdminPassword)
     dumpPrefix: ${{ parameters.environment }}
 
 - template: ./db-sync-upload-blob.yaml
