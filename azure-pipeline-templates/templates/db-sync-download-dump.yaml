@@ -19,6 +19,12 @@ steps:
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
 
 - script: |
+    echo ${{ variables.postgresqlAdminUser }}
+    echo ${{ variables.DBUser }}
+    echo ${{ coalesce(variables.postgresqlAdminUser, variables.DBUser) }}
+    echo ${{ variables.DBPass }}
+    echo ${{ variables.postgresqlAdminPassword }}
+    echo ${{ coalesce(variables.postgresqlAdminPassword, variables.DBPass) }}
     set -x
     set -e
     docker run \
