@@ -40,7 +40,7 @@ stages:
     jobs:
       - job: ProdDBCopy
         steps:
-          - task: AzureKeyVault@1
+          - task: AzureKeyVault@2
             displayName: 'Azure Key Vault: dct-crc-v3-vlt-prod-uks'
             inputs:
               azureSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
