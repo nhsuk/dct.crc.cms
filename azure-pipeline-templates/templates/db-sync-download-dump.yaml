@@ -18,6 +18,19 @@ steps:
   name: '${{parameters.dumpPrefix}}_PGvars'
   
 - script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      psql -d "$(DBName)" \
+      -c "ALTER ROLE $(DBUser) SUPERUSER;"
+  displayName: Make $(DBUser) a superuser
+  env:
+    PGPASSWORD: $(DBPass)
+  
+- script: |
     set -x
     set -e
     docker run \
