@@ -1,41 +1,32 @@
 steps:
 - script: |
-    echo $[variables.postgresqlAdminUser ]
-    echo $[ variables.DBUser ]
-    echo $[ coalesce(variables.postgresqlAdminUser, variables.DBUser) ]
-    echo $[ variables.DBPass ]
-    echo $[ variables.postgresqlAdminPassword ]
-    echo $[ coalesce(variables.postgresqlAdminPassword, variables.DBPass) ]
     set -x
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="${{ coalesce(variables.postgresqlAdminPassword, variables.DBPass) }}" \
-      -e PGUSER="${{ coalesce(variables.postgresqlAdminUser, variables.DBUser) }}" \
       postgres:16 \
       pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ eq(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
+  env:
+    PGUSER: $[ coalesce(variables.postgresqlAdminUser, variables.DBUser) ]
+    PGPASSWORD: $[ coalesce(variables.postgresqlAdminPassword, variables.DBPass) ]
+
 
 - script: |
-    echo $[variables.postgresqlAdminUser ]
-    echo $[ variables.DBUser ]
-    echo $[ coalesce(variables.postgresqlAdminUser, variables.DBUser) ]
-    echo $[ variables.DBPass ]
-    echo $[ variables.postgresqlAdminPassword ]
-    echo $[ coalesce(variables.postgresqlAdminPassword, variables.DBPass) ]
     set -x
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="${{ coalesce(variables.postgresqlAdminPassword, variables.DBPass) }}" \
-      -e PGUSER="${{ coalesce(variables.postgresqlAdminUser, variables.DBUser) }}" \
       postgres:16 \
       pg_dump -Fc "$(DBName)" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ ne(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
+  env:
+    PGUSER: $[ coalesce(variables.postgresqlAdminUser, variables.DBUser) ]
+    PGPASSWORD: $[ coalesce(variables.postgresqlAdminPassword, variables.DBPass) ]
 
 - task: PublishPipelineArtifact@1
   condition: ${{ eq(parameters.publishDump, True) }}
