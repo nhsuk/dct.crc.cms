@@ -15,8 +15,8 @@ steps:
 
 - template: ./db-sync-download-dump.yaml
   parameters:
-    user: $(postgresqlAdminUser)
-    password: $(postgresqlAdminPassword)
+    user: $(DBUser)
+    password: $(DBPass)
     dumpPrefix: ${{ parameters.environment }}_users
     usersOnly: True
 
