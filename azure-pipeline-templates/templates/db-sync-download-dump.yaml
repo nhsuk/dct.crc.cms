@@ -1,10 +1,20 @@
 steps:
 - bash: |
-    user=${postgresqlAdminUser:-$DBUser}
-    echo "##vso[task.setvariable variable=PGUSER]$user"
+    user=$(DBUser)
+    adminUser=$(postgresqlAdminUser)
+    pguser=${adminUser:-$user}
+    echo "##vso[task.setvariable variable=PGUSER]$pguser"
+    
     echo $user
-    pass=${postgresqlAdminPassword:-$DBPass}
-    echo "##vso[task.setvariable variable=PGPASSWORD]$pass"
+    echo '-----'
+    echo $adminUser
+    echo '-----'
+    echo $pguser
+    
+    password=$(DBPass)
+    adminPassword=$(postgresqlAdminPassword)
+    pgpassword=${adminPassword:-$password}
+    echo "##vso[task.setvariable variable=PGPASSWORD]$pgpassword"
   name: '${{parameters.dumpPrefix}}_PGvars'
   
 - script: |
@@ -12,26 +22,32 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGUSER="$(DBUser)" \
-      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER \
+      -e PGPASSWORD \
       postgres:16 \
       pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ eq(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
+  env:
+    PGUSER: $(PGUSER)
+    PGPASSWORD: $(PGPASSWORD)
 
 - script: |
     set -x
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGUSER="$(DBUser)" \
-      -e PGPASSWORD="$(DBPass)" \
+      -e PGUSER \
+      -e PGPASSWORD \
       postgres:16 \
       pg_dump -Fc "$(DBName)" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ ne(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
+  env:
+    PGUSER: $(PGUSER)
+    PGPASSWORD: $(PGPASSWORD)
 
 - task: PublishPipelineArtifact@1
   condition: ${{ eq(parameters.publishDump, True) }}
