@@ -12,8 +12,8 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGUSER \
-      -e PGPASSWORD \
+      -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD="$(DBPass)" \
       postgres:16 \
       pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ eq(parameters.usersOnly, True) }}
@@ -25,8 +25,8 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGUSER \
-      -e PGPASSWORD \
+      -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD="$(DBPass)" \
       postgres:16 \
       pg_dump -Fc "$(DBName)" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ ne(parameters.usersOnly, True) }}
