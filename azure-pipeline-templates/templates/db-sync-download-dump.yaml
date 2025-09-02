@@ -5,7 +5,7 @@ steps:
     echo $user
     pass=$[ coalesce(variables.postgresqlAdminPassword, variables.DBPass) ]
     echo "##vso[task.setvariable variable=PGPASSWORD]$pass"
-  name: vars
+  name: PGvars
   
 - script: |
     set -x
