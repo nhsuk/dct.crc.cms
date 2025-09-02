@@ -445,7 +445,7 @@ stages:
       - Test
       - Build
       - Deploy
-    condition: and(eq(variables['Build.Reason'], 'Schedule'), ne(variables.notificationSlackWebhook, ''), or(failed('Test'), failed('Build'), failed('Deploy')))
+    condition: and(ne(variables.notificationSlackWebhook, ''), or(failed('Test'), failed('Build'), failed('Deploy')))
     variables:
       - group: alerting
     jobs:
