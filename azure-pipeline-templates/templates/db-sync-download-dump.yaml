@@ -33,7 +33,7 @@ steps:
   env:
     PGUSER: ${{ parameters.user }}
     PGPASSWORD: ${{ parameters.password }}
-    PGOPTIONS: "all=1"
+    PGOPTIONS: "-c all=1"
 
 - script: |
     set -x
@@ -51,7 +51,7 @@ steps:
   env:
     PGUSER: ${{ parameters.user }}
     PGPASSWORD: ${{ parameters.password }}
-    PGOPTIONS: "all=1"
+    PGOPTIONS: "-c all=1"
 
 - task: PublishPipelineArtifact@1
   condition: ${{ eq(parameters.publishDump, True) }}
