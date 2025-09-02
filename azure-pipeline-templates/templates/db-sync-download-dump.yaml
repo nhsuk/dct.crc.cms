@@ -26,7 +26,20 @@ steps:
       postgres:16 \
       psql -d "$(DBName)" \
       -c "SELECT * FROM pg_user;"
-  displayName: Make $(DBUser) a superuser
+  displayName: see users
+  env:
+    PGPASSWORD: $(DBPass)
+  
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      psql -d "$(DBName)" \
+      -c "SELECT * FROM pg_roles;"
+  displayName: see roles
   env:
     PGPASSWORD: $(DBPass)
   
