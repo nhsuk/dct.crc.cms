@@ -48,6 +48,8 @@ stages:
               SecretsFilter: DBPass, DBName, DBHost, DBUser
           - template: templates/db-sync-download-dump.yaml
             parameters:
+              user: $(DBUser)
+              password: $(DBPass)
               dumpPrefix: prod
               publishDump: true
 
