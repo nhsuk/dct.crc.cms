@@ -30,8 +30,8 @@ steps:
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
   env:
-    PGUSER: $(PGUSER)
-    PGPASSWORD: $(PGPASSWORD)
+    PGUSER: ${{ parameters.user }}
+    PGPASSWORD: ${{ parameters.password }}
 
 - script: |
     set -x
@@ -46,8 +46,8 @@ steps:
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
   env:
-    PGUSER: $(PGUSER)
-    PGPASSWORD: $(PGPASSWORD)
+    PGUSER: ${{ parameters.user }}
+    PGPASSWORD: ${{ parameters.password }}
 
 - task: PublishPipelineArtifact@1
   condition: ${{ eq(parameters.publishDump, True) }}
