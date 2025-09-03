@@ -4,26 +4,32 @@ steps:
     set -e
     docker run \
       -e PGHOST='$(DBHost)' \
-      -e PGUSER='${{ parameters.user }}' \
-      -e PGPASSWORD='${{ parameters.password }}' \
+      -e PGUSER \
+      -e PGPASSWORD \
       postgres:16 \
       pg_dump -Fc '$(DBName)' -t 'users_user' -t 'otp_totp_totpdevice' -t 'users_user_groups' -t 'users_user_user_permissions' -t 'wagtailusers_userprofile' > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ eq(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
+  env:
+    PGPASSWORD: ${{ parameters.password }}
+    PGUSER: ${{ parameters.user }}
 
 - script: |
     set -x
     set -e
     docker run \
       -e PGHOST='$(DBHost)' \
-      -e PGUSER='${{ parameters.user }}' \
-      -e PGPASSWORD='${{ parameters.password }}' \
+      -e PGUSER \
+      -e PGPASSWORD \
       postgres:16 \
       pg_dump -Fc '$(DBName)' > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ ne(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
+  env:
+    PGPASSWORD: ${{ parameters.password }}
+    PGUSER: ${{ parameters.user }}
 
 - task: PublishPipelineArtifact@1
   condition: ${{ eq(parameters.publishDump, True) }}
