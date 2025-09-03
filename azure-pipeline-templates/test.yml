@@ -1,6 +1,6 @@
 
 steps:
-- task: Gitleaks@2
+- task: Gitleaks@3
   inputs:
     scanlocation: '$(Build.SourcesDirectory)'
     configtype: 'custom'
