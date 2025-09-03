@@ -1,79 +1,29 @@
 steps:
-- bash: |
-    user=$(DBUser)
-    adminUser=$(postgresqlAdminUser)
-    pguser=${user:-$adminUser}
-    echo "##vso[task.setvariable variable=PGUSER]$pguser"
-    
-    echo $user
-    echo '-----'
-    echo $adminUser
-    echo '-----'
-    echo $pguser
-    
-    password=$(DBPass)
-    adminPassword=$(postgresqlAdminPassword)
-    pgpassword=${password:-$adminPassword}
-    echo "##vso[task.setvariable variable=PGPASSWORD]$pgpassword"
-  name: '${{parameters.dumpPrefix}}_PGvars'
-  
-- script: |
-    set -e
-    docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGUSER="$(DBUser)" \
-      -e PGPASSWORD \
-      postgres:16 \
-      psql -d "$(DBName)" \
-      -c "SELECT * FROM pg_user;"
-  displayName: see users
-  env:
-    PGPASSWORD: $(DBPass)
-  
-- script: |
-    set -e
-    docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGUSER="$(DBUser)" \
-      -e PGPASSWORD \
-      postgres:16 \
-      psql -d "$(DBName)" \
-      -c "SELECT * FROM pg_roles;"
-  displayName: see roles
-  env:
-    PGPASSWORD: $(DBPass)
-  
 - script: |
     set -x
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGUSER \
-      -e PGPASSWORD \
+      -e PGHOST='$(DBHost)' \
+      -e PGUSER='${{ parameters.user }}' \
+      -e PGPASSWORD='${{ parameters.password }}' \
       postgres:16 \
-      pg_dump -Fc "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
+      pg_dump -Fc '$(DBName)' -t 'users_user' -t 'otp_totp_totpdevice' -t 'users_user_groups' -t 'users_user_user_permissions' -t 'wagtailusers_userprofile' > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ eq(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
-  env:
-    PGUSER: ${{ parameters.user }}
-    PGPASSWORD: ${{ parameters.password }}
 
 - script: |
     set -x
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGUSER \
-      -e PGPASSWORD \
+      -e PGHOST='$(DBHost)' \
+      -e PGUSER='${{ parameters.user }}' \
+      -e PGPASSWORD='${{ parameters.password }}' \
       postgres:16 \
-      pg_dump -Fc "$(DBName)" > ${{parameters.dumpPrefix}}-db-dump.dump
+      pg_dump -Fc '$(DBName)' > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ ne(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
-  env:
-    PGUSER: ${{ parameters.user }}
-    PGPASSWORD: ${{ parameters.password }}
 
 - task: PublishPipelineArtifact@1
   condition: ${{ eq(parameters.publishDump, True) }}
