@@ -125,8 +125,8 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGPASSWORD="$(postgresqlAdminPassword)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
       postgres:16 \
       psql -d "$(DBName)" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'

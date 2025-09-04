@@ -40,15 +40,22 @@ stages:
     jobs:
       - job: ProdDBCopy
         steps:
-          - task: AzureKeyVault@1
+          - task: AzureKeyVault@2
             displayName: 'Azure Key Vault: dct-crc-v3-vlt-prod-uks'
             inputs:
               azureSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
               KeyVaultName: dct-crc-v3-vlt-prod-uks
               SecretsFilter: DBPass, DBName, DBHost, DBUser
+          - task: AzureKeyVault@2
+            displayName: 'Azure Key Vault: Admin'
+            inputs:
+              azureSubscription: dct-crccms-prod
+              KeyVaultName: dct-crccms-kv2-prod-uks
+              SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-prod
+              user: $(postgresqlAdminUser)
+              password: $(postgresqlAdminPassword)
               dumpPrefix: prod
               publishDump: true
 
@@ -62,7 +69,7 @@ stages:
         steps:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-prod
+              azureStorageSubscription: dct-crccms-prod
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
