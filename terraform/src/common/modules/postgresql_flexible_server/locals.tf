@@ -16,6 +16,11 @@ locals {
   }
 
   database_replicas = {
+    staging = {
+      name           = "dct-crccms-psql-stag-ukw"
+      resource_group = "dct-crccms-rg-stag-ukw"
+      location       = "ukwest"
+    },
     production = {
       name           = "dct-crccms-psql-prod-ukw"
       resource_group = "dct-crccms-rg-prod-ukw"
@@ -30,7 +35,4 @@ locals {
   databases = [
     "crc"
   ]
-
-  law_name                = var.environment != "prod" ? "nhsuk-law-nonprod-uks" : "nhsuk-law-prod-uks"
-  law_resource_group_name = var.environment != "prod" ? "nhsuk-law-rg-nonprod-uks" : "nhsuk-law-rg-prod-uks"
 }
