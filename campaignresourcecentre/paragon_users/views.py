@@ -122,7 +122,7 @@ def signup(request):
                 if response["code"] == 200:
                     # Send verification Email
                     token = response["content"]
-                    url = request.build_absolute_uri(reverse("verification"))
+                    url = f"{settings.SITE_BASE_URL}{reverse("verification")}"
                     send_verification(token, url, email, first_name)
                     postcode_data = get_postcode_data(postcode)
 
@@ -235,7 +235,7 @@ def resend_verification(request):
             return redirect("/")
         name = user.get("FirstName")
         email = user.get("EmailAddress")
-        url = request.build_absolute_uri(reverse("verification"))
+        url = f"{settings.SITE_BASE_URL}{reverse("verification")}"
         send_verification(user_token, url, email, name)
     except ParagonClientError as e:
         logger.error("Failed to retrieve user profile: %s", e)
@@ -403,11 +403,7 @@ def password_reset(request):
                     return HttpResponseServerError
 
                 signed_token = sign(user_token)
-                url = (
-                    request.build_absolute_uri(reverse("password-set"))
-                    + "?q="
-                    + quote(signed_token)
-                )
+                url = f"{settings.SITE_BASE_URL}{reverse("password-set")}?q={quote(signed_token)}"
 
                 # send confirmation email
                 email_client = (
