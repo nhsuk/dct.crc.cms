@@ -11,5 +11,5 @@ def global_vars(request):
         "GOOGLE_TAG_MANAGER_ID": getattr(tracking, "google_tag_manager_id", None),
         "SEO_NOINDEX": settings.SEO_NOINDEX,
         "BASKET_ITEM_COUNT": basket.get_items_count(),
-        "CANONICAL_PATH": request.build_absolute_uri(request.path),
+        "CANONICAL_PATH": f"{settings.SITE_BASE_URL}{request.path}",
     }
