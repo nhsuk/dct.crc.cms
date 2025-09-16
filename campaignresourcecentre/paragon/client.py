@@ -41,6 +41,7 @@ class Client:
                 {
                     "message": "Starting Paragon client call %s" % self.call_method,
                     "correlation_id": self.log_uuid,
+                    "request_data": self.data,
                 }
             )
         )
@@ -74,6 +75,7 @@ class Client:
                     "message": "Paragon client %s call took %0.3fs"
                     % (self.call_method, elapsed),
                     "correlation_id": self.log_uuid,
+                    "response_data": self.response.json(),
                 }
             )
         )
