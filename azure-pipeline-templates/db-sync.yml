@@ -54,8 +54,6 @@ stages:
               SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              user: $(postgresqlAdminUser)
-              password: $(postgresqlAdminPassword)
               dumpPrefix: prod
               publishDump: true
 
