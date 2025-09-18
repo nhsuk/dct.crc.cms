@@ -59,13 +59,13 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGUSER="$(DBUser)" \
       -e PGPASSWORD \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:16 \
       pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.dumpPrefix}}-db.dump
   displayName: Copy ${{parameters.dumpPrefix}} to target database
   env:
-    PGPASSWORD: $(postgresqlAdminPassword)
+    PGPASSWORD: $(DBPass)
 
     
