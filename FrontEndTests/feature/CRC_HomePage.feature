@@ -269,7 +269,7 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
     Then verify OHID link is accessible
     Then verify what guides us sections are working
 
-  # For this test to run, a Wagtail admin user has been created called 'frontendtester' in a specific group called 'Automation test'. This test requires the ability to read the order of pages within 'Campaigns', but does NOT require any other permissions such as editing, deleting or publishing. If this test times out, it could indicate a permissions issue. 
+  # For this test to run, a Wagtail admin user has been created called 'frontendtester' in a specific group called 'Automation test'. This test requires the ability to read the order of pages within 'Campaigns', but does NOT require any other permissions such as editing, deleting or publishing. If this test times out, it could indicate a permissions issue.
   @CRCV3-030 @Smoke
   Scenario: verify custom admin and frontend campaign page order match
     Given I log in to the admin panel
@@ -287,3 +287,14 @@ Feature: CRCV3 Main Page  - NHSUK CRC Website
       | pages       |
       | documents   |
       | images      |
+
+  @CRCV3-032 @Smoke
+  Scenario: open CRCV3 site, login with email and password, and update newsletter preferences
+    Given I loaded CRCV3 site to load the home page
+    When  I click on Sign in button Sign in page loaded with Email_address and and password
+    Then I enter your login details
+    Then I sign in
+    Then verify logout displayed in place of Sign in
+    Then I modify my newsletter preferences
+    Then I view my account details
+    Then click Sign Out link and verify its logged out successfully
