@@ -84,9 +84,9 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: dct-development-vault-uks-dct.campaign-resource-centre-v3
               azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
-              VaultId: dct-crc-v3-vlt-rev-uks
+              azureVaultSubscription: dct-crccms-dev
+              VaultId: dct-crc-kv-app-dev-uks
               environment: review
               env: dev
 
@@ -100,9 +100,9 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: dct-development-vault-uks-dct.campaign-resource-centre-v3
               azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
-              VaultId: dct-crc-v3-vlt-int-uks
+              azureVaultSubscription: dct-crccms-int
+              VaultId: dct-crc-kv-app-int-uks
               environment: integration
               env: int
 
