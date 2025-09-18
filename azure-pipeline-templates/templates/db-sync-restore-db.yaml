@@ -67,5 +67,3 @@ steps:
   displayName: Copy ${{parameters.dumpPrefix}} to target database
   env:
     PGPASSWORD: $(DBPass)
-
-    
