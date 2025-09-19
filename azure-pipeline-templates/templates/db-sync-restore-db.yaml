@@ -59,11 +59,37 @@ steps:
     set -e
     docker run \
       -e PGHOST="$(DBHost)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:16 \
       pg_restore --no-acl --no-owner -d "$(DBName)" ${{parameters.dumpPrefix}}-db.dump
   displayName: Copy ${{parameters.dumpPrefix}} to target database
   env:
-    PGPASSWORD: $(DBPass)
+    PGPASSWORD: $(postgresqlAdminPassword)
+
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      psql -d "$(DBName)" \
+      -c "ALTER DATABASE $(DBName) OWNER TO $(DBUser)"
+  displayName: Change database ownership
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
+
+- script: |
+    set -e
+    docker run \
+      -e PGHOST="$(DBHost)" \
+      -e PGUSER="$(postgresqlAdminUser)" \
+      -e PGPASSWORD \
+      postgres:16 \
+      psql -d "$(DBName)" \
+      -c "REASSIGN OWNED BY $(postgresqlAdminUser) TO $(DBUser)"
+  displayName: Change tables ownership
+  env:
+    PGPASSWORD: $(postgresqlAdminPassword)
