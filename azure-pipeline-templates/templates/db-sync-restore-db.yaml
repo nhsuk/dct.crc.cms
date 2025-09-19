@@ -76,7 +76,7 @@ steps:
       -e PGPASSWORD \
       postgres:16 \
       psql -d "$(DBName)" \
-      -c "ALTER DATABASE $(DBName) OWNER TO $(DBUser)"
+      -c "ALTER DATABASE $(DBName) OWNER TO $(DBUser);"
   displayName: Change database ownership
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
@@ -89,7 +89,7 @@ steps:
       -e PGPASSWORD \
       postgres:16 \
       psql -d "$(DBName)" \
-      -c "REASSIGN OWNED BY $(postgresqlAdminUser) TO $(DBUser)"
+      -c "REASSIGN OWNED BY $(postgresqlAdminUser) TO $(DBUser);"
   displayName: Change tables ownership
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
