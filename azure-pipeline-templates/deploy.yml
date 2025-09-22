@@ -1,5 +1,5 @@
 steps:
-  - task: AzureKeyVault@1
+  - task: AzureKeyVault@2
     inputs:
       azureSubscription: ${{parameters.azureSubscription}}
       KeyVaultName: ${{parameters.keyVaultName}}
