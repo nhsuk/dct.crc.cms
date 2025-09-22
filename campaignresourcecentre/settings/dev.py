@@ -56,6 +56,10 @@ INSTALLED_APPS += ["django_extensions"]  # noqa
 # Disable forcing HTTPS locally since development server supports HTTP only.
 SECURE_SSL_REDIRECT = False
 
+# Ensure that the CSRF cookie is can also be sent by browsers under an HTTP connection.
+# https://docs.djangoproject.com/en/stable/ref/settings/#csrf-cookie-secure
+CSRF_COOKIE_SECURE = False
+
 # Adds Django Debug Toolbar, if preset and requested
 # (slows system right down, so for use as required)
 USING_DEBUG_TOOLBAR = getenv_bool("USING_DEBUG_TOOLBAR")
