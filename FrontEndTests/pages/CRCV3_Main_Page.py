@@ -36,9 +36,7 @@ class CRCV3MainPage(BasePage):
         By.PARTIAL_LINK_TEXT, "Newsletter preferences"
     )
     All_topics_input = PageElement(By.ID, "id_AllSubjects")
-    Update_newsletter_preferences_button = PageElement(
-        By.XPATH, "//button[text()='Update newsletter preferences']"
-    )
+    Update_newsletter_preferences_button = PageElement(By.CLASS_NAME, "primary-button")
     Sign_out_lable = PageElement(By.XPATH, "//a[@href='/logout ']")
     Login_error_list = PageElement(
         By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']/li"
