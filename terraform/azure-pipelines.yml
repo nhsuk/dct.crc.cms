@@ -39,6 +39,10 @@ parameters:
     displayName: Force Deploy Staging
     type: boolean
     default: false
+  - name: deployStagingDr
+    displayName: Force Deploy Staging DR
+    type: boolean
+    default: false
   - name: deployProduction
     displayName: Force Deploy Production
     type: boolean
@@ -207,6 +211,30 @@ stages:
                   tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
                   tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
                   dryrun: ${{ parameters.dryrun }}
+
+  - stage: StagingDR
+    dependsOn: Build
+    condition: ${{ parameters.deployStagingDr }}
+    variables:
+      - template: ./templates/variables.yml
+        parameters:
+          environment: stag
+          location: ukw
+    jobs:
+      - deployment: StagingDR
+        environment: StagingDR
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - template: templates/deployment-steps.yml
+                parameters:
+                  environment: stag
+                  azureSubscription: ${{ variables.AZURE_SUBSCRIPTION }}
+                  tfResourceGroup: ${{ variables.TF_RESOURCE_GROUP }}
+                  tfStorageAccount: ${{ variables.TF_STORAGE_ACCOUNT }}
+                  dryrun: ${{ parameters.dryrun }}
+                  location: ukw
 
   - stage: Production
     dependsOn: Staging

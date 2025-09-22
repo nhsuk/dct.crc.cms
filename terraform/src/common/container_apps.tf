@@ -1,10 +1,11 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=0.4.1"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=1.0.0"
 
   # dev container apps get deployed separately to allow for many transient environments
   count = var.deploy_container_apps && var.env != "dev" ? 1 : 0
 
   environment                       = var.env
+  location                          = data.azurerm_resource_group.rg.location
   org                               = local.org
   app                               = local.app
   short_app_name                    = local.short_app_name
@@ -14,7 +15,7 @@ module "aca_wagtail" {
   resource_group                    = data.azurerm_resource_group.rg.name
   container_app_environment_id      = module.container_app_env[0].container_app_environment_id
   identity_id                       = module.container_app_env[0].identity_id
-  frontdoor_profile                 = module.network_spoke[0].frontdoor
+  frontdoor_profile                 = local.frontdoor_profile
   frontdoor_firewall_policy_enabled = true
   frontdoor_firewall_policy_id      = module.network_spoke[0].waf_policy_id
   key_vault_id                      = module.container_app_env[0].key_vault_id
@@ -25,5 +26,5 @@ module "aca_wagtail" {
   init_secrets                      = local.init_secrets
   app_secrets                       = local.app_secrets
   alerts_action_group_id            = module.container_app_env[0].alerts_action_group_id
-  aks_origin                        = var.aks_origin
+  dr_origin                         = var.dr_deployed ? data.azurerm_container_app.dr[0].ingress[0].fqdn : null
 }

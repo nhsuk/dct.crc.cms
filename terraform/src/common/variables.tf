@@ -32,6 +32,15 @@ variable "location" {
   }
 }
 
+variable "storage" {
+  type = object({
+    account   = string
+    container = string
+  })
+  description = "The storage account and container names for hosting CRC content"
+  default     = null
+}
+
 variable "deploy_container_apps" {
   type    = bool
   default = false
@@ -65,11 +74,8 @@ variable "network_address_space" {
   }
 }
 
-variable "aks_origin" {
-  type = object({
-    firewall_ip_address = string
-    origin_host_header  = string
-  })
-  description = "Optional AKS origin on the Front Door origin group to allow for migration"
-  default     = null
+variable "dr_deployed" {
+  type        = bool
+  description = "Optional flag in primary region to say there is a DR site that should be added to the front door"
+  default     = false
 }

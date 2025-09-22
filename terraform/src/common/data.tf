@@ -17,3 +17,10 @@ data "azurerm_log_analytics_workspace" "shared_log_analytics_workspace" {
   name                = local.law_name
   resource_group_name = local.law_resource_group_name
 }
+
+data "azurerm_container_app" "dr" {
+  count = var.dr_deployed ? 1 : 0
+
+  name                = "ca-haproxy-${var.env}-ukw"
+  resource_group_name = replace(var.resource_group, "-uks", "-ukw")
+}
