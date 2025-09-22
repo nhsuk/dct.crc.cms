@@ -31,10 +31,11 @@ steps:
   parameters:
     dumpPrefix: ${{ parameters.environment }}
 
-- template: ./db-sync-upload-blob.yaml
-  parameters:
-    azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
-    StorageAccountNameDbDump: $(StorageAccountNameDbDump)
-    BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
-    BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
-    dumpPrefix: ${{ parameters.environment }}
+# TODO: once CRC 'feat' subscription established, upload db dump to it for use in local dev
+# - template: ./db-sync-upload-blob.yaml
+#   parameters:
+#     azureStorageSubscription: ${{ parameters.azureStorageSubscription}}
+#     StorageAccountNameDbDump: $(StorageAccountNameDbDump)
+#     BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
+#     BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
+#     dumpPrefix: ${{ parameters.environment }}
