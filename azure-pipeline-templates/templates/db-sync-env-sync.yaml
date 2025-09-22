@@ -30,6 +30,8 @@ steps:
 - template: ./db-sync-download-dump.yaml
   parameters:
     dumpPrefix: ${{ parameters.environment }}
+    # Added for now so that pipeline artifact can be used for local dev until upload available
+    publishDump: true
 
 # TODO: once CRC 'feat' subscription established, upload db dump to it for use in local dev
 # - template: ./db-sync-upload-blob.yaml
