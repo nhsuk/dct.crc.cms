@@ -18,9 +18,13 @@
             position: relative;
             z-index: 999;
 
-            svg {
+            & > svg {
                 width: 340px;
                 height: 41px;
+
+                .cls-1 {
+                    fill: $white;
+                }
             }
 
             &:hover {
@@ -32,13 +36,8 @@
                 background-color: $focus;
                 outline: 3px solid #fd0;
 
-                svg {
-                    .st0 {
-                        fill: $black;
-                        g {
-                            fill: $black;
-                        }
-                    }
+                & > svg .cls-1 {
+                    fill: $black;
                 }
             }
         }
