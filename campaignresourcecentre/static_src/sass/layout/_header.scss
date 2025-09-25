@@ -11,6 +11,10 @@
             margin-bottom: 15px;
         }
 
+        @media(max-width:48.0525em), (max-width:61.875em) {
+            width: 100%;
+        }
+
         .nhsuk-header__link {
             height: auto;
             width: auto;
@@ -19,8 +23,9 @@
             z-index: 999;
 
             & > svg {
-                width: 340px;
                 height: 41px;
+                max-width: 340px;
+                object-fit: contain;
 
                 .cls-1 {
                     fill: $white;
