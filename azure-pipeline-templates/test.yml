@@ -62,18 +62,18 @@ steps:
     testRunner: JUnit
     testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml"
     testRunTitle: "OWASP Dependency check"
-- task: SonarCloudPrepare@3
-  inputs:
-    SonarCloud: SonarCloud-dct.campaign-resource-centre #needs confirming with JC
-    organization: nhsdigital
-    scannerMode: cli
-    cliProjectKey: dct-campaign-resource-centre
-    extraProperties: |
-      sonar.qualitygate.wait=true
-      sonar.projectVersion=$(toolVersion)
-      sonar.dependencyCheck.xmlReportPath=$(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
-- task: SonarCloudAnalyze@3
-- task: SonarCloudPublish@3
-  inputs:
-    pollingTimeoutSec: "300"
-  continueOnError: true
+#- task: SonarCloudPrepare@3
+#  inputs:
+#    SonarCloud: SonarCloud-dct.campaign-resource-centre #needs confirming with JC
+#    organization: nhsdigital
+#    scannerMode: cli
+#    cliProjectKey: dct-campaign-resource-centre
+#    extraProperties: |
+#      sonar.qualitygate.wait=true
+#      sonar.projectVersion=$(toolVersion)
+#      sonar.dependencyCheck.xmlReportPath=$(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
+#- task: SonarCloudAnalyze@3
+#- task: SonarCloudPublish@3
+#  inputs:
+#    pollingTimeoutSec: "300"
+#  continueOnError: true
