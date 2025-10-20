@@ -14,6 +14,14 @@ trigger:
     exclude:
       - 'terraform'
 
+pr:
+  branches:
+    include:
+    - '*'
+  paths:
+    exclude:
+      - terraform
+
 schedules:
   - cron: '0 4 * * *'
     displayName: Daily build
@@ -82,28 +90,49 @@ resources:
   - repo: self
 
 variables:
-  sourceBranchName: '$(Build.SourceBranchName)'
-  environmentName: 'production'
-  namespace: 'dct-crc-v3'
-  buildId: '$(Build.BuildId)'
-  repository: 'dct/crc-v3'
-  imageName: 'nhsuk.azurecr.io/dct/crc-v3'
-  webReplicaCount: 2
-  webMinReplicas: 2
-  maxReplicas: 7
-  averageUtilization: 90
-  requestscpu: '600m'
-  requestsmemory: '1400Mi'
-  limitsmemory: '2Gi'
-  limitscpu: '1000m'
-  appPort: '8000'
-  redisUrl: 'redis://crc-v3-redis-svc:6379/0'
-  staticDir: '/app/static/'
-  staticUrl: '/static/'
+  - name: sourceBranchName
+    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+      value: pr-$(System.PullRequest.PullRequestNumber)
+    ${{ else }}:
+      value: $(Build.SourceBranchName)
+  - name: environmentName
+    value: 'production'
+  - name: namespace
+    value: 'dct-crc-v3'
+  - name: buildId
+    value: '$(Build.BuildId)'
+  - name: repository
+    value: 'dct/crc-v3'
+  - name: imageName
+    value: 'nhsuk.azurecr.io/dct/crc-v3'
+  - name: webReplicaCount
+    value: 2
+  - name: webMinReplicas
+    value: 2
+  - name: maxReplicas
+    value: 7
+  - name: averageUtilization
+    value: 90
+  - name: requestscpu
+    value: '600m'
+  - name: requestsmemory
+    value: '1400Mi'
+  - name: limitsmemory
+    value: '2Gi'
+  - name: limitscpu
+    value: '1000m'
+  - name: appPort
+    value: '8000'
+  - name: redisUrl
+    value: 'redis://crc-v3-redis-svc:6379/0'
+  - name: staticDir
+    value: '/app/static/'
+  - name: staticUrl
+    value: '/static/'
 
 stages:
-  - stage: Test
-    displayName: Test
+  - stage: PrepareAndTest
+    displayName: Prepare & Unit Test
     jobs:
       - job: dryRun
         displayName: 'Dry Run'
@@ -115,43 +144,39 @@ stages:
               echo "##vso[task.complete result=SucceededWithIssues;]"
             displayName: 'Dry Run: ${{ parameters.dryRun }}'
       - job: test
-        displayName: 'Test'
+        displayName: 'Prepare & Unit Test'
         steps:
           - template: azure-pipeline-templates/test.yml
   - stage: Build
     displayName: Build
-    dependsOn: Test
+    dependsOn: PrepareAndTest
     condition: succeeded()
     jobs:
       - job: buildReview
         displayName: 'Build Review'
-        condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), ${{ parameters.deployReview }})
-        variables:
-          tag: 'review-$(sourceBranchName)'
+        dependsOn: []
+        condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.Reason'], 'PullRequest'), ${{ parameters.deployReview }})
         steps:
           - template: azure-pipeline-templates/build.yml
             parameters:
-              tag: $(tag)
+              tag: 'review-$(sourceBranchName)'
               dryRun: ${{ parameters.dryRun }}
       - job: buildIntegration
         displayName: 'Build Integration'
         condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
-        variables:
-          tag: 'latest'
         steps:
           - template: azure-pipeline-templates/build.yml
             parameters:
-              tag: $(tag)
+              tag: latest
               dryRun: ${{ parameters.dryRun }}
       - job: buildStaging
-        displayName: 'Build Staging'
+        displayName: 'Promote Staging'
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
-        variables:
-          tag: '$(sourceBranchName)'
+        dependsOn: []
         steps:
           - template: azure-pipeline-templates/build.yml
             parameters:
-              tag: $(tag)
+              tag: $(sourceBranchName)
               dryRun: ${{ parameters.dryRun }}
   - stage: Deploy
     displayName: 'Deploy'
@@ -160,7 +185,7 @@ stages:
     jobs:
       - job: deployReview
         displayName: 'Deploy Review'
-        condition: or(${{ parameters.deployReview }}, and(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-'))))
+        condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.Reason'], 'PullRequest'), ${{ parameters.deployReview }})
         variables:
           - group: Review
           - name: environmentName
@@ -195,6 +220,11 @@ stages:
             value: ${{ parameters.tags }}
           - name: imageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
+          - name: branchName
+            ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
+              value: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+            ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+              value: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
         steps:
           - template: azure-pipeline-templates/deploy.yml
             parameters:
@@ -203,6 +233,14 @@ stages:
               keyVaultName: dct-crc-kv-app-dev-uks
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+          - script: |
+              echo "Sending slack notification for branch $branchName"
+              echo "Review Url: https://$(hostUrl)"
+              messageText="`if [[ '${{ parameters.dryrun }}' == 'True' ]]; then printf %s 'THIS IS A DRYRUN\n'; fi`
+                      Campaign Resource Centre: A new review environment has been deployed for $(Build.RequestedFor).
+                      \nBranch: $(branchName)
+              body="{\"text\": \"$messageText\", \"mrkdwn\": false}"
+              curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
           - ${{ if ne('${{ parameters.dryRun }}', 'True') }}:
             - template: azure-pipeline-templates/frontendtest.yml
 

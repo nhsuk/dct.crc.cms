@@ -34,6 +34,11 @@ steps:
       testResultsFiles: "**/trivy-scan.xml"
       testRunTitle: "${{ parameters.tag }} image scan"
       failTaskOnFailedTests: true
+  - ${{ if parameters.dryrun }}:
+      - bash: |
+          echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping image tag push for 'dct/campaigns-cms:${{ parameters.tag }}'"
+          echo "##vso[task.complete result=SucceededWithIssues;]"
+        displayName: "Dry Run Warning"
   - task: Docker@2
     displayName: 'Docker Push (nhsuk acr-dct.campaign-resource-centre-v3) '
     condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
@@ -53,6 +58,7 @@ steps:
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
   - task: AzureCLI@2
     displayName: Docker Login (dctcampaignsacrproduks)
+    condition: and(succeeded(), ne('${{ parameters.dryrun }}', 'True'))
     inputs:
       azureSubscription: dct-crccms-dev
       scriptType: bash
