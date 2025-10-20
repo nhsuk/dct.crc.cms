@@ -480,7 +480,7 @@ stages:
   - stage: DailyBuildAlert
     displayName: Daily Build alerting
     dependsOn:
-      - Test
+      - PrepareAndTest
       - Build
       - Deploy
     condition: and(eq(variables['Build.Reason'], 'Schedule'), ne(variables.notificationSlackWebhook, ''), or(failed('Test'), failed('Build'), failed('Deploy')))
