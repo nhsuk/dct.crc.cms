@@ -29,10 +29,6 @@ steps:
     pip3 install black==24.3.0
     black --check ./ --config poetry/pyproject.toml
   displayName: Installs Black & Checks if the python scripts are formatted properly with black
-- template: npm-install.yml
-#- script: |
-#    python $(pipDirectory)/black --check ./ --config 'pyproject.toml'
-#  displayName: Check formatting with Black
 - script: |
     docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
