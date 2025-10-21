@@ -7,14 +7,14 @@ steps:
     displayName: Cache npm
     inputs:
       key: |
-        npm | "$(Agent.OS)" | CRC CMS | $(Build.SourcesDirectory)/frontend/package-lock.json
+        npm | "$(Agent.OS)" | CRC CMS | $(Build.SourcesDirectory)package-lock.json
       restoreKeys: |
         npm | "$(Agent.OS)" | CRC CMS
-      path: $(Build.SourcesDirectory)/frontend/node_modules
+      path: $(Build.SourcesDirectory)/node_modules
       cacheHitVar: NPM_CACHE_RESTORED
   - task: Npm@1
     displayName: Install npm dependencies
     condition: ne(variables.NPM_CACHE_RESTORED, 'true')
     inputs:
-      workingDir: $(Build.SourcesDirectory)/frontend
+      workingDir: $(Build.SourcesDirectory)
       command: "ci"
