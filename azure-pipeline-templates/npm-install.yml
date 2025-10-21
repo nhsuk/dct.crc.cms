@@ -7,7 +7,7 @@ steps:
     displayName: Cache npm
     inputs:
       key: |
-        npm | "$(Agent.OS)" | CRC CMS | $(Build.SourcesDirectory)package-lock.json
+        npm | "$(Agent.OS)" | CRC CMS | $(Build.SourcesDirectory)/package-lock.json
       restoreKeys: |
         npm | "$(Agent.OS)" | CRC CMS
       path: $(Build.SourcesDirectory)/node_modules
