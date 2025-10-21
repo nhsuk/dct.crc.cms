@@ -4,7 +4,7 @@ FROM node:14-alpine AS frontend
 ARG CI=true
 
 # Install front-end dependencies.
-COPY package.json package-lock.json .babelrc.js webpack.config.js ./
+COPY package.json package-lock.json .babelrc.js webpack.config.js postcss.config.js ./
 RUN npm ci --no-optional --no-audit --progress=false
 
 # Compile static files
