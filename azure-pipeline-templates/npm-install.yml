@@ -2,7 +2,7 @@ steps:
   - task: UseNode@1
     displayName: "Use Node 22.x" # 22 is current LTS, EOL April 2027
     inputs:
-      version: '18.x'
+      version: '22.x'
   - task: Cache@2
     displayName: Cache npm
     inputs:
