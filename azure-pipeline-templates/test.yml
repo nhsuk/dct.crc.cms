@@ -47,7 +47,7 @@ steps:
   inputs:
     workingDirectory: $(Pipeline.Workspace)/owasp
     filePath: $(Pipeline.Workspace)/owasp/run_owasp_scanner.sh
-    arguments: '--scan "$(System.DefaultWorkingDirectory)" --supression "$(System.DefaultWorkingDirectory)/owasp-suppression.xml" --failOnCVSS ${{ parameters.OWASPFailScore }} --project "$(Build.Repository.Name)" --disableOssIndex --out "$(System.DefaultWorkingDirectory)/dependency-scan-results" --format HTML --format JUNIT --format JSON'
+    arguments: '--scan "$(System.DefaultWorkingDirectory)" --suppression "$(System.DefaultWorkingDirectory)/owasp-suppression.xml" --failOnCVSS ${{ parameters.OWASPFailScore }} --project "$(Build.Repository.Name)" --disableOssIndex --out "$(System.DefaultWorkingDirectory)/dependency-scan-results" --format HTML --format JUNIT --format JSON'
 - task: PublishTestResults@2
   displayName: "Publish OWASP dependency check results"
   condition: and(succeededOrFailed(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
