@@ -1,0 +1,20 @@
+steps:
+  - task: UseNode@1
+    displayName: "Use Node 22.x" # 22 is current LTS, EOL April 2027
+    inputs:
+      version: '18.x'
+  - task: Cache@2
+    displayName: Cache npm
+    inputs:
+      key: |
+        npm | "$(Agent.OS)" | CRC CMS | $(Build.SourcesDirectory)/frontend/package-lock.json
+      restoreKeys: |
+        npm | "$(Agent.OS)" | CRC CMS
+      path: $(Build.SourcesDirectory)/frontend/node_modules
+      cacheHitVar: NPM_CACHE_RESTORED
+  - task: Npm@1
+    displayName: Install npm dependencies
+    condition: ne(variables.NPM_CACHE_RESTORED, 'true')
+    inputs:
+      workingDir: $(Build.SourcesDirectory)/frontend
+      command: "ci"

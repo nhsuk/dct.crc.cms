@@ -5,6 +5,7 @@ parameters:
   default: 7
 
 steps:
+- checkout: self
 - task: Gitleaks@3
   displayName: Gitleaks scan
   inputs:
@@ -17,10 +18,18 @@ steps:
     taskfail: true
     verbose: true
   continueOnError: false
-- bash: |
-    pip3 install black==24.3.0
-    black --check ./ --config poetry/pyproject.toml
-  displayName: Installs Black & Checks if the python scripts are formatted properly with black
+- script: |
+    version="$(git describe --tags --abbrev=0)"
+    full_version="$version+$(Build.BuildNumber)"
+    echo "Version: $version"
+    echo "##vso[task.setvariable variable=toolVersion]$version"
+    echo "##vso[task.setvariable variable=fullVersion]$full_version"
+  displayName: Get Latest Version
+- template: azure-pipeline-templates/pip-install.yml
+- template: azure-pipeline-templates/npm-install.yml
+- script: |
+    python $(pipDirectory)/black --check ./ --config 'pyproject.toml'
+  displayName: Check formatting with Black
 - script: |
     docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
