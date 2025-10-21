@@ -134,15 +134,6 @@ stages:
   - stage: PrepareAndTest
     displayName: Prepare & Unit Test
     jobs:
-      - job: dryRun
-        displayName: 'Dry Run'
-        condition: eq('${{ parameters.dryRun }}', 'True')
-        continueOnError: true
-        steps:
-          - bash: |
-              echo "##vso[task.logissue type=error]Running in dryrun mode."
-              echo "##vso[task.complete result=SucceededWithIssues;]"
-            displayName: 'Dry Run: ${{ parameters.dryRun }}'
       - job: test
         displayName: 'Prepare & Unit Test'
         steps:
