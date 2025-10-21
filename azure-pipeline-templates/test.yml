@@ -29,21 +29,6 @@ steps:
     pip3 install black==24.3.0
     black --check ./ --config poetry/pyproject.toml
   displayName: Installs Black & Checks if the python scripts are formatted properly with black
-- script: |
-    docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
-  displayName: 'Run Coverage Test'
-- task: PublishTestResults@2
-  displayName: "Publish Test Results"
-  inputs:
-    testResultsFiles: "**/testresults.xml"
-  condition: succeededOrFailed()
-- task: PublishCodeCoverageResults@2
-  displayName: "Publish code coverage results"
-  inputs:
-    codeCoverageTool: "Cobertura"
-    summaryFileLocation: "./docker/coverage.xml"
-    failIfCoverageEmpty: true
-  condition: succeededOrFailed()
 - task: DownloadPipelineArtifact@2
   displayName: Download OWASP artifact
   inputs:
@@ -70,6 +55,22 @@ steps:
     testRunner: JUnit
     testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml"
     testRunTitle: "OWASP Dependency check"
+- script: |
+    docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
+  displayName: 'Run Coverage Test'
+- task: PublishTestResults@2
+  displayName: "Publish Test Results"
+  inputs:
+    testResultsFiles: "**/testresults.xml"
+  condition: succeededOrFailed()
+- task: PublishCodeCoverageResults@2
+  displayName: "Publish code coverage results"
+  inputs:
+    codeCoverageTool: "Cobertura"
+    summaryFileLocation: "./docker/coverage.xml"
+    failIfCoverageEmpty: true
+  condition: succeededOrFailed()
+
 - task: SonarCloudPrepare@3
   inputs:
     SonarCloud: SonarCloud
