@@ -53,7 +53,7 @@ steps:
   condition: and(succeededOrFailed(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
   inputs:
     testRunner: JUnit
-    testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml"
+    testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
     testRunTitle: "OWASP Dependency check"
 - script: |
     docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
