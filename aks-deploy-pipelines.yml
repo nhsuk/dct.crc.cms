@@ -227,6 +227,7 @@ stages:
           - script: |
               echo "Sending slack notification for branch $branchName"
               echo "Review Url: https://$(hostUrl)"
+              echo "webhook test only $(notificationSlackWebhook)"
               messageText="`if [[ '${{ parameters.dryrun }}' == 'True' ]]; then printf %s 'THIS IS A DRYRUN\n'; fi`
                       Campaign Resource Centre: A new review environment has been deployed for $(Build.RequestedFor).
                       \nBranch: $(branchName)"
