@@ -161,7 +161,7 @@ stages:
               tag: latest
               dryRun: ${{ parameters.dryRun }}
       - job: buildStaging
-        displayName: 'Promote Staging'
+        displayName: 'Build Staging'
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
         dependsOn: []
         steps:
