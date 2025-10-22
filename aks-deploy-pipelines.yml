@@ -225,13 +225,12 @@ stages:
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
           - script: |
-              echo "Sending slack notification for branch $branchName"
+              echo "Sending slack notification for branch $(branchName)"
               echo "Review Url: https://$(hostUrl)"
-              echo "webhook test only $(notificationSlackWebhook)"
               messageText="`if [[ '${{ parameters.dryrun }}' == 'True' ]]; then printf %s 'THIS IS A DRYRUN\n'; fi`
                       Campaign Resource Centre: A new review environment has been deployed for $(Build.RequestedFor).
                       \nBranch: $(branchName)"
-              body="{\"text\": \"$messageText\", \"mrkdwn\": false}"
+              body="{\"text\": \"$messageText\", \"mrkdwn\": true}"
               curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
           - ${{ if ne('${{ parameters.dryRun }}', 'True') }}:
             - template: azure-pipeline-templates/frontendtest.yml
