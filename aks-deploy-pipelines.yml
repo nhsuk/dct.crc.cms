@@ -230,7 +230,7 @@ stages:
               echo "Review Url: https://$(hostUrl)"
               messageText="`if [[ '${{ parameters.dryrun }}' == 'True' ]]; then printf %s 'THIS IS A DRYRUN\n'; fi`
                       Campaign Resource Centre: A new review environment has been deployed for $(Build.RequestedFor).
-                      \nBranch: $(branchName)"
+                      \nBranch: $(branchName) \nURL: https://$(hostUrl)"
               body="{\"text\": \"$messageText\", \"mrkdwn\": true}"
               curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
           - ${{ if ne('${{ parameters.dryRun }}', 'True') }}:
