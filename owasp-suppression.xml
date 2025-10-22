@@ -7,7 +7,7 @@
         Suppressed temporarily until node/packages can be properly upgraded. 
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/braces@.*$</packageUrl>
-        <vulnerabilityName>CVE-2024-4068</vulnerabilityName>
+        <vulnerabilityName>GHSA-grv7-fg5c-xmjg</vulnerabilityName>
     </suppress>
     <suppress until="2026-01-30Z">
         <notes><![CDATA[
@@ -16,7 +16,7 @@
         Suppressed temporarily until node/packages can be properly upgraded. 
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/decode-uri-component@.*$</packageUrl>
-        <vulnerabilityName>CVE-2022-38900</vulnerabilityName>
+        <vulnerabilityName>GHSA-w573-4hg7-7wgq</vulnerabilityName>
     </suppress>
     <suppress until="2026-01-30Z">
         <notes><![CDATA[
@@ -25,7 +25,7 @@
         Suppressed temporarily until node/packages can be properly upgraded. 
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/form-data@.*$</packageUrl>
-        <vulnerabilityName>CVE-2025-7783</vulnerabilityName>
+        <vulnerabilityName>GHSA-fjxv-7rqg-78g4</vulnerabilityName>
     </suppress>
     <suppress until="2026-01-30Z">
         <notes><![CDATA[
@@ -34,7 +34,7 @@
         Suppressed temporarily until node/packages can be properly upgraded. 
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/pbkdf2@.*$</packageUrl>
-        <vulnerabilityName>CVE-2025-6545</vulnerabilityName>
+        <vulnerabilityName>GHSA-h7cp-r72f-jxh6</vulnerabilityName>
     </suppress>
     <suppress until="2026-01-30Z">
         <notes><![CDATA[
@@ -43,6 +43,6 @@
         Suppressed temporarily until node/packages can be properly upgraded. 
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/sha.js@.*$</packageUrl>
-        <vulnerabilityName>CVE-2025-9288</vulnerabilityName>
+        <vulnerabilityName>GHSA-95m3-7q98-8xr5</vulnerabilityName>
     </suppress>
 </suppressions>
