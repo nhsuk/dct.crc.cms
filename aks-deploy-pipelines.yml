@@ -179,6 +179,7 @@ stages:
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.Reason'], 'PullRequest'), ${{ parameters.deployReview }})
         variables:
           - group: Review
+          - group: alerting
           - name: environmentName
             value: 'review'
           - name: namespace
