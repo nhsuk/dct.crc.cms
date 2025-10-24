@@ -218,6 +218,10 @@ stages:
             ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
               value: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
         steps:
+          - script: |
+              deployedOnce=$(curl -I https://$hostUrl) | awk '{if (FNR <=1) print $2}')
+              echo "deployedOnce status code = $deployedOnce"
+              echo "##vso[task.setvariable variable=deployedStatus]$deployedOnce"
           - template: azure-pipeline-templates/deploy.yml
             parameters:
               dryRun: ${{ parameters.dryRun }}
@@ -233,6 +237,8 @@ stages:
                       \nBranch: $(branchName) \nURL: https://$(hostUrl)"
               body="{\"text\": \"$messageText\", \"mrkdwn\": true}"
               curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
+            displayName: Send Slack Notification
+            condition: and(succeeded(), ne(variables['deployedStatus'], '200'))
           - ${{ if ne('${{ parameters.dryRun }}', 'True') }}:
             - template: azure-pipeline-templates/frontendtest.yml
 
