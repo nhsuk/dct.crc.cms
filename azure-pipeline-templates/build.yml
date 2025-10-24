@@ -63,6 +63,11 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: az acr login --name dctcampaignsacrproduks
+  - ${{ if parameters.dryrun }}:
+      - bash: |
+          echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping image tag push for '$(repository):${{ parameters.tag }}'"
+          echo "##vso[task.complete result=SucceededWithIssues;]"
+        displayName: "Dry Run Warning"
   - task: Docker@2
     displayName: Docker Push (dctcampaignsacrproduks)
     condition: and(succeeded(), ne('${{ parameters.dryrun }}', 'True'))
@@ -70,9 +75,5 @@ steps:
       repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms
       command: push
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
-  - ${{ if parameters.dryrun }}:
-      - bash: |
-          echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping image tag push for '$(repository):${{ parameters.tag }}'"
-          echo "##vso[task.complete result=SucceededWithIssues;]"
-        displayName: "Dry Run Warning"
+  
 
