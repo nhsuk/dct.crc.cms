@@ -58,7 +58,6 @@ steps:
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
   - task: AzureCLI@2
     displayName: Docker Login (dctcampaignsacrproduks)
-    condition: succeeded()
     inputs:
       azureSubscription: dct-crccms-dev
       scriptType: bash
