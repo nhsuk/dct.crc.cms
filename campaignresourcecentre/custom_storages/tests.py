@@ -11,6 +11,7 @@ from campaignresourcecentre.custom_storages.custom_azure_file import (
 )
 from campaignresourcecentre.custom_storages.custom_azure_storage import (
     AzureMediaStorage,
+    SearchStorage,
 )
 from django.core.files.storage import default_storage
 
@@ -316,21 +317,14 @@ class SearchStorageTestCase(unittest.TestCase):
         for patch in self.patches.values():
             patch.stop()
 
-    def test_search_storage_uses_search_alias(self):
-        from campaignresourcecentre.custom_storages.custom_azure_storage import (
-            SearchStorage,
-        )
-
+    def test_search_storage_setup_uses_search_alias(self):
         storage = SearchStorage()
-        storage.open("test.txt")
+        storage._setup()
 
-        self.mocks["storages"].__getitem__.assert_called_once_with("search")
+        self.mocks["storages"].__getitem__.assert_called_with("search")
+        self.assertEqual(storage._wrapped, self.mock_backend)
 
-    def test_search_storage_uses_custom_alias_from_settings(self):
-        from campaignresourcecentre.custom_storages.custom_azure_storage import (
-            SearchStorage,
-        )
-
+    def test_search_storage_setup_uses_custom_alias_from_settings(self):
         self.patches["settings"] = patch(
             "campaignresourcecentre.custom_storages.custom_azure_storage.settings"
         )
@@ -338,6 +332,7 @@ class SearchStorageTestCase(unittest.TestCase):
         self.mocks["settings"].SEARCH_STORAGE_ALIAS = "custom_search"
 
         storage = SearchStorage()
-        storage.open("test.txt")
+        storage._setup()
 
-        self.mocks["storages"].__getitem__.assert_called_once_with("custom_search")
+        self.mocks["storages"].__getitem__.assert_called_with("custom_search")
+        self.assertEqual(storage._wrapped, self.mock_backend)
