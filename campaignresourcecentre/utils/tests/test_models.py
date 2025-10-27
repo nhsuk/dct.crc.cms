@@ -1,4 +1,4 @@
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from wagtail_factories import SiteFactory
 
 from campaignresourcecentre.utils.context_processors import global_vars
@@ -12,6 +12,7 @@ class TrackingTest(TestCase):
         )
         self.tracking = TrackingFactory(site=self.site)
 
+    @override_settings(SITE_BASE_URL="http://testserver")
     def test_context_processor(self):
         request = RequestFactory().get("/")
         request.site = self.tracking.site

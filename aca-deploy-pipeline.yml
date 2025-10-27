@@ -78,7 +78,7 @@ stages:
             displayName: 'Azure Key Vault: Admin'
             inputs:
               azureSubscription: $(azureSubscription)
-              KeyVaultName: dct-crccms-kv-dev-uks
+              KeyVaultName: dct-crccms-kv2-dev-uks
               SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
 
           - script: |

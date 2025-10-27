@@ -16,6 +16,11 @@ locals {
   }
 
   database_replicas = {
+    staging = {
+      name           = "dct-crccms-psql-stag-ukw"
+      resource_group = "dct-crccms-rg-stag-ukw"
+      location       = "ukwest"
+    },
     production = {
       name           = "dct-crccms-psql-prod-ukw"
       resource_group = "dct-crccms-rg-prod-ukw"

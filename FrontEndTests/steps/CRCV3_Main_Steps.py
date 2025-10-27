@@ -107,6 +107,21 @@ def Sign_In(context):
     context.support_page.Sign_In_button()
 
 
+@Step("I view my account details")
+def View_Account_Details(context):
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.View_Account()
+
+
+@Step("I modify my newsletter preferences")
+def Sign_In(context):
+    View_Account_Details(context)
+    context.support_page = CRCV3MainPage(context.browser, context.logger)
+    context.support_page.View_Newsletter_Preferences()
+    context.support_page.Toggle_All_Topics()
+    context.support_page.Submit_Newsletter_Preferences()
+
+
 @Step("verify all fields validation errors displayed in the error list for")
 def problem_error_list_page(context):
     expected_error_list = create_list_from_feature_table_column(context, "error_list")

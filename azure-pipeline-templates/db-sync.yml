@@ -40,7 +40,7 @@ stages:
     jobs:
       - job: ProdDBCopy
         steps:
-          - task: AzureKeyVault@1
+          - task: AzureKeyVault@2
             displayName: 'Azure Key Vault: dct-crc-v3-vlt-prod-uks'
             inputs:
               azureSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
@@ -48,7 +48,6 @@ stages:
               SecretsFilter: DBPass, DBName, DBHost, DBUser
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-prod
               dumpPrefix: prod
               publishDump: true
 
@@ -62,7 +61,7 @@ stages:
         steps:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-prod
+              azureStorageSubscription: dct-crccms-prod
               StorageAccountNameDbDump: $(StorageAccountNameDbDump)
               BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
               BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
@@ -79,9 +78,9 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: dct-development-vault-uks-dct.campaign-resource-centre-v3
               azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
-              VaultId: dct-crc-v3-vlt-rev-uks
+              azureVaultSubscription: dct-crccms-dev
+              VaultId: dct-crc-kv-app-dev-uks
               environment: review
               env: dev
 
@@ -95,9 +94,9 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: dct-development-vault-uks-dct.campaign-resource-centre-v3
               azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
-              VaultId: dct-crc-v3-vlt-int-uks
+              azureVaultSubscription: dct-crccms-int
+              VaultId: dct-crc-kv-app-int-uks
               environment: integration
               env: int
 

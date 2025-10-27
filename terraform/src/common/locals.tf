@@ -12,13 +12,18 @@ locals {
 
   scheduler_logic_app_name         = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   search_reindex_logic_app_name    = replace(data.azurerm_resource_group.rg.name, "-rg-", "-search-reindex-la-")
-  key_vault_name                   = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv-")
+  key_vault_name                   = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv2-")
   log_analytics_workspace_name     = replace(data.azurerm_resource_group.rg.name, "-rg-", "-log-")
   aks_app_insights_name            = replace(data.azurerm_resource_group.rg.name, "-rg-", "-appi-aks-")
   postgres_flex_name               = replace(data.azurerm_resource_group.rg.name, "-rg-", "-psql-")
   postgres_flex_id                 = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.DBforPostgreSQL/flexibleServers/${local.postgres_flex_name}"
   activeconnections_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-la-")
   activeconnections_logic_app_id   = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Logic/workflows/${local.activeconnections_logic_app_name}"
+  backup_vault_name                = replace(data.azurerm_resource_group.rg.name, "-rg-", "-bv-")
+  backup_vault_resource_group_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-vault-rg-")
+
+  storage_account   = toset(var.storage != null ? [var.storage.account] : [])
+  storage_container = var.storage != null ? { "${var.storage.container}" : var.storage.account } : {}
 
   secret_names = [
     "alertingWebhook",
@@ -126,4 +131,9 @@ locals {
     "OTEL_RESOURCE_ATTRIBUTES",
     "CSRF_TRUSTED_ORIGIN"
   ]
+
+  frontdoor_profile = { # front door is only deployed to primary region
+    name                = "${local.org}-${local.app}-afd-${var.env}",
+    resource_group_name = replace(var.resource_group, "-ukw", "-uks")
+  }
 }

@@ -31,6 +31,12 @@ class CRCV3MainPage(BasePage):
     email_id = PageElement(By.ID, "id_email")
     Password = PageElement(By.ID, "id_password")
     Sign_in_button = PageElement(By.XPATH, "//button[text()='Sign in']")
+    Account_link = PageElement(By.PARTIAL_LINK_TEXT, "Account")
+    Newsletter_preferences_link = PageElement(
+        By.PARTIAL_LINK_TEXT, "Newsletter preferences"
+    )
+    All_topics_input = PageElement(By.ID, "id_AllSubjects")
+    Update_newsletter_preferences_button = PageElement(By.CLASS_NAME, "primary-button")
     Sign_out_lable = PageElement(By.XPATH, "//a[@href='/logout ']")
     Login_error_list = PageElement(
         By.XPATH, "//ul[@class='govuk-list govuk-error-summary__list']/li"
@@ -1004,6 +1010,18 @@ class CRCV3MainPage(BasePage):
 
     def Sign_In_button(self):
         self.interact.click_element(self.Sign_in_button)
+
+    def View_Account(self):
+        self.interact.click_element(self.Account_link)
+
+    def View_Newsletter_Preferences(self):
+        self.interact.click_element(self.Newsletter_preferences_link)
+
+    def Toggle_All_Topics(self):
+        self.interact.click_element(self.All_topics_input)
+
+    def Submit_Newsletter_Preferences(self):
+        self.interact.click_element(self.Update_newsletter_preferences_button)
 
     def verify_logout(self):
         WebDriverWait(self.driver, 30).until(

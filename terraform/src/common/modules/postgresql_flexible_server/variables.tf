@@ -28,3 +28,8 @@ variable "key_vault" {
     id = string
   })
 }
+
+variable "log_analytics_workspace_id" {
+  description = "ID of Log Analytics Workspace to send audit logs to"
+  type        = string
+}
