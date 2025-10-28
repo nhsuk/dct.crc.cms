@@ -81,6 +81,7 @@ steps:
       sonar.qualitygate.wait=true
       sonar.projectVersion=$(toolVersion)
       sonar.dependencyCheck.xmlReportPath=$(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
+      sonar.python.coverage.reportPaths=docker/coverage.xml
 - task: SonarCloudAnalyze@3
 - task: SonarCloudPublish@3
   inputs:
