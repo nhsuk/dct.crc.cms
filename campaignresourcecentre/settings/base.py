@@ -269,8 +269,7 @@ USE_TZ = True
 # The static files with this backend are generated when you run
 # "django-admin collectstatic".
 # http://whitenoise.evans.io/en/stable/#quickstart-for-django-apps
-# https://docs.djangoproject.com/en/stable/ref/settings/#staticfiles-storage
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# https://docs.djangoproject.com/en/stable/ref/settings/#std-setting-STORAGES
 
 # Place static files that need a specific URL (such as robots.txt and favicon.ico) in the "public" folder
 WHITENOISE_ROOT = os.path.join(BASE_DIR, "public")
@@ -337,7 +336,7 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
             "BACKEND": "campaignresourcecentre.custom_storages.custom_azure_storage.AzureSearchStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
     AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
@@ -363,7 +362,7 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
     FILE_UPLOAD_HANDLERS.append(
