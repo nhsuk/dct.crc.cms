@@ -11,6 +11,7 @@ from campaignresourcecentre.custom_storages.custom_azure_file import (
 )
 from campaignresourcecentre.custom_storages.custom_azure_storage import (
     AzureMediaStorage,
+    SearchStorage,
 )
 from django.core.files.storage import default_storage
 
@@ -244,8 +245,8 @@ class AzureBlobUploadHandlerTestCase(unittest.TestCase):
 
 
 class AzureMediaStorageTestCase(unittest.TestCase):
-    def __init__(self, methodName: str = "runTest"):
-        super().__init__(methodName)
+    def __init__(self, method_name: str = "runTest"):
+        super().__init__(method_name)
         self.storage_class_to_mock = "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage"
         self.storage_mock_method_names = [
             "get_available_name",
@@ -299,3 +300,39 @@ class AzureMediaStorageTestCase(unittest.TestCase):
         self.storage.save(name, TEST_CONTENT)
 
         self.assertTrue(self.mocks["_save"].called)
+
+
+class SearchStorageTestCase(unittest.TestCase):
+    def setUp(self):
+        self.patches = {}
+        self.mocks = {}
+        self.patches["storages"] = patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.storages"
+        )
+        self.mocks["storages"] = self.patches["storages"].start()
+        self.mock_backend = MagicMock()
+        self.mocks["storages"].__getitem__.return_value = self.mock_backend
+
+    def tearDown(self):
+        for patch in self.patches.values():
+            patch.stop()
+
+    def test_search_storage_setup_uses_search_alias(self):
+        storage = SearchStorage()
+        storage._setup()
+
+        self.mocks["storages"].__getitem__.assert_called_with("search")
+        self.assertEqual(storage._wrapped, self.mock_backend)
+
+    def test_search_storage_setup_uses_custom_alias_from_settings(self):
+        self.patches["settings"] = patch(
+            "campaignresourcecentre.custom_storages.custom_azure_storage.settings"
+        )
+        self.mocks["settings"] = self.patches["settings"].start()
+        self.mocks["settings"].SEARCH_STORAGE_ALIAS = "custom_search"
+
+        storage = SearchStorage()
+        storage._setup()
+
+        self.mocks["storages"].__getitem__.assert_called_with("custom_search")
+        self.assertEqual(storage._wrapped, self.mock_backend)

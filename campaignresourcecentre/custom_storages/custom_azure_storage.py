@@ -3,7 +3,7 @@ from urllib.parse import urlparse, urlunparse
 from azure.storage.blob import ContentSettings
 from django.conf import settings
 from django.core.files import File
-from django.core.files.storage import get_storage_class
+from django.core.files.storage import storages
 from django.utils.functional import LazyObject
 from storages.backends.azure_storage import AzureStorage, AzureStorageFile, clean_name
 
@@ -124,9 +124,8 @@ class AzureSearchStorage(AzureStorage):
 
 class SearchStorage(LazyObject):
     def _setup(self):
-        self._wrapped = get_storage_class(
-            getattr(settings, "SEARCH_STORAGE_CLASS", settings.DEFAULT_FILE_STORAGE)
-        )()
+        alias = getattr(settings, "SEARCH_STORAGE_ALIAS", "search")
+        self._wrapped = storages[alias]
 
 
 search_storage = SearchStorage()

@@ -269,8 +269,7 @@ USE_TZ = True
 # The static files with this backend are generated when you run
 # "django-admin collectstatic".
 # http://whitenoise.evans.io/en/stable/#quickstart-for-django-apps
-# https://docs.djangoproject.com/en/stable/ref/settings/#staticfiles-storage
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# https://docs.djangoproject.com/en/stable/ref/settings/#std-setting-STORAGES
 
 # Place static files that need a specific URL (such as robots.txt and favicon.ico) in the "public" folder
 WHITENOISE_ROOT = os.path.join(BASE_DIR, "public")
@@ -323,18 +322,23 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 16  # Max memory size
 FILE_UPLOAD_TEMP_DIR = None
 
 # Azure storage configuration
-# https://docs.djangoproject.com/en/stable/ref/settings/#default-file-storage
+# https://docs.djangoproject.com/en/stable/ref/settings/#std-setting-STORAGES
 AZURE_CONTAINER = env.get("AZURE_CONTAINER", "")
 if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     # Add django-storages to the installed apps
     INSTALLED_APPS = INSTALLED_APPS + ["storages"]
 
-    DEFAULT_FILE_STORAGE = (
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage"
-    )
-    SEARCH_STORAGE_CLASS = (
-        "campaignresourcecentre.custom_storages.custom_azure_storage.AzureSearchStorage"
-    )
+    STORAGES = {
+        "default": {
+            "BACKEND": "campaignresourcecentre.custom_storages.custom_azure_storage.AzureMediaStorage",
+        },
+        "search": {
+            "BACKEND": "campaignresourcecentre.custom_storages.custom_azure_storage.AzureSearchStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
     AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
     AZURE_ACCOUNT_KEY = env["AZURE_ACCOUNT_KEY"]
     AZURE_SEARCH_CONTAINER = env["AZURE_SEARCH_CONTAINER"]
@@ -350,8 +354,17 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
         "campaignresourcecentre.custom_storages.custom_azure_uploader.AzureBlobUploadHandler"
     )
 else:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    SEARCH_STORAGE_CLASS = "django.core.files.storage.FileSystemStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "search": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
     FILE_UPLOAD_HANDLERS.append(
         "django.core.files.uploadhandler.TemporaryFileUploadHandler"
     )
