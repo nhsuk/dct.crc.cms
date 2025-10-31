@@ -61,6 +61,17 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         max_length=10, choices=PermissionRole.choices, default=PermissionRole.STANDARD
     )
 
+    @property
+    def parsed_tags(self):
+        if not self.taxonomy_json:
+            return ""
+        try:
+            items = json.loads(self.taxonomy_json)
+            labels = [item.get("label", "") for item in items if item.get("label")]
+            return ", ".join(labels)
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            return ""
+
     def search_indexable(self):
         return True
 
