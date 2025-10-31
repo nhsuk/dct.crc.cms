@@ -1,22 +1,32 @@
-import csv
-from datetime import datetime
-from io import StringIO
-
-from django.http import HttpResponse
+import django_filters
+from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.views.reports import ReportView
 
+from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
 
 
 class CampaignResourceFilterSet(WagtailFilterSet):
+    campaign = django_filters.ModelMultipleChoiceFilter(
+        label="Campaign",
+        queryset=CampaignPage.objects.live().order_by("title"),
+        widget=CheckboxSelectMultiple,
+        method="filter_campaign",
+    )
+
     class Meta:
         model = ResourcePage
-        fields = {
-            "title": ["icontains"],
-            "slug": ["icontains"],
-        }
+        fields = ["campaign"]
+
+    def filter_campaign(self, queryset, name, value):
+        if not value:
+            return queryset
+        filtered = ResourcePage.objects.none()
+        for campaign in value:
+            filtered |= queryset.child_of(campaign)
+        return filtered
 
 
 class CampaignResourceAuditReportView(ReportView):
