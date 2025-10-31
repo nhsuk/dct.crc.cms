@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "campaignresourcecentre.page_lifecycle",
     "campaignresourcecentre.paragon",
     "campaignresourcecentre.paragon_users",
+    "campaignresourcecentre.reports",
     "campaignresourcecentre.resources",
     "campaignresourcecentre.search",
     "campaignresourcecentre.standardpages",
