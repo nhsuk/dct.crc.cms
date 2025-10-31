@@ -1,0 +1,31 @@
+{% extends 'wagtailadmin/reports/base_report_results.html' %}
+{% load i18n %}
+
+{% block results %}
+    <table class="listing">
+        <thead>
+            <tr>
+                <th>{% trans "Type" %}</th>
+                <th>{% trans "Campaign" %}</th>
+                <th><a href="?ordering={% if request.GET.ordering == 'title' %}-{% endif %}title">{% trans "Title" %}</a></th>
+                <th><a href="?ordering={% if request.GET.ordering == 'slug' %}-{% endif %}slug">{% trans "Slug" %}</a></th>
+                <th>{% trans "Tags" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resource in object_list %}
+                <tr>
+                    <td>Resource</td>
+                    <td>{{ resource.get_parent.title }}</td>
+                    <td><a href="{% url 'wagtailadmin_pages:edit' resource.id %}">{{ resource.title }}</a></td>
+                    <td>{{ resource.slug }}</td>
+                    <td>{{ resource.parsed_tags }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block no_results_message %}
+    <p>{% trans "No resources found." %}</p>
+{% endblock %}

@@ -72,6 +72,15 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         except (json.JSONDecodeError, TypeError, AttributeError):
             return ""
 
+    @property
+    def resource_type(self):
+        return "Resource"
+
+    @property
+    def campaign_name(self):
+        parent = self.get_parent()
+        return parent.title if parent else ""
+
     def search_indexable(self):
         return True
 

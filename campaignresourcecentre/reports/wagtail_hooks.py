@@ -16,6 +16,11 @@ def register_report_urls():
             CampaignResourceAuditReportView.as_view(),
             name="campaign_resource_audit_report",
         ),
+        path(
+            "reports/campaign-resource-audit/results/",
+            CampaignResourceAuditReportView.as_view(results_only=True),
+            name="campaign_resource_audit_report_results",
+        ),
     ]
 
 
