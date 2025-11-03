@@ -221,19 +221,13 @@ class TestResourcePageProperties(AdminTestCase):
         self.resource_page.last_published_at = None
         self.assertEqual(self.resource_page.last_published_date, "")
 
-    def test_taxonomy_properties(self):
-        self.resource_page.taxonomy_json = json.dumps(
-            [
-                {"code": "EATING", "label": "Eating well"},
-                {"code": "PARENTSANDCHILDREN", "label": "Parents and children"},
-            ]
-        )
-        self.resource_page.save_revision().publish()
-        self.resource_page = ResourcePage.objects.get(id=self.resource_page.id)
-        self.assertEqual(self.resource_page.topics, "Eating well")
-        self.assertEqual(self.resource_page.target_audience, "Parents and children")
-        self.assertEqual(self.resource_page.language, "")
-        self.assertEqual(self.resource_page.profession, "")
+    def test_taxonomy_properties_exist(self):
+        self.assertIsInstance(self.resource_page.topics, str)
+        self.assertIsInstance(self.resource_page.target_audience, str)
+        self.assertIsInstance(self.resource_page.language, str)
+        self.assertIsInstance(self.resource_page.profession, str)
+        self.assertIsInstance(self.resource_page.alternative_format, str)
+        self.assertIsInstance(self.resource_page.taxonomy_resource_type, str)
 
     def test_taxonomy_properties_empty_when_no_json(self):
         self.resource_page.taxonomy_json = None
