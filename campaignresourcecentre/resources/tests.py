@@ -228,6 +228,8 @@ class TestResourcePageProperties(AdminTestCase):
                 {"code": "PARENTSANDCHILDREN", "label": "Parents and children"},
             ]
         )
+        self.resource_page.save()
+        self.resource_page.refresh_from_db()
         self.assertEqual(self.resource_page.topics, "Eating well")
         self.assertEqual(self.resource_page.target_audience, "Parents and children")
         self.assertEqual(self.resource_page.language, "")
