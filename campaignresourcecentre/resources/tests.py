@@ -13,6 +13,7 @@ from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from .models import ResourcePage, ResourceItem
 from .admin import ResourcePageAdmin, ResourceItemAdmin
+from datetime import datetime
 
 # Mock a request object and user with all permissions
 
@@ -177,3 +178,69 @@ class TestResourceItemAdmin(AdminTestCase):
             self.resource_item.clean()
         self.assertEqual({"sku": ["Please enter a SKU"]}, context.exception.args[0])
         self.resource_item.sku = sku
+
+
+class TestResourcePageProperties(AdminTestCase):
+    def setUp(self):
+        self.prepareTestData()
+
+    def test_campaign_name_returns_parent_title(self):
+        parent = self.resource_page.get_parent()
+        self.assertEqual(self.resource_page.campaign_name, parent.title)
+
+    def test_campaign_name_empty_when_no_parent(self):
+        orphan_page = ResourcePage(title="Test", summary="Test", description="Test")
+        self.assertEqual(orphan_page.campaign_name, "")
+
+    def test_admin_url_format(self):
+        result = self.resource_page.admin_url
+        self.assertIn("/crc-admin/pages/", result)
+        self.assertIn(f"/{self.resource_page.id}/edit/", result)
+
+    def test_publish_status_live(self):
+        self.resource_page.live = True
+        self.assertEqual(self.resource_page.publish_status, "Published")
+
+    def test_publish_status_not_live(self):
+        self.resource_page.live = False
+        self.assertEqual(self.resource_page.publish_status, "Draft")
+
+    def test_first_published_date_formatting(self):
+        self.resource_page.first_published_at = datetime(2025, 10, 18, 14, 43, 46)
+        self.assertEqual(self.resource_page.first_published_date, "2025-10-18 14:43")
+
+    def test_first_published_date_empty_when_none(self):
+        self.resource_page.first_published_at = None
+        self.assertEqual(self.resource_page.first_published_date, "")
+
+    def test_last_published_date_formatting(self):
+        self.resource_page.last_published_at = datetime(2025, 11, 3, 10, 30, 0)
+        self.assertEqual(self.resource_page.last_published_date, "2025-11-03 10:30")
+
+    def test_last_published_date_empty_when_none(self):
+        self.resource_page.last_published_at = None
+        self.assertEqual(self.resource_page.last_published_date, "")
+
+    def test_taxonomy_properties(self):
+        self.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "EATING", "label": "Eating well"},
+                {"code": "PARENTSANDCHILDREN", "label": "Parents and children"},
+            ]
+        )
+        self.assertEqual(self.resource_page.topics, "Eating well")
+        self.assertEqual(self.resource_page.target_audience, "Parents and children")
+        self.assertEqual(self.resource_page.language, "")
+        self.assertEqual(self.resource_page.profession, "")
+
+    def test_taxonomy_properties_empty_when_no_json(self):
+        self.resource_page.taxonomy_json = None
+        self.assertEqual(self.resource_page.topics, "")
+        self.assertEqual(self.resource_page.target_audience, "")
+        self.assertEqual(self.resource_page.language, "")
+        self.assertEqual(self.resource_page.profession, "")
+        self.assertEqual(self.resource_page.alternative_format, "")
+        self.assertEqual(self.resource_page.taxonomy_resource_type, "")
+
+    def test_objecttype(self):
+        self.assertEqual(self.resource_page.objecttype(), "resource")
