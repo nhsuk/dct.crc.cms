@@ -39,13 +39,35 @@ class CampaignResourceAuditReportView(ReportView):
     paginate_by = 25
     filterset_class = CampaignResourceFilterSet
 
-    list_export = ["resource_type", "campaign_name", "title", "slug", "parsed_tags"]
+    list_export = [
+        "objecttype",
+        "campaign_name",
+        "title",
+        "admin_url",
+        "topics",
+        "target_audience",
+        "language",
+        "profession",
+        "alternative_format",
+        "taxonomy_resource_type",
+        "first_published_date",
+        "last_published_date",
+        "publish_status",
+    ]
     export_headings = {
-        "resource_type": "Type",
+        "objecttype": "Type",
         "campaign_name": "Campaign",
         "title": "Title",
-        "slug": "Slug",
-        "parsed_tags": "Tags",
+        "admin_url": "Wagtail URL",
+        "topics": "Topics",
+        "target_audience": "Target Audience",
+        "language": "Language",
+        "profession": "Profession",
+        "alternative_format": "Alternative Format",
+        "taxonomy_resource_type": "Resource Type",
+        "first_published_date": "First Published",
+        "last_published_date": "Last Published",
+        "publish_status": "Status",
     }
 
     def get_queryset(self):
