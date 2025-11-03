@@ -36,7 +36,7 @@ class CampaignResourceAuditReportView(ReportView):
     results_template_name = "reports/campaign_resource_audit_results.html"
     page_title = _("Campaign Resource Audit")
     header_icon = "doc-full-inverse"
-    paginate_by = 25
+    paginate_by = 50
     filterset_class = CampaignResourceFilterSet
 
     list_export = [
