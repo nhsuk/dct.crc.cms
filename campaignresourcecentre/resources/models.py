@@ -94,6 +94,21 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return parent.title if parent else ""
 
     @property
+    def parent_campaign_chain(self):
+        """
+        Returns the full parent campaign chain for a resource.
+        Format: "Campaign > Sub Campaign > Resource"
+        """
+        from campaignresourcecentre.campaigns.models import CampaignPage
+
+        campaigns = [
+            page.title
+            for page in self.get_ancestors()
+            if isinstance(page.specific, CampaignPage)
+        ]
+        return " > ".join(campaigns)
+
+    @property
     def admin_url(self):
         base_url = settings.WAGTAILADMIN_BASE_URL.rstrip("/")
         return f"{base_url}/crc-admin/pages/{self.id}/edit/"

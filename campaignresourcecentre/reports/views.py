@@ -43,7 +43,7 @@ class CampaignResourceAuditReportView(ReportView):
 
     export_headings = {
         "objecttype": "Type",
-        "campaign_name": "Campaign",
+        "parent_campaign_chain": "Campaign Hierarchy",
         "title": "Title",
         "admin_url": "Wagtail URL",
         "topics": "Topics",

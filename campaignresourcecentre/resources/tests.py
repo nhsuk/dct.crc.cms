@@ -192,6 +192,36 @@ class TestResourcePageProperties(AdminTestCase):
         orphan_page = ResourcePage(title="Test", summary="Test", description="Test")
         self.assertEqual(orphan_page.campaign_name, "")
 
+    def test_parent_campaign_chain_single_level(self):
+        parent = self.resource_page.get_parent()
+        result = self.resource_page.parent_campaign_chain
+        self.assertEqual(result, parent.title)
+
+    def test_parent_campaign_chain_nested_campaigns(self):
+        child_campaign = CampaignPage(
+            title="Child Campaign",
+            summary="Child summary",
+            description="Child description",
+            image=self.campaign_page.image,
+        )
+        self.campaign_page.add_child(instance=child_campaign)
+        child_campaign.save()
+
+        nested_resource = ResourcePage(
+            title="Nested Resource",
+            summary="Test summary",
+            description="Test description",
+        )
+        child_campaign.add_child(instance=nested_resource)
+        nested_resource.save()
+
+        result = nested_resource.parent_campaign_chain
+        self.assertEqual(result, f"{self.campaign_page.title} > {child_campaign.title}")
+
+    def test_parent_campaign_chain_empty_when_no_parent(self):
+        orphan_page = ResourcePage(title="Test", summary="Test", description="Test")
+        self.assertEqual(orphan_page.parent_campaign_chain, "")
+
     def test_admin_url_format(self):
         result = self.resource_page.admin_url
         self.assertIn("/crc-admin/pages/", result)
