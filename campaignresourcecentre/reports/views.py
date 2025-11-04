@@ -21,8 +21,10 @@ class CampaignResourceFilterSet(WagtailFilterSet):
         fields = ["campaign"]
 
     def filter_campaign(self, queryset, name, value):
+        """Filter resources that are children of the selected campaigns."""
         if not value:
             return queryset
+
         filtered = ResourcePage.objects.none()
         for campaign in value:
             filtered |= queryset.child_of(campaign)
