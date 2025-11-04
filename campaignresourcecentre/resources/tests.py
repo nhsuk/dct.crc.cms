@@ -13,6 +13,7 @@ from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from .models import ResourcePage, ResourceItem
 from .admin import ResourcePageAdmin, ResourceItemAdmin
+from datetime import datetime
 
 # Mock a request object and user with all permissions
 
@@ -177,3 +178,87 @@ class TestResourceItemAdmin(AdminTestCase):
             self.resource_item.clean()
         self.assertEqual({"sku": ["Please enter a SKU"]}, context.exception.args[0])
         self.resource_item.sku = sku
+
+
+class TestResourcePageProperties(AdminTestCase):
+    def setUp(self):
+        self.prepareTestData()
+
+    def test_parent_campaign_chain_single_level(self):
+        parent = self.resource_page.get_parent()
+        result = self.resource_page.parent_campaign_chain
+        self.assertEqual(result, parent.title)
+
+    def test_parent_campaign_chain_nested_campaigns(self):
+        child_campaign = CampaignPage(
+            title="Child Campaign",
+            summary="Child summary",
+            description="Child description",
+            image=self.campaign_page.image,
+        )
+        self.campaign_page.add_child(instance=child_campaign)
+        child_campaign.save()
+
+        nested_resource = ResourcePage(
+            title="Nested Resource",
+            summary="Test summary",
+            description="Test description",
+        )
+        child_campaign.add_child(instance=nested_resource)
+        nested_resource.save()
+
+        result = nested_resource.parent_campaign_chain
+        self.assertEqual(result, f"{self.campaign_page.title} > {child_campaign.title}")
+
+    def test_parent_campaign_chain_empty_when_no_parent(self):
+        orphan_page = ResourcePage(title="Test", summary="Test", description="Test")
+        self.assertEqual(orphan_page.parent_campaign_chain, "")
+
+    def test_admin_url_format(self):
+        result = self.resource_page.admin_url
+        self.assertIn("/crc-admin/pages/", result)
+        self.assertIn(f"/{self.resource_page.id}/edit/", result)
+
+    def test_publish_status_live(self):
+        self.resource_page.live = True
+        self.assertEqual(self.resource_page.publish_status, "Published")
+
+    def test_publish_status_not_live(self):
+        self.resource_page.live = False
+        self.assertEqual(self.resource_page.publish_status, "Draft")
+
+    def test_first_published_date_formatting(self):
+        self.resource_page.first_published_at = datetime(2025, 10, 18, 14, 43, 46)
+        self.assertEqual(self.resource_page.first_published_date, "2025-10-18 14:43")
+
+    def test_first_published_date_empty_when_none(self):
+        self.resource_page.first_published_at = None
+        self.assertEqual(self.resource_page.first_published_date, "")
+
+    def test_last_published_date_formatting(self):
+        self.resource_page.last_published_at = datetime(2025, 11, 3, 10, 30, 0)
+        self.assertEqual(self.resource_page.last_published_date, "2025-11-03 10:30")
+
+    def test_last_published_date_empty_when_none(self):
+        self.resource_page.last_published_at = None
+        self.assertEqual(self.resource_page.last_published_date, "")
+
+    def test_taxonomy_properties_exist(self):
+        self.assertIsInstance(self.resource_page.topics, str)
+        self.assertIsInstance(self.resource_page.target_audience, str)
+        self.assertIsInstance(self.resource_page.language, str)
+        self.assertIsInstance(self.resource_page.profession, str)
+        self.assertIsInstance(self.resource_page.alternative_format, str)
+        self.assertIsInstance(self.resource_page.taxonomy_resource_type, str)
+
+    def test_taxonomy_properties_empty_when_no_json(self):
+        self.resource_page.taxonomy_json = None
+        self.assertEqual(self.resource_page.topics, "")
+        self.assertEqual(self.resource_page.target_audience, "")
+        self.assertEqual(self.resource_page.language, "")
+        self.assertEqual(self.resource_page.profession, "")
+        self.assertEqual(self.resource_page.alternative_format, "")
+        self.assertEqual(self.resource_page.taxonomy_resource_type, "")
+
+    def test_objecttype(self):
+        self.assertEqual(self.resource_page.objecttype(), "resource")

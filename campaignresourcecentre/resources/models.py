@@ -6,6 +6,7 @@ from urllib.parse import quote
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.conf import settings
 from modelcluster.fields import ParentalKey
 
 from wagtail.admin.panels import (
@@ -60,6 +61,74 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     permission_role = models.CharField(
         max_length=10, choices=PermissionRole.choices, default=PermissionRole.STANDARD
     )
+
+    @property
+    def topics(self):
+        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TOPIC")
+
+    @property
+    def target_audience(self):
+        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TARGAUD")
+
+    @property
+    def language(self):
+        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "LANGUAGE")
+
+    @property
+    def profession(self):
+        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "PROF")
+
+    @property
+    def alternative_format(self):
+        return get_taxonomies(
+            json.loads(self.taxonomy_json or "[]"), "ALTERNATIVEFORMAT"
+        )
+
+    @property
+    def taxonomy_resource_type(self):
+        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TYPE")
+
+    @property
+    def parent_campaign_chain(self):
+        """
+        Returns the full parent campaign chain for a resource.
+        Format: "Campaign > Sub Campaign > Resource"
+        """
+        from campaignresourcecentre.campaigns.models import CampaignPage
+
+        campaigns = [
+            page.title
+            for page in self.get_ancestors()
+            if isinstance(page.specific, CampaignPage)
+        ]
+        return " > ".join(campaigns)
+
+    @property
+    def admin_url(self):
+        base_url = settings.WAGTAILADMIN_BASE_URL.rstrip("/")
+        return f"{base_url}/crc-admin/pages/{self.id}/edit/"
+
+    @property
+    def publish_status(self):
+        if self.live:
+            return "Published"
+        return "Draft"
+
+    @property
+    def first_published_date(self):
+        return (
+            self.first_published_at.strftime("%Y-%m-%d %H:%M")
+            if self.first_published_at
+            else ""
+        )
+
+    @property
+    def last_published_date(self):
+        return (
+            self.last_published_at.strftime("%Y-%m-%d %H:%M")
+            if self.last_published_at
+            else ""
+        )
 
     def search_indexable(self):
         return True
