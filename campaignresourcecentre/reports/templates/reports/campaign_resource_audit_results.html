@@ -5,7 +5,6 @@
     <table class="listing">
         <thead>
             <tr>
-                <th>{% trans "Type" %}</th>
                 <th>{% trans "Campaign" %}</th>
                 <th>{% trans "Title" %}</th>
                 <th>{% trans "Wagtail URL" %}</th>
@@ -23,7 +22,6 @@
         <tbody>
             {% for resource in object_list %}
                 <tr>
-                    <td>{{ resource.objecttype|title }}</td>
                     <td>{{ resource.campaign_name }}</td>
                     <td>{{ resource.title }}</td>
                     <td><a href="{{ resource.admin_url }}" target="_blank">{% trans "Edit page" %}</a></td>
