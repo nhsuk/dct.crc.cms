@@ -184,14 +184,6 @@ class TestResourcePageProperties(AdminTestCase):
     def setUp(self):
         self.prepareTestData()
 
-    def test_campaign_name_returns_parent_title(self):
-        parent = self.resource_page.get_parent()
-        self.assertEqual(self.resource_page.campaign_name, parent.title)
-
-    def test_campaign_name_empty_when_no_parent(self):
-        orphan_page = ResourcePage(title="Test", summary="Test", description="Test")
-        self.assertEqual(orphan_page.campaign_name, "")
-
     def test_parent_campaign_chain_single_level(self):
         parent = self.resource_page.get_parent()
         result = self.resource_page.parent_campaign_chain

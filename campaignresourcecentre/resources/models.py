@@ -89,11 +89,6 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TYPE")
 
     @property
-    def campaign_name(self):
-        parent = self.get_parent()
-        return parent.title if parent else ""
-
-    @property
     def parent_campaign_chain(self):
         """
         Returns the full parent campaign chain for a resource.
