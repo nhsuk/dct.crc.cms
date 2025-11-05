@@ -1,3 +1,4 @@
+import json
 import django_filters
 from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +7,17 @@ from wagtail.admin.views.reports import ReportView
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
+from campaignresourcecentre.core.templatetags.json_lookup import data as taxonomy_data
+
+
+def get_all_taxonomy_terms():
+    """Get all taxonomy terms as choices for filtering."""
+    choices = []
+    for category in taxonomy_data:
+        for item in category["children"]:
+            choices.append((item["code"], item["label"]))
+
+    return sorted(choices, key=lambda x: x[1])
 
 
 class CampaignResourceFilterSet(WagtailFilterSet):
@@ -16,18 +28,40 @@ class CampaignResourceFilterSet(WagtailFilterSet):
         method="filter_campaign",
     )
 
+    taxonomy = django_filters.MultipleChoiceFilter(
+        label="Taxonomy",
+        choices=get_all_taxonomy_terms,
+        widget=CheckboxSelectMultiple,
+        method="filter_taxonomy",
+    )
+
     class Meta:
         model = ResourcePage
-        fields = ["campaign"]
+        fields = ["campaign", "taxonomy"]
 
     def filter_campaign(self, queryset, name, value):
         """Filter resources that are children of the selected campaigns."""
         if not value:
             return queryset
 
-        filtered = ResourcePage.objects.none()
         for campaign in value:
-            filtered |= queryset.child_of(campaign)
+            filtered = queryset.descendant_of(campaign)
+        return filtered
+
+    def filter_taxonomy(self, queryset, name, value):
+        """Filter resources by taxonomy terms."""
+        if not value:
+            return queryset
+
+        matching_ids = []
+        for resource in queryset:
+            terms = json.loads(resource.taxonomy_json or "[]")
+            codes = [term["code"] for term in terms]
+
+            if all(selected_code in codes for selected_code in value):
+                matching_ids.append(resource.id)
+
+        filtered = queryset.filter(id__in=matching_ids)
         return filtered
 
 
