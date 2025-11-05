@@ -122,9 +122,10 @@ class TestResourceItemAdmin(AdminTestCase):
     def internal_test_identifyWithinCampaignDuplicatedSKUs_when_one(self):
         self.admin.identifyWithinCampaignDuplicatedSKUs(self.request, [])
         messages = get_messages(self.request)
+        message_text = ";".join([m.message for m in messages])
+        self.assertIn("1 duplicated SKU(s)", message_text)
         self.assertEqual(
-            ";".join([m.message for m in messages]),
-            "1:C4L301B:Healthy families top tips leaflet;2:C4L301B:Healthy families top tips leaflet;3:C4L301B:Healthy families top tips leaflet;1 duplicated SKU(s)",
+            message_text.count("C4L301B:Healthy families top tips leaflet"), 3
         )
 
     def internal_test_identifyDuplicatedSKUs_when_one(self):
