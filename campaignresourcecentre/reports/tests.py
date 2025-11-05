@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
@@ -12,7 +12,7 @@ from campaignresourcecentre.reports.views import (
 from campaignresourcecentre.resources.models import ResourcePage
 
 
-class TestCampaignResourceFilterSet(TestCase):
+class TestCampaignResourceFilterSet(TransactionTestCase):
     def setUp(self):
         test_data = PrepareTestData()
         self.resource_page = test_data.resource_page
@@ -21,10 +21,6 @@ class TestCampaignResourceFilterSet(TestCase):
             [{"code": "ADULTS", "label": "Adults"}, {"code": "FLU", "label": "Flu"}]
         )
         self.resource_page.save()
-
-    def tearDown(self):
-        ResourcePage.objects.all().delete()
-        CampaignPage.objects.all().delete()
 
     def test_get_all_taxonomy_terms_returns_sorted_list(self):
         terms = get_all_taxonomy_terms()
