@@ -13,14 +13,15 @@ from campaignresourcecentre.resources.models import ResourcePage
 
 
 class TestCampaignResourceFilterSet(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         test_data = PrepareTestData()
-        self.resource_page = test_data.resource_page
-        self.campaign_page = test_data.campaign_page
-        self.resource_page.taxonomy_json = json.dumps(
+        cls.resource_page = test_data.resource_page
+        cls.campaign_page = test_data.campaign_page
+        cls.resource_page.taxonomy_json = json.dumps(
             [{"code": "ADULTS", "label": "Adults"}, {"code": "FLU", "label": "Flu"}]
         )
-        self.resource_page.save()
+        cls.resource_page.save()
 
     def test_get_all_taxonomy_terms_returns_sorted_list(self):
         terms = get_all_taxonomy_terms()
