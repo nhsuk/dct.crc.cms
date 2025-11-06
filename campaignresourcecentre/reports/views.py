@@ -1,4 +1,3 @@
-import json
 import django_filters
 from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
@@ -55,7 +54,7 @@ class CampaignResourceFilterSet(WagtailFilterSet):
 
         matching_ids = []
         for resource in queryset:
-            terms = json.loads(resource.taxonomy_json or "[]")
+            terms = resource.taxonomy
             codes = [term["code"] for term in terms]
 
             if all(selected_code in codes for selected_code in value):

@@ -63,30 +63,32 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     )
 
     @property
+    def taxonomy(self):
+        return json.loads(self.taxonomy_json or "[]")
+
+    @property
     def topics(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TOPIC")
+        return get_taxonomies(self.taxonomy, "TOPIC")
 
     @property
     def target_audience(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TARGAUD")
+        return get_taxonomies(self.taxonomy, "TARGAUD")
 
     @property
     def language(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "LANGUAGE")
+        return get_taxonomies(self.taxonomy, "LANGUAGE")
 
     @property
     def profession(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "PROF")
+        return get_taxonomies(self.taxonomy, "PROF")
 
     @property
     def alternative_format(self):
-        return get_taxonomies(
-            json.loads(self.taxonomy_json or "[]"), "ALTERNATIVEFORMAT"
-        )
+        return get_taxonomies(self.taxonomy, "ALTERNATIVEFORMAT")
 
     @property
     def taxonomy_resource_type(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TYPE")
+        return get_taxonomies(self.taxonomy, "TYPE")
 
     @property
     def all_taxonomy_tags(self):
@@ -249,9 +251,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def get_context(self, request, *args, **kwargs):
         """Adds data to the template context for display on the page."""
 
-        json_data = {}
-        if self.taxonomy_json:
-            json_data = json.loads(self.taxonomy_json)
+        json_data = self.taxonomy
 
         context = super().get_context(request, *args, **kwargs)
         user_role = (
