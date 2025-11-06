@@ -85,9 +85,9 @@ class CampaignResourceAuditReportView(ReportView):
         "profession": "Profession",
         "alternative_format": "Alternative Format",
         "taxonomy_resource_type": "Resource Type",
-        "first_published_date": "First Published",
-        "last_published_date": "Last Published",
-        "publish_status": "Status",
+        "first_published_at": "First Published",
+        "last_published_at": "Last Published",
+        "live": "Published Status",
     }
 
     list_export = list(export_headings.keys())

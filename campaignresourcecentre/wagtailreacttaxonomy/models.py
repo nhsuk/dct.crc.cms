@@ -93,6 +93,10 @@ def to_json(data):
 class TaxonomyMixin(models.Model):
     taxonomy_json = models.TextField(null=True, blank=True)
 
+    @property
+    def taxonomy(self):
+        return json.loads(self.taxonomy_json or "[]")
+
     class Meta:
         abstract = True
 

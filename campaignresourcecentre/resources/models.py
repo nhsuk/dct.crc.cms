@@ -63,10 +63,6 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     )
 
     @property
-    def taxonomy(self):
-        return json.loads(self.taxonomy_json or "[]")
-
-    @property
     def topics(self):
         return get_taxonomies(self.taxonomy, "TOPIC")
 
@@ -128,28 +124,6 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def admin_url(self):
         base_url = settings.WAGTAILADMIN_BASE_URL.rstrip("/")
         return f"{base_url}/crc-admin/pages/{self.id}/edit/"
-
-    @property
-    def publish_status(self):
-        if self.live:
-            return "Published"
-        return "Draft"
-
-    @property
-    def first_published_date(self):
-        return (
-            self.first_published_at.strftime("%Y-%m-%d %H:%M")
-            if self.first_published_at
-            else ""
-        )
-
-    @property
-    def last_published_date(self):
-        return (
-            self.last_published_at.strftime("%Y-%m-%d %H:%M")
-            if self.last_published_at
-            else ""
-        )
 
     def search_indexable(self):
         return True

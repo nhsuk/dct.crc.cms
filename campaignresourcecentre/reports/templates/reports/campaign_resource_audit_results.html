@@ -1,5 +1,5 @@
 {% extends 'wagtailadmin/reports/base_report_results.html' %}
-{% load i18n %}
+{% load i18n wagtailadmin_tags %}
 
 {% block results %}
     <table class="listing">
@@ -17,11 +17,15 @@
             {% for resource in object_list %}
                 <tr>
                     <td>{{ resource.parent_campaign_chain }}</td>
-                    <td><a href="{{ resource.admin_url }}" target="_blank">{{ resource.title }}</a></td>
+                    <td>
+                        <a href="{% url 'wagtailadmin_pages:edit' resource.id %}">
+                            {{ resource.get_admin_display_title }}
+                        </a>
+                    </td>
                     <td>{{ resource.all_taxonomy_tags }}</td>
-                    <td>{{ resource.first_published_date }}</td>
-                    <td>{{ resource.last_published_date }}</td>
-                    <td>{{ resource.publish_status }}</td>
+                    <td>{% human_readable_date resource.first_published_at %}</td>
+                    <td>{% human_readable_date resource.last_published_at %}</td>
+                    <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=resource %}</td>
                 </tr>
             {% endfor %}
         </tbody>

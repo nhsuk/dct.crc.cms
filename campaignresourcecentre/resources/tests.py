@@ -216,35 +216,6 @@ class TestResourcePageProperties(AdminTestCase):
         orphan_page = ResourcePage(title="Test", summary="Test", description="Test")
         self.assertEqual(orphan_page.parent_campaign_chain, "")
 
-    def test_admin_url_format(self):
-        result = self.resource_page.admin_url
-        self.assertIn("/crc-admin/pages/", result)
-        self.assertIn(f"/{self.resource_page.id}/edit/", result)
-
-    def test_publish_status_live(self):
-        self.resource_page.live = True
-        self.assertEqual(self.resource_page.publish_status, "Published")
-
-    def test_publish_status_not_live(self):
-        self.resource_page.live = False
-        self.assertEqual(self.resource_page.publish_status, "Draft")
-
-    def test_first_published_date_formatting(self):
-        self.resource_page.first_published_at = datetime(2025, 10, 18, 14, 43, 46)
-        self.assertEqual(self.resource_page.first_published_date, "2025-10-18 14:43")
-
-    def test_first_published_date_empty_when_none(self):
-        self.resource_page.first_published_at = None
-        self.assertEqual(self.resource_page.first_published_date, "")
-
-    def test_last_published_date_formatting(self):
-        self.resource_page.last_published_at = datetime(2025, 11, 3, 10, 30, 0)
-        self.assertEqual(self.resource_page.last_published_date, "2025-11-03 10:30")
-
-    def test_last_published_date_empty_when_none(self):
-        self.resource_page.last_published_at = None
-        self.assertEqual(self.resource_page.last_published_date, "")
-
     def test_taxonomy_properties_exist(self):
         self.assertIsInstance(self.resource_page.topics, str)
         self.assertIsInstance(self.resource_page.target_audience, str)
