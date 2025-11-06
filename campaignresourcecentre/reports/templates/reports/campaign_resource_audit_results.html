@@ -23,8 +23,8 @@
                         </a>
                     </td>
                     <td>{{ resource.all_taxonomy_tags }}</td>
-                    <td>{% human_readable_date resource.first_published_at %}</td>
-                    <td>{% human_readable_date resource.last_published_at %}</td>
+                    <td>{% if resource.first_published_at %}{% human_readable_date resource.first_published_at %}{% else %}—{% endif %}</td>
+                    <td>{% if resource.last_published_at %}{% human_readable_date resource.last_published_at %}{% else %}—{% endif %}</td>
                     <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=resource %}</td>
                 </tr>
             {% endfor %}
