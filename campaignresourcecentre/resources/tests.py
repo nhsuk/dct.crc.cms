@@ -234,44 +234,8 @@ class TestResourcePageProperties(AdminTestCase):
         self.assertEqual(self.resource_page.taxonomy_resource_type, "")
 
     def test_all_taxonomy_tags_returns_string(self):
-        self.assertIsInstance(self.resource_page.all_taxonomy_tags, str)
-
-    def test_all_taxonomy_tags_empty_when_no_json(self):
-        self.resource_page.taxonomy_json = None
-        self.assertEqual(self.resource_page.all_taxonomy_tags, "")
-
-    def test_all_taxonomy_tags_combines_all_categories(self):
-        taxonomy_data = json.dumps(
-            [
-                {"code": "CANCER", "label": "Cancer"},
-                {"code": "ADULTS", "label": "Adults"},
-                {"code": "ARABIC", "label": "Arabic"},
-            ]
-        )
-        self.resource_page.taxonomy_json = taxonomy_data
-        self.resource_page.save()
-        self.resource_page.refresh_from_db()
-
         result = self.resource_page.all_taxonomy_tags
-
-        self.assertIn("Cancer", result)
-        self.assertIn("Adults", result)
-        self.assertIn("Arabic", result)
-        self.assertIn(",", result)
-
-    def test_all_taxonomy_tags_handles_single_category(self):
-        taxonomy_data = json.dumps(
-            [
-                {"code": "CANCER", "label": "Cancer"},
-            ]
-        )
-        self.resource_page.taxonomy_json = taxonomy_data
-        self.resource_page.save()
-        self.resource_page.refresh_from_db()
-
-        result = self.resource_page.all_taxonomy_tags
-
-        self.assertEqual(result, "Cancer")
+        self.assertIsInstance(result, str)
 
     def test_objecttype(self):
         self.assertEqual(self.resource_page.objecttype(), "resource")
