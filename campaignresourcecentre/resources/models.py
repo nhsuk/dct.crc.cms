@@ -89,6 +89,25 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TYPE")
 
     @property
+    def all_taxonomy_tags(self):
+        tags = []
+
+        categories = [
+            self.topics,
+            self.target_audience,
+            self.language,
+            self.profession,
+            self.alternative_format,
+            self.taxonomy_resource_type,
+        ]
+
+        for category_value in categories:
+            if category_value:
+                tags.append(category_value)
+
+        return ", ".join(tags)
+
+    @property
     def parent_campaign_chain(self):
         """
         Returns the full parent campaign chain for a resource.
