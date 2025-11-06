@@ -64,29 +64,46 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
 
     @property
     def topics(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TOPIC")
+        return get_taxonomies(self.taxonomy, "TOPIC")
 
     @property
     def target_audience(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TARGAUD")
+        return get_taxonomies(self.taxonomy, "TARGAUD")
 
     @property
     def language(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "LANGUAGE")
+        return get_taxonomies(self.taxonomy, "LANGUAGE")
 
     @property
     def profession(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "PROF")
+        return get_taxonomies(self.taxonomy, "PROF")
 
     @property
     def alternative_format(self):
-        return get_taxonomies(
-            json.loads(self.taxonomy_json or "[]"), "ALTERNATIVEFORMAT"
-        )
+        return get_taxonomies(self.taxonomy, "ALTERNATIVEFORMAT")
 
     @property
     def taxonomy_resource_type(self):
-        return get_taxonomies(json.loads(self.taxonomy_json or "[]"), "TYPE")
+        return get_taxonomies(self.taxonomy, "TYPE")
+
+    @property
+    def all_taxonomy_tags(self):
+        tags = []
+
+        categories = [
+            self.topics,
+            self.target_audience,
+            self.language,
+            self.profession,
+            self.alternative_format,
+            self.taxonomy_resource_type,
+        ]
+
+        for category_value in categories:
+            if category_value:
+                tags.append(category_value)
+
+        return ", ".join(tags)
 
     @property
     def parent_campaign_chain(self):
@@ -107,28 +124,6 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def admin_url(self):
         base_url = settings.WAGTAILADMIN_BASE_URL.rstrip("/")
         return f"{base_url}/crc-admin/pages/{self.id}/edit/"
-
-    @property
-    def publish_status(self):
-        if self.live:
-            return "Published"
-        return "Draft"
-
-    @property
-    def first_published_date(self):
-        return (
-            self.first_published_at.strftime("%Y-%m-%d %H:%M")
-            if self.first_published_at
-            else ""
-        )
-
-    @property
-    def last_published_date(self):
-        return (
-            self.last_published_at.strftime("%Y-%m-%d %H:%M")
-            if self.last_published_at
-            else ""
-        )
 
     def search_indexable(self):
         return True
@@ -230,9 +225,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def get_context(self, request, *args, **kwargs):
         """Adds data to the template context for display on the page."""
 
-        json_data = {}
-        if self.taxonomy_json:
-            json_data = json.loads(self.taxonomy_json)
+        json_data = self.taxonomy
 
         context = super().get_context(request, *args, **kwargs)
         user_role = (

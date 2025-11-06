@@ -1,5 +1,5 @@
 {% extends 'wagtailadmin/reports/base_report_results.html' %}
-{% load i18n %}
+{% load i18n wagtailadmin_tags %}
 
 {% block results %}
     <table class="listing">
@@ -7,13 +7,7 @@
             <tr>
                 <th>{% trans "Campaign Hierarchy" %}</th>
                 <th>{% trans "Title" %}</th>
-                <th>{% trans "Wagtail URL" %}</th>
-                <th>{% trans "Topics" %}</th>
-                <th>{% trans "Target Audience" %}</th>
-                <th>{% trans "Language" %}</th>
-                <th>{% trans "Profession" %}</th>
-                <th>{% trans "Alternative Format" %}</th>
-                <th>{% trans "Resource Type" %}</th>
+                <th>{% trans "Taxonomy Tags" %}</th>
                 <th>{% trans "First Published" %}</th>
                 <th>{% trans "Last Published" %}</th>
                 <th>{% trans "Status" %}</th>
@@ -23,17 +17,15 @@
             {% for resource in object_list %}
                 <tr>
                     <td>{{ resource.parent_campaign_chain }}</td>
-                    <td>{{ resource.title }}</td>
-                    <td><a href="{{ resource.admin_url }}" target="_blank">{% trans "Edit page" %}</a></td>
-                    <td>{{ resource.topics }}</td>
-                    <td>{{ resource.target_audience }}</td>
-                    <td>{{ resource.language }}</td>
-                    <td>{{ resource.profession }}</td>
-                    <td>{{ resource.alternative_format }}</td>
-                    <td>{{ resource.taxonomy_resource_type }}</td>
-                    <td>{{ resource.first_published_date }}</td>
-                    <td>{{ resource.last_published_date }}</td>
-                    <td>{{ resource.publish_status }}</td>
+                    <td>
+                        <a href="{% url 'wagtailadmin_pages:edit' resource.id %}">
+                            {{ resource.get_admin_display_title }}
+                        </a>
+                    </td>
+                    <td>{{ resource.all_taxonomy_tags }}</td>
+                    <td>{% if resource.first_published_at %}{% human_readable_date resource.first_published_at %}{% else %}—{% endif %}</td>
+                    <td>{% if resource.last_published_at %}{% human_readable_date resource.last_published_at %}{% else %}—{% endif %}</td>
+                    <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=resource %}</td>
                 </tr>
             {% endfor %}
         </tbody>
