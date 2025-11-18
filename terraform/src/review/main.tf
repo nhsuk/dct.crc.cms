@@ -1,11 +1,12 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=0.4.1"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=1.4.1"
 
   environment                  = local.environment
   org                          = local.org
   app                          = local.app
   short_app_name               = local.short_app_name
   app_image                    = "dct/crc-cms:${var.crc_cms_version}"
+  haproxy_image                = "dct/haproxy-front-door:1.0.1"
   container_registry           = "dctcampaignsacrproduks.azurecr.io"
   healthcheck_path             = "/"
   dev_instance                 = var.dev_instance
@@ -20,5 +21,7 @@ module "aca_wagtail" {
   init_config                  = local.init_config
   init_secrets                 = local.init_secrets
   app_secrets                  = local.app_secrets
-  alerts_action_group_id       = data.azurerm_monitor_action_group.action_group.id
+  alerts_action_group_id       = null
+  enable_alerts                = false
+  existing_secrets             = true
 }

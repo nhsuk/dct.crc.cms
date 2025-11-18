@@ -21,8 +21,3 @@ data "azurerm_key_vault" "wagtail" {
   name                = "${local.org}-${local.short_app_name}-kv-app-${local.environment}-${local.region}"
   resource_group_name = data.azurerm_resource_group.wagtail.name
 }
-
-data "azurerm_monitor_action_group" "action_group" {
-  name                = "${local.org}-${local.app}-ag-${local.environment}-${local.region}"
-  resource_group_name = data.azurerm_resource_group.wagtail.name
-}
