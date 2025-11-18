@@ -79,3 +79,30 @@ variable "dr_deployed" {
   description = "Optional flag in primary region to say there is a DR site that should be added to the front door"
   default     = false
 }
+
+variable "container_resources" {
+  description = "Container resource management/scaling configuration"
+  type = object({
+    haproxy = object({
+      cpu                 = number
+      memory              = string
+      min_replicas        = number
+      max_replicas        = number
+      concurrent_requests = number
+    }),
+    redis = object({
+      cpu                 = number
+      memory              = string
+      min_replicas        = number
+      max_replicas        = number
+      concurrent_requests = number
+    }),
+    wagtail = object({
+      cpu                 = number
+      memory              = string
+      min_replicas        = number
+      max_replicas        = number
+      concurrent_requests = number
+    })
+  })
+}

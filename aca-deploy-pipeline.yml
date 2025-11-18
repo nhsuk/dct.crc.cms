@@ -14,6 +14,10 @@ parameters:
     displayName: Force Deploy Review
     type: boolean
     default: true # For fast testing
+  - name: imageTag
+    displayName: Image version to deploy (default is review-<branch-name>, other options include latest or pr-1)
+    type: string
+    default: default
   - name: reviewUsername
     displayName: Review Username
     type: string
@@ -29,20 +33,16 @@ variables:
     value: dev
   - name: region
     value: uks
-  - name: tag
-    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-      value: pr-$(System.PullRequest.PullRequestNumber)
-    ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-      value: $(Build.SourceBranchName)
-    ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-      value: main-$(Build.SourceVersion)
-    ${{ else }}:
-      value: review-$(Build.SourceBranchName)
   - name: devInstance
     ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
       value: pr-$(System.PullRequest.PullRequestNumber)
     ${{ else }}:
       value: $[lower(variables['Build.SourceBranchName'])]
+  - name: tag
+    ${{ if eq(parameters.imageTag, 'default') }}:
+      value: $[format('review-{0}', variables['Build.SourceBranchName'])]
+    ${{ else }}:
+      value: ${{ parameters.imageTag }}
 
 resources:
   repositories:
@@ -94,52 +94,9 @@ stages:
                 -c "CREATE DATABASE \"$(devInstance)\" WITH TEMPLATE $(default--db-name) OWNER $(default--db-user);" \
                 -c "\connect \"$(devInstance)\";"
             displayName: Create review database
+            condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
             env:
               PGPASSWORD: $(postgresqlAdminPassword)
-
-          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
-            displayName: Install latest Terraform
-
-          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-            displayName: Initialise
-            inputs:
-              command: init
-              workingDirectory: terraform/src/review
-              backendType: azurerm
-              backendServiceArm: $(azureSubscription)
-              backendAzureRmResourceGroupName: dct-crccms-platform-rg-$(environment)-$(region)
-              backendAzureRmStorageAccountName: crccmstfst$(environment)$(region)
-              backendAzureRmKey: terraform-$(devInstance)-apps.tfstate
-
-          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-            displayName: Plan
-            inputs:
-              command: plan
-              workingDirectory: terraform/src/review
-              environmentServiceName: $(azureSubscription)
-              commandOptions: >
-                -var dev_instance=$(devInstance)
-                -var crc_cms_version=latest
-                -var username=${{ parameters.reviewUsername }}
-                -var sha_512_password=${{ parameters.reviewPasswordHash }}
-                -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
-                -detailed-exitcode
-              publishPlanResults: $(environment)_plan
-
-          - ${{ if eq(parameters.dryRun, 'true') }}:
-              - script: |
-                  echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
-                  echo "##vso[task.complete result=SucceededWithIssues;]"
-                displayName: Dry Run - skipping apply
-
-          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-            displayName: Apply
-            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne('${{ parameters.dryRun }}', 'True'))
-            inputs:
-              command: apply
-              workingDirectory: terraform/src/review
-              environmentServiceName: $(azureSubscription)
-              commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
           - task: AzureCLI@2
             displayName: Copy default app config
@@ -166,3 +123,54 @@ stages:
               DEV_INSTANCE: $(devInstance)
               ENVIRONMENT: $(environment)
               REGION: $(region)
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
+            displayName: Install latest Terraform
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Initialise
+            inputs:
+              command: init
+              workingDirectory: terraform/src/review
+              backendType: azurerm
+              backendServiceArm: $(azureSubscription)
+              backendAzureRmResourceGroupName: dct-crccms-platform-rg-$(environment)-$(region)
+              backendAzureRmStorageAccountName: crccmstfst$(environment)$(region)
+              backendAzureRmKey: terraform-$(devInstance)-apps.tfstate
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Plan
+            inputs:
+              command: plan
+              workingDirectory: terraform/src/review
+              environmentServiceName: $(azureSubscription)
+              commandOptions: >
+                -var dev_instance=$(devInstance)
+                -var crc_cms_version=$(tag)
+                -var username=${{ parameters.reviewUsername }}
+                -var sha_512_password=${{ parameters.reviewPasswordHash }}
+                -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
+                -detailed-exitcode
+              publishPlanResults: $(environment)_plan
+
+          - ${{ if eq(parameters.dryRun, 'true') }}:
+              - script: |
+                  echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
+                  echo "##vso[task.complete result=SucceededWithIssues;]"
+                displayName: Dry Run - skipping apply
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Apply
+            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne('${{ parameters.dryRun }}', 'True'))
+            inputs:
+              command: apply
+              workingDirectory: terraform/src/review
+              environmentServiceName: $(azureSubscription)
+              commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: dev
+              version: $(tag)
+              devInstance: $(devInstance)
+              dryrun: ${{ parameters.dryRun }}

@@ -24,3 +24,10 @@ data "azurerm_container_app" "dr" {
   name                = "ca-haproxy-${var.env}-ukw"
   resource_group_name = replace(var.resource_group, "-uks", "-ukw")
 }
+
+data "azurerm_cdn_frontdoor_profile" "frontdoor" { # The frontdoor profile is only deployed to the primary region
+  count = var.deploy_container_apps && var.location == "ukw" ? 1 : 0
+
+  name                = "${local.org}-${local.app}-afd-${var.env}"
+  resource_group_name = replace(var.resource_group, "-ukw", "-uks")
+}
