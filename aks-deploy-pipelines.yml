@@ -317,6 +317,11 @@ stages:
               keyVaultName: dct-crc-kv-app-int-uks
               kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: int
+              version: $(Build.SourceVersion)
+              dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/deploy-container-app-revision.yml
             parameters:
               env: int
@@ -372,6 +377,11 @@ stages:
               keyVaultName: 'dct-crc-v3-vlt-stag-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: stag
+              version: $(sourceBranchName)
+              dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/deploy-container-app-revision.yml
             parameters:
               env: stag

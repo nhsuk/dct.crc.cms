@@ -14,6 +14,10 @@ parameters:
     displayName: Force Deploy Review
     type: boolean
     default: true # For fast testing
+  - name: imageTag
+    displayName: Image version to deploy (default is review-<branch-name>, other options include latest or pr-1)
+    type: string
+    default: default
   - name: reviewUsername
     displayName: Review Username
     type: string
@@ -29,20 +33,16 @@ variables:
     value: dev
   - name: region
     value: uks
-  - name: tag
-    ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-      value: pr-$(System.PullRequest.PullRequestNumber)
-    ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-      value: $(Build.SourceBranchName)
-    ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-      value: main-$(Build.SourceVersion)
-    ${{ else }}:
-      value: review-$(Build.SourceBranchName)
   - name: devInstance
     ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
       value: pr-$(System.PullRequest.PullRequestNumber)
     ${{ else }}:
       value: $[lower(variables['Build.SourceBranchName'])]
+  - name: tag
+    ${{ if eq(parameters.imageTag, 'default') }}:
+      value: $[format('review-{0}', variables['Build.SourceBranchName'])]
+    ${{ else }}:
+      value: ${{ parameters.imageTag }}
 
 resources:
   repositories:
@@ -146,7 +146,7 @@ stages:
               environmentServiceName: $(azureSubscription)
               commandOptions: >
                 -var dev_instance=$(devInstance)
-                -var crc_cms_version=latest
+                -var crc_cms_version=$(tag)
                 -var username=${{ parameters.reviewUsername }}
                 -var sha_512_password=${{ parameters.reviewPasswordHash }}
                 -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
@@ -167,3 +167,10 @@ stages:
               workingDirectory: terraform/src/review
               environmentServiceName: $(azureSubscription)
               commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: dev
+              version: $(tag)
+              devInstance: $(devInstance)
+              dryrun: ${{ parameters.dryRun }}

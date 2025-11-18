@@ -1,0 +1,73 @@
+parameters:
+  - name: env
+    type: string
+  - name: region
+    type: string
+    default: uks
+  - name: version
+    type: string
+  - name: devInstance
+    type: string
+    default: ''
+  - name: dryrun
+    type: boolean
+    default: false
+
+steps:
+  - ${{ if parameters.dryrun }}:
+    - bash: |
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping updating and running init container app job"
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      displayName: Dry Run Warning
+  - task: AzureCLI@2
+    condition: ne('${{ parameters.dryrun }}', 'True')
+    displayName: Update and run init container app job
+    inputs:
+      azureSubscription: dct-crccms-${{ parameters.env }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -e
+        export RESOURCE_GROUP_NAME="${ORG}-${APP}-rg-${ENV}-${REGION}"
+
+        echo "⬆️ Updating image..."
+        az containerapp job update \
+          --name $JOB_NAME \
+          --resource-group $RESOURCE_GROUP_NAME \
+          --image dctcampaignsacrproduks.azurecr.io/dct/crc-cms:${{ parameters.version }}
+
+        echo "🎬 Starting job..."
+        export JOB_EXECUTION_NAME=$(az containerapp job start \
+          --name $JOB_NAME \
+          --resource-group $RESOURCE_GROUP_NAME \
+          --query 'name' \
+          --output tsv)
+
+        echo "$JOB_EXECUTION_NAME is progress"
+
+        echo "🕰️ Waiting for job to complete..."
+        while true; do
+          sleep 10
+          job_status=$(az containerapp job execution show \
+            --name $JOB_NAME \
+            --resource-group $RESOURCE_GROUP_NAME \
+            --query 'properties.status' \
+            --output tsv \
+            --job-execution-name $JOB_EXECUTION_NAME)
+
+          if [ "$job_status" == "Succeeded" ]; then
+            echo "✅ Job completed successfully"
+            exit 0
+          elif [ "$job_status" == "Failed" ]; then
+            echo "❌ Job failed"
+            exit 1
+          else
+            echo "⏳ Job is ${job_status}"
+          fi
+        done
+    env:
+      ORG: dct
+      APP: crccms
+      ENV: ${{ parameters.env }}
+      REGION: ${{ parameters.region }}
+      JOB_NAME: caj-init-${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}
