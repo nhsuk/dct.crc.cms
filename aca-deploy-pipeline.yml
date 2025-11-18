@@ -94,8 +94,35 @@ stages:
                 -c "CREATE DATABASE \"$(devInstance)\" WITH TEMPLATE $(default--db-name) OWNER $(default--db-user);" \
                 -c "\connect \"$(devInstance)\";"
             displayName: Create review database
+            condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
             env:
               PGPASSWORD: $(postgresqlAdminPassword)
+
+          - task: AzureCLI@2
+            displayName: Copy default app config
+            condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                SECRET_NAMES=$(az keyvault secret list --vault-name $VAULT_NAME --query "[?starts_with(name,'default--')].name" --output tsv)
+                while read secret
+                do
+                  VALUE=$(az keyvault secret show --vault-name $VAULT_NAME --name $secret --query "value" --output tsv)
+                  if [ -z "${VALUE}" ]; then
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --file /dev/null --query "name"
+                  else
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --value "${VALUE}" --query "name"
+                  fi
+                done <<< "$SECRET_NAMES"
+                az keyvault secret set --vault-name $VAULT_NAME --name "$DEV_INSTANCE--db-name" --value $DEV_INSTANCE --query "name"
+            env:
+              VAULT_NAME: dct-crc-kv-app-dev-uks
+              DEV_INSTANCE: $(devInstance)
+              ENVIRONMENT: $(environment)
+              REGION: $(region)
 
           - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
             displayName: Install latest Terraform
@@ -140,29 +167,3 @@ stages:
               workingDirectory: terraform/src/review
               environmentServiceName: $(azureSubscription)
               commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
-
-          - task: AzureCLI@2
-            displayName: Copy default app config
-            condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
-            inputs:
-              azureSubscription: $(azureSubscription)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                set -e
-                SECRET_NAMES=$(az keyvault secret list --vault-name $VAULT_NAME --query "[?starts_with(name,'default--')].name" --output tsv)
-                while read secret
-                do
-                  VALUE=$(az keyvault secret show --vault-name $VAULT_NAME --name $secret --query "value" --output tsv)
-                  if [ -z "${VALUE}" ]; then
-                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --file /dev/null --query "name"
-                  else
-                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --value "${VALUE}" --query "name"
-                  fi
-                done <<< "$SECRET_NAMES"
-                az keyvault secret set --vault-name $VAULT_NAME --name "$DEV_INSTANCE--db-name" --value $DEV_INSTANCE --query "name"
-            env:
-              VAULT_NAME: dct-crc-kv-app-dev-uks
-              DEV_INSTANCE: $(devInstance)
-              ENVIRONMENT: $(environment)
-              REGION: $(region)
