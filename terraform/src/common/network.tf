@@ -1,7 +1,7 @@
 resource "random_uuid" "akamai_guid" {}
 
 module "network_spoke" {
-  source = "git::https://github.com/nhsuk/nhsuk.platform.terraform-modules.network-spoke?ref=b4ad89f0782ebdd2e7906ac9d448810f79bbd773"
+  source = "git::https://github.com/nhsuk/nhsuk.platform.terraform-modules.network-spoke?ref=0.0.11"
 
   count = var.deploy_container_apps ? 1 : 0
 

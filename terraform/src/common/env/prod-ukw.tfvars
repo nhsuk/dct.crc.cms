@@ -3,8 +3,9 @@ environment    = "production"
 location       = "ukw"
 resource_group = "dct-crccms-rg-prod-ukw"
 
-deploy_container_apps = false
+deploy_container_apps = true
 network_address_space = "10.25.8.0/22"
+crc_cms_version       = "1.17.0" # initial version to deploy
 
 container_resources = {
   haproxy = {
@@ -26,6 +27,6 @@ container_resources = {
     memory              = "4Gi"
     min_replicas        = 2
     max_replicas        = 12
-    concurrent_requests = 50
+    concurrent_requests = 75
   }
 }
