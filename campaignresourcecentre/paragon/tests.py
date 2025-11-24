@@ -59,11 +59,54 @@ class TestClient(TestCase):
             job_title,
             area_work,
             postcode,
-            created_at,
             postcode_region,
+            created_at,
         )
 
         self.assertEqual({"code": 200, "content": "Token", "status": "ok"}, resp)
+
+    @responses.activate
+    def test_create_account_includes_area_work_and_postcode_region(self):
+        responses.add(
+            responses.POST,
+            "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Signup"),
+            json="Token",
+            status=200,
+        )
+
+        email = "test@example.com"
+        password = "Test123@"
+        first_name = "John"
+        last_name = "Doe"
+        organisation = "Test Org"
+        job_title = "Developer"
+        area_work = "Software Development"
+        postcode = "SW1A 1AA"
+        postcode_region = "London"
+        created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
+        
+        self.client.create_account(
+            email,
+            password,
+            first_name,
+            last_name,
+            organisation,
+            job_title,
+            area_work,
+            postcode,
+            postcode_region,
+            created_at,
+        )
+
+        self.assertEqual(len(responses.calls), 1)
+        request_data = json.loads(responses.calls[0].request.body)
+        
+        self.assertEqual(request_data["ContactVar2"], area_work)
+        self.assertEqual(request_data["ContactVar3"], postcode_region)
+        self.assertEqual(request_data["EmailAddress"], email)
+        self.assertEqual(request_data["ProductRegistrationVar3"], organisation)
+        self.assertEqual(request_data["ProductRegistrationVar4"], job_title)
+        self.assertEqual(request_data["ProductRegistrationVar9"], postcode)
 
     @responses.activate
     def test_search_users(self):
@@ -155,6 +198,35 @@ class TestClient(TestCase):
             {"code": 200, "content": [{"email": "test@gmail.com"}], "status": "ok"},
             resp,
         )
+
+    @responses.activate
+    def test_update_user_profile_with_area_work_and_postcode_region(self):
+        responses.add(
+            responses.POST,
+            "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/UpdateProfile"),
+            json={"success": True},
+            status=200,
+        )
+
+        user_token = "test_token"
+        area_work = "Healthcare"
+        postcode_region = "West Midlands"
+        
+        resp = self.client.update_user_profile(
+            user_token,
+            email="updated@example.com",
+            first_name="Updated",
+            last_name="User",
+            area_work=area_work,
+            postcode_region=postcode_region,
+            postcode="B1 1AA"
+        )
+
+        self.assertEqual(len(responses.calls), 1)
+        request_data = json.loads(responses.calls[0].request.body)
+        self.assertEqual(request_data["ContactVar2"], area_work)
+        self.assertEqual(request_data["ContactVar3"], postcode_region)
+        self.assertEqual({"code": 200, "content": {"success": True}, "status": "ok"}, resp)
 
     @responses.activate
     def test_update_password(self):
@@ -476,6 +548,32 @@ class TestUserDataClass(TestCase):
         with self.assertRaises(ValueError) as error:
             update_user_profile.params()
         self.assertEqual(str(error.exception), "user_token is empty!")
+
+    def test_user_area_work_mapping(self):
+        """Test that User area_work maps to ContactVar2"""
+        verified_at = datetime.datetime.now()
+        created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
+        
+        update_user_profile = User(
+            "token",
+            "test@gmail.com", 
+            "First Name",
+            "Last Name",
+            "NHS",
+            "Health",
+            "Emergency Medicine",  # area_work
+            "role",
+            True,
+            created_at,
+            verified_at,
+            "news",
+            "AB25 1CD",
+            "Scotland",  # postcode_region
+        )
+        
+        params = update_user_profile.params()
+        self.assertEqual(params["ContactVar2"], "Emergency Medicine")
+        self.assertEqual(params["ContactVar3"], "Scotland")
 
 
 class TestUpdatePasswordDataClass(TestCase):
