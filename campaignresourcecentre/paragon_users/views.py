@@ -91,7 +91,9 @@ def signup(request):
             last_name = f.cleaned_data.get("last_name")
             job_title = f.cleaned_data.get("job_title")
             area_work = f.cleaned_data.get("area_work")
-            organisation = f.cleaned_data.get("organisation") if job_title != "student" else " "
+            organisation = (
+                f.cleaned_data.get("organisation") if job_title != "student" else " "
+            )
             postcode = f.cleaned_data.get("postcode")
             postcode_region = get_region(postcode)
 

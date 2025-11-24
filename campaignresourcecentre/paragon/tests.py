@@ -402,8 +402,7 @@ class TestUserDataClass(TestCase):
             "Last Name",
             "NHS",
             "Health",
-            "GP"
-            "role",
+            "GP" "role",
             True,
             created_at,
             verified_at,
