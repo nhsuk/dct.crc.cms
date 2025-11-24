@@ -1,6 +1,6 @@
 import datetime
 import json
-import responses
+import  responses
 
 from django.test import TestCase
 from django.conf import settings
@@ -45,8 +45,10 @@ class TestClient(TestCase):
         first_name = "First Name"
         last_name = "Last Name"
         organisation = "NHS"
-        job_title = "Developer"
+        job_title = "Health"
+        area_work = "GP"
         postcode = "S221LZ"
+        postcode_region = "South Yorkshire"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
         resp = self.client.create_account(
             email,
@@ -55,8 +57,10 @@ class TestClient(TestCase):
             last_name,
             organisation,
             job_title,
+            area_work,
             postcode,
             created_at,
+            postcode_region,
         )
 
         self.assertEqual({"code": 200, "content": "Token", "status": "ok"}, resp)
@@ -237,18 +241,22 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         expected_params = {
             "EmailAddress": "test@gmail.com",
+            "Password": "Test@123",
             "FirstName": "First Name",
             "LastName": "Last Name",
-            "Password": "Test@123",
+            "ContactVar2": "GP",
+            "ContactVar3": "South Yorkshire",
             "ProductRegistrationVar2": "False",
             "ProductRegistrationVar3": "NHS",
-            "ProductRegistrationVar4": "Developer",
+            "ProductRegistrationVar4": "Health",
             "ProductRegistrationVar6": "true",
             "ProductRegistrationVar7": "000000000000000000000000000000",
             "ProductRegistrationVar9": "SE1 9LT",
@@ -267,8 +275,10 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(PasswordError) as error:
@@ -286,8 +296,10 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -302,8 +314,10 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -318,8 +332,10 @@ class TestRegistrationDataClass(TestCase):
             "",
             "Last Name",
             "NHS",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -334,8 +350,10 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "",
             "NHS",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -350,8 +368,10 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "",
-            "Developer",
+            "Health",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -367,7 +387,9 @@ class TestRegistrationDataClass(TestCase):
             "Last Name",
             "NHS",
             "",
+            "GP",
             "SE1 9LT",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -383,7 +405,9 @@ class TestRegistrationDataClass(TestCase):
             "Last Name",
             "NHS",
             "Developer",
+            "GP",
             "",
+            "South Yorkshire",
             created_at,
         )
         with self.assertRaises(ValueError) as error:
@@ -402,7 +426,8 @@ class TestUserDataClass(TestCase):
             "Last Name",
             "NHS",
             "Health",
-            "GP" "role",
+            "GP",
+            "role",
             True,
             created_at,
             verified_at,
@@ -420,6 +445,7 @@ class TestUserDataClass(TestCase):
             "ProductRegistrationVar1": "role",
             "ProductRegistrationVar2": True,
             "ProductRegistrationVar3": "NHS",
+            "ProductRegistrationVar4": "Health",
             "ProductRegistrationVar7": "news",
             "ProductRegistrationVar8": verified_at,
             "ProductRegistrationVar9": "AB25 1CD",
@@ -437,12 +463,14 @@ class TestUserDataClass(TestCase):
             "Last Name",
             "NHS",
             "Developer",
+            "GP",
             "role",
             True,
             created_at,
             verified_at,
             "news",
             "AB25 1CD",
+            "postcode_region",
         )
 
         with self.assertRaises(ValueError) as error:

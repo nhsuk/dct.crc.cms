@@ -163,7 +163,7 @@ class Client:
         )
         self.data.update(registration.params())
 
-        # self.call()
+        self.call()
         if self.response.status_code == 200:
             return {
                 "status": "ok",
