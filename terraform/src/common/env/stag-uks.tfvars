@@ -36,6 +36,6 @@ container_resources = {
     memory              = "4Gi"
     min_replicas        = 1
     max_replicas        = 3
-    concurrent_requests = 100
+    concurrent_requests = 75
   }
 }

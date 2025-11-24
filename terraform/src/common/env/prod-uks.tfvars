@@ -8,8 +8,11 @@ storage = {
   container = "campaign-resource-centre-v3-production"
 }
 
-deploy_container_apps = false
+deploy_container_apps = true
 network_address_space = "10.12.8.0/22"
+crc_cms_version       = "1.17.0" # initial version to deploy
+
+dr_deployed = true
 
 container_resources = {
   haproxy = {
@@ -29,8 +32,8 @@ container_resources = {
   wagtail = {
     cpu                 = 2
     memory              = "4Gi"
-    min_replicas        = 6
+    min_replicas        = 3
     max_replicas        = 12
-    concurrent_requests = 50
+    concurrent_requests = 75
   }
 }
