@@ -12,7 +12,7 @@ deploy_container_apps = true
 network_address_space = "10.12.8.0/22"
 crc_cms_version       = "1.17.0" # initial version to deploy
 
-dr_deployed = false
+dr_deployed = true
 
 container_resources = {
   haproxy = {
