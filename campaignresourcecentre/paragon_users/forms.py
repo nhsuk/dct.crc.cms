@@ -33,13 +33,12 @@ JOB_CHOICES = (
 HEALTH_CHOICES = (
     ("health:pharmacy", "Pharmacy"),
     ("health:nurse", "Nurse"),
-    ("health:management", "Practice Management"),
     ("health:infantteam", "Infant feeding team"),
-    ("health:childrensteam", "Childrens centre team"),
+    ("health:childrensteam", "Children's Health"),
     ("health:oralhealth", "Oral health"),
     ("health:improvement", "Health Improvement / Public Health"),
     ("health:healthvisitor", "Health visitor"),
-    ("health:gp", "GP"),
+    ("health:gp", "General Practice"),
     ("health:midwife", "Midwife"),
     ("health:smokingcessation", "Smoking cessation"),
     ("health:healthwellbeing", "Health and Wellbeing coach"),
@@ -47,7 +46,7 @@ HEALTH_CHOICES = (
     ("health:socialprescribing", "Social Prescribing Link Worker"),
     ("health:carecoordinator", "Care Coordinator"),
     ("health:immunisation", "Immunisation Coordinator"),
-    ("health:other", "Other"),
+    ("health:mentalhealth", "Mental Health"),
 )
 
 
@@ -88,6 +87,7 @@ def validate_postcode(postcode):
 
 class RegisterForm(forms.Form):
     first_name = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
@@ -104,6 +104,7 @@ class RegisterForm(forms.Form):
     )
 
     last_name = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
@@ -120,6 +121,7 @@ class RegisterForm(forms.Form):
     )
 
     job_title = forms.CharField(
+        max_length=100,
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
@@ -135,6 +137,7 @@ class RegisterForm(forms.Form):
     )
 
     area_work = forms.CharField(
+        max_length=100,
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
@@ -147,6 +150,7 @@ class RegisterForm(forms.Form):
     )
 
     organisation = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input",
@@ -164,6 +168,7 @@ class RegisterForm(forms.Form):
     )
 
     postcode = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
@@ -178,6 +183,7 @@ class RegisterForm(forms.Form):
     )
 
     email = forms.EmailField(
+        max_length=100,
         widget=forms.EmailInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
@@ -191,6 +197,7 @@ class RegisterForm(forms.Form):
     )
 
     password = forms.CharField(
+        max_length=100,
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",

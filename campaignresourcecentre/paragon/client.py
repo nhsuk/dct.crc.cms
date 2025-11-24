@@ -143,7 +143,9 @@ class Client:
         last_name,
         organisation,
         job_title,
+        area_work,
         postcode,
+        postcode_region,
         created_at,
     ):
         self.call_method = "/Signup"
@@ -154,12 +156,16 @@ class Client:
             last_name,
             organisation,
             job_title,
+            area_work,
             postcode,
+            postcode_region,
             created_at,
         )
         self.data.update(registration.params())
 
-        self.call()
+        print(self.data)
+        return
+        # self.call()
         if self.response.status_code == 200:
             return {
                 "status": "ok",
@@ -230,6 +236,8 @@ class Client:
         verified_at=None,
         subscriptions=None,
         postcode=None,
+        postcode_region=None,
+        area_work=None,
     ):
         self.call_method = "/UpdateProfile"
         user_profile = User(
@@ -239,12 +247,14 @@ class Client:
             last_name,
             organisation,
             job_title,
+            area_work,
             role,
             active,
             "",
             verified_at,
             subscriptions,
             postcode,
+            postcode_region,
         )
         self.data.update(user_profile.params())
         self.call()

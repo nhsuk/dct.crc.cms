@@ -80,7 +80,7 @@ def signup(request):
 
         organisation = f.fields["organisation"]
         job_title = f.fields["job_title"]
-        if not f.data["job_title"] == "student":
+        if f.data["job_title"] != "student":
             organisation.required = True
             job_title.required = True
 
@@ -89,16 +89,11 @@ def signup(request):
             password = f.cleaned_data.get("password")
             first_name = f.cleaned_data.get("first_name")
             last_name = f.cleaned_data.get("last_name")
-
-            if f.cleaned_data.get("job_title") == "health":
-                job_title = f.cleaned_data.get("area_work")
-            else:
-                job_title = f.cleaned_data.get("job_title")
-            if not job_title == "student":
-                organisation = f.cleaned_data.get("organisation")
-            else:
-                organisation = " "
-            postcode = f.data["postcode"]
+            job_title = f.cleaned_data.get("job_title")
+            area_work = f.cleaned_data.get("area_work")
+            organisation = f.cleaned_data.get("organisation") if job_title != "student" else " "
+            postcode = f.cleaned_data.get("postcode")
+            postcode_region = get_region(postcode)
 
             # Need to set created_at (ProductRegistrationVar10) when creating a new user
             # Paragon sets its own created_at field but this is only available from the
@@ -115,7 +110,9 @@ def signup(request):
                     last_name,
                     organisation,
                     job_title,
+                    area_work,
                     postcode,
+                    postcode_region,
                     created_at,
                 )
 
