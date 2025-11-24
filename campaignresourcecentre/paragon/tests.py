@@ -1,6 +1,6 @@
 import datetime
 import json
-import  responses
+import responses
 
 from django.test import TestCase
 from django.conf import settings
@@ -84,7 +84,7 @@ class TestClient(TestCase):
         postcode = "SW1A 1AA"
         postcode_region = "London"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
-        
+
         self.client.create_account(
             email,
             password,
@@ -100,7 +100,7 @@ class TestClient(TestCase):
 
         self.assertEqual(len(responses.calls), 1)
         request_data = json.loads(responses.calls[0].request.body)
-        
+
         self.assertEqual(request_data["ContactVar2"], area_work)
         self.assertEqual(request_data["ContactVar3"], postcode_region)
         self.assertEqual(request_data["EmailAddress"], email)
@@ -211,7 +211,7 @@ class TestClient(TestCase):
         user_token = "test_token"
         area_work = "Healthcare"
         postcode_region = "West Midlands"
-        
+
         resp = self.client.update_user_profile(
             user_token,
             email="updated@example.com",
@@ -219,14 +219,16 @@ class TestClient(TestCase):
             last_name="User",
             area_work=area_work,
             postcode_region=postcode_region,
-            postcode="B1 1AA"
+            postcode="B1 1AA",
         )
 
         self.assertEqual(len(responses.calls), 1)
         request_data = json.loads(responses.calls[0].request.body)
         self.assertEqual(request_data["ContactVar2"], area_work)
         self.assertEqual(request_data["ContactVar3"], postcode_region)
-        self.assertEqual({"code": 200, "content": {"success": True}, "status": "ok"}, resp)
+        self.assertEqual(
+            {"code": 200, "content": {"success": True}, "status": "ok"}, resp
+        )
 
     @responses.activate
     def test_update_password(self):
@@ -553,10 +555,10 @@ class TestUserDataClass(TestCase):
         """Test that User area_work maps to ContactVar2"""
         verified_at = datetime.datetime.now()
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
-        
+
         update_user_profile = User(
             "token",
-            "test@gmail.com", 
+            "test@gmail.com",
             "First Name",
             "Last Name",
             "NHS",
@@ -570,7 +572,7 @@ class TestUserDataClass(TestCase):
             "AB25 1CD",
             "Scotland",  # postcode_region
         )
-        
+
         params = update_user_profile.params()
         self.assertEqual(params["ContactVar2"], "Emergency Medicine")
         self.assertEqual(params["ContactVar3"], "Scotland")
