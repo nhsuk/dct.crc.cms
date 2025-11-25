@@ -41,7 +41,7 @@ class TestClient(TestCase):
         )
 
         email = "test2@test.com"
-        password = ""
+        password = "Test123@"
         first_name = "First Name"
         last_name = "Last Name"
         organisation = "NHS"
@@ -75,7 +75,7 @@ class TestClient(TestCase):
         )
 
         email = "test@example.com"
-        password = " "
+        password = "Test123@"
         first_name = "John"
         last_name = "Doe"
         organisation = "Test Org"
