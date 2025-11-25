@@ -189,103 +189,117 @@ class ParagonUsersTestCase(WagtailPageTests):
             "content": {
                 "UserToken": "test_token",
                 "EmailAddress": "test@example.com",
-                "FirstName": "John", 
-                "LastName": "Doe",
-                "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "GP",
-                "ProductRegistrationVar1": "health",
-                "ProductRegistrationVar2": "True", 
-                "ProductRegistrationVar10": "2025-11-25T10:00:00",
-                "ProductRegistrationVar8": "",
-                "ProductRegistrationVar7": "news",
-                "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "Emergency Medicine",
-                "ContactVar3": "Manchester"
-            }
-        }
-    
-    def _create_test_form_data(self):
-        return {
-            'role': 'standard',
-            'email': 'test@example.com',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'organisation': 'NHS Trust',
-            'job_title': 'GP',
-            'area_work': 'Primary Care',
-            'postcode': 'LS1 1AA'
-        }
-    
-    def _setup_user_permissions(self):
-        content_type = ContentType.objects.get_for_model(self.user)
-        permission, _ = Permission.objects.get_or_create(
-            codename='manage_paragon_users_all_fields',
-            content_type=content_type,
-            defaults={'name': 'Can manage all paragon user fields'}
-        )
-        self.user.user_permissions.add(permission)
-    
-    def _setup_mock_client_and_form(self, mock_client_class, mock_form_class):
-        mock_client = mock_client_class.return_value
-        mock_client.get_user_profile.return_value = self._create_test_user_profile_data()
-        mock_client.update_user_profile.return_value = {"code": 200}
-        
-        mock_form = mock_form_class.return_value
-        mock_form.is_valid.return_value = True
-        mock_form.cleaned_data = self._create_test_form_data()
-        
-        return mock_client
-
-    @patch("campaignresourcecentre.paragon_users.admin_views.UserAdminForm")
-    @patch("campaignresourcecentre.paragon_users.admin_views.get_region")
-    @patch("campaignresourcecentre.paragon_users.admin_views.Client")
-    def test_edit_view_calls_get_region_for_postcode(self, mock_client_class, mock_get_region, mock_form_class):
-        mock_get_region.return_value = "Greater Manchester"
-        self._setup_mock_client_and_form(mock_client_class, mock_form_class)
-        self._setup_user_permissions()
-        
-        self.client.post(reverse("paragon_users:edit", args=["test_token"]), self._create_test_form_data())
-        
-        mock_get_region.assert_called_once_with("LS1 1AA")
-
-    @patch("campaignresourcecentre.paragon_users.admin_views.UserAdminForm")
-    @patch("campaignresourcecentre.paragon_users.admin_views.get_region")
-    @patch("campaignresourcecentre.paragon_users.admin_views.Client")
-    def test_edit_view_updates_user_with_area_work_and_region(self, mock_client_class, mock_get_region, mock_form_class):
-        mock_get_region.return_value = "Greater Manchester"
-        mock_client = self._setup_mock_client_and_form(mock_client_class, mock_form_class)
-        self._setup_user_permissions()
-        
-        self.client.post(reverse("paragon_users:edit", args=["test_token"]), self._create_test_form_data())
-        
-        mock_client.update_user_profile.assert_called_once()
-        call_kwargs = mock_client.update_user_profile.call_args[1]
-        self.assertEqual(call_kwargs["area_work"], "Primary Care")
-        self.assertEqual(call_kwargs["postcode_region"], "Greater Manchester")
-
-    @patch("campaignresourcecentre.paragon_users.admin_views.Client")
-    def test_edit_view_get_user_profile(self, mock_client_class):        
-        mock_client = mock_client_class.return_value
-        mock_client.get_user_profile.return_value = {
-            "content": {
-                "UserToken": "test_token",
-                "EmailAddress": "test@example.com",
                 "FirstName": "John",
-                "LastName": "Doe", 
+                "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
                 "ProductRegistrationVar4": "GP",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
                 "ProductRegistrationVar8": "",
-                "ProductRegistrationVar7": "news", 
+                "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "Primary Care",
-                "ContactVar3": "Manchester"
+                "ContactVar2": "Emergency Medicine",
+                "ContactVar3": "Manchester",
             }
         }
-        
+
+    def _create_test_form_data(self):
+        return {
+            "role": "standard",
+            "email": "test@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "organisation": "NHS Trust",
+            "job_title": "GP",
+            "area_work": "Primary Care",
+            "postcode": "LS1 1AA",
+        }
+
+    def _setup_user_permissions(self):
+        content_type = ContentType.objects.get_for_model(self.user)
+        permission, _ = Permission.objects.get_or_create(
+            codename="manage_paragon_users_all_fields",
+            content_type=content_type,
+            defaults={"name": "Can manage all paragon user fields"},
+        )
+        self.user.user_permissions.add(permission)
+
+    def _setup_mock_client_and_form(self, mock_client_class, mock_form_class):
+        mock_client = mock_client_class.return_value
+        mock_client.get_user_profile.return_value = (
+            self._create_test_user_profile_data()
+        )
+        mock_client.update_user_profile.return_value = {"code": 200}
+
+        mock_form = mock_form_class.return_value
+        mock_form.is_valid.return_value = True
+        mock_form.cleaned_data = self._create_test_form_data()
+
+        return mock_client
+
+    @patch("campaignresourcecentre.paragon_users.admin_views.UserAdminForm")
+    @patch("campaignresourcecentre.paragon_users.admin_views.get_region")
+    @patch("campaignresourcecentre.paragon_users.admin_views.Client")
+    def test_edit_view_calls_get_region_for_postcode(
+        self, mock_client_class, mock_get_region, mock_form_class
+    ):
+        mock_get_region.return_value = "Greater Manchester"
+        self._setup_mock_client_and_form(mock_client_class, mock_form_class)
+        self._setup_user_permissions()
+
+        self.client.post(
+            reverse("paragon_users:edit", args=["test_token"]),
+            self._create_test_form_data(),
+        )
+
+        mock_get_region.assert_called_once_with("LS1 1AA")
+
+    @patch("campaignresourcecentre.paragon_users.admin_views.UserAdminForm")
+    @patch("campaignresourcecentre.paragon_users.admin_views.get_region")
+    @patch("campaignresourcecentre.paragon_users.admin_views.Client")
+    def test_edit_view_updates_user_with_area_work_and_region(
+        self, mock_client_class, mock_get_region, mock_form_class
+    ):
+        mock_get_region.return_value = "Greater Manchester"
+        mock_client = self._setup_mock_client_and_form(
+            mock_client_class, mock_form_class
+        )
+        self._setup_user_permissions()
+
+        self.client.post(
+            reverse("paragon_users:edit", args=["test_token"]),
+            self._create_test_form_data(),
+        )
+
+        mock_client.update_user_profile.assert_called_once()
+        call_kwargs = mock_client.update_user_profile.call_args[1]
+        self.assertEqual(call_kwargs["area_work"], "Primary Care")
+        self.assertEqual(call_kwargs["postcode_region"], "Greater Manchester")
+
+    @patch("campaignresourcecentre.paragon_users.admin_views.Client")
+    def test_edit_view_get_user_profile(self, mock_client_class):
+        mock_client = mock_client_class.return_value
+        mock_client.get_user_profile.return_value = {
+            "content": {
+                "UserToken": "test_token",
+                "EmailAddress": "test@example.com",
+                "FirstName": "John",
+                "LastName": "Doe",
+                "ProductRegistrationVar3": "NHS Trust",
+                "ProductRegistrationVar4": "GP",
+                "ProductRegistrationVar1": "health",
+                "ProductRegistrationVar2": "True",
+                "ProductRegistrationVar10": "2025-11-25T10:00:00",
+                "ProductRegistrationVar8": "",
+                "ProductRegistrationVar7": "news",
+                "ProductRegistrationVar9": "M1 1AA",
+                "ContactVar2": "Primary Care",
+                "ContactVar3": "Manchester",
+            }
+        }
+
         response = self.client.get(reverse("paragon_users:edit", args=["test_token"]))
-        
+
         mock_client.get_user_profile.assert_called_once_with(user_token="test_token")
         self.assertEqual(response.status_code, 200)
