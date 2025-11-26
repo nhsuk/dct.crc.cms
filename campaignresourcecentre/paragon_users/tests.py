@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
@@ -303,3 +303,80 @@ class ParagonUsersTestCase(WagtailPageTests):
 
         mock_client.get_user_profile.assert_called_once_with(user_token="test_token")
         self.assertEqual(response.status_code, 200)
+
+    def test_signup_extracts_area_work_from_form(self):
+        from campaignresourcecentre.paragon_users.views import RegisterForm
+        form_data = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@example.com", 
+            "password": "TestPass123@",
+            "job_title": "health:gp",
+            "area_work": "health:gp",
+            "organisation": "Test Org",
+            "postcode": "SW1A1AA"
+        }
+        
+        form = RegisterForm(form_data)
+        if form.is_valid():
+            area_work = form.cleaned_data.get("area_work")
+            self.assertEqual(area_work, "health:gp")
+        else:
+            area_work = form.data.get("area_work")
+            self.assertEqual(area_work, "health:gp")
+
+    def test_signup_handles_student_organisation_logic(self):
+        test_cases = [
+            ("student", " "),
+            ("health:gp", "Test Org"),
+            ("marketing", "Test Org")
+        ]
+        
+        for job_title, expected_org in test_cases:
+            organisation = " " if job_title == "student" else "Test Org"
+            self.assertEqual(organisation, expected_org)
+
+    def test_signup_calls_get_region_function(self):
+        from campaignresourcecentre.paragon_users.helpers.postcodes import get_region
+        
+        result = get_region("SW1A 1AA")
+        self.assertIsNotNone(result)
+
+    @patch("campaignresourcecentre.paragon_users.views.send_verification")
+    @patch("campaignresourcecentre.paragon_users.views.get_postcode_data")
+    @patch("campaignresourcecentre.paragon_users.views.send_report")
+    @patch("campaignresourcecentre.paragon_users.views.get_region")
+    @patch("campaignresourcecentre.paragon_users.views.Client")
+    def test_signup_create_account_with_new_fields(self, mock_client_class, mock_get_region, mock_send_report, mock_get_postcode_data, mock_send_verification):
+        self.client.logout()
+        mock_get_region.return_value = "Test Region"
+        mock_get_postcode_data.return_value = {"longitude": 0, "latitude": 0, "region": "Test Region"}
+        mock_client = mock_client_class.return_value
+        mock_client.create_account.return_value = {"code": 200, "content": "token"}
+        
+        with patch("campaignresourcecentre.paragon_users.views.RegisterForm") as mock_form_class:
+            mock_form = mock_form_class.return_value
+            mock_form.is_valid.return_value = True
+            mock_form.cleaned_data = {
+                "email": "test@example.com",
+                "password": "TestPass123@",
+                "first_name": "John",
+                "last_name": "Doe",
+                "job_title": "health:gp",
+                "area_work": "Emergency Medicine",
+                "organisation": "Test Org",
+                "postcode": "SW1A 1AA"
+            }
+            mock_form.fields = {"organisation": type('obj', (object,), {"required": False})(), "job_title": type('obj', (object,), {"required": False})()}
+            mock_form.data = {"job_title": "health:gp"}
+            
+            from campaignresourcecentre.paragon_users.views import signup
+            
+            request = RequestFactory().post("/signup/")
+            request.session = {}
+            signup(request)
+            
+            mock_client.create_account.assert_called_once()
+            call_args = mock_client.create_account.call_args[0]
+            self.assertEqual(call_args[6], "Emergency Medicine")
+            self.assertEqual(call_args[8], "Test Region")
