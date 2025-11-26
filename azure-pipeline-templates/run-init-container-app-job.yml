@@ -22,6 +22,7 @@ steps:
   - task: AzureCLI@2
     condition: ne('${{ parameters.dryrun }}', 'True')
     displayName: Update and run init container app job
+    name: run_job
     inputs:
       azureSubscription: dct-crccms-${{ parameters.env }}
       scriptType: bash
@@ -44,6 +45,7 @@ steps:
           --output tsv)
 
         echo "$JOB_EXECUTION_NAME is progress"
+        echo "##vso[task.setvariable variable=JOB_EXECUTION_NAME;isOutput=true]$JOB_EXECUTION_NAME"
 
         echo "🕰️ Waiting for job to complete..."
         while true; do
@@ -70,4 +72,46 @@ steps:
       APP: crccms
       ENV: ${{ parameters.env }}
       REGION: ${{ parameters.region }}
+      JOB_NAME: caj-init-${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}
+
+  - task: AzureCLI@2
+    condition: and(failed(), ne('${{ parameters.dryrun }}', 'True'))
+    displayName: Fetch init job logs
+    inputs:
+      azureSubscription: dct-campaignscms-${{ parameters.env }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -e
+        export JOB_EXECUTION_NAME="$(run_job.JOB_EXECUTION_NAME)"
+
+        echo "📋 Fetching logs for execution ${JOB_EXECUTION_NAME} (may take up to 3 minutes to be available)..."
+
+        if [ "${{ parameters.env }}" == "prod" ]; then
+          WORKSPACE_ID="a4074ac3-af3b-4878-b01c-222622ee9154"
+        else
+          WORKSPACE_ID="4f437aad-44d1-4f34-adb6-1904be0b6b1f"
+        fi
+
+        logs_found=false
+        for i in {1..6}; do
+          sleep 30
+          echo "Attempting to fetch logs (attempt $i/6)..."
+
+          log_output=$(az monitor log-analytics query \
+            --workspace "${WORKSPACE_ID}" \
+            --analytics-query "ContainerAppConsoleLogs | where JobName == '${JOB_NAME}' and ContainerGroupName contains '${JOB_EXECUTION_NAME}' | order by TimeGenerated asc | project TimeGenerated, Log" \
+            --output table 2>/dev/null || true)
+
+          if echo "$log_output" | grep -q "TimeGenerated"; then
+            echo "$log_output"
+            logs_found=true
+            break
+          fi
+        done
+
+        if [ "$logs_found" = false ]; then
+          echo "⚠️ Could not find logs for execution ${JOB_EXECUTION_NAME}. Please check the logs manually in Log Analytics."
+        fi
+    env:
       JOB_NAME: caj-init-${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}

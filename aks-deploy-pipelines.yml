@@ -448,6 +448,16 @@ stages:
               keyVaultName: 'dct-crc-v3-vlt-prod-uks'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: prod
+              version: $(sourceBranchName)
+              dryrun: ${{ parameters.dryrun }}
+          - template: azure-pipeline-templates/deploy-container-app-revision.yml
+            parameters:
+              env: prod
+              version: $(sourceBranchName)
+              dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
   - stage: deployDr
     displayName: 'Deploy DR'
@@ -485,6 +495,18 @@ stages:
               keyVaultName: 'dct-crc-v3-vlt-dr-ukw'
               kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
               kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: prod
+              region: ukw
+              version: $(sourceBranchName)
+              dryrun: ${{ parameters.dryrun }}
+          - template: azure-pipeline-templates/deploy-container-app-revision.yml
+            parameters:
+              env: prod
+              region: ukw
+              version: $(sourceBranchName)
+              dryrun: ${{ parameters.dryrun }}
   - stage: DailyBuildAlert
     displayName: Daily Build alerting
     dependsOn:
