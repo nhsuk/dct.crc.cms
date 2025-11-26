@@ -78,7 +78,7 @@ steps:
     condition: and(failed(), ne('${{ parameters.dryrun }}', 'True'))
     displayName: Fetch init job logs
     inputs:
-      azureSubscription: dct-campaignscms-${{ parameters.env }}
+      azureSubscription: dct-crccms-${{ parameters.env }}
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
