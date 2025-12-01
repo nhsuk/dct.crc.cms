@@ -97,4 +97,28 @@ locals {
     "OTEL_SERVICE_NAME",
     "OTEL_RESOURCE_ATTRIBUTES"
   ]
+
+  container_resources = {
+    haproxy = {
+      cpu          = 0.25
+      memory       = "0.5Gi"
+      min_replicas = 1
+      max_replicas = 3
+      concurrency  = 10
+    },
+    redis = {
+      cpu          = 0.25
+      memory       = "0.5Gi"
+      min_replicas = 1
+      max_replicas = 3
+      concurrency  = 10
+    },
+    wagtail = {
+      cpu          = 0.25
+      memory       = "0.5Gi"
+      min_replicas = 1
+      max_replicas = 3
+      concurrency  = 10
+    }
+  }
 }

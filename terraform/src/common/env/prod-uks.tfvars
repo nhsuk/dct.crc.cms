@@ -16,24 +16,24 @@ dr_deployed = true
 
 container_resources = {
   haproxy = {
-    cpu                 = 1
-    memory              = "2Gi"
-    min_replicas        = 3
-    max_replicas        = 6
-    concurrent_requests = 500
+    cpu          = 1
+    memory       = "2Gi"
+    min_replicas = 3
+    max_replicas = 6
+    concurrency  = 500
   },
   redis = {
-    cpu                 = 0.25
-    memory              = "0.5Gi"
-    min_replicas        = 3
-    max_replicas        = 6
-    concurrent_requests = 100
+    cpu          = 0.25
+    memory       = "0.5Gi"
+    min_replicas = 3
+    max_replicas = 6
+    concurrency  = 100
   },
   wagtail = {
-    cpu                 = 2
-    memory              = "4Gi"
-    min_replicas        = 3
-    max_replicas        = 12
-    concurrent_requests = 75
+    cpu          = 2
+    memory       = "4Gi"
+    min_replicas = 3
+    max_replicas = 12
+    concurrency  = 75
   }
 }
