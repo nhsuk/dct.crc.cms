@@ -1,5 +1,5 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=1.4.1"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=4f160e44b17f5dd0604240c9477c08d08775ece4"
 
   # dev container apps get deployed separately to allow for many transient environments
   count = var.deploy_container_apps && var.env != "dev" ? 1 : 0
