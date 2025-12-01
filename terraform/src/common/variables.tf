@@ -84,25 +84,25 @@ variable "container_resources" {
   description = "Container resource management/scaling configuration"
   type = object({
     haproxy = object({
-      cpu                 = number
-      memory              = string
-      min_replicas        = number
-      max_replicas        = number
-      concurrent_requests = number
+      cpu          = number
+      memory       = string
+      min_replicas = number
+      max_replicas = number
+      concurrency  = number
     }),
     redis = object({
-      cpu                 = number
-      memory              = string
-      min_replicas        = number
-      max_replicas        = number
-      concurrent_requests = number
+      cpu          = number
+      memory       = string
+      min_replicas = number
+      max_replicas = number
+      concurrency  = number
     }),
     wagtail = object({
-      cpu                 = number
-      memory              = string
-      min_replicas        = number
-      max_replicas        = number
-      concurrent_requests = number
+      cpu          = number
+      memory       = string
+      min_replicas = number
+      max_replicas = number
+      concurrency  = number
     })
   })
 }
