@@ -35,6 +35,8 @@ from .forms import (
     PasswordSetForm,
     RegisterForm,
     EmailUpdatesForm,
+    JOB_CHOICES, 
+    HEALTH_CHOICES
 )
 from .helpers.newsletter import (
     deserialise,
@@ -258,7 +260,7 @@ def verification(request):
         verified = client_user.get("ProductRegistrationVar2")
         if verified != "True":
             email = client_user["EmailAddress"]
-            user_job = client_user["ProductRegistrationVar4"]
+            user_job = client_user["ContactVar2"] if client_user["ContactVar2"] else client_user["ProductRegistrationVar4"]
             postcode = client_user["ProductRegistrationVar9"]
 
             # update role
@@ -267,12 +269,13 @@ def verification(request):
                 role=get_role(email, user_job),
                 active="True",
                 verified_at=todays_date,
-                postcode=postcode + "|" + get_region(postcode),
+                postcode_region=get_region(postcode),
+                postcode=postcode,
             ):
                 if request.session.get("ParagonUser") == unsigned_token:
                     request.session["Verified"] = "True"
                 return render(request, "users/confirmation_user_verification.html")
-            else:
+            else: 
                 return HttpResponseServerError()
     return redirect("/")
 
@@ -507,7 +510,6 @@ def password_set(request):
         return HttpResponseBadRequest()
     return redirect("/")
 
-
 @paragon_user_logged_in
 def user_profile(request):
     paragon_client = Client()
@@ -515,43 +517,21 @@ def user_profile(request):
         "content"
     ]
 
-    job_choices = {
-        "director": "Director / Board Member / CEO",
-        "admin": "Administration",
-        "comms": "Communications",
-        "education": "Education and Teaching",
-        "marketing": "Marketing",
-        "hr": "HR / Training / Organisational Development",
-        "community": "Community and Social Services / Charity / Volunteering",
-        "student": "Student / Unemployed / Retired",
-        "health": "Health",
-        "other": "Other",
-        "health:pharmacy": "Pharmacy",
-        "health:nurse": "Nurse",
-        "health:management": "Practice Management",
-        "health:infantteam": "Infant feeding team",
-        "health:childrensteam": "Childrens centre team",
-        "health:oralhealth": "Oral health",
-        "health:improvement": "Health Improvement / Public Health",
-        "health:healthvisitor": "Health visitor",
-        "health:gp": "GP",
-        "health:midwife": "Midwife",
-        "health:smokingcessation": "Smoking cessation",
-        "health:healthwellbeing": "Health and Wellbeing coach",
-        "health:healthassistant": "Health Care Assistant",
-        "health:socialprescribing": "Social Prescribing Link Worker",
-        "health:carecoordinator": "Care Coordinator",
-        "health:immunisation": "Immunisation Coordinator",
-        "health:other": "Other",
-    }
+    job_choices = {**dict(JOB_CHOICES[1:]), **dict(HEALTH_CHOICES)}
+
+    postcode_raw = user["ProductRegistrationVar9"]
+    postcode = postcode_raw.split("|")[0] if "|" in postcode_raw else postcode_raw
+
+    job_title_raw = user.get("ContactVar2") if user.get("ContactVar2") else user["ProductRegistrationVar4"]
+    job_title = job_choices.get(job_title_raw)
 
     context = {
         "first_name": user["FirstName"],
         "last_name": user["LastName"],
         "email_address": user["EmailAddress"],
         "organisation": user["ProductRegistrationVar3"],
-        "job_title": job_choices.get(user["ProductRegistrationVar4"]),
-        "postcode": user["ProductRegistrationVar9"].split("|")[0],
+        "job_title": job_title,
+        "postcode": postcode,
         "user_type": user["ProductRegistrationVar1"],
     }
 

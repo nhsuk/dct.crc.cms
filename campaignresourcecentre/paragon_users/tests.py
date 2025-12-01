@@ -81,6 +81,128 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "Error: No users found for search: test",
             )
 
+    @patch("campaignresourcecentre.paragon_users.views.Client")
+    def test_user_profile_template_context_fields(self, mock_client_class):
+        mock_client = mock_client_class.return_value
+        mock_client.get_user_profile.return_value = {
+            "content": {
+                "FirstName": "John",
+                "LastName": "Doe", 
+                "EmailAddress": "john@example.com",
+                "ProductRegistrationVar3": "Test Organisation",
+                "ProductRegistrationVar4": "health:gp",
+                "ProductRegistrationVar9": "SW1A 1AA",
+                "ProductRegistrationVar1": "standard",
+                "ContactVar2": "health:gp"
+            }
+        }
+        
+        session = self.client.session
+        session['ParagonUser'] = 'test_token'
+        session['Verified'] = 'True'
+        session.save()
+        
+        response = self.client.get(reverse('account'))
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['first_name'], "John")
+        self.assertEqual(response.context['last_name'], "Doe")
+        self.assertEqual(response.context['email_address'], "john@example.com")
+        self.assertEqual(response.context['organisation'], "Test Organisation")
+        self.assertEqual(response.context['user_type'], "standard")
+        self.assertIsNotNone(response.context['job_title'])
+        self.assertIn('postcode', response.context)
+
+    @patch("campaignresourcecentre.paragon_users.views.Client")
+    def test_user_profile_postcode_is_backwords_compatible(self, mock_client_class):
+        mock_client = mock_client_class.return_value
+        
+        session = self.client.session
+        session['ParagonUser'] = 'test_token'
+        session['Verified'] = 'True'
+        session.save()
+        
+        test_cases = [
+            {
+                "postcode_data": "SW1A 1AA|London",
+                "expected": "SW1A 1AA"
+            },
+            {
+                "postcode_data": "M1 1AA",
+                "expected": "M1 1AA"
+            }
+        ]
+        
+        for case in test_cases:
+            with self.subTest(postcode=case["postcode_data"]):
+                mock_client.get_user_profile.return_value = {
+                    "content": {
+                        "FirstName": "Test",
+                        "LastName": "User",
+                        "EmailAddress": "test@example.com", 
+                        "ProductRegistrationVar3": "Test Org",
+                        "ProductRegistrationVar4": "health:gp",
+                        "ProductRegistrationVar9": case["postcode_data"],
+                        "ProductRegistrationVar1": "standard",
+                        "ContactVar2": "health:gp"
+                    }
+                }
+                
+                response = self.client.get(reverse('account'))
+                
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.context['postcode'], case["expected"])
+
+    @patch("campaignresourcecentre.paragon_users.views.Client")
+    def test_user_profile_job_title_fallback_logic(self, mock_client_class):
+        mock_client = mock_client_class.return_value
+        
+        session = self.client.session
+        session['ParagonUser'] = 'test_token'
+        session['Verified'] = 'True'
+        session.save()
+        
+        test_cases = [
+            {
+                "name": "uses_contactvar2_when_available",
+                "ContactVar2": "health:gp",
+                "ProductRegistrationVar4": "health:nurse",
+                "expected_job_title": "General Practice"
+            },
+            {
+                "name": "falls_back_to_productregistrationvar4_when_contactvar2_empty",
+                "ContactVar2": "",
+                "ProductRegistrationVar4": "health:nurse", 
+                "expected_job_title": "Nurse"
+            },
+            {
+                "name": "falls_back_to_productregistrationvar4_when_contactvar2_none",
+                "ContactVar2": None,
+                "ProductRegistrationVar4": "marketing",
+                "expected_job_title": "Marketing"
+            }
+        ]
+        
+        for case in test_cases:
+            with self.subTest(case=case["name"]):
+                mock_client.get_user_profile.return_value = {
+                    "content": {
+                        "FirstName": "Test",
+                        "LastName": "User",
+                        "EmailAddress": "test@example.com",
+                        "ProductRegistrationVar3": "Test Org", 
+                        "ProductRegistrationVar4": case["ProductRegistrationVar4"],
+                        "ProductRegistrationVar9": "SW1A 1AA",
+                        "ProductRegistrationVar1": "standard",
+                        "ContactVar2": case["ContactVar2"]
+                    }
+                }
+                
+                response = self.client.get(reverse('account'))
+                
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.context['job_title'], case["expected_job_title"])
+
     def getDummyResponse(self):
         return {
             "content": [
