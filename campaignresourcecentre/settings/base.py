@@ -216,7 +216,7 @@ else:
         }
     }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 # Values for the Django cache middleware - note we have subclassed it
 CACHE_MIDDLEWARE_ALIAS = "default"

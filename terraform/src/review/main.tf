@@ -1,5 +1,5 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=1.4.1"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=1.4.2"
 
   environment                  = local.environment
   org                          = local.org
@@ -24,4 +24,5 @@ module "aca_wagtail" {
   alerts_action_group_id       = null
   enable_alerts                = false
   existing_secrets             = true
+  container_resources          = local.container_resources
 }
