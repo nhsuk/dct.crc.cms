@@ -35,8 +35,8 @@ from .forms import (
     PasswordSetForm,
     RegisterForm,
     EmailUpdatesForm,
-    JOB_CHOICES, 
-    HEALTH_CHOICES
+    JOB_CHOICES,
+    HEALTH_CHOICES,
 )
 from .helpers.newsletter import (
     deserialise,
@@ -260,7 +260,11 @@ def verification(request):
         verified = client_user.get("ProductRegistrationVar2")
         if verified != "True":
             email = client_user["EmailAddress"]
-            user_job = client_user["ContactVar2"] if client_user["ContactVar2"] else client_user["ProductRegistrationVar4"]
+            user_job = (
+                client_user["ContactVar2"]
+                if client_user["ContactVar2"]
+                else client_user["ProductRegistrationVar4"]
+            )
             postcode = client_user["ProductRegistrationVar9"]
 
             # update role
@@ -275,7 +279,7 @@ def verification(request):
                 if request.session.get("ParagonUser") == unsigned_token:
                     request.session["Verified"] = "True"
                 return render(request, "users/confirmation_user_verification.html")
-            else: 
+            else:
                 return HttpResponseServerError()
     return redirect("/")
 
@@ -510,6 +514,7 @@ def password_set(request):
         return HttpResponseBadRequest()
     return redirect("/")
 
+
 @paragon_user_logged_in
 def user_profile(request):
     paragon_client = Client()
@@ -522,7 +527,11 @@ def user_profile(request):
     postcode_raw = user["ProductRegistrationVar9"]
     postcode = postcode_raw.split("|")[0] if "|" in postcode_raw else postcode_raw
 
-    job_title_raw = user.get("ContactVar2") if user.get("ContactVar2") else user["ProductRegistrationVar4"]
+    job_title_raw = (
+        user.get("ContactVar2")
+        if user.get("ContactVar2")
+        else user["ProductRegistrationVar4"]
+    )
     job_title = job_choices.get(job_title_raw)
 
     context = {
