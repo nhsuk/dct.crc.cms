@@ -532,7 +532,7 @@ def user_profile(request):
         if user.get("ContactVar2")
         else user["ProductRegistrationVar4"]
     )
-    job_title = job_choices.get(job_title_raw)
+    job_title = job_choices.get(job_title_raw, "")
 
     context = {
         "first_name": user["FirstName"],

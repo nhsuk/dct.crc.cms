@@ -79,7 +79,7 @@ class SpecialCharacterRestrictionValidator(RegexValidator):
 
 
 def validate_postcode(postcode):
-    postcode_pattern = r"^[A-Z]{1,2}[0-9R][0-9A-Z]?\s?[0-9][A-Z]{2}$"
+    postcode_pattern = r"^[A-Z]{1,2}[0-9R][0-9A-Z]?\s?\d[A-Z]{2}$"
     cleaned_postcode = postcode.strip().upper()
 
     if not re.match(postcode_pattern, cleaned_postcode):
@@ -90,7 +90,7 @@ def validate_postcode(postcode):
 
     try:
         get_postcode_region(postcode)
-    except PostcodeException as e:
+    except PostcodeException:
         raise ValidationError(
             "Postcode '%(postcode)s' not recognised", params={"postcode": postcode}
         )
