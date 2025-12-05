@@ -16,7 +16,12 @@ def get_postcode_data(postcode):
 
     try:
         response = data.json()
-        return response.get("result")[0]
+        result = response.get("result")
+        if not result or len(result) == 0:
+            raise PostcodeException("Postcode not found")
+        return result[0]
+    except PostcodeException:
+        raise
     except Exception as e:
         raise PostcodeException(
             "Failed to retrieve postcode '%s' - not a valid JSON response '%s' (%s)"

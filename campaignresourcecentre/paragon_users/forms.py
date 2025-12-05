@@ -1,11 +1,15 @@
 from logging import getLogger
+import re
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator, RegexValidator
 from django.utils.regex_helper import _lazy_re_compile
 
-from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_region
+from campaignresourcecentre.paragon_users.helpers.postcodes import (
+    get_postcode_region,
+    PostcodeException,
+)
 from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
 )
@@ -74,12 +78,19 @@ class SpecialCharacterRestrictionValidator(RegexValidator):
         self.regex = _lazy_re_compile(self.regex, self.flags)
 
 
-# uses get_postcode_region to verify existence of specified postcode
 def validate_postcode(postcode):
+    postcode_pattern = r"^[A-Z]{1,2}[0-9R][0-9A-Z]?\s?[0-9][A-Z]{2}$"
+    cleaned_postcode = postcode.strip().upper()
+
+    if not re.match(postcode_pattern, cleaned_postcode):
+        raise ValidationError(
+            "Postcode '%(postcode)s' is not in the correct format",
+            params={"postcode": postcode},
+        )
+
     try:
         get_postcode_region(postcode)
-    except Exception as e:
-        logger.warn("Failed to verify postcode '%s' (%s)", postcode, e)
+    except PostcodeException as e:
         raise ValidationError(
             "Postcode '%(postcode)s' not recognised", params={"postcode": postcode}
         )

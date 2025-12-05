@@ -455,11 +455,15 @@ class ParagonUsersTestCase(WagtailPageTests):
             organisation = " " if job_title == "student" else "Test Org"
             self.assertEqual(organisation, expected_org)
 
-    def test_signup_calls_get_region_function(self):
+    @patch("campaignresourcecentre.paragon_users.helpers.postcodes.get_postcode_region")
+    def test_signup_calls_get_region_function(self, mock_get_postcode_region):
         from campaignresourcecentre.paragon_users.helpers.postcodes import get_region
+
+        mock_get_postcode_region.return_value = "London"
 
         result = get_region("SW1A 1AA")
         self.assertIsNotNone(result)
+        self.assertEqual(result, "region.london")
 
     @patch("campaignresourcecentre.paragon_users.views.send_verification")
     @patch("campaignresourcecentre.paragon_users.views.get_postcode_data")
@@ -515,3 +519,77 @@ class ParagonUsersTestCase(WagtailPageTests):
             call_args = mock_client.create_account.call_args[0]
             self.assertEqual(call_args[6], "Emergency Medicine")
             self.assertEqual(call_args[8], "Test Region")
+
+
+class ValidatePostcodeTestCase(TestCase):
+
+    @patch("campaignresourcecentre.paragon_users.forms.get_postcode_region")
+    def test_valid_postcode_formats(self, mock_get_region):
+        from campaignresourcecentre.paragon_users.forms import validate_postcode
+
+        mock_get_region.return_value = "London"
+        valid_postcodes = [
+            "SW1A 1AA",
+            "SW1A1AA",
+            "M1 1AA",
+            "B33 8TH",
+            "W1A 0AX",
+            "sw1a 1aa",
+            " SW1A 1AA ",
+        ]
+
+        for postcode in valid_postcodes:
+            with self.subTest(postcode=postcode):
+                try:
+                    validate_postcode(postcode)
+                except Exception as e:
+                    self.fail(f"Valid postcode '{postcode}' raised exception: {e}")
+
+    def test_invalid_postcode_formats(self):
+        from campaignresourcecentre.paragon_users.forms import validate_postcode
+        from django.core.exceptions import ValidationError
+
+        invalid_postcodes = [
+            "",
+            "INVALID",
+            "12345",
+            "SW1A",
+            "SW1A 1AAA",
+            "SW1A1A",
+            "1W1A 1AA",
+            "SW1AA 1AA",
+        ]
+
+        for postcode in invalid_postcodes:
+            with self.subTest(postcode=postcode):
+                with self.assertRaises(ValidationError) as context:
+                    validate_postcode(postcode)
+                self.assertIn("not in the correct format", str(context.exception))
+
+    @patch("campaignresourcecentre.paragon_users.forms.get_postcode_region")
+    def test_postcode_not_found_in_api(self, mock_get_region):
+        from campaignresourcecentre.paragon_users.forms import validate_postcode
+        from campaignresourcecentre.paragon_users.helpers.postcodes import (
+            PostcodeException,
+        )
+        from django.core.exceptions import ValidationError
+
+        mock_get_region.side_effect = PostcodeException("Postcode not found")
+
+        with self.assertRaises(ValidationError) as context:
+            validate_postcode("SW1A 1AA")
+        self.assertIn("not recognised", str(context.exception))
+
+    @patch("campaignresourcecentre.paragon_users.forms.get_postcode_region")
+    def test_postcode_api_error(self, mock_get_region):
+        from campaignresourcecentre.paragon_users.forms import validate_postcode
+        from campaignresourcecentre.paragon_users.helpers.postcodes import (
+            PostcodeException,
+        )
+        from django.core.exceptions import ValidationError
+
+        mock_get_region.side_effect = PostcodeException("API request failed")
+
+        with self.assertRaises(ValidationError) as context:
+            validate_postcode("SW1A 1AA")
+        self.assertIn("not recognised", str(context.exception))
