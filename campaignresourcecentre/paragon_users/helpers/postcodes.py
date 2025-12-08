@@ -27,8 +27,6 @@ def get_postcode_data(postcode):
         raise PostcodeException("Postcode not found")
     return result[0]
 
-        
-
 
 def get_postcode_region(postcode):
     try:

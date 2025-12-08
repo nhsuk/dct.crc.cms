@@ -253,15 +253,16 @@ def unsign_user_token(signed_token: str):
         logger.error("Failed to unsign token: %s" % (e,))
         return None
 
+
 def verification(request):
     if not request.GET.get("q"):
         return redirect("/")
-    
+
     unsigned_token = unsign_user_token(request.GET.get("q"))
-    
+
     if not unsigned_token:
         return HttpResponseBadRequest()
-    
+
     todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
     client = Client()
     client_user = client.get_user_profile(unsigned_token)["content"]
@@ -269,7 +270,7 @@ def verification(request):
 
     if is_verified:
         return redirect("/")
-    
+
     email = client_user["EmailAddress"]
     user_job = (
         client_user["ContactVar2"]
@@ -284,13 +285,12 @@ def verification(request):
         verified_at=todays_date,
     ):
         return HttpResponseServerError()
-    
+
     if request.session.get("ParagonUser") == unsigned_token:
         request.session["Verified"] = "True"
 
     return render(request, "users/confirmation_user_verification.html")
-        
-        
+
 
 def get_role(user_email: str, user_job: str):
     user_email = user_email.lower()
