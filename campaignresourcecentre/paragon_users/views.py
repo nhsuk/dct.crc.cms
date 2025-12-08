@@ -245,44 +245,52 @@ def resend_verification(request):
     return redirect("/")
 
 
+def unsign_user_token(signed_token: str):
+    try:
+        unsigned_token = unsign(signed_token, max_age=86400)
+        return unsigned_token
+    except Exception as e:
+        logger.error("Failed to unsign token: %s" % (e,))
+        return None
+
 def verification(request):
-    if request.GET.get("q"):
-        # unsign Token from URL Query
-        try:
-            unsigned_token = unsign(request.GET.get("q"), max_age=86400)
-        except Exception as e:
-            logger.error("Failed to unsign token: %s" % (e,))
-            return HttpResponseBadRequest()
-        todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
-        # set user parameters
-        client = Client()
-        client_user = client.get_user_profile(unsigned_token)["content"]
-        verified = client_user.get("ProductRegistrationVar2")
-        if verified != "True":
-            email = client_user["EmailAddress"]
-            user_job = (
-                client_user["ContactVar2"]
-                if client_user["ContactVar2"]
-                else client_user["ProductRegistrationVar4"]
-            )
-            postcode = client_user["ProductRegistrationVar9"]
+    if not request.GET.get("q"):
+        return redirect("/")
+    
+    unsigned_token = unsign_user_token(request.GET.get("q"))
+    
+    if not unsigned_token:
+        return HttpResponseBadRequest()
+    
+    todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
+    client = Client()
+    client_user = client.get_user_profile(unsigned_token)["content"]
+    is_verified = client_user.get("ProductRegistrationVar2") == "True"
 
-            # update role
-            if client.update_user_profile(
-                user_token=unsigned_token,
-                role=get_role(email, user_job),
-                active="True",
-                verified_at=todays_date,
-                postcode_region=get_region(postcode),
-                postcode=postcode,
-            ):
-                if request.session.get("ParagonUser") == unsigned_token:
-                    request.session["Verified"] = "True"
-                return render(request, "users/confirmation_user_verification.html")
-            else:
-                return HttpResponseServerError()
-    return redirect("/")
+    if is_verified:
+        return redirect("/")
+    
+    email = client_user["EmailAddress"]
+    user_job = (
+        client_user["ContactVar2"]
+        if client_user["ContactVar2"]
+        else client_user["ProductRegistrationVar4"]
+    )
 
+    if not client.update_user_profile(
+        user_token=unsigned_token,
+        role=get_role(email, user_job),
+        active="True",
+        verified_at=todays_date,
+    ):
+        return HttpResponseServerError()
+    
+    if request.session.get("ParagonUser") == unsigned_token:
+        request.session["Verified"] = "True"
+
+    return render(request, "users/confirmation_user_verification.html")
+        
+        
 
 def get_role(user_email: str, user_job: str):
     user_email = user_email.lower()
