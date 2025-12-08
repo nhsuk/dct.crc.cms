@@ -523,16 +523,15 @@ def user_profile(request):
     ]
 
     job_choices = {**dict(JOB_CHOICES[1:]), **dict(HEALTH_CHOICES)}
-
-    postcode_raw = user["ProductRegistrationVar9"]
-    postcode = postcode_raw.split("|")[0] if "|" in postcode_raw else postcode_raw
-
     job_title_raw = (
         user.get("ContactVar2")
         if user.get("ContactVar2")
         else user["ProductRegistrationVar4"]
     )
     job_title = job_choices.get(job_title_raw, "")
+
+    postcode_raw = user["ProductRegistrationVar9"]
+    postcode = postcode_raw.split("|")[0] if "|" in postcode_raw else postcode_raw
 
     context = {
         "first_name": user["FirstName"],
