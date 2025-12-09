@@ -41,7 +41,7 @@ wagtail-modeladmin = "^2.0.0"
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 unittest-xml-reporting = "^3.2.0"
 Werkzeug = "~3.0"
 fabric = "~2.5"

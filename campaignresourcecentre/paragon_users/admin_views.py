@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
+from campaignresourcecentre.paragon_users.helpers.postcodes import get_region
 from wagtail.admin import messages
 from wagtail.admin.auth import any_permission_required
 from wagtail.admin.forms.search import SearchForm
@@ -129,11 +130,10 @@ def edit(request, user_token):
                     user.first_name = form.cleaned_data["first_name"]
                     user.last_name = form.cleaned_data["last_name"]
                     user.organisation = form.cleaned_data["organisation"]
-                    if form.cleaned_data["job_title"] == "health":
-                        user.job_title = form.cleaned_data["area_work"]
-                    else:
-                        user.job_title = form.cleaned_data["job_title"]
+                    user.job_title = form.cleaned_data["job_title"]
+                    user.area_work = form.cleaned_data["area_work"]
                     user.postcode = form.cleaned_data["postcode"]
+                    user.postcode_region = get_region(user.postcode)
 
                 try:
                     paragon_client.update_user_profile(
@@ -143,8 +143,10 @@ def edit(request, user_token):
                         last_name=user.last_name,
                         organisation=user.organisation,
                         job_title=user.job_title,
+                        area_work=user.area_work,
                         role=user.role,
                         postcode=user.postcode,
+                        postcode_region=user.postcode_region,
                     )
 
                     messages.success(
