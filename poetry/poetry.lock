@@ -3428,18 +3428,18 @@ testing = ["Django (==3.2)", "beautifulsoup4 (==4.8.2)", "pytest (==4.3.0)", "py
 
 [[package]]
 name = "werkzeug"
-version = "3.0.6"
+version = "3.1.4"
 description = "The comprehensive WSGI web application library."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "werkzeug-3.0.6-py3-none-any.whl", hash = "sha256:1bc0c2310d2fbb07b1dd1105eba2f7af72f322e1e455f2f93c993bee8c8a5f17"},
-    {file = "werkzeug-3.0.6.tar.gz", hash = "sha256:a8dd59d4de28ca70471a34cba79bed5f7ef2e036a76b3ab0835474246eb41f8d"},
+    {file = "werkzeug-3.1.4-py3-none-any.whl", hash = "sha256:2ad50fb9ed09cc3af22c54698351027ace879a0b60a3b5edf5730b2f7d876905"},
+    {file = "werkzeug-3.1.4.tar.gz", hash = "sha256:cd3cd98b1b92dc3b7b3995038826c68097dcb16f9baa63abe35f20eafeb9fe5e"},
 ]
 
 [package.dependencies]
-MarkupSafe = ">=2.1.1"
+markupsafe = ">=2.1.1"
 
 [package.extras]
 watchdog = ["watchdog (>=2.3)"]
@@ -3600,4 +3600,4 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12"
-content-hash = "5d90f8c0a0eeb9e88cd3ae3bdb681413660587f4f9d7cc4c0d6c279d9e01bc97"
+content-hash = "848860790bf3f4511ecdf9c6c2d7aae57f39f9de06d36ad0d501ccfed5fb2b94"
