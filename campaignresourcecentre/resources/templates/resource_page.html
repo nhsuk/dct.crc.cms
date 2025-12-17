@@ -135,41 +135,49 @@
         const resourceType="{% get_taxonomies taxonomy_json 'TYPE' %}";
         const topics="{% get_taxonomies taxonomy_json 'TOPIC' %}";
 
-        function formatDate() {
+        function formatDateTime() {
             var d = new Date(),
-                month = '' + (d.getUTCMonth() + 1),
                 day = '' + d.getUTCDate(),
-                year = d.getUTCFullYear();
+                month = '' + (d.getUTCMonth() + 1),
+                year = d.getUTCFullYear(),
+                hour = '' + d.getUTCHours(),
+                minute = '' + d.getUTCMinutes(),
+                second = '' + d.getUTCSeconds();
+
 
             if (month.length < 2) 
                 month = '0' + month;
             if (day.length < 2) 
                 day = '0' + day;
+            if (hour.length < 2)
+                hour = '0' + hour;
+            if (minute.length < 2)
+                minute = '0' + minute;
+            if (second.length < 2)
+                second = '0' + second;
 
-            return [year, month, day].join('-');
+            return { date: [year, month, day].join('-'), time: [hour, minute, second].join(':') };
         }
 
         if( REPORTING_ENABLED ){
             //perform reporting action
             const buttons = document.getElementsByClassName("download-button");
-            for(let i=0; i<buttons.length; i++) {
-                buttons[i].addEventListener("click", function(event){
+            for(const button of buttons) {
+                button.addEventListener("click", function(event){
                     event.preventDefault();
 
                     // Send the API request.
-                    const date = new Date();
-                    const _date = formatDate();
-                    const date_time = `${_date} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+                    const {date, time} = formatDateTime();
                     let href = this.getAttribute("href");
                     let params = {
-                        "resourceId" : this.getAttribute("data-resourceid"),
+                        "resourceId" : this.dataset.resourceid,
                         "resourceType" : resourceType,
                         "userToken" : userToken,
                         "topics" : topics,
-                        "campaign" : this.getAttribute("data-campaign"),
-                        "resourceTitle" : this.getAttribute("data-resourcetitle"),
-                        "date": _date,
-                        "ts" : date_time,
+                        "campaign" : this.dataset.campaign,
+                        "resourceTitle" : this.dataset.resourcetitle,
+                        "date": date,
+                        "ts" : `${date} ${time}`,
                     };
                     
                     let message = {
@@ -178,18 +186,18 @@
                         "group": "crc"
                     }
                     let xhr = new XMLHttpRequest();
-                    xhr.open('POST', REPORTING_ENDPOINT, true),
-                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8'),
-                    xhr.timeout = 500,
-                    (xhr.onreadystatechange = function () {
+                    xhr.open('POST', REPORTING_ENDPOINT, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                    xhr.timeout = 500;
+                    xhr.onreadystatechange = function () {
                         // Navigate to the href when readyState is DONE (response is received or after 500 milliseconds)
                         if (4 === xhr.readyState) {
-                            window.location.href = href
+                            globalThis.location.href = href;
                             if(xhr.status != 200) {
                                 console.log("Error: "+ xhr.status + "-" + xhr.responseText);
                             }
                         }
-                    }),
+                    };
                     xhr.send(JSON.stringify({"message": message}));
                 });
             }

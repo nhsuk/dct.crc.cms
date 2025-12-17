@@ -19,6 +19,14 @@ steps:
         echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping updating and running init container app job"
         echo "##vso[task.complete result=SucceededWithIssues;]"
       displayName: Dry Run Warning
+  - bash: |
+      suffix="${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}"
+      shortSuffix="${suffix:0:20}"
+      echo "Trimmed suffix: $shortSuffix"
+      jobName="caj-init-$shortSuffix"
+      echo "Full name: $jobName"
+      echo "##vso[task.setvariable variable=JOB_NAME]$jobName"
+    displayName: Get Job Name
   - task: AzureCLI@2
     condition: ne('${{ parameters.dryrun }}', 'True')
     displayName: Update and run init container app job
@@ -72,7 +80,7 @@ steps:
       APP: crccms
       ENV: ${{ parameters.env }}
       REGION: ${{ parameters.region }}
-      JOB_NAME: caj-init-${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}
+      JOB_NAME: $(JOB_NAME)
 
   - task: AzureCLI@2
     condition: and(failed(), ne('${{ parameters.dryrun }}', 'True'))
@@ -114,4 +122,4 @@ steps:
           echo "⚠️ Could not find logs for execution ${JOB_EXECUTION_NAME}. Please check the logs manually in Log Analytics."
         fi
     env:
-      JOB_NAME: caj-init-${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}
+      JOB_NAME: $(JOB_NAME)
