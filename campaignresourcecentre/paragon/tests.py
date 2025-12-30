@@ -338,6 +338,37 @@ class TestRegistrationDataClass(TestCase):
         }
         self.assertEqual(expected_params, registration.params())
 
+    def test_valid_optional_params(self):
+        created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
+        registration = Registration(
+            "test@gmail.com",
+            "Test@123",
+            "First Name",
+            "Last Name",
+            "NHS",
+            "marketing",
+            None,
+            "SE1 9LT",
+            None,
+            created_at,
+        )
+        expected_params = {
+            "EmailAddress": "test@gmail.com",
+            "Password": "Test@123",
+            "FirstName": "First Name",
+            "LastName": "Last Name",
+            "ContactVar2": None,
+            "ContactVar3": None,
+            "ProductRegistrationVar2": "False",
+            "ProductRegistrationVar3": "NHS",
+            "ProductRegistrationVar4": "Health",
+            "ProductRegistrationVar6": "true",
+            "ProductRegistrationVar7": "000000000000000000000000000000",
+            "ProductRegistrationVar9": "SE1 9LT",
+            "ProductRegistrationVar10": created_at,
+        }
+        self.assertEqual(expected_params, registration.params())
+
     def assert_exception(self, error, message):
         self.assertEqual(str(error.exception), message)
 
