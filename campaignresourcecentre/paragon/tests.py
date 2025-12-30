@@ -361,7 +361,7 @@ class TestRegistrationDataClass(TestCase):
             "ContactVar3": None,
             "ProductRegistrationVar2": "False",
             "ProductRegistrationVar3": "NHS",
-            "ProductRegistrationVar4": "Health",
+            "ProductRegistrationVar4": "marketing",
             "ProductRegistrationVar6": "true",
             "ProductRegistrationVar7": "000000000000000000000000000000",
             "ProductRegistrationVar9": "SE1 9LT",
