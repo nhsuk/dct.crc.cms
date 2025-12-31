@@ -4,7 +4,7 @@
         <notes><![CDATA[
         Package: braces
         Uncontrolled resource consumption in braces
-        Suppressed temporarily until node/packages can be properly upgraded. 
+        Suppressed temporarily until node/packages can be properly upgraded.
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/braces@.*$</packageUrl>
         <vulnerabilityName>GHSA-grv7-fg5c-xmjg</vulnerabilityName>
@@ -13,45 +13,9 @@
         <notes><![CDATA[
         Package: decode-uri-component
         Improper Input Validation Vulnerability Leading to Denial of Service
-        Suppressed temporarily until node/packages can be properly upgraded. 
+        Suppressed temporarily until node/packages can be properly upgraded.
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/decode-uri-component@.*$</packageUrl>
         <vulnerabilityName>GHSA-w573-4hg7-7wgq</vulnerabilityName>
-    </suppress>
-    <suppress until="2026-01-30Z">
-        <notes><![CDATA[
-        Package: form-data
-        Use of Insufficiently Random Values vulnerability in form-data allows HTTP Parameter Pollution (HPP). This vulnerability is associated with program files lib/form_data.Js. This issue affects form-data: < 2.5.4, 3.0.0 - 3.0.3, 4.0.0 - 4.0.3.
-        Suppressed temporarily until node/packages can be properly upgraded. 
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/form-data@.*$</packageUrl>
-        <vulnerabilityName>GHSA-fjxv-7rqg-78g4</vulnerabilityName>
-    </suppress>
-    <suppress until="2026-01-30Z">
-        <notes><![CDATA[
-        Package: pbkdf2
-        Improper Input Validation vulnerability in pbkdf2 allows Signature Spoofing by Improper Validation. This vulnerability is associated with program files lib/to-buffer.Js. This issue affects pbkdf2: from 3.0.10 through 3.1.2.
-        Suppressed temporarily until node/packages can be properly upgraded. 
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/pbkdf2@.*$</packageUrl>
-        <vulnerabilityName>GHSA-h7cp-r72f-jxh6</vulnerabilityName>
-    </suppress>
-    <suppress until="2026-01-30Z">
-        <notes><![CDATA[
-        Package: pbkdf2
-        Improper Input Validation vulnerability in pbkdf2 allows Signature Spoofing by Improper Validation. This vulnerability is associated with program files lib/to-buffer.Js. This issue affects pbkdf2: from 3.0.10 through 3.1.2.
-        Suppressed temporarily until node/packages can be properly upgraded. 
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/pbkdf2@.*$</packageUrl>
-        <vulnerabilityName>GHSA-v62p-rq8g-8h59</vulnerabilityName>
-    </suppress>
-    <suppress until="2026-01-30Z">
-        <notes><![CDATA[
-        Package: sha.js
-        Improper Input Validation vulnerability in sha.js allows Input Data Manipulation.This issue affects sha.js: through 2.4.11.
-        Suppressed temporarily until node/packages can be properly upgraded. 
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/sha.js@.*$</packageUrl>
-        <vulnerabilityName>GHSA-95m3-7q98-8xr5</vulnerabilityName>
     </suppress>
 </suppressions>
