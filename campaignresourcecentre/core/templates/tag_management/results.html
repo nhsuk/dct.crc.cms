@@ -1,0 +1,116 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n wagtailadmin_tags static %}
+
+{% block titletag %}{% trans "Tag Management Results" %}{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'tag_management/css/results.css' %}">
+{% endblock %}
+
+{% block content %}
+    {% include "wagtailadmin/shared/header.html" with title=_("Tag Management Results") icon="success" %}
+
+    <div class="nice-padding">
+        {% if num_failed > 0 %}
+            <div class="help-block help-warning">
+                <svg class="icon icon-warning" aria-hidden="true"><use href="#icon-warning"></use></svg>
+                {% blocktrans count counter=num_failed %}
+                    {{ counter }} page failed to update
+                {% plural %}
+                    {{ counter }} pages failed to update
+                {% endblocktrans %}
+            </div>
+        {% endif %}
+
+        {% if num_modified > 0 %}
+            <div class="help-block help-info">
+                <svg class="icon icon-success" aria-hidden="true"><use href="#icon-success"></use></svg>
+                {% blocktrans count counter=num_modified %}
+                    {{ counter }} page was successfully updated
+                {% plural %}
+                    {{ counter }} pages were successfully updated
+                {% endblocktrans %}
+            </div>
+        {% endif %}
+
+        {% if source_page %}
+            <div class="help-block">
+                <strong>{% trans "Tags copied from:" %}</strong>
+                <a href="{% url 'wagtailadmin_pages:edit' source_page.id %}" target="_blank" rel="noreferrer">
+                    {{ source_page.get_admin_display_title }}
+                </a>
+            </div>
+        {% endif %}
+
+        <h2>{% trans "Changes Made" %}</h2>
+        
+        {% if change_details %}
+            <table class="listing">
+                <thead>
+                    <tr>
+                        <th>{% trans "Page" %}</th>
+                        <th>{% trans "Tags Removed" %}</th>
+                        <th>{% trans "Tags Added" %}</th>
+                        <th>{% trans "Status" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for change in change_details %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'wagtailadmin_pages:edit' change.page_id %}" target="_blank" rel="noreferrer">
+                                    {{ change.page_title }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if change.tags_removed %}
+                                    {% for tag in change.tags_removed %}
+                                        <span class="status-tag primary">{{ tag.label }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <em>{% trans "None" %}</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if change.tags_added %}
+                                    {% for tag in change.tags_added %}
+                                        <span class="status-tag">{{ tag.label }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <em>{% trans "None" %}</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if change.error %}
+                                    <span class="status-tag warning">
+                                        {% icon "warning" %}
+                                        {% trans "Failed" %}
+                                    </span>
+                                    <br><small>{{ change.error }}</small>
+                                {% elif change.had_changes %}
+                                    <span class="status-tag primary">
+                                        {% icon "success" %}
+                                        {% trans "Updated" %}
+                                    </span>
+                                {% else %}
+                                    <span class="status-tag">
+                                        {% trans "No changes" %}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{% trans "No changes were made." %}</p>
+        {% endif %}
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ next_url }}" class="button">
+                {% trans "Back to Pages" %}
+            </a>
+        </div>
+    </div>
+{% endblock %}

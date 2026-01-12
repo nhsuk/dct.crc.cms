@@ -1,0 +1,98 @@
+{% extends 'wagtailadmin/bulk_actions/confirmation/base.html' %}
+{% load i18n wagtailadmin_tags %}
+
+{% block titletag %}
+    {% trans "Manage Tags" %}
+{% endblock %}
+
+{% block header %}
+    {% include "wagtailadmin/shared/header.html" with title=_("Manage Tags") icon="tag" %}
+{% endblock header %}
+
+{% block items_with_access %}
+    {% if items %}
+        <h2>{% trans "Copy Tags from Resource" %}</h2>
+        <div class="field" style="margin-bottom: 2rem;">
+            <label for="id_source_page">{% trans "Select Source Resource/Campaign" %}</label>
+            <div class="field-content">
+                <button type="button" class="button" id="choose-source-page">
+                    {% icon "pick" %}
+                    {% trans "Choose a page" %}
+                </button>
+                <p class="help">{% trans "Select a page to copy tags from. Tags will be added to all selected pages." %}</p>
+                <div id="selected-page-display" style="display: none; margin-top: 10px;">
+                    <strong>{% trans "Selected:" %}</strong> <span id="selected-page-title"></span>
+                </div>
+            </div>
+        </div>
+
+        <h2>{% trans "Current Tags" %}</h2>
+        <p class="help">{% trans "Click the × to remove a tag from a page" %}</p>
+        <table class="listing">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">{% trans "Page" %}</th>
+                    <th>{% trans "Tags" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for page_data in items %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'wagtailadmin_pages:edit' page_data.item.id %}" target="_blank" rel="noreferrer">
+                                {{ page_data.item.get_admin_display_title }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="tags-container" data-page-id="{{ page_data.item.id }}">
+                                {% if page_data.taxonomy_tags %}
+                                    {% for term in page_data.taxonomy_tags %}
+                                        <span class="tag-badge" data-tag-code="{{ term.code }}">
+                                            {{ term.label }}
+                                            <button type="button" class="tag-remove" data-page-id="{{ page_data.item.id }}" data-tag-code="{{ term.code }}" title="{% trans 'Remove tag' %}">×</button>
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <em class="no-tags-message">{% trans "No tags" %}</em>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock items_with_access %}
+
+{% block items_with_no_access %}
+    {% if items_with_no_access %}
+        {% blocktrans trimmed asvar no_access_msg count counter=items_with_no_access|length %}
+            You don't have permission to manage tags on this page
+        {% plural %}
+            You don't have permission to manage tags on these pages
+        {% endblocktrans %}
+        {% include 'wagtailadmin/bulk_actions/confirmation/list_items_with_no_access.html' with items=items_with_no_access no_access_msg=no_access_msg %}
+    {% endif %}
+{% endblock items_with_no_access %}
+
+{% block form_section %}
+    {% if items %}
+        {% trans 'Save Changes' as action_button_text %}
+        {% trans "Cancel" as no_action_button_text %}
+        {% include 'wagtailadmin/bulk_actions/confirmation/form_with_fields.html' %}
+    {% else %}
+        {% include 'wagtailadmin/bulk_actions/confirmation/go_back.html' %}
+    {% endif %}
+{% endblock form_section %}
+
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}">
+{% endblock extra_css %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="{% static 'tag_management/js/bulk_manage_tags.js' %}"></script>
+{% endblock extra_js %}
