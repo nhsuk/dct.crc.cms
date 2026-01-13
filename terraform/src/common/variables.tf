@@ -34,6 +34,7 @@ variable "location" {
 
 variable "subscription_id" {
   description = "Azure subscription ID, only used in the primary region"
+  default     = null
 }
 
 variable "storage" {
