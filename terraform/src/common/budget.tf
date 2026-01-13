@@ -1,6 +1,4 @@
 module "config" {
-  count = local.deploy_budget ? 1 : 0
-
   source          = "./modules/config"
   env             = var.env
 
@@ -10,13 +8,12 @@ module "config" {
 }
 
 data "azurerm_subscription" "sub" {
-  count           = local.deploy_budget ? 1 : 0
   subscription_id = var.subscription_id
 }
 
 resource "azurerm_consumption_budget_subscription" "standard" {
   count           = local.deploy_budget ? 1 : 0
-  name            = data.azurerm_subscription.sub[0].display_name
+  name            = data.azurerm_subscription.sub.display_name
   subscription_id = "/subscriptions/${var.subscription_id}"
   amount          = 150
   time_grain      = "Monthly"
@@ -28,7 +25,7 @@ resource "azurerm_consumption_budget_subscription" "standard" {
     threshold      = 100
     operator       = "GreaterThan"
     threshold_type = "Forecasted"
-    contact_emails = [module.config[0].campaigns_monitoring_email]
+    contact_emails = [module.config.campaigns_monitoring_email]
   }
   lifecycle {
     create_before_destroy = true
