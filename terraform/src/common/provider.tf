@@ -17,3 +17,9 @@ provider "azurerm" {
   alias           = "hub"
   subscription_id = "d535b130-e970-4713-b547-0ba3cd149539"
 }
+
+provider "azurerm" {
+  features {}
+  alias           = "config"
+  subscription_id = var.env == "prod" ? "ed6103a2-2642-470e-b1fa-77bf35b7b3fc" : "2aed4d1b-245d-4bd8-99c5-b21e53c84b72" # dct-config-prod or API dct-config-int 
+}

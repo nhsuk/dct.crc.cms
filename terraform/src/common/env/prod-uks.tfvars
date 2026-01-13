@@ -1,7 +1,8 @@
-env            = "prod"
-environment    = "production"
-location       = "uks"
-resource_group = "dct-crccms-rg-prod-uks"
+env             = "prod"
+environment     = "production"
+location        = "uks"
+resource_group  = "dct-crccms-rg-prod-uks"
+subscription_id = "984dd01f-f3aa-4fa8-ba8a-e804f38e49d0"
 
 storage = {
   account   = "campaignscrcv3produks"
