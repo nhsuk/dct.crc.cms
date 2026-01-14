@@ -1,54 +1,64 @@
 {% extends 'wagtailadmin/bulk_actions/confirmation/base.html' %}
-{% load i18n wagtailadmin_tags static %}
+{% load wagtailadmin_tags static %}
 
 {% block titletag %}
-    {% trans "Manage Tags" %}
+  Manage Tags
 {% endblock %}
 
 {% block header %}
-    {% include "wagtailadmin/shared/header.html" with title=_("Manage Tags") icon="tag" %}
-{% endblock header %}
+  {% include 'wagtailadmin/shared/header.html' with title='Manage Tags' icon='tag' %}
+{% endblock %}
 
 {% block form_section %}
-    {% if items %}
-        <form action="{{ submit_url }}" method="POST">
-            {% include 'wagtailadmin/shared/non_field_errors.html' %}
-            {% csrf_token %}
-            
-            <h2>{% trans "Copy Tags from Resource" %}</h2>
-            <div class="field">
-                {% include "wagtailadmin/shared/field.html" with field=form.source_page %}
-            </div>
-            
-            <div id="selected-page-tags" class="help-block help-info selected-page-tags">
-                <strong>{% trans "Tags from selected page:" %}</strong>
-                <div id="selected-page-tags-container"></div>
-            </div>
-            
-            <div class="field">
-                {% include "wagtailadmin/shared/field.html" with field=form.tag_operation_mode %}
-            </div>
-            
-            {% include "tag_management/includes/pages_tags_table.html" with items=items %}
-            
+  {% if not items %}
+    <div class="messages">
+      <div class="message error">
+        No items selected.
+      </div>
+    </div>
+  {% else %}
+    <form action="{{ submit_url }}" method="POST" class="bulk-manage-tags-form">
+      {% include 'wagtailadmin/shared/non_field_errors.html' %}
+      {% csrf_token %}
+      {{ form.active_tab }}
+
+      <div class="tab-container">
+        <div class="tab-buttons">
+          <button type="button" class="tab-button active" data-tab="remove">Remove Tags</button>
+          <button type="button" class="tab-button" data-tab="copy">Copy Tags</button>
+        </div>
+
+        <div class="tab-panels">
+          <div class="tab-panel active" data-panel="remove">
+            {% include 'tag_management/includes/pages_tags_table.html' %}
             {{ form.tags_to_remove }}
+          </div>
+
+          <div class="tab-panel" data-panel="copy">
+            {% include 'wagtailadmin/shared/field.html' with field=form.source_page %}
             
-            {% trans 'Save Changes' as action_button_text %}
-            {% trans "Cancel" as no_action_button_text %}
-            <button type="submit" class="button">{{ action_button_text }}</button>
-            <a href="{{ next }}" class="button button-secondary">{{ no_action_button_text }}</a>
-        </form>
-    {% else %}
-        {% include 'wagtailadmin/bulk_actions/confirmation/go_back.html' %}
-    {% endif %}
-{% endblock form_section %}
+            <div id="selected-page-tags" class="selected-tags-preview">
+              <strong>Tags from selected page:</strong>
+              <div id="selected-page-tags-container" class="tags-container"></div>
+            </div>
+            
+            {% include 'wagtailadmin/shared/field.html' with field=form.tag_operation_mode %}
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="button">Save Changes</button>
+      <a href="{{ next }}" class="button button-secondary">Cancel</a>
+    </form>
+  {% endif %}
+{% endblock %}
 
 {% block extra_css %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}">
-{% endblock extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}" />
+{% endblock %}
 
 {% block extra_js %}
-    {{ block.super }}
-    <script src="{% static 'tag_management/js/bulk_manage_tags.js' %}"></script>
-{% endblock extra_js %}
+  {{ block.super }}
+  <script src="{% static 'tag_management/js/bulk_manage_tags.js' %}"></script>
+{% endblock %}

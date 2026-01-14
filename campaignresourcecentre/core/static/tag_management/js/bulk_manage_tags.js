@@ -1,162 +1,95 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const tagsToRemoveInput = document.getElementById('id_tags_to_remove');
     const tagsToRemove = {};
-    
-    // Initialize the hidden input with empty object
-    if (tagsToRemoveInput) {
-        tagsToRemoveInput.value = JSON.stringify(tagsToRemove);
-    }
-    
-    // Watch the hidden input field that stores the selected page ID
-    const sourcePageInput = document.getElementById('id_source_page');
-    
+    const el = (id) => document.getElementById(id);
+    const activeTabInput = el('id_active_tab');
+    const tagsToRemoveInput = el('id_tags_to_remove');
+    const sourcePageInput = el('id_source_page');
+
+    const fetchPageTags = async (pageId) => {
+        const response = await fetch(`/crc-admin/tag-management/page/${pageId}/tags/`);
+        if (!response.ok) throw new Error();
+        const data = await response.json();
+        return data.tags || [];
+    };
+
+    const renderTags = (tags, container) => {
+        container.innerHTML = '';
+        if (tags.length) {
+            tags.forEach(tag => {
+                const badge = document.createElement('span');
+                badge.className = 'taxonomy-tag';
+                badge.textContent = tag.label;
+                container.appendChild(badge);
+            });
+        } else {
+            const empty = document.createElement('em');
+            empty.className = 'help-text';
+            empty.textContent = 'No tags on selected page';
+            container.appendChild(empty);
+        }
+    };
+
+    const updateTagDisplay = async (pageId) => {
+        const container = el('selected-page-tags-container');
+        const display = el('selected-page-tags');
+        if (!container || !display) return;
+        
+        try {
+            const tags = await fetchPageTags(pageId);
+            renderTags(tags, container);
+            display.classList.add('visible');
+        } catch {
+            display.classList.remove('visible');
+        }
+    };
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const target = button.dataset.tab;
+            if (activeTabInput) activeTabInput.value = target;
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(panel => 
+                panel.classList.toggle('active', panel.dataset.panel === target)
+            );
+        });
+    });
+
+    if (tagsToRemoveInput) tagsToRemoveInput.value = '{}';
+    if (activeTabInput) activeTabInput.value = 'remove';
+
     if (sourcePageInput) {
         let lastPageId = sourcePageInput.value;
-        
-        // Use MutationObserver to watch for value changes
-        const observer = new MutationObserver(() => {
+        new MutationObserver(() => {
             const pageId = sourcePageInput.value;
-            
-            // Only fetch if the value actually changed
             if (pageId !== lastPageId) {
                 lastPageId = pageId;
-                
-                if (pageId) {
-                    fetchAndDisplayPageTags(pageId);
-                } else {
-                    hideSelectedPageTags();
-                }
+                if (pageId) updateTagDisplay(pageId);
+                else el('selected-page-tags')?.classList.remove('visible');
             }
-        });
+        }).observe(sourcePageInput, {attributes: true, attributeFilter: ['value']});
         
-        observer.observe(sourcePageInput, {
-            attributes: true,
-            attributeFilter: ['value']
-        });
-        
-        // Check if a page is already selected on page load
-        if (sourcePageInput.value) {
-            fetchAndDisplayPageTags(sourcePageInput.value);
-        }
-    }
-    
-    function fetchAndDisplayPageTags(pageId) {
-        // Use the proper API endpoint to get page tags
-        fetch(`/crc-admin/tag-management/api/page-tags/${pageId}/`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch page tags');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.tags && data.tags.length > 0) {
-                displaySelectedPageTags(data.tags);
-            } else {
-                displayEmptyTags();
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching page tags:', err);
-            hideSelectedPageTags();
-        });
-    }
-    
-    function displaySelectedPageTags(tags) {
-        const container = document.getElementById('selected-page-tags');
-        const tagsContainer = document.getElementById('selected-page-tags-container');
-        
-        if (!container || !tagsContainer) return;
-        
-        tagsContainer.innerHTML = '';
-        
-        tags.forEach(tag => {
-            const badge = document.createElement('span');
-            badge.className = 'status-tag primary';
-            badge.textContent = tag.label;
-            tagsContainer.appendChild(badge);
-        });
-        
-        container.classList.add('visible');
-    }
-    
-    function displayEmptyTags() {
-        const container = document.getElementById('selected-page-tags');
-        const tagsContainer = document.getElementById('selected-page-tags-container');
-        
-        if (!container || !tagsContainer) return;
-        
-        tagsContainer.innerHTML = '<em class="help-text">No tags on selected page</em>';
-        container.classList.add('visible');
-    }
-    
-    function hideSelectedPageTags() {
-        const container = document.getElementById('selected-page-tags');
-        if (container) {
-            container.classList.remove('visible');
-        }
+        if (lastPageId) updateTagDisplay(lastPageId);
     }
 
-    // Tag removal functionality
-    function updateRemovedTagsInput() {
-        if (tagsToRemoveInput) {
-            tagsToRemoveInput.value = JSON.stringify(tagsToRemove);
-        }
-    }
-
-    function updateNoTagsMessage(container) {
-        const allTags = container.querySelectorAll('.tag-badge');
-        const allRemoving = Array.from(allTags).every(tag => tag.classList.contains('removing'));
-        let noTagsMsg = container.querySelector('.no-tags-message');
-        
-        if (allRemoving && !noTagsMsg) {
-            noTagsMsg = document.createElement('em');
-            noTagsMsg.className = 'no-tags-message';
-            noTagsMsg.textContent = 'No tags (after save)';
-            container.appendChild(noTagsMsg);
-        } else if (!allRemoving && noTagsMsg) {
-            noTagsMsg.remove();
-        }
-    }
-
-    function toggleTagRemoval(button) {
-        const {pageId, tagCode} = button.dataset;
-        const tagBadge = button.closest('.tag-badge');
-        const container = button.closest('.tags-container');
-        
-        if (tagBadge.classList.contains('removing')) {
-            tagBadge.classList.remove('removing');
-            const index = tagsToRemove[pageId]?.indexOf(tagCode);
-            if (index > -1) {
-                tagsToRemove[pageId].splice(index, 1);
-                if (tagsToRemove[pageId].length === 0) {
-                    delete tagsToRemove[pageId];
-                }
-            }
-        } else {
-            tagBadge.classList.add('removing');
-            if (!tagsToRemove[pageId]) {
-                tagsToRemove[pageId] = [];
-            }
-            tagsToRemove[pageId].push(tagCode);
-        }
-        
-        updateRemovedTagsInput();
-        updateNoTagsMessage(container);
-    }
-
-    // Attach listeners to all tag remove buttons
-    const removeButtons = document.querySelectorAll('.tag-remove');
-    
-    removeButtons.forEach(button => {
+    document.querySelectorAll('.btn-remove').forEach(button => {
         button.addEventListener('click', e => {
             e.preventDefault();
-            e.stopPropagation();
-            toggleTagRemoval(button);
+            const {pageId, tagCode} = button.dataset;
+            const badge = button.closest('.taxonomy-tag');
+            
+            badge.classList.toggle('removing');
+            
+            if (badge.classList.contains('removing')) {
+                if (!tagsToRemove[pageId]) tagsToRemove[pageId] = [];
+                tagsToRemove[pageId].push(tagCode);
+            } else {
+                const idx = tagsToRemove[pageId].indexOf(tagCode);
+                tagsToRemove[pageId].splice(idx, 1);
+                if (!tagsToRemove[pageId].length) delete tagsToRemove[pageId];
+            }
+            
+            tagsToRemoveInput.value = JSON.stringify(tagsToRemove);
         });
     });
 });

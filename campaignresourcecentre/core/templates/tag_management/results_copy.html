@@ -1,0 +1,60 @@
+{% extends "tag_management/results_base.html" %}
+
+{% block operation_summary %}
+    <p class="operation-text">
+        <strong>Operation:</strong> 
+        {% if operation_mode == "replace" %}
+            Replace tags (removed existing, added from source)
+        {% else %}
+            Merge tags (added to existing)
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block table_headers %}
+    {% if operation_mode == "replace" %}
+        <th>Old Tags</th>
+        <th>New Tags</th>
+    {% else %}
+        <th>Tags Added</th>
+    {% endif %}
+{% endblock %}
+
+{% block table_row %}
+    {% if operation_mode == "replace" %}
+        <td>
+            {% if change.original_tags %}
+                <div class="tags-container">
+                    {% for tag in change.original_tags %}
+                        <span class="taxonomy-tag">{{ tag.label }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <em class="help-text">No tags</em>
+            {% endif %}
+        </td>
+        <td>
+            {% if change.final_tags %}
+                <div class="tags-container">
+                    {% for tag in change.final_tags %}
+                        <span class="taxonomy-tag">{{ tag.label }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <em class="help-text">No tags</em>
+            {% endif %}
+        </td>
+    {% else %}
+        <td>
+            {% if change.tags_added %}
+                <div class="tags-container">
+                    {% for tag in change.tags_added %}
+                        <span class="taxonomy-tag">{{ tag.label }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <em class="help-text">None</em>
+            {% endif %}
+        </td>
+    {% endif %}
+{% endblock %}
