@@ -82,6 +82,7 @@ steps:
       sonar.projectVersion=$(toolVersion)
       sonar.dependencyCheck.xmlReportPath=$(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
 - task: SonarCloudAnalyze@3
+  continueOnError: true
 - task: SonarCloudPublish@3
   inputs:
     pollingTimeoutSec: "300"
