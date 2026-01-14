@@ -1,12 +1,3 @@
-module "config" {
-  source = "./modules/config"
-  env    = var.env
-
-  providers = {
-    azurerm = azurerm.config
-  }
-}
-
 data "azurerm_subscription" "sub" {
   subscription_id = var.subscription_id
 }
@@ -33,6 +24,7 @@ resource "azurerm_consumption_budget_subscription" "standard" {
 }
 
 import {
-  id = "/subscriptions/${var.subscription_id}/providers/Microsoft.Consumption/budgets/subscription_budget"
-  to = azurerm_consumption_budget_subscription.standard[0]
+  for_each = toset(local.deploy_budget ? [var.subscription_id] : [])
+  id       = "/subscriptions/${each.value}/providers/Microsoft.Consumption/budgets/subscription_budget"
+  to       = azurerm_consumption_budget_subscription.standard[0]
 }
