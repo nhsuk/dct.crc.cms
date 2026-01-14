@@ -180,8 +180,6 @@ stages:
         variables:
           - group: Review
           - group: alerting
-          - name: azureSubscription
-            value: dct-crccms-dev
           - name: environment
             value: dev
           - name: region
@@ -214,7 +212,7 @@ stages:
               command: init
               workingDirectory: terraform/src/review
               backendType: azurerm
-              backendServiceArm: $(azureSubscription)
+              backendServiceArm: dct-crccms-dev
               backendAzureRmResourceGroupName: dct-crccms-platform-rg-$(environment)-$(region)
               backendAzureRmStorageAccountName: crccmstfst$(environment)$(region)
               backendAzureRmKey: terraform-$(devInstance)-apps.tfstate
@@ -233,7 +231,7 @@ stages:
             displayName: 'Azure Key Vault: Database'
             condition: and(succeeded(), ne(variables['existingDeployment'], true))
             inputs:
-              azureSubscription: $(azureSubscription)
+              azureSubscription: dct-crccms-dev
               KeyVaultName: dct-crc-kv-app-dev-uks
               SecretsFilter: default--db-name, default--db-host, default--db-user
 
@@ -241,7 +239,7 @@ stages:
             displayName: 'Azure Key Vault: Admin'
             condition: and(succeeded(), ne(variables['existingDeployment'], true))
             inputs:
-              azureSubscription: $(azureSubscription)
+              azureSubscription: dct-crccms-dev
               KeyVaultName: dct-crccms-kv2-dev-uks
               SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
 
@@ -266,7 +264,7 @@ stages:
             displayName: Copy default app config
             condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], true))
             inputs:
-              azureSubscription: $(azureSubscription)
+              azureSubscription: dct-crccms-dev
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
@@ -293,7 +291,7 @@ stages:
             inputs:
               command: plan
               workingDirectory: terraform/src/review
-              environmentServiceName: $(azureSubscription)
+              environmentServiceName: dct-crccms-dev
               commandOptions: >
                 -var dev_instance=$(devInstance)
                 -var crc_cms_version=$(tag)
@@ -315,7 +313,7 @@ stages:
             inputs:
               command: apply
               workingDirectory: terraform/src/review
-              environmentServiceName: $(azureSubscription)
+              environmentServiceName: dct-crccms-dev
               commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
 
           - script: |
