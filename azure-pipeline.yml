@@ -297,8 +297,8 @@ stages:
               commandOptions: >
                 -var dev_instance=$(devInstance)
                 -var crc_cms_version=$(tag)
-                -var username=${{ parameters.reviewUsername }}
-                -var sha_512_password=${{ parameters.reviewPasswordHash }}
+                -var username=$(AUTH_USERNAME)
+                -var sha_512_password=$(AUTH_PASSWORD_SHA_512)
                 -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
                 -detailed-exitcode
               publishPlanResults: $(environment)_plan
