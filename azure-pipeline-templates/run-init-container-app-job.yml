@@ -28,7 +28,7 @@ steps:
       echo "##vso[task.setvariable variable=JOB_NAME]$jobName"
     displayName: Get Job Name
   - task: AzureCLI@2
-    condition: ne('${{ parameters.dryrun }}', 'True')
+    condition: ne('${{ lower(parameters.dryRun) }}', 'true')
     displayName: Update and run init container app job
     name: run_job
     inputs:
@@ -83,7 +83,7 @@ steps:
       JOB_NAME: $(JOB_NAME)
 
   - task: AzureCLI@2
-    condition: and(failed(), ne('${{ parameters.dryrun }}', 'True'))
+    condition: and(failed(), ne('${{ lower(parameters.dryRun) }}', 'true'))
     displayName: Fetch init job logs
     inputs:
       azureSubscription: dct-crccms-${{ parameters.env }}

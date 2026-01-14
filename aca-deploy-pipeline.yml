@@ -21,7 +21,7 @@ parameters:
   - name: reviewUsername
     displayName: Review Username
     type: string
-    default: "nhsuk"
+    default: nhsuk
   - name: reviewPasswordHash
     displayName: Review SHA-512 Password
     type: string
