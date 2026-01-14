@@ -13,6 +13,7 @@ steps:
       dockerfile: $(Build.SourcesDirectory)/Dockerfile
       repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms 
       command: build
+      arguments: '--build-arg BUILD_ENV="production"'
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
   - bash: |
       sudo apt-get install wget apt-transport-https gnupg
