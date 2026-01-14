@@ -6,6 +6,9 @@ parameters:
     default: uks
   - name: version
     type: string
+  - name: devInstance
+    type: string
+    default: ''
   - name: dryrun
     type: boolean
     default: false
@@ -16,8 +19,16 @@ steps:
         echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping new container app revision"
         echo "##vso[task.complete result=SucceededWithIssues;]"
       displayName: "Dry Run Warning"
+  - bash: |
+      suffix="${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}"
+      shortSuffix="${suffix:0:20}"
+      echo "Trimmed suffix: $shortSuffix"
+      appName="ca-wagtail-$shortSuffix"
+      echo "Full name: $appName"
+      echo "##vso[task.setvariable variable=APP_NAME]$appName"
+    displayName: Get App Name
   - task: AzureCLI@2
-    condition: ne('${{ parameters.dryrun }}', 'True')
+    condition: ne('${{ lower(parameters.dryrun) }}', 'true')
     displayName: Deploy Wagtail Container App Revision
     inputs:
       azureSubscription: dct-crccms-${{ parameters.env }}
@@ -25,6 +36,6 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         az containerapp revision copy \
-          --name ca-wagtail-${{ parameters.env }}-${{ parameters.region }} \
+          --name $APP_NAME \
           --resource-group dct-crccms-rg-${{ parameters.env }}-${{ parameters.region }} \
           --image dctcampaignsacrproduks.azurecr.io/dct/crc-cms:${{ parameters.version }}

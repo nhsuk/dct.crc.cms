@@ -31,7 +31,6 @@ schedules:
         - main
 
 parameters:
-   # Dry run changes
   - name: dryRun
     displayName: Dry Run
     type: boolean
@@ -56,7 +55,6 @@ parameters:
     displayName: Force Deploy DisasterRecovery
     type: boolean
     default: false
-  # end dryrun
   - name: debug
     displayName: Debug (forced false in production)
     type: boolean
@@ -87,7 +85,11 @@ parameters:
     default: false
 
 resources:
-  - repo: self
+  repositories:
+    - repository: wagtail-container-apps
+      type: github
+      name: nhsuk/dct.terraform-modules.wagtail-container-apps
+      endpoint: nhsuk (1)
 
 variables:
   - name: sourceBranchName
@@ -95,8 +97,6 @@ variables:
       value: pr-$(System.PullRequest.PullRequestNumber)
     ${{ else }}:
       value: $(Build.SourceBranchName)
-  - name: environmentName
-    value: 'production'
   - name: namespace
     value: 'dct-crc-v3'
   - name: buildId
@@ -138,6 +138,7 @@ stages:
         displayName: 'Prepare & Unit Test'
         steps:
           - template: azure-pipeline-templates/test.yml
+
   - stage: Build
     displayName: Build
     dependsOn: PrepareAndTest
@@ -169,116 +170,196 @@ stages:
             parameters:
               tag: $(sourceBranchName)
               dryRun: ${{ parameters.dryRun }}
+
   - stage: Deploy
     displayName: 'Deploy'
     dependsOn: Build
     condition: succeeded()
     jobs:
-      - job: deployReview
-        displayName: 'Deploy Review'
-        condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.Reason'], 'PullRequest'), ${{ parameters.deployReview }})
+      - job: Review
         variables:
           - group: Review
           - group: alerting
-          - name: environmentName
-            value: 'review'
-          - name: namespace
-            value: 'dct-crc-v3-review-$(sourceBranchName)-ns'
-          - name: tag
-            value: 'review-$(sourceBranchName)'
-          - name: hostUrl
-            value: 'crc-v3-review-$(sourceBranchName).nhswebsite-dev.nhs.uk'
-          - name: appName
-            value: 'crc-v3'
-          - name: devEnv
-            value: 'int'
-          - name: appEnv
-            value: 'review'
-          - name: autoscaleEnv
-            value: 'int'
-          - name: paragonMock
-            value: ${{ parameters.paragonMock }}
-          - name: debug
-            value: ${{ parameters.debug }}
-          - name: notifyDebug
-            value: ${{ parameters.notifyDebug }}
-          - name: workers
-            value: 2
-          - name: gunicornArgs
-            value: ${{ parameters.gunicornArgs }}
-          - name: azureSearchUpdate
-            value: ${{ parameters.azureSearchUpdate }}
-          - name: tags
-            value: ${{ parameters.tags }}
-          - name: imageTag
-            value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
-          - name: branchName
-            ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
-              value: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+          - name: environment
+            value: dev
+          - name: region
+            value: uks
+          - name: devInstance
             ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-              value: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
+              value: pr-$(System.PullRequest.PullRequestNumber)
+            ${{ else }}:
+              value: $[lower(variables['Build.SourceBranchName'])]
+          - name: tag
+            value: $(Build.SourceVersion)
         steps:
+          - checkout: self
+            workspaceRepo: true
+
+          - checkout: wagtail-container-apps
+            persistCredentials: true
+            fetchDepth: 1
+
           - script: |
-              deployedOnce=$(curl -I https://$hostUrl | awk '{if (FNR <=1) print $2}')
-              echo "deployedOnce status code = $deployedOnce"
-              echo "##vso[task.setvariable variable=deployedStatus]$deployedOnce"
-          - template: azure-pipeline-templates/deploy.yml
-            parameters:
-              dryRun: ${{ parameters.dryRun }}
+              tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.wagtail-container-apps/.git/config >> ~/.gitconfig
+            displayName: Git auth
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
+            displayName: Install latest Terraform
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Initialise
+            inputs:
+              command: init
+              workingDirectory: terraform/src/review
+              backendType: azurerm
+              backendServiceArm: dct-crccms-dev
+              backendAzureRmResourceGroupName: dct-crccms-platform-rg-$(environment)-$(region)
+              backendAzureRmStorageAccountName: crccmstfst$(environment)$(region)
+              backendAzureRmKey: terraform-$(devInstance)-apps.tfstate
+
+          - script: |
+              set -ex
+              export url=$(terraform output -raw url)
+              if [[ "$url" == https* ]]; then
+                echo "##vso[task.setvariable variable=existingDeployment]true"
+              fi
+            name: existingDeployment
+            displayName: Existing deployment check
+            workingDirectory: terraform/src/review
+
+          - task: AzureKeyVault@2
+            displayName: 'Azure Key Vault: Database'
+            condition: and(succeeded(), ne(variables['existingDeployment'], true))
+            inputs:
               azureSubscription: dct-crccms-dev
-              keyVaultName: dct-crc-kv-app-dev-uks
-              kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
-              kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
+              KeyVaultName: dct-crc-kv-app-dev-uks
+              SecretsFilter: default--db-name, default--db-host, default--db-user
+
+          - task: AzureKeyVault@2
+            displayName: 'Azure Key Vault: Admin'
+            condition: and(succeeded(), ne(variables['existingDeployment'], true))
+            inputs:
+              azureSubscription: dct-crccms-dev
+              KeyVaultName: dct-crccms-kv2-dev-uks
+              SecretsFilter: postgresqlAdminUser, postgresqlAdminPassword
+
           - script: |
-              echo "Sending slack notification for branch $(branchName)"
-              echo "Review Url: https://$(hostUrl)"
+              set -e
+              docker run \
+                -e PGHOST="$(default--db-host)" \
+                -e PGUSER="$(postgresqlAdminUser)" \
+                -e PGPASSWORD \
+                postgres:16 \
+                psql -d "$(default--db-name)" \
+                -v ON_ERROR_STOP=off \
+                -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(default--db-name)' AND pid <> pg_backend_pid();" \
+                -c "CREATE DATABASE \"$(devInstance)\" WITH TEMPLATE $(default--db-name) OWNER $(default--db-user);" \
+                -c "\connect \"$(devInstance)\";"
+            displayName: Create review database
+            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], true))
+            env:
+              PGPASSWORD: $(postgresqlAdminPassword)
+
+          - task: AzureCLI@2
+            displayName: Copy default app config
+            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], true))
+            inputs:
+              azureSubscription: dct-crccms-dev
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                SECRET_NAMES=$(az keyvault secret list --vault-name $VAULT_NAME --query "[?starts_with(name,'default--')].name" --output tsv)
+                while read secret
+                do
+                  VALUE=$(az keyvault secret show --vault-name $VAULT_NAME --name $secret --query "value" --output tsv)
+                  if [ -z "${VALUE}" ]; then
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --file /dev/null --query "name"
+                  else
+                    az keyvault secret set --vault-name $VAULT_NAME --name ${secret/default/"$DEV_INSTANCE"} --value "${VALUE}" --query "name"
+                  fi
+                done <<< "$SECRET_NAMES"
+                az keyvault secret set --vault-name $VAULT_NAME --name "$DEV_INSTANCE--db-name" --value $DEV_INSTANCE --query "name"
+            env:
+              VAULT_NAME: dct-crc-kv-app-dev-uks
+              DEV_INSTANCE: $(devInstance)
+              ENVIRONMENT: $(environment)
+              REGION: $(region)
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Plan
+            inputs:
+              command: plan
+              workingDirectory: terraform/src/review
+              environmentServiceName: dct-crccms-dev
+              commandOptions: >
+                -var dev_instance=$(devInstance)
+                -var crc_cms_version=$(tag)
+                -var username=$(AUTH_USERNAME)
+                -var sha_512_password=$(AUTH_PASSWORD_SHA_512)
+                -out=$(System.DefaultWorkingDirectory)/terraform.tfplan
+                -detailed-exitcode
+              publishPlanResults: $(environment)_plan
+
+          - ${{ if eq(lower(parameters.dryRun), 'true') }}:
+              - script: |
+                  echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping apply step"
+                  echo "##vso[task.complete result=SucceededWithIssues;]"
+                displayName: Dry Run - skipping apply
+
+          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
+            displayName: Apply
+            condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'), ne('${{ lower(parameters.dryRun) }}', 'true'))
+            inputs:
+              command: apply
+              workingDirectory: terraform/src/review
+              environmentServiceName: dct-crccms-dev
+              commandOptions: $(System.DefaultWorkingDirectory)/terraform.tfplan
+
+          - script: |
+              set -ex
+              URL="$(terraform output -raw url)"
+              echo "##vso[task.setvariable variable=BASE_URL;isOutput=true]${URL}"
+            name: terraformOutput
+            displayName: Get Base URL
+            workingDirectory: terraform/src/review
+
+          - template: azure-pipeline-templates/run-init-container-app-job.yml
+            parameters:
+              env: dev
+              version: $(tag)
+              devInstance: $(devInstance)
+              dryrun: ${{ parameters.dryRun }}
+
+          - template: ./azure-pipeline-templates/deploy-container-app-revision.yml
+            parameters:
+              env: dev
+              version: $(tag)
+              devInstance: $(devInstance)
+              dryrun: ${{ parameters.dryrun }}
+
+          - script: |
+              echo "Sending slack notification for branch $(sourceBranchName)"
+              echo "Review Url: $(terraformOutput.BASE_URL)"
               messageText="`if [[ '${{ parameters.dryrun }}' == 'True' ]]; then printf %s 'THIS IS A DRYRUN\n'; fi`
                       Campaign Resource Centre: A new review environment has been deployed for $(Build.RequestedFor).
-                      \nBranch: $(branchName) \nURL: https://$(hostUrl)"
+                      \nBranch: $(sourceBranchName)
+                      \nURL: $(terraformOutput.BASE_URL)"
               body="{\"text\": \"$messageText\", \"mrkdwn\": true}"
               curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
             displayName: Send Slack Notification
-            condition: and(succeeded(), ne(variables['deployedStatus'], '200'))
-          - ${{ if ne('${{ parameters.dryRun }}', 'True') }}:
+            condition: and(succeeded(), ne(variables['existingDeployment'], 'true'))
+          - ${{ if ne('${{ lower(parameters.dryRun) }}', 'true') }}:
             - template: azure-pipeline-templates/frontendtest.yml
+              parameters:
+                authorize: $(ENV_AUTH)
+                baseUrl: $(terraformOutput.BASE_URL)
 
-      - job: deployTest
-        displayName: 'Deploy Perf Testing'
-        condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/review/perf-')
-        variables:
-          environmentName: 'staging'
-          namespace: 'dct-crc-v3-test-ns'
-          tag: 'review-$(sourceBranchName)'
-          hostUrl: 'crc-v3.nhswebsite-staging.nhs.uk'
-          appName: 'crc-v3-test'
-          devEnv: 'stag'
-          appEnv: 'staging'
-          autoscaleEnv: 'stag'
-          averageUtilization: 60
-          paragonMock: ${{ parameters.paragonMock }}
-          debug: ${{ parameters.debug }}
-          notifyDebug: ${{ parameters.notifyDebug }}
-          workers: ${{ parameters.workers }}
-          gunicornArgs: ${{ parameters.gunicornArgs }}
-          azureSearchUpdate: ${{ parameters.azureSearchUpdate }}
-          redisUrl: 'redis://crc-v3-test-redis-svc:6379/0'
-        steps:
-          - template: azure-pipeline-templates/deploy.yml
-            parameters:
-              dryRun: ${{ parameters.dryRun }}
-              azureSubscription: 'dct-staging-vault-uks-dct.campaign-resource-centre-v3'
-              keyVaultName: 'dct-crc-v3-vlt-test-uks'
-              kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
-              kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
       - job: deployIntegration
         displayName: 'Deploy Integration'
         condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
         variables:
           - group: Integration
-          - name: environmentName
-            value: 'integration'
-          - name: namespace
-            value: 'dct-crc-v3-ns'
           - name: tag
             value: 'latest'
           - name: hostUrl
@@ -310,13 +391,6 @@ stages:
           - name: imageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
-          - template: azure-pipeline-templates/deploy.yml
-            parameters:
-              dryRun: ${{ parameters.dryRun }}
-              azureSubscription: dct-crccms-int
-              keyVaultName: dct-crc-kv-app-int-uks
-              kubernetesServiceConnection: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
-              kubernetesServiceEndPoint: 'helm-dct-platforms-aks-dev-uksouth-dct.campaign-resource-centre-v3'
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
               env: int
@@ -328,15 +402,15 @@ stages:
               version: $(Build.SourceVersion)
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: $(ENV_AUTH)
+              baseUrl: https://int.campaignresources.dhsc.gov.uk
+
       - job: deployStaging
         displayName: 'Deploy Staging'
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
         variables:
           - group: Staging
-          - name: environmentName
-            value: 'staging'
-          - name: namespace
-            value: 'dct-crc-v3-ns'
           - name: tag
             value: '$(sourceBranchName)'
           - name: hostUrl
@@ -370,13 +444,6 @@ stages:
           - name: imageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
-          - template: azure-pipeline-templates/deploy.yml
-            parameters:
-              dryRun: ${{ parameters.dryRun }}
-              azureSubscription: 'dct-staging-vault-uks-dct.campaign-resource-centre-v3'
-              keyVaultName: 'dct-crc-v3-vlt-stag-uks'
-              kubernetesServiceConnection: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
-              kubernetesServiceEndPoint: 'helm-dct-platforms-aks-stag-uksouth-dct.campaign-resource-centre-v3'
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
               env: stag
@@ -389,7 +456,9 @@ stages:
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: STAGING_AUTHORIZATION
+              authorize: $(ENV_AUTH)
+              baseUrl: https://staging.campaignresources.dhsc.gov.uk
+
   - stage: deployProduction
     displayName: 'Deploy Production'
     condition: or(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), ${{ parameters.deployProduction }})
@@ -400,10 +469,6 @@ stages:
       - job: deployProduction
         variables:
           - group: Production
-          - name: environmentName
-            value: 'production'
-          - name: namespace
-            value: 'dct-crc-v3-ns'
           - name: tag
             value: '$(sourceBranchName)'
           - name: hostUrl
@@ -441,13 +506,6 @@ stages:
           - name: imageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
-          - template: azure-pipeline-templates/deploy.yml
-            parameters:
-              dryRun: ${{ parameters.dryRun }}
-              azureSubscription: 'dct-production-vault-uks-dct.campaign-resource-centre-v3'
-              keyVaultName: 'dct-crc-v3-vlt-prod-uks'
-              kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
-              kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-uksouth-dct.campaign-resource-centre-v3'
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
               env: prod
@@ -459,6 +517,9 @@ stages:
               version: $(sourceBranchName)
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              baseUrl: https://campaignresources.dhsc.gov.uk
+
   - stage: deployDr
     displayName: 'Deploy DR'
     condition: or(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), ${{ parameters.deployDr }})
@@ -488,13 +549,6 @@ stages:
           gunicornArgs: ${{ parameters.gunicornArgs }}
           azureSearchUpdate: true
         steps:
-          - template: azure-pipeline-templates/deploy.yml
-            parameters:
-              dryRun: ${{ parameters.dryRun }}
-              azureSubscription: 'dct-dr-vault-ukw-dct.campaign-resource-centre-v3'
-              keyVaultName: 'dct-crc-v3-vlt-dr-ukw'
-              kubernetesServiceConnection: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
-              kubernetesServiceEndPoint: 'helm-dct-platforms-aks-prod-ukwest-dct.campaign-resource-centre-v3'
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
               env: prod
@@ -507,6 +561,7 @@ stages:
               region: ukw
               version: $(sourceBranchName)
               dryrun: ${{ parameters.dryrun }}
+
   - stage: DailyBuildAlert
     displayName: Daily Build alerting
     dependsOn:
