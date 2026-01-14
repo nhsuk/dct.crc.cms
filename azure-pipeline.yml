@@ -191,6 +191,8 @@ stages:
               value: $[lower(variables['Build.SourceBranchName'])]
           - name: tag
             value: $(Build.SourceVersion)
+          - name: frontendTestImageTag
+            value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - checkout: self
             workspaceRepo: true
@@ -388,7 +390,7 @@ stages:
             value: ${{ parameters.azureSearchUpdate }}
           - name: tags
             value: ${{ parameters.tags }}
-          - name: imageTag
+          - name: frontendTestImageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
@@ -441,7 +443,7 @@ stages:
             value: true
           - name: tags
             value: ${{ parameters.tags }}
-          - name: imageTag
+          - name: frontendTestImageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
@@ -503,7 +505,7 @@ stages:
             value: true
           - name: tags
             value: ${{ parameters.tags }}
-          - name: imageTag
+          - name: frontendTestImageTag
             value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
