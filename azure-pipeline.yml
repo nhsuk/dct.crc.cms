@@ -352,7 +352,7 @@ stages:
           - ${{ if ne('${{ lower(parameters.dryRun) }}', 'true') }}:
             - template: azure-pipeline-templates/frontendtest.yml
               parameters:
-                authorize: ENV_AUTH
+                authorize: $(ENV_AUTH)
                 baseUrl: $(terraformOutput.BASE_URL)
 
       - job: deployIntegration
@@ -403,7 +403,7 @@ stages:
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: ENV_AUTH
+              authorize: $(ENV_AUTH)
               baseUrl: https://int.campaignresources.dhsc.gov.uk
 
       - job: deployStaging
@@ -456,7 +456,7 @@ stages:
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: ENV_AUTH
+              authorize: $(ENV_AUTH)
               baseUrl: https://staging.campaignresources.dhsc.gov.uk
 
   - stage: deployProduction
