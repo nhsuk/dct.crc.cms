@@ -322,7 +322,7 @@ stages:
               echo "##vso[task.setvariable variable=BASE_URL;isOutput=true]${URL}"
             name: terraformOutput
             displayName: Get Base URL
-            workingDirectory: terraform/aca/apps
+            workingDirectory: terraform/src/review
 
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
@@ -351,6 +351,9 @@ stages:
             condition: and(succeeded(), ne(variables['existingDeployment'], 'true'))
           - ${{ if ne('${{ lower(parameters.dryRun) }}', 'true') }}:
             - template: azure-pipeline-templates/frontendtest.yml
+              parameters:
+                authorize: ENV_AUTH
+                baseUrl: $(terraformOutput.BASE_URL)
 
       - job: deployIntegration
         displayName: 'Deploy Integration'
@@ -399,6 +402,9 @@ stages:
               version: $(Build.SourceVersion)
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: ENV_AUTH
+              baseUrl: https://int.campaignresources.dhsc.gov.uk
 
       - job: deployStaging
         displayName: 'Deploy Staging'
@@ -450,7 +456,8 @@ stages:
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: STAGING_AUTHORIZATION
+              authorize: ENV_AUTH
+              baseUrl: https://staging.campaignresources.dhsc.gov.uk
 
   - stage: deployProduction
     displayName: 'Deploy Production'
@@ -510,6 +517,8 @@ stages:
               version: $(sourceBranchName)
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              baseUrl: https://campaignresources.dhsc.gov.uk
 
   - stage: deployDr
     displayName: 'Deploy DR'
