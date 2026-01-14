@@ -25,7 +25,7 @@ steps:
       WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
       WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
       BASE_URL: ${{ parameters.baseUrl }}
-      IMAGE_TAG: $(imageTag)
+      IMAGE_TAG: $(frontendTestImageTag)
       PARALLEL: 4
       SCENARIOS: parallel
       AUTHORIZE: ${{ parameters.authorize }}
