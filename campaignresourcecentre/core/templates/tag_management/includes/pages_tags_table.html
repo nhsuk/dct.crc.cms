@@ -1,0 +1,38 @@
+{% load i18n %}
+
+<h2>{% trans "Current Tags" %}</h2>
+<p class="help">{% trans "Click the × to remove a tag from a page" %}</p>
+
+<table class="listing">
+    <thead>
+        <tr>
+            <th class="title">{% trans "Page" %}</th>
+            <th>{% trans "Tags" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for page_data in items %}
+            <tr>
+                <td>
+                    <a href="{% url 'wagtailadmin_pages:edit' page_data.item.id %}" target="_blank" rel="noreferrer">
+                        {{ page_data.item.get_admin_display_title }}
+                    </a>
+                </td>
+                <td>
+                    <div class="tags-container" data-page-id="{{ page_data.item.id }}">
+                        {% if page_data.taxonomy_tags %}
+                            {% for term in page_data.taxonomy_tags %}
+                                <span class="status-tag primary" data-tag-code="{{ term.code }}">
+                                    {{ term.label }}
+                                    <button type="button" class="tag-remove" data-page-id="{{ page_data.item.id }}" data-tag-code="{{ term.code }}" title="{% trans 'Remove tag' %}">×</button>
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <em class="help-text">{% trans "No tags" %}</em>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

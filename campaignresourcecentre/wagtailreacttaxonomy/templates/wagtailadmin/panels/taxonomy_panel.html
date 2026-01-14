@@ -1,4 +1,4 @@
-{% load wagtailadmin_tags %}
+{% load wagtailadmin_tags i18n %}
 
 {% if taxonomy_terms_error_message %}
     <fieldset>
@@ -7,6 +7,10 @@
         </div>
     </fieldset>
 {% else %}
+    {% comment %}
+    {% include "tag_management/copy_taxonomy_tags_form.html" %}
+    {% endcomment %}
+    
     <fieldset>
         <ul class="fields">
             <li>

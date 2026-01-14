@@ -1,0 +1,58 @@
+{% load wagtailadmin_tags i18n static %}
+
+{% if copy_tags_form %}
+<style>
+.copy-tags-section {
+    margin-bottom: 20px;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+}
+
+.copy-tags-summary {
+    cursor: pointer;
+    padding: 12px;
+    background: #f5f5f5;
+    font-weight: 500;
+}
+
+.copy-tags-content {
+    padding: 15px;
+    border-top: 1px solid #e6e6e6;
+}
+
+#copyTagsMessage {
+    margin: 10px 0;
+}
+</style>
+{{ copy_tags_form.media }}
+<details class="collapsible copy-tags-section" open>
+    <summary class="copy-tags-summary">Copy tags from another Campaign/Resource</summary>
+    <div class="copy-tags-content">
+        <div id="copyTagsContainer" data-page-id="{{ self.instance.id }}">
+            {% for field in copy_tags_form %}
+                {% include "wagtailadmin/shared/field.html" with field=field %}
+            {% endfor %}
+            <div id="copyTagsPreviewContainer" class="tags-container --inline-form">
+                <strong>Preview: </strong>
+                <div id="copyTagsPreview" class="tags-container"></div>
+            </div>
+            <div id="copyTagsMessage"></div>
+            <button type="button" id="copyTagsBtn" class="button button-primary">{% trans "Copy Tags" %}</button>
+        </div>
+    </div>
+</details>
+
+<template id="tagPreviewTemplate">
+  <span class="taxonomy-tag primary">
+    <span class="w-sr-only">Tag: </span>
+    <span class="label"></span>
+  </span>
+</template>
+
+{% endif %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}">
+{% endblock extra_css %}
+{% block extra_js %}
+    <script src="{% static 'tag_management/js/copy_taxonomy_tags_form.js' %}"></script>
+{% endblock extra_js %}

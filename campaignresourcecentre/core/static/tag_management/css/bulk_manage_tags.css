@@ -1,67 +1,77 @@
-#choose-source-page svg,
-#choose-source-page .icon {
-    width: 1em;
-    height: 1em;
-    flex-shrink: 0;
-    display: inline-block;
-    vertical-align: middle;
-}
-
 .tags-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 0.5rem;
     align-items: center;
 }
 
-.tag-badge {
+.tags-container.--inline-form {
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+
+.tags-container .taxonomy-tag {
+    background-color: #f9f9f9;
+    border-radius: 3px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: #e8f4f8;
-    border: 1px solid #b8dce8;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: #333;
+    gap: 0.25rem;
+    color: black;
+    border: 1px solid #ccc;
 }
 
-.tag-badge.removing {
+/* Tag styling - unified for all contexts */
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-tag.removing {
     opacity: 0.5;
     text-decoration: line-through;
-    background: #f8e8e8;
-    border-color: #e8b8b8;
 }
 
+/* Tag remove button */
 .tag-remove {
     background: none;
     border: none;
-    color: #999;
-    font-size: 18px;
+    color: inherit;
+    opacity: 0.6;
+    font-size: 1.2em;
     line-height: 1;
     cursor: pointer;
     padding: 0;
     margin: 0;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 2px;
-    transition: all 0.2s;
+    transition: opacity 0.2s;
 }
 
 .tag-remove:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #c00;
+    opacity: 1;
 }
 
-.tag-badge.removing .tag-remove {
+.status-tag.removing .tag-remove {
     display: none;
 }
 
-.no-tags-message {
-    color: #999;
-    font-style: italic;
+/* Icon sizing */
+.help-block .icon,
+.status-tag .icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+}
+
+/* Selected page tags preview */
+#selected-page-tags {
+    display: none;
+}
+
+#selected-page-tags.visible {
+    display: block;
 }

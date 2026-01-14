@@ -3,7 +3,6 @@ import json
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ImproperlyConfigured
-
 from wagtail.admin.panels import FieldPanel, Panel
 
 from .models import TaxonomyTerms
@@ -81,6 +80,11 @@ class TaxonomyPanel(FieldPanel):
             self.taxonomy_terms_error_message = None
 
         def render_html(self, parent_context):
+            from campaignresourcecentre.core.tag_management.forms import CopyTaxonomyTagsForm
+            copy_tags_form = None
+            if self.instance.id:
+                copy_tags_form = CopyTaxonomyTagsForm(exclude_page_id=self.instance.id)
+            
             return mark_safe(
                 render_to_string(
                     self.object_template,
@@ -90,6 +94,7 @@ class TaxonomyPanel(FieldPanel):
                         "field": self.bound_field,
                         "taxonomy_terms_json": self.load_taxonomy_terms(),
                         "taxonomy_terms_error_message": self.taxonomy_terms_error_message,
+                        "copy_tags_form": copy_tags_form,
                     },
                 )
             )

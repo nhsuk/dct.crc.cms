@@ -5,16 +5,37 @@
 
 {% block extra_css %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'tag_management/css/results.css' %}">
+    <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}">
 {% endblock %}
 
 {% block content %}
     {% include "wagtailadmin/shared/header.html" with title=_("Tag Management Results") icon="success" %}
 
     <div class="nice-padding">
+        {# Source Page and Operation Summary #}
+        {% if source_page %}
+            <div class="help-block source-page-block">
+                <strong>{% trans "Source Page:" %}</strong>
+                <a href="{% url 'wagtailadmin_pages:edit' source_page.id %}" target="_blank" rel="noreferrer">
+                    {{ source_page.get_admin_display_title }}
+                </a>
+            </div>
+        {% endif %}
+
+        <p class="operation-text">
+            <strong>{% trans "Operation:" %}</strong>
+            {% if display_mode == 'comparison' %}
+                {% trans "Manual tag removal and addition" %}
+            {% elif display_mode == 'old_new' %}
+                {% trans "Replace tags (remove existing, add from source)" %}
+            {% else %}
+                {% trans "Merge tags (add to existing)" %}
+            {% endif %}
+        </p>
+
         {% if num_failed > 0 %}
             <div class="help-block help-warning">
-                <svg class="icon icon-warning" aria-hidden="true"><use href="#icon-warning"></use></svg>
+                <svg class="icon" aria-hidden="true"><use href="#icon-warning"></use></svg>
                 {% blocktrans count counter=num_failed %}
                     {{ counter }} page failed to update
                 {% plural %}
@@ -25,21 +46,12 @@
 
         {% if num_modified > 0 %}
             <div class="help-block help-info">
-                <svg class="icon icon-success" aria-hidden="true"><use href="#icon-success"></use></svg>
+                <svg class="icon" aria-hidden="true"><use href="#icon-success"></use></svg>
                 {% blocktrans count counter=num_modified %}
                     {{ counter }} page was successfully updated
                 {% plural %}
                     {{ counter }} pages were successfully updated
                 {% endblocktrans %}
-            </div>
-        {% endif %}
-
-        {% if source_page %}
-            <div class="help-block">
-                <strong>{% trans "Tags copied from:" %}</strong>
-                <a href="{% url 'wagtailadmin_pages:edit' source_page.id %}" target="_blank" rel="noreferrer">
-                    {{ source_page.get_admin_display_title }}
-                </a>
             </div>
         {% endif %}
 
@@ -50,8 +62,15 @@
                 <thead>
                     <tr>
                         <th>{% trans "Page" %}</th>
-                        <th>{% trans "Tags Removed" %}</th>
-                        <th>{% trans "Tags Added" %}</th>
+                        {% if display_mode == 'final' %}
+                            <th>{% trans "Final Tags" %}</th>
+                        {% elif display_mode == 'old_new' %}
+                            <th>{% trans "Old Tags" %}</th>
+                            <th>{% trans "New Tags" %}</th>
+                        {% else %}
+                            <th>{% trans "Tags Removed" %}</th>
+                            <th>{% trans "Tags Added" %}</th>
+                        {% endif %}
                         <th>{% trans "Status" %}</th>
                     </tr>
                 </thead>
@@ -63,40 +82,61 @@
                                     {{ change.page_title }}
                                 </a>
                             </td>
-                            <td>
-                                {% if change.tags_removed %}
-                                    {% for tag in change.tags_removed %}
-                                        <span class="status-tag primary">{{ tag.label }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <em>{% trans "None" %}</em>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if change.tags_added %}
-                                    {% for tag in change.tags_added %}
-                                        <span class="status-tag">{{ tag.label }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <em>{% trans "None" %}</em>
-                                {% endif %}
-                            </td>
+                            
+                            {% if display_mode == 'final' %}
+                                <td>
+                                    {% if change.final_tags %}
+                                        {% for tag in change.final_tags %}{{ tag.label }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                    {% else %}
+                                        <em class="help-text">{% trans "No tags" %}</em>
+                                    {% endif %}
+                                </td>
+                            {% elif display_mode == 'old_new' %}
+                                <td>
+                                    {% if change.original_tags %}
+                                        {% for tag in change.original_tags %}{{ tag.label }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                    {% else %}
+                                        <em class="help-text">{% trans "No tags" %}</em>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if change.final_tags %}
+                                        {% for tag in change.final_tags %}{{ tag.label }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                    {% else %}
+                                        <em class="help-text">{% trans "No tags" %}</em>
+                                    {% endif %}
+                                </td>
+                            {% else %}
+                                <td>
+                                    {% if change.tags_removed %}
+                                        {% for tag in change.tags_removed %}{{ tag.label }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                    {% else %}
+                                        <em class="help-text">{% trans "None" %}</em>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if change.tags_added %}
+                                        {% for tag in change.tags_added %}{{ tag.label }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                    {% else %}
+                                        <em class="help-text">{% trans "None" %}</em>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            
                             <td>
                                 {% if change.error %}
                                     <span class="status-tag warning">
-                                        {% icon "warning" %}
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-warning"></use></svg>
                                         {% trans "Failed" %}
                                     </span>
                                     <br><small>{{ change.error }}</small>
                                 {% elif change.had_changes %}
                                     <span class="status-tag primary">
-                                        {% icon "success" %}
+                                        <svg class="icon" aria-hidden="true"><use href="#icon-success"></use></svg>
                                         {% trans "Updated" %}
                                     </span>
                                 {% else %}
-                                    <span class="status-tag">
-                                        {% trans "No changes" %}
-                                    </span>
+                                    <span class="status-tag">{% trans "No changes" %}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -107,7 +147,7 @@
             <p>{% trans "No changes were made." %}</p>
         {% endif %}
 
-        <div style="margin-top: 2rem;">
+        <div class="button-wrapper">
             <a href="{{ next_url }}" class="button">
                 {% trans "Back to Pages" %}
             </a>
