@@ -83,14 +83,6 @@ parameters:
     displayName: Update Azure search (forced true in staging and production)
     type: boolean
     default: false
-  - name: reviewUsername
-    displayName: Review Username
-    type: string
-    default: "nhsuk"
-  - name: reviewPasswordHash
-    displayName: Review SHA-512 Password
-    type: string
-    default: ""
 
 resources:
   repositories:
