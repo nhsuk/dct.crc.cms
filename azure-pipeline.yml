@@ -89,7 +89,7 @@ resources:
     - repository: wagtail-container-apps
       type: github
       name: nhsuk/dct.terraform-modules.wagtail-container-apps
-      endpoint: nhsuk (1)-dct.campaigns-cms
+      endpoint: nhsuk (1)
 
 variables:
   - name: sourceBranchName
