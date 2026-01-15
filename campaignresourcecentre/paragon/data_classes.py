@@ -1,6 +1,5 @@
 import datetime
 from dataclasses import dataclass
-from typing import Optional
 
 from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_data_classes,
@@ -17,16 +16,13 @@ class Registration:
     last_name: str
     organisation: str
     job_title: str
-    area_work: Optional[str]
+    area_work: str
     postcode: str
-    postcode_region: Optional[str]
+    postcode_region: str
     created_at: datetime
 
     def valid(self):
         for key, value in self.__dict__.items():
-            if key in ["area_work", "postcode_region"]:
-                # area_work and postcode_region can be None
-                continue
             if not value:
                 raise ValueError(EMPTY_ERROR.format(key))
         validate_password_data_classes(self.password)
@@ -59,14 +55,14 @@ class User:
     last_name: str
     organisation: str
     job_title: str
-    area_work: Optional[str]
+    area_work: str
     role: str
     active: str
     created_at: datetime
     verified_at: str
     subscriptions: str
     postcode: str
-    postcode_region: Optional[str]
+    postcode_region: str
 
     @property
     def full_name(self):
