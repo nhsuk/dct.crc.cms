@@ -8,15 +8,13 @@ parameters:
 
 steps:
   - task: Docker@2
-    displayName: 'Docker Build (nhsuk acr-dct.campaign-resource-centre-v3)'
+    displayName: Docker Build (dctcampaignsacrproduks)
     inputs:
-      containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-      dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-      repository: '$(repository)'
-      command: 'build'
+      dockerfile: $(Build.SourcesDirectory)/Dockerfile
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms 
+      command: build
       arguments: '--build-arg BUILD_ENV="production"'
-      tags: |
-        ${{ parameters.tag }}
+      tags: ${{ parameters.tag }},$(Build.SourceVersion)
   - bash: |
       sudo apt-get install wget apt-transport-https gnupg
       wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
@@ -25,7 +23,7 @@ steps:
       sudo apt-get install trivy
 
       junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
-      trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln nhsuk.azurecr.io/$(repository):${{ parameters.tag }}
+      trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln dctcampaignsacrproduks.azurecr.io/dct/crc-cms:${{ parameters.tag }}
     displayName: 'Run Trivy Scan'
   - task: PublishTestResults@2
     condition: succeededOrFailed()
@@ -34,28 +32,6 @@ steps:
       testResultsFiles: "**/trivy-scan.xml"
       testRunTitle: "${{ parameters.tag }} image scan"
       failTaskOnFailedTests: true
-  - ${{ if parameters.dryrun }}:
-      - bash: |
-          echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping image tag push for '$(repository):${{ parameters.tag }}'"
-          echo "##vso[task.complete result=SucceededWithIssues;]"
-        displayName: "Dry Run Warning"
-  - task: Docker@2
-    displayName: 'Docker Push (nhsuk acr-dct.campaign-resource-centre-v3) '
-    condition: and(succeeded(), ne('${{ parameters.dryRun }}', 'True'))
-    inputs:
-      containerRegistry: 'nhsuk acr-dct.campaign-resource-centre-v3'
-      dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-      repository: '$(repository)'
-      command: 'push'
-      tags: |
-        ${{ parameters.tag }}
-  - task: Docker@2
-    displayName: Docker Build (dctcampaignsacrproduks)
-    inputs:
-      dockerfile: $(Build.SourcesDirectory)/Dockerfile
-      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms 
-      command: build
-      tags: ${{ parameters.tag }},$(Build.SourceVersion)
   - task: AzureCLI@2
     displayName: Docker Login (dctcampaignsacrproduks)
     inputs:
@@ -65,12 +41,12 @@ steps:
       inlineScript: az acr login --name dctcampaignsacrproduks
   - ${{ if parameters.dryrun }}:
       - bash: |
-          echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping image tag push for '$(repository):${{ parameters.tag }}'"
+          echo "##vso[task.logissue type=warning;]Running in dryrun mode - skipping image tag push for 'dct/crc-cms:${{ parameters.tag }}'"
           echo "##vso[task.complete result=SucceededWithIssues;]"
         displayName: "Dry Run Warning"
   - task: Docker@2
     displayName: Docker Push (dctcampaignsacrproduks)
-    condition: and(succeeded(), ne('${{ parameters.dryrun }}', 'True'))
+    condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'))
     inputs:
       repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms
       command: push

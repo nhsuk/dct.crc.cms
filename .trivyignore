@@ -1,2 +1,2 @@
-# Will upgrade Django as part of CV-1357
-CVE-2025-57833
+# Vuln in jaraco.context
+GHSA-58pv-8j8x-9vj2
