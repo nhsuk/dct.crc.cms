@@ -19,7 +19,7 @@ class ManageTagsBulkAction(PageBulkAction):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.change_details = []
-        
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["items"] = [
@@ -55,7 +55,9 @@ class ManageTagsBulkAction(PageBulkAction):
                 "change_details": self.change_details,
                 "num_modified": self.num_parent_objects,
                 "num_failed": self.num_child_objects,
-                "operation_mode": self.cleaned_form.cleaned_data.get("tag_operation_mode", "merge"),
+                "operation_mode": self.cleaned_form.cleaned_data.get(
+                    "tag_operation_mode", "merge"
+                ),
                 "next_url": self.next_url,
             },
         )
@@ -96,7 +98,7 @@ class ManageTagsBulkAction(PageBulkAction):
         instance = kwargs.get("bulk_action_instance")
         num_modified = 0
         num_failed = 0
-        
+
         for page in objects:
             try:
                 cls.process_page(page, **kwargs)
@@ -126,10 +128,11 @@ class ManageTagsBulkAction(PageBulkAction):
             f"{num_modified} pages updated",
             num_modified,
         )
-        
+
     @classmethod
     def process_page(cls, page, **kwargs):
         raise NotImplementedError("Subclasses must implement process_page method.")
+
 
 class RemoveTagsBulkAction(ManageTagsBulkAction):
     """Bulk action to remove tags from selected pages."""
@@ -139,7 +142,7 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
     aria_label = _("Remove tags from selected pages")
     action_type = "remove_tags"
     result_template = "tag_management/results.html"
-    
+
     @classmethod
     def remove_tags_from_page(cls, page, tags_to_remove, user, instance=None):
         if str(page.id) not in tags_to_remove:
@@ -156,10 +159,10 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
         cls.save_page_tags(page, final, user)
         cls.track_changes(instance, page, current, final, removed, [], "remove")
         return True
-    
+
     @classmethod
     def process_page(cls, page, tags_to_remove="{}", user=None, **kwargs):
-        instance = kwargs.get('bulk_action_instance')
+        instance = kwargs.get("bulk_action_instance")
         tags_dict = json.loads(tags_to_remove) if tags_to_remove else {}
         return cls.remove_tags_from_page(page, tags_dict, user, instance)
 
@@ -182,10 +185,12 @@ class CopyTagsBulkAction(ManageTagsBulkAction):
         user=None,
         **kwargs,
     ):
-        instance = kwargs.get('bulk_action_instance')
-        source_tags = get_page_taxonomy_tags(Page.objects.get(id=source_page_id).specific)
+        instance = kwargs.get("bulk_action_instance")
+        source_tags = get_page_taxonomy_tags(
+            Page.objects.get(id=source_page_id).specific
+        )
         current_tags = get_page_taxonomy_tags(page.specific)
-        
+
         if tag_operation_mode == "replace":
             final = source_tags.copy()
             removed = current_tags.copy()
@@ -202,8 +207,14 @@ class CopyTagsBulkAction(ManageTagsBulkAction):
             cls.save_page_tags(page, final, user)
 
         cls.track_changes(
-            instance, page, current_tags, final, removed, added, tag_operation_mode, had_changes
+            instance,
+            page,
+            current_tags,
+            final,
+            removed,
+            added,
+            tag_operation_mode,
+            had_changes,
         )
-        
+
         return had_changes
-        

@@ -36,8 +36,10 @@ class ManageTagsForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         source_page = cleaned_data.get("source_page")
-        
+
         if not source_page:
-            self.add_error("source_page", "Please select a source page to copy tags from.")
-        
+            self.add_error(
+                "source_page", "Please select a source page to copy tags from."
+            )
+
         return cleaned_data
