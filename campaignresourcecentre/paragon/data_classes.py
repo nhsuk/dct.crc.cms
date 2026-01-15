@@ -16,9 +16,7 @@ class Registration:
     last_name: str
     organisation: str
     job_title: str
-    area_work: str
     postcode: str
-    postcode_region: str
     created_at: datetime
 
     def valid(self):
@@ -35,8 +33,6 @@ class Registration:
             "Password": self.password,
             "FirstName": self.first_name,
             "LastName": self.last_name,
-            "ContactVar2": self.area_work,
-            "ContactVar3": self.postcode_region,
             "ProductRegistrationVar2": "False",  # Is active
             "ProductRegistrationVar3": self.organisation,
             "ProductRegistrationVar4": self.job_title,
@@ -55,14 +51,12 @@ class User:
     last_name: str
     organisation: str
     job_title: str
-    area_work: str
     role: str
     active: str
     created_at: datetime
     verified_at: str
     subscriptions: str
     postcode: str
-    postcode_region: str
 
     @property
     def full_name(self):
@@ -99,10 +93,6 @@ class User:
             result["ProductRegistrationVar9"] = self.postcode
         if self.created_at:
             result["ProductRegistrationVar10"] = self.created_at
-        if self.postcode_region:
-            result["ContactVar3"] = self.postcode_region
-        if self.area_work:
-            result["ContactVar2"] = self.area_work
 
         return result
 
@@ -140,8 +130,6 @@ def user_from_dict(user_dict):
         verified_at=user_dict["ProductRegistrationVar8"],
         subscriptions=user_dict["ProductRegistrationVar7"],
         postcode=user_dict["ProductRegistrationVar9"],
-        postcode_region=user_dict["ContactVar3"],
-        area_work=user_dict["ContactVar2"],
     )
 
 
