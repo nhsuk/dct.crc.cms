@@ -18,7 +18,7 @@ def insert_global_admin_css():
         static("admin/css/admin.css"),
     )
 
-@hooks.register('register_bulk_action')
+
+@hooks.register("register_bulk_action")
 class RegisterManageTagsBulkAction(ManageTagsBulkAction):
     pass
-

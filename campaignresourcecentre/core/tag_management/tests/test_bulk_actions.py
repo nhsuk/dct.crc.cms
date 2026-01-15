@@ -21,61 +21,54 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         root = HomePage.objects.first()
         if not root:
             root = HomePage.objects.create(
-                title="Home",
-                slug="home",
-                path="00010001",
-                depth=2
+                title="Home", slug="home", path="00010001", depth=2
             )
-        
+
         cls.user = User.objects.create_superuser(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
-        
+
         # Create a test image for campaign pages
         from wagtail.images.tests.utils import get_test_image_file
         from wagtail.images import get_image_model
+
         Image = get_image_model()
         cls.test_image = Image.objects.create(
-            title="Test image",
-            file=get_test_image_file()
+            title="Test image", file=get_test_image_file()
         )
-        
+
         # Create a CampaignHubPage as parent (required for search_indexable)
         cls.campaign_hub = CampaignHubPage(
-            title="Campaigns",
-            slug="campaigns",
-            introduction="Campaign Hub"
+            title="Campaigns", slug="campaigns", introduction="Campaign Hub"
         )
         root.add_child(instance=cls.campaign_hub)
-        
+
         cls.campaign_page_1 = CampaignPage(
             title="Campaign 1",
             slug="campaign-1",
             description="<p>Test description</p>",
             summary="<p>Test summary</p>",
             image=cls.test_image,
-            taxonomy_json='[{"code": "health:gp", "label": "GP"}, {"code": "health:hospital", "label": "Hospital"}]'
+            taxonomy_json='[{"code": "health:gp", "label": "GP"}, {"code": "health:hospital", "label": "Hospital"}]',
         )
         cls.campaign_hub.add_child(instance=cls.campaign_page_1)
-        
+
         cls.campaign_page_2 = CampaignPage(
             title="Campaign 2",
             slug="campaign-2",
             description="<p>Test description 2</p>",
             summary="<p>Test summary 2</p>",
             image=cls.test_image,
-            taxonomy_json='[{"code": "health:pharmacy", "label": "Pharmacy"}]'
+            taxonomy_json='[{"code": "health:pharmacy", "label": "Pharmacy"}]',
         )
         cls.campaign_hub.add_child(instance=cls.campaign_page_2)
-        
+
         cls.resource_page = ResourcePage(
             title="Resource 1",
             slug="resource-1",
             description="<p>Test resource description</p>",
             summary="Test resource summary",
-            taxonomy_json='[]'
+            taxonomy_json="[]",
         )
         root.add_child(instance=cls.resource_page)
 
@@ -83,7 +76,7 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         """parse_tags_json should parse valid JSON and handle invalid inputs."""
         result = ManageTagsBulkAction.parse_tags_json('{"123": ["tag1", "tag2"]}')
         self.assertEqual(result, {"123": ["tag1", "tag2"]})
-        
+
         for invalid_input in ["invalid json", "", None]:
             self.assertEqual(ManageTagsBulkAction.parse_tags_json(invalid_input), {})
 
@@ -91,8 +84,8 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         """get_page_tags should return tags for valid page and empty list for invalid inputs."""
         tags = ManageTagsBulkAction.get_page_tags(self.campaign_page_1.id)
         self.assertEqual(len(tags), 2)
-        self.assertEqual(tags[0]['code'], 'health:gp')
-        
+        self.assertEqual(tags[0]["code"], "health:gp")
+
         for invalid_input in [99999, None]:
             self.assertEqual(ManageTagsBulkAction.get_page_tags(invalid_input), [])
 
@@ -100,44 +93,59 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         """save_page_tags should update page's taxonomy_json field."""
         new_tags = [{"code": "new:tag", "label": "New Tag"}]
         ManageTagsBulkAction.save_page_tags(self.resource_page, new_tags, self.user)
-        
+
         self.resource_page.refresh_from_db()
-        self.assertEqual(json.loads(self.resource_page.specific.taxonomy_json), new_tags)
+        self.assertEqual(
+            json.loads(self.resource_page.specific.taxonomy_json), new_tags
+        )
 
     def test_track_changes(self):
         """track_changes should track changes with had_changes flag."""
         from unittest.mock import Mock
+
         action = Mock(change_details=[])
         original = [{"code": "old", "label": "Old"}]
         final = [{"code": "new", "label": "New"}]
-        
+
         ManageTagsBulkAction.track_changes(
-            action, self.campaign_page_1, original, final,
-            removed=original, added=final, mode='replace', had_changes=True
+            action,
+            self.campaign_page_1,
+            original,
+            final,
+            removed=original,
+            added=final,
+            mode="replace",
+            had_changes=True,
         )
-        
-        self.assertEqual(action.change_details[0]['operation_mode'], 'replace')
-        self.assertTrue(action.change_details[0]['had_changes'])
-        
+
+        self.assertEqual(action.change_details[0]["operation_mode"], "replace")
+        self.assertTrue(action.change_details[0]["had_changes"])
+
         ManageTagsBulkAction.track_changes(
-            action, self.campaign_page_1, final, final,
-            removed=[], added=[], mode='merge', had_changes=False
+            action,
+            self.campaign_page_1,
+            final,
+            final,
+            removed=[],
+            added=[],
+            mode="merge",
+            had_changes=False,
         )
-        
-        self.assertFalse(action.change_details[1]['had_changes'])
+
+        self.assertFalse(action.change_details[1]["had_changes"])
 
     def test_remove_tags_from_page_success(self):
         """remove_tags_from_page should remove specified tags."""
         result = ManageTagsBulkAction.remove_tags_from_page(
             self.campaign_page_1,
             {str(self.campaign_page_1.id): ["health:gp"]},
-            self.user
+            self.user,
         )
         self.assertTrue(result)
         self.campaign_page_1.refresh_from_db()
         remaining = json.loads(self.campaign_page_1.specific.taxonomy_json)
         self.assertEqual(len(remaining), 1)
-        self.assertEqual(remaining[0]['code'], 'health:hospital')
+        self.assertEqual(remaining[0]["code"], "health:hospital")
 
     def test_remove_tags_from_page_not_in_dict(self):
         """remove_tags_from_page should return False when page not in removal dict."""
@@ -149,7 +157,9 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
     def test_remove_tags_from_page_tags_dont_exist(self):
         """remove_tags_from_page should return False when tags don't exist on page."""
         result = ManageTagsBulkAction.remove_tags_from_page(
-            self.campaign_page_1, {str(self.campaign_page_1.id): ["nonexistent"]}, self.user
+            self.campaign_page_1,
+            {str(self.campaign_page_1.id): ["nonexistent"]},
+            self.user,
         )
         self.assertFalse(result)
 
@@ -158,20 +168,22 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         result = ManageTagsBulkAction.copy_tags_to_page(
             self.campaign_page_2,
             [{"code": "health:gp", "label": "GP"}, {"code": "new:tag", "label": "New"}],
-            'merge',
-            self.user
+            "merge",
+            self.user,
         )
         self.assertTrue(result)
         self.campaign_page_2.refresh_from_db()
-        self.assertEqual(len(json.loads(self.campaign_page_2.specific.taxonomy_json)), 3)
+        self.assertEqual(
+            len(json.loads(self.campaign_page_2.specific.taxonomy_json)), 3
+        )
 
     def test_copy_tags_merge_skips_duplicates(self):
         """copy_tags_to_page in merge mode should skip duplicates and return False."""
         result = ManageTagsBulkAction.copy_tags_to_page(
             self.campaign_page_2,
             [{"code": "health:pharmacy", "label": "Pharmacy"}],
-            'merge',
-            self.user
+            "merge",
+            self.user,
         )
         self.assertFalse(result)
 
@@ -180,22 +192,22 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         result = ManageTagsBulkAction.copy_tags_to_page(
             self.campaign_page_2,
             [{"code": "replaced", "label": "Replaced"}],
-            'replace',
-            self.user
+            "replace",
+            self.user,
         )
         self.assertTrue(result)
         self.campaign_page_2.refresh_from_db()
         tags = json.loads(self.campaign_page_2.specific.taxonomy_json)
         self.assertEqual(len(tags), 1)
-        self.assertEqual(tags[0]['code'], 'replaced')
+        self.assertEqual(tags[0]["code"], "replaced")
 
     def test_execute_action_remove_mode(self):
         """execute_action should remove tags in remove mode."""
         num_modified, num_failed = ManageTagsBulkAction.execute_action(
             [self.campaign_page_1],
-            active_tab='remove',
+            active_tab="remove",
             tags_to_remove=json.dumps({str(self.campaign_page_1.id): ["health:gp"]}),
-            user=self.user
+            user=self.user,
         )
         self.assertEqual((num_modified, num_failed), (1, 0))
 
@@ -203,24 +215,29 @@ class ManageTagsBulkActionTestCase(WagtailPageTests):
         """execute_action should copy tags in copy mode."""
         num_modified, num_failed = ManageTagsBulkAction.execute_action(
             [self.resource_page],
-            active_tab='copy',
+            active_tab="copy",
             source_page_id=self.campaign_page_1.id,
-            tag_operation_mode='merge',
-            user=self.user
+            tag_operation_mode="merge",
+            user=self.user,
         )
         self.assertEqual((num_modified, num_failed), (1, 0))
 
     def test_execute_action_error_tracking(self):
         """execute_action should track errors in change_details."""
         from unittest.mock import Mock
+
         action = Mock(change_details=[])
-        with patch.object(ManageTagsBulkAction, 'remove_tags_from_page', side_effect=Exception("Test error")):
+        with patch.object(
+            ManageTagsBulkAction,
+            "remove_tags_from_page",
+            side_effect=Exception("Test error"),
+        ):
             num_modified, num_failed = ManageTagsBulkAction.execute_action(
                 [self.campaign_page_1],
-                active_tab='remove',
-                tags_to_remove='{}',
+                active_tab="remove",
+                tags_to_remove="{}",
                 user=self.user,
-                bulk_action_instance=action
+                bulk_action_instance=action,
             )
         self.assertEqual((num_modified, num_failed), (0, 1))
-        self.assertIn('error', action.change_details[0])
+        self.assertIn("error", action.change_details[0])
