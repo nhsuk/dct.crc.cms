@@ -1,5 +1,3 @@
-<p class="tag-help-text">Click the × to remove a tag from a page</p>
-
 <table class="listing">
   <thead>
     <tr>
@@ -10,21 +8,25 @@
   <tbody>
     {% for page_data in items %}
       <tr>
-        <td>
-          <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">{{ page_data.item.get_admin_display_title }}</a>
+        <td class="title">
+          <div class="title-wrapper">
+            <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">{{ page_data.item.get_admin_display_title }}</a>
+          </div>
         </td>
-        <td class="tags-container" data-page-id="{{ page_data.item.id }}">
+        <td>
           {% if page_data.taxonomy_tags %}
             <div class="tags-container">
               {% for term in page_data.taxonomy_tags %}
                 <span class="taxonomy-tag" data-tag-code="{{ term.code }}">
                   {{ term.label }}
-                  <button type="button" class="btn-remove" data-page-id="{{ page_data.item.id }}" data-tag-code="{{ term.code }}" title="Remove tag">×</button>
+                  {% if show_remove_button %}
+                    <button type="button" class="btn-remove" data-page-id="{{ page_data.item.id }}" data-tag-code="{{ term.code }}" title="Remove tag">×</button>
+                  {% endif %}
                 </span>
               {% endfor %}
             </div>
           {% else %}
-            <em class="help-text">No tags</em>
+            <span class="help-text">No tags</span>
           {% endif %}
         </td>
       </tr>

@@ -6,7 +6,10 @@ from django.utils.html import format_html
 from django.templatetags.static import static
 from wagtail import hooks
 
-from campaignresourcecentre.core.tag_management.bulk_actions import ManageTagsBulkAction
+from campaignresourcecentre.core.tag_management.bulk_actions import (
+    RemoveTagsBulkAction,
+    CopyTagsBulkAction,
+)
 
 logger = getLogger(__name__)
 
@@ -20,5 +23,10 @@ def insert_global_admin_css():
 
 
 @hooks.register("register_bulk_action")
-class RegisterManageTagsBulkAction(ManageTagsBulkAction):
+class RegisterRemoveTagsBulkAction(RemoveTagsBulkAction):
+    pass
+
+
+@hooks.register("register_bulk_action")
+class RegisterCopyTagsBulkAction(CopyTagsBulkAction):
     pass

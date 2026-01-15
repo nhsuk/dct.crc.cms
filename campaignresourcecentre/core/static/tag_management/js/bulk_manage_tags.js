@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tagsToRemove = {};
     const el = (id) => document.getElementById(id);
-    const activeTabInput = el('id_active_tab');
     const tagsToRemoveInput = el('id_tags_to_remove');
     const sourcePageInput = el('id_source_page');
 
@@ -43,20 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const target = button.dataset.tab;
-            if (activeTabInput) activeTabInput.value = target;
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            document.querySelectorAll('.tab-panel').forEach(panel => 
-                panel.classList.toggle('active', panel.dataset.panel === target)
-            );
-        });
-    });
 
     if (tagsToRemoveInput) tagsToRemoveInput.value = '{}';
-    if (activeTabInput) activeTabInput.value = 'remove';
 
     if (sourcePageInput) {
         let lastPageId = sourcePageInput.value;

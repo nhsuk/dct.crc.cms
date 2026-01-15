@@ -11,20 +11,15 @@ from .forms import ManageTagsForm
 
 
 class ManageTagsBulkAction(PageBulkAction):
-    display_name = _("Manage Tags")
-    aria_label = _("Manage tags for selected pages")
-    action_type = "manage_tags"
-    template_name = "tag_management/bulk_manage_tags.html"
+    """Base class for tag management bulk actions."""
+
     models = [Page]
     form_class = ManageTagsForm
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.change_details = []
-
-    def check_perm(self, page):
-        return isinstance(page.specific, (CampaignPage, ResourcePage))
-
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["items"] = [
@@ -33,64 +28,37 @@ class ManageTagsBulkAction(PageBulkAction):
         ]
         return context
 
+    def check_perm(self, page):
+        return isinstance(page.specific, (CampaignPage, ResourcePage))
+
     def get_execution_context(self):
+        cleaned_data = self.cleaned_form.cleaned_data
         return {
             **super().get_execution_context(),
-            "active_tab": self.cleaned_form.cleaned_data.get("active_tab", "remove"),
-            "tags_to_remove": self.cleaned_form.cleaned_data.get(
-                "tags_to_remove", "{}"
-            ),
+            "tags_to_remove": cleaned_data.get("tags_to_remove", "{}"),
             "source_page_id": (
-                self.cleaned_form.cleaned_data.get("source_page").id
-                if self.cleaned_form.cleaned_data.get("source_page")
+                cleaned_data.get("source_page").id
+                if cleaned_data.get("source_page")
                 else None
             ),
-            "tag_operation_mode": self.cleaned_form.cleaned_data.get(
-                "tag_operation_mode", "merge"
-            ),
+            "tag_operation_mode": cleaned_data.get("tag_operation_mode", "merge"),
             "bulk_action_instance": self,
         }
 
     def form_valid(self, form):
         super().form_valid(form)
-        active_tab = self.cleaned_form.cleaned_data.get("active_tab", "remove")
-        operation_mode = self.cleaned_form.cleaned_data.get(
-            "tag_operation_mode", "merge"
-        )
-
-        template = (
-            "tag_management/results_remove.html"
-            if active_tab == "remove"
-            else "tag_management/results_copy.html"
-        )
 
         return render(
             self.request,
-            template,
+            self.result_template,
             {
                 "change_details": self.change_details,
                 "num_modified": self.num_parent_objects,
                 "num_failed": self.num_child_objects,
-                "operation_mode": operation_mode,
+                "operation_mode": self.cleaned_form.cleaned_data.get("tag_operation_mode", "merge"),
                 "next_url": self.next_url,
             },
         )
-
-    @staticmethod
-    def parse_tags_json(tags_json):
-        try:
-            return json.loads(tags_json) if tags_json else {}
-        except (json.JSONDecodeError, TypeError):
-            return {}
-
-    @staticmethod
-    def get_page_tags(page_id):
-        if not page_id:
-            return []
-        try:
-            return get_page_taxonomy_tags(Page.objects.get(id=page_id).specific)
-        except Page.DoesNotExist:
-            return []
 
     @staticmethod
     def save_page_tags(page, tags, user):
@@ -124,6 +92,55 @@ class ManageTagsBulkAction(PageBulkAction):
             )
 
     @classmethod
+    def execute_action(cls, objects, **kwargs):
+        instance = kwargs.get("bulk_action_instance")
+        num_modified = 0
+        num_failed = 0
+        
+        for page in objects:
+            try:
+                cls.process_page(page, **kwargs)
+                num_modified += 1
+            except Exception as e:
+                if instance:
+                    instance.change_details.append(
+                        {
+                            "page_id": page.id,
+                            "page_title": page.title,
+                            "edit_url": getattr(
+                                page,
+                                "edit_url",
+                                f"/crc-admin/pages/{page.id}/edit/",
+                            ),
+                            "error": str(e),
+                        }
+                    )
+                num_failed += 1
+        return num_modified, num_failed
+
+    def get_success_message(self, num_modified, num_failed):
+        if num_failed:
+            return _(f"{num_modified} pages updated. {num_failed} failed.")
+        return ngettext(
+            f"{num_modified} page updated",
+            f"{num_modified} pages updated",
+            num_modified,
+        )
+        
+    @classmethod
+    def process_page(cls, page, **kwargs):
+        raise NotImplementedError("Subclasses must implement process_page method.")
+
+class RemoveTagsBulkAction(ManageTagsBulkAction):
+    """Bulk action to remove tags from selected pages."""
+
+    template_name = "tag_management/remove-tags-form.html"
+    display_name = _("Remove Tags")
+    aria_label = _("Remove tags from selected pages")
+    action_type = "remove_tags"
+    result_template = "tag_management/results.html"
+    
+    @classmethod
     def remove_tags_from_page(cls, page, tags_to_remove, user, instance=None):
         if str(page.id) not in tags_to_remove:
             return False
@@ -139,19 +156,44 @@ class ManageTagsBulkAction(PageBulkAction):
         cls.save_page_tags(page, final, user)
         cls.track_changes(instance, page, current, final, removed, [], "remove")
         return True
+    
+    @classmethod
+    def process_page(cls, page, tags_to_remove="{}", user=None, **kwargs):
+        instance = kwargs.get('bulk_action_instance')
+        tags_dict = json.loads(tags_to_remove) if tags_to_remove else {}
+        return cls.remove_tags_from_page(page, tags_dict, user, instance)
+
+
+class CopyTagsBulkAction(ManageTagsBulkAction):
+    """Bulk action to copy tags from another resource to selected pages."""
+
+    display_name = _("Copy Tags from Another Resource")
+    aria_label = _("Copy tags from another resource to selected pages")
+    action_type = "copy_tags"
+    result_template = "tag_management/results.html"
+    template_name = "tag_management/copy-tags-form.html"
 
     @classmethod
-    def copy_tags_to_page(cls, page, source_tags, mode, user, instance=None):
-        current = get_page_taxonomy_tags(page.specific)
-
-        if mode == "replace":
+    def process_page(
+        cls,
+        page,
+        source_page_id=None,
+        tag_operation_mode="merge",
+        user=None,
+        **kwargs,
+    ):
+        instance = kwargs.get('bulk_action_instance')
+        source_tags = get_page_taxonomy_tags(Page.objects.get(id=source_page_id).specific)
+        current_tags = get_page_taxonomy_tags(page.specific)
+        
+        if tag_operation_mode == "replace":
             final = source_tags.copy()
-            removed = current.copy()
+            removed = current_tags.copy()
             added = source_tags.copy()
         else:
-            existing = {t.get("code") for t in current}
+            existing = {t.get("code") for t in current_tags}
             added = [t for t in source_tags if t.get("code") not in existing]
-            final = current + added
+            final = current_tags + added
             removed = []
 
         had_changes = bool(added or removed)
@@ -160,77 +202,8 @@ class ManageTagsBulkAction(PageBulkAction):
             cls.save_page_tags(page, final, user)
 
         cls.track_changes(
-            instance, page, current, final, removed, added, mode, had_changes
+            instance, page, current_tags, final, removed, added, tag_operation_mode, had_changes
         )
+        
         return had_changes
-
-    @classmethod
-    def execute_action(
-        cls,
-        objects,
-        active_tab="remove",
-        tags_to_remove="{}",
-        source_page_id=None,
-        tag_operation_mode="merge",
-        user=None,
-        **kwargs,
-    ):
-        instance = kwargs.get("bulk_action_instance")
-        num_modified = 0
-        num_failed = 0
-
-        if active_tab == "copy":
-            source_tags = cls.get_page_tags(source_page_id)
-            for page in objects:
-                try:
-                    if cls.copy_tags_to_page(
-                        page, source_tags, tag_operation_mode, user, instance
-                    ):
-                        num_modified += 1
-                except Exception as e:
-                    if instance:
-                        instance.change_details.append(
-                            {
-                                "page_id": page.id,
-                                "page_title": page.title,
-                                "edit_url": getattr(
-                                    page,
-                                    "edit_url",
-                                    f"/crc-admin/pages/{page.id}/edit/",
-                                ),
-                                "error": str(e),
-                            }
-                        )
-                    num_failed += 1
-        else:
-            tags_dict = cls.parse_tags_json(tags_to_remove)
-            for page in objects:
-                try:
-                    if cls.remove_tags_from_page(page, tags_dict, user, instance):
-                        num_modified += 1
-                except Exception as e:
-                    if instance:
-                        instance.change_details.append(
-                            {
-                                "page_id": page.id,
-                                "page_title": page.title,
-                                "edit_url": getattr(
-                                    page,
-                                    "edit_url",
-                                    f"/crc-admin/pages/{page.id}/edit/",
-                                ),
-                                "error": str(e),
-                            }
-                        )
-                    num_failed += 1
-
-        return num_modified, num_failed
-
-    def get_success_message(self, num_modified, num_failed):
-        if num_failed:
-            return _(f"{num_modified} pages updated. {num_failed} failed.")
-        return ngettext(
-            f"{num_modified} page updated",
-            f"{num_modified} pages updated",
-            num_modified,
-        )
+        

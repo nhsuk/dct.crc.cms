@@ -6,9 +6,6 @@ from wagtail.models import Page
 
 
 class ManageTagsForm(forms.Form):
-    active_tab = forms.CharField(
-        widget=forms.HiddenInput(), required=False, initial="remove"
-    )
     tags_to_remove = forms.CharField(
         widget=forms.HiddenInput(), required=False, initial="{}"
     )
@@ -35,3 +32,12 @@ class ManageTagsForm(forms.Form):
         self.fields["source_page"].queryset = Page.objects.type(
             CampaignPage, ResourcePage
         ).all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        source_page = cleaned_data.get("source_page")
+        
+        if not source_page:
+            self.add_error("source_page", "Please select a source page to copy tags from.")
+        
+        return cleaned_data

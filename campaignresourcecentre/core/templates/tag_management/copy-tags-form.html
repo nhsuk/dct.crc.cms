@@ -1,0 +1,48 @@
+{% extends 'wagtailadmin/bulk_actions/confirmation/base.html' %}
+{% load wagtailadmin_tags static %}
+
+{% block titletag %}
+  Copy Tags
+{% endblock %}
+
+{% block header %}
+  {% include 'wagtailadmin/shared/header.html' with title='Copy Tags' icon='tag' %}
+{% endblock %}
+
+{% block form_section %}
+  {% if not items %}
+    {% include 'wagtailadmin/bulk_actions/confirmation/go_back.html' %}
+  {% else %}
+    <form action="{{ submit_url }}" method="POST">
+      {% include 'wagtailadmin/shared/non_field_errors.html' %}
+      {% csrf_token %}
+      <input type="hidden" name="active_tab" value="copy">
+
+      {% include 'wagtailadmin/shared/field.html' with field=form.source_page %}
+      
+      <div id="selected-page-tags" class="selected-tags-preview">
+        <strong>Tags from selected page:</strong>
+        <div id="selected-page-tags-container" class="tags-container"></div>
+      </div>
+      
+      {% include 'wagtailadmin/shared/field.html' with field=form.tag_operation_mode %}
+
+      <h2>Selected Pages</h2>
+      {% include 'tag_management/includes/pages_list_table.html' with show_remove_button=False %}
+
+      {% with action_button_text='Apply changes' no_action_button_text='Cancel' %}
+        {% include 'wagtailadmin/bulk_actions/confirmation/form.html' %}
+      {% endwith %}
+    </form>
+  {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}" />
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script src="{% static 'tag_management/js/bulk_manage_tags.js' %}"></script>
+{% endblock %}
