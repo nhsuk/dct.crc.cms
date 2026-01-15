@@ -1,18 +1,18 @@
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 trigger:
   batch: true
   branches:
     include:
-      - 'review/*'
-      - 'refs/tags/*'
-      - 'main'
+      - review/*
+      - refs/tags/*
+      - main
     exclude:
-      - 'refs/tags/tf-*'
+      - refs/tags/tf-*
   paths:
     exclude:
-      - 'terraform'
+      - terraform
 
 pr:
   branches:
@@ -63,26 +63,6 @@ parameters:
     displayName: Frontend test tags (default Smoke)
     type: string
     default: Smoke
-  - name: paragonMock
-    displayName: Mock Paragon API (forced false in production)
-    type: boolean
-    default: false
-  - name: notifyDebug
-    displayName: Mock Gov notification API (forced false in production)
-    type: boolean
-    default: true
-  - name: workers
-    displayName: Workers (web concurrency)
-    type: number
-    default: 5
-  - name: gunicornArgs
-    displayName: Gunicorn commands
-    type: string
-    default: -c gunicorn-conf.py --worker-class 'gthread' --max-requests 1200 --max-requests-jitter 50 --access-logfile - --timeout 600 --threads 5
-  - name: azureSearchUpdate
-    displayName: Update Azure search (forced true in staging and production)
-    type: boolean
-    default: false
 
 resources:
   repositories:
@@ -97,45 +77,13 @@ variables:
       value: pr-$(System.PullRequest.PullRequestNumber)
     ${{ else }}:
       value: $(Build.SourceBranchName)
-  - name: namespace
-    value: 'dct-crc-v3'
-  - name: buildId
-    value: '$(Build.BuildId)'
-  - name: repository
-    value: 'dct/crc-v3'
-  - name: imageName
-    value: 'nhsuk.azurecr.io/dct/crc-v3'
-  - name: webReplicaCount
-    value: 2
-  - name: webMinReplicas
-    value: 2
-  - name: maxReplicas
-    value: 7
-  - name: averageUtilization
-    value: 90
-  - name: requestscpu
-    value: '600m'
-  - name: requestsmemory
-    value: '1400Mi'
-  - name: limitsmemory
-    value: '2Gi'
-  - name: limitscpu
-    value: '1000m'
-  - name: appPort
-    value: '8000'
-  - name: redisUrl
-    value: 'redis://crc-v3-redis-svc:6379/0'
-  - name: staticDir
-    value: '/app/static/'
-  - name: staticUrl
-    value: '/static/'
 
 stages:
   - stage: PrepareAndTest
     displayName: Prepare & Unit Test
     jobs:
       - job: test
-        displayName: 'Prepare & Unit Test'
+        displayName: Prepare & Unit Test
         steps:
           - template: azure-pipeline-templates/test.yml
 
@@ -145,7 +93,7 @@ stages:
     condition: succeeded()
     jobs:
       - job: buildReview
-        displayName: 'Build Review'
+        displayName: Build Review
         dependsOn: []
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.Reason'], 'PullRequest'), ${{ parameters.deployReview }})
         steps:
@@ -154,7 +102,7 @@ stages:
               tag: 'review-$(sourceBranchName)'
               dryRun: ${{ parameters.dryRun }}
       - job: buildIntegration
-        displayName: 'Build Integration'
+        displayName: Build Integration
         condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
         steps:
           - template: azure-pipeline-templates/build.yml
@@ -162,7 +110,7 @@ stages:
               tag: latest
               dryRun: ${{ parameters.dryRun }}
       - job: buildStaging
-        displayName: 'Build Staging'
+        displayName: Build Staging
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
         dependsOn: []
         steps:
@@ -172,11 +120,11 @@ stages:
               dryRun: ${{ parameters.dryRun }}
 
   - stage: Deploy
-    displayName: 'Deploy'
+    displayName: Deploy
     dependsOn: Build
-    condition: succeeded()
     jobs:
       - job: Review
+        condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/review/'), eq(variables['Build.Reason'], 'PullRequest'), ${{ parameters.deployReview }}))
         variables:
           - group: Review
           - group: alerting
@@ -191,8 +139,6 @@ stages:
               value: $[lower(variables['Build.SourceBranchName'])]
           - name: tag
             value: $(Build.SourceVersion)
-          - name: frontendTestImageTag
-            value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - checkout: self
             workspaceRepo: true
@@ -354,44 +300,15 @@ stages:
           - ${{ if ne('${{ lower(parameters.dryRun) }}', 'true') }}:
             - template: azure-pipeline-templates/frontendtest.yml
               parameters:
-                authorize: $(ENV_AUTH)
+                authorize: STAGING_AUTHORIZATION
                 baseUrl: $(terraformOutput.BASE_URL)
+                tags: ${{ parameters.tags }}
 
       - job: deployIntegration
-        displayName: 'Deploy Integration'
+        displayName: Deploy Integration
         condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), ${{ parameters.deployIntegration }})
         variables:
           - group: Integration
-          - name: tag
-            value: 'latest'
-          - name: hostUrl
-            value: 'crc-v3.nhswebsite-dev.nhs.uk'
-          - name: hostUrlCertSecretName
-            value: 'haproxy-tls-cert'
-          - name: appName
-            value: 'crc-v3'
-          - name: devEnv
-            value: 'int'
-          - name: appEnv
-            value: 'integration'
-          - name: autoscaleEnv
-            value: 'int'
-          - name: paragonMock
-            value: ${{ parameters.paragonMock }}
-          - name: debug
-            value: ${{ parameters.debug }}
-          - name: notifyDebug
-            value: ${{ parameters.notifyDebug }}
-          - name: workers
-            value: 2
-          - name: gunicornArgs
-            value: ${{ parameters.gunicornArgs }}
-          - name: azureSearchUpdate
-            value: ${{ parameters.azureSearchUpdate }}
-          - name: tags
-            value: ${{ parameters.tags }}
-          - name: frontendTestImageTag
-            value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
@@ -405,46 +322,15 @@ stages:
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: $(ENV_AUTH)
+              authorize: STAGING_AUTHORIZATION
               baseUrl: https://int.campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
 
       - job: deployStaging
-        displayName: 'Deploy Staging'
+        displayName: Deploy Staging
         condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), ${{ parameters.deployStaging }})
         variables:
           - group: Staging
-          - name: tag
-            value: '$(sourceBranchName)'
-          - name: hostUrl
-            value: 'staging.campaignresources.dhsc.gov.uk'
-          - name: hostUrlCertSecretName
-            value: 'stag.campaignresources-tls-cert'
-          - name: appName
-            value: 'crc-v3'
-          - name: devEnv
-            value: 'stag'
-          - name: appEnv
-            value: 'staging'
-          - name: autoscaleEnv
-            value: 'stag'
-          - name: averageUtilization
-            value: 60
-          - name: paragonMock
-            value: ${{ parameters.paragonMock }}
-          - name: debug
-            value: ${{ parameters.debug }}
-          - name: notifyDebug
-            value: false
-          - name: workers
-            value: ${{ parameters.workers }}
-          - name: gunicornArgs
-            value: ${{ parameters.gunicornArgs }}
-          - name: azureSearchUpdate
-            value: true
-          - name: tags
-            value: ${{ parameters.tags }}
-          - name: frontendTestImageTag
-            value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
@@ -458,11 +344,12 @@ stages:
               dryrun: ${{ parameters.dryrun }}
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: $(ENV_AUTH)
+              authorize: STAGING_AUTHORIZATION
               baseUrl: https://staging.campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
 
   - stage: deployProduction
-    displayName: 'Deploy Production'
+    displayName: Deploy Production
     condition: or(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), ${{ parameters.deployProduction }})
     dependsOn: Deploy
     jobs:
@@ -471,42 +358,6 @@ stages:
       - job: deployProduction
         variables:
           - group: Production
-          - name: tag
-            value: '$(sourceBranchName)'
-          - name: hostUrl
-            value: 'campaignresources.dhsc.gov.uk'
-          - name: hostUrlCertSecretName
-            value: 'campaigns-resources-prod-tls-cert'
-          - name: appName
-            value: 'crc-v3'
-          - name: appEnv
-            value: 'production'
-          - name: devEnv
-            value: 'prod'
-          - name: autoscaleEnv
-            value: 'prod'
-          - name: webReplicaCount
-            value: 2
-          - name: webMinReplicas
-            value: 2
-          - name: averageUtilization
-            value: 60
-          - name: paragonMock
-            value: false
-          - name: debug
-            value: false
-          - name: notifyDebug
-            value: false
-          - name: workers
-            value: ${{ parameters.workers }}
-          - name: gunicornArgs
-            value: ${{ parameters.gunicornArgs }}
-          - name: azureSearchUpdate
-            value: true
-          - name: tags
-            value: ${{ parameters.tags }}
-          - name: frontendTestImageTag
-            value: $(FRONTEND_TEST_CONTAINER_IMAGE_TAG)
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
@@ -521,35 +372,16 @@ stages:
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
               baseUrl: https://campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
 
   - stage: deployDr
-    displayName: 'Deploy DR'
+    displayName: Deploy DR
     condition: or(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), ${{ parameters.deployDr }})
     dependsOn: Deploy
     jobs:
       - deployment: approval
         environment: production
       - job: deployDr
-        variables:
-          environmentName: 'production'
-          namespace: 'dct-crc-v3-ns'
-          tag: '$(sourceBranchName)'
-          hostUrl: 'campaignresources.dhsc.gov.uk'
-          hostUrlCertSecretName: 'campaigns-resources-prod-tls-cert'
-          drHostUrl: 'dr.nhswebsite.nhs.uk'
-          appName: 'crc-v3'
-          appEnv: 'production'
-          devEnv: 'prod'
-          autoscaleEnv: 'prod'
-          webReplicaCount: 2
-          webMinReplicas: 2
-          averageUtilization: 60
-          paragonMock: false
-          debug: false
-          notifyDebug: false
-          workers: ${{ parameters.workers }}
-          gunicornArgs: ${{ parameters.gunicornArgs }}
-          azureSearchUpdate: true
         steps:
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
