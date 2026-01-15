@@ -1,11 +1,14 @@
 parameters:
-- name: authorize
-  default: "None"
-- name: baseUrl
+  - name: authorize
+    default: "None"
+  - name: baseUrl
+    type: string
+  - name: tags
+    type: string
 
 steps:
   - task: DownloadSecureFile@1
-    displayName: 'Download username/password secret file'
+    displayName: Download username/password secret file
     name: CSVFile # The name with which to reference the secure file’s path on the agent, like $(CSVFile.secureFilePath)
     inputs:
       secureFile: crcv3-user.csv # A secret file in the pipeline library with a Parkhouse test API username/password value
@@ -19,14 +22,14 @@ steps:
   - bash: ./execute-frontendtests.sh
     env:
       WORK: $(System.DefaultWorkingDirectory)
-      TAGS: $(tags)
+      TAGS: ${{ parameters.tags }}
       SECRETS_FILE: $(CSVFile.secureFilePath)
       WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
       WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
       WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
       BASE_URL: ${{ parameters.baseUrl }}
-      IMAGE_TAG: $(frontendTestImageTag)
+      IMAGE_TAG: 1.1.1
       PARALLEL: 4
       SCENARIOS: parallel
       AUTHORIZE: ${{ parameters.authorize }}
-    displayName: 'Run Frontend tests in Docker container'
+    displayName: Run Frontend tests in Docker container
