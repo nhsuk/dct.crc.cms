@@ -1,6 +1,7 @@
 parameters:
 - name: authorize
   default: "None"
+- name: baseUrl
 
 steps:
   - task: DownloadSecureFile@1
@@ -23,8 +24,8 @@ steps:
       WAGTAIL_AUTOMATION_USERNAME: $(WAGTAIL_AUTOMATION_USERNAME)
       WAGTAIL_AUTOMATION_PASSWORD: $(WAGTAIL_AUTOMATION_PASSWORD)
       WAGTAIL_TOTP_URI: $(WAGTAIL_TOTP_URI)
-      BASE_URL: https://$(hostUrl)
-      IMAGE_TAG: $(imageTag)
+      BASE_URL: ${{ parameters.baseUrl }}
+      IMAGE_TAG: $(frontendTestImageTag)
       PARALLEL: 4
       SCENARIOS: parallel
       AUTHORIZE: ${{ parameters.authorize }}
