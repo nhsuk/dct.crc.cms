@@ -6,7 +6,7 @@ resource "azurerm_consumption_budget_subscription" "standard" {
   count           = local.deploy_budget ? 1 : 0
   name            = data.azurerm_subscription.sub.display_name
   subscription_id = "/subscriptions/${var.subscription_id}"
-  amount          = 150
+  amount          = var.dr_deployed ? 800 : 400
   time_grain      = "Monthly"
   time_period {
     start_date = "2026-01-01T00:00:00Z"
@@ -16,7 +16,10 @@ resource "azurerm_consumption_budget_subscription" "standard" {
     threshold      = 100
     operator       = "GreaterThan"
     threshold_type = "Forecasted"
-    contact_emails = [module.config.campaigns_monitoring_email]
+    contact_emails = [
+      module.config.campaigns_monitoring_email,
+      module.config.nhsuk_infra_email,
+    ]
   }
   lifecycle {
     create_before_destroy = true
