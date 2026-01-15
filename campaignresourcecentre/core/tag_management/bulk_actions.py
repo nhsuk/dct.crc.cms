@@ -170,8 +170,8 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
 class CopyTagsBulkAction(ManageTagsBulkAction):
     """Bulk action to copy tags from another resource to selected pages."""
 
-    display_name = _("Copy Tags from Another Resource")
-    aria_label = _("Copy tags from another resource to selected pages")
+    display_name = "Copy Tags from Another Resource"
+    aria_label = "Copy tags from another resource to selected pages"
     action_type = "copy_tags"
     result_template = "tag_management/results.html"
     template_name = "tag_management/copy-tags-form.html"
