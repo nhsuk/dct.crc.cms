@@ -1,21 +1,25 @@
 {% extends 'tag_management/bulk_manage_tags_form.html' %}
 {% load wagtailadmin_tags static %}
 
-{% block page_title %}Remove Tags{% endblock %}
+{% block page_title %}Add Tags{% endblock %}
 
 {% block header %}
-  {% include 'wagtailadmin/shared/header.html' with title='Bulk Action: Remove Tags' icon='tag' %}
+  {% include 'wagtailadmin/shared/header.html' with title='Bulk Action: Add Tags' icon='tag' %}
 {% endblock %}
 
 {% block form_fields %}
-  <p class="help-block help-info">Click the × to remove a tag from a page</p>
-  {% include 'tag_management/includes/pages_list_table.html' with show_remove_button=True %}
-  {{ form.tags_to_remove }}
+  {% include 'wagtailadmin/panels/taxonomy_panel.html' with field=form.tags_to_add taxonomy_terms_json=taxonomy_terms_json taxonomy_terms_error_message=taxonomy_terms_error_message %}
+  {% include 'wagtailadmin/shared/field.html' with field=form.tag_operation_mode %}
 {% endblock %}
 
 {% block preview_content %}
   <p class="operation-text">
-    <strong>Operation Mode:</strong> Remove tags
+    <strong>Operation Mode:</strong>
+    {% if operation_mode == 'replace' %}
+      Replace (removed existing tags, added new tags)
+    {% else %}
+      Merge (added to existing tags)
+    {% endif %}
   </p>
   
   <table class="listing">
@@ -46,9 +50,13 @@
             {% endif %}
           </td>
           <td>
+            {% if page_data.tags_added %}
+              <span class="change-badge added">{{ page_data.tags_added|length }} added</span>
+            {% endif %}
             {% if page_data.tags_removed %}
               <span class="change-badge removed">{{ page_data.tags_removed|length }} removed</span>
-            {% else %}
+            {% endif %}
+            {% if not page_data.had_changes %}
               <em class="help-text">No changes</em>
             {% endif %}
           </td>

@@ -18,7 +18,7 @@
             <div class="tags-container">
               {% for term in page_data.taxonomy_tags %}
                 <span class="taxonomy-tag" data-tag-code="{{ term.code }}">
-                  {{ term.label }}
+                  <span class="tag-label">{{ term.label }}</span>
                   {% if show_remove_button %}
                     <button type="button" class="btn-remove" data-page-id="{{ page_data.item.id }}" data-tag-code="{{ term.code }}" title="Remove tag">×</button>
                   {% endif %}

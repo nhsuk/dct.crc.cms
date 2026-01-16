@@ -6,19 +6,18 @@ from wagtail.admin.views.pages.bulk_actions.page_bulk_action import PageBulkActi
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
+from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 from .utils import get_page_taxonomy_tags
 from .forms import ManageTagsForm
 
 
 class ManageTagsBulkAction(PageBulkAction):
-    """Base class for tag management bulk actions."""
-
     models = [Page]
     form_class = ManageTagsForm
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.change_details = []
+        self.calculated_changes = []
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -31,19 +30,75 @@ class ManageTagsBulkAction(PageBulkAction):
     def check_perm(self, page):
         return isinstance(page.specific, (CampaignPage, ResourcePage))
 
+    def calculate_changes(self, items):
+        raise NotImplementedError("Subclasses must implement calculate_changes")
+
+    def apply_changes(self, user):
+        num_modified = 0
+        num_failed = 0
+
+        for change in self.calculated_changes:
+            if not change.get("had_changes"):
+                continue
+
+            try:
+                page = Page.objects.get(id=change["page_id"])
+                self._save_tags(page, change["final_tags"], user)
+                num_modified += 1
+            except Exception as e:
+                change["error"] = str(e)
+                change["had_changes"] = False
+                num_failed += 1
+
+        return num_modified, num_failed
+
+    def _save_tags(self, page, tags, user):
+        page_specific = page.specific
+        page_specific.taxonomy_json = json.dumps(tags)
+        page_specific.save()
+        revision = page_specific.save_revision(user=user, log_action=True, changed=True)
+        if page.live:
+            revision.publish(user=user)
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get("preview") == "clear" and not request.POST.get("confirm"):
+            ctx = self.get_context_data(**kwargs)
+            self.calculated_changes = self.calculate_changes(ctx.get("items", []))
+            ctx["confirming"] = True
+            ctx["items"] = [
+                {**item, **change}
+                for item, change in zip(ctx["items"], self.calculated_changes)
+            ]
+            ctx["calculated_changes_json"] = json.dumps(self.calculated_changes)
+            ctx["operation_mode"] = request.POST.get("tag_operation_mode", "merge")
+            return self.render_to_response(ctx)
+        
+        if request.POST.get("confirm") and request.POST.get("calculated_changes"):
+            try:
+                self.calculated_changes = json.loads(request.POST.get("calculated_changes"))
+            except (json.JSONDecodeError, TypeError):
+                self.calculated_changes = []
+        
+        return super().post(request, *args, **kwargs)
+
     def get_execution_context(self):
-        cleaned_data = self.cleaned_form.cleaned_data
         return {
             **super().get_execution_context(),
-            "tags_to_remove": cleaned_data.get("tags_to_remove", "{}"),
-            "source_page_id": (
-                cleaned_data.get("source_page").id
-                if cleaned_data.get("source_page")
-                else None
-            ),
-            "tag_operation_mode": cleaned_data.get("tag_operation_mode", "merge"),
             "bulk_action_instance": self,
         }
+
+    @classmethod
+    def execute_action(cls, objects, **kwargs):
+        instance = kwargs.get("bulk_action_instance")
+        user = kwargs.get("user")
+        
+        if not instance:
+            return 0, len(objects)
+        
+        if not hasattr(instance, "calculated_changes") or not instance.calculated_changes:
+            return 0, len(objects)
+
+        return instance.apply_changes(user)
 
     def form_valid(self, form):
         super().form_valid(form)
@@ -52,169 +107,113 @@ class ManageTagsBulkAction(PageBulkAction):
             self.request,
             self.result_template,
             {
-                "change_details": self.change_details,
+                "change_details": self.calculated_changes,
                 "num_modified": self.num_parent_objects,
                 "num_failed": self.num_child_objects,
-                "operation_mode": self.cleaned_form.cleaned_data.get(
-                    "tag_operation_mode", "merge"
-                ),
+                "operation_mode": form.cleaned_data.get("tag_operation_mode", "merge"),
                 "next_url": self.next_url,
             },
         )
 
-    @staticmethod
-    def save_page_tags(page, tags, user):
-        page_specific = page.specific
-        page_specific.taxonomy_json = json.dumps(tags)
-        page_specific.save()
-        revision = page_specific.save_revision(user=user, log_action=True, changed=True)
-        if page.live:
-            revision.publish(user=user)
-
-    @staticmethod
-    def track_changes(
-        instance, page, original, final, removed, added, mode, had_changes=True
-    ):
-        if instance:
-            instance.change_details.append(
-                {
-                    "page_id": page.id,
-                    "page_title": page.title,
-                    "page_url": page.specific.url if hasattr(page, "specific") else "",
-                    "edit_url": getattr(
-                        page, "edit_url", f"/crc-admin/pages/{page.id}/edit/"
-                    ),
-                    "original_tags": original,
-                    "final_tags": final,
-                    "tags_removed": removed,
-                    "tags_added": added,
-                    "operation_mode": mode,
-                    "had_changes": had_changes,
-                }
-            )
-
-    @classmethod
-    def execute_action(cls, objects, **kwargs):
-        instance = kwargs.get("bulk_action_instance")
-        num_modified = 0
-        num_failed = 0
-
-        for page in objects:
-            try:
-                cls.process_page(page, **kwargs)
-                num_modified += 1
-            except Exception as e:
-                if instance:
-                    instance.change_details.append(
-                        {
-                            "page_id": page.id,
-                            "page_title": page.title,
-                            "edit_url": getattr(
-                                page,
-                                "edit_url",
-                                f"/crc-admin/pages/{page.id}/edit/",
-                            ),
-                            "error": str(e),
-                        }
-                    )
-                num_failed += 1
-        return num_modified, num_failed
-
-    def get_success_message(self, num_modified, num_failed):
-        if num_failed:
-            return _(f"{num_modified} pages updated. {num_failed} failed.")
-        return ngettext(
-            f"{num_modified} page updated",
-            f"{num_modified} pages updated",
-            num_modified,
-        )
-
-    @classmethod
-    def process_page(cls, page, **kwargs):
-        raise NotImplementedError("Subclasses must implement process_page method.")
-
 
 class RemoveTagsBulkAction(ManageTagsBulkAction):
-    """Bulk action to remove tags from selected pages."""
-
     template_name = "tag_management/remove-tags-form.html"
+    result_template = "tag_management/results.html"
     display_name = _("Remove Tags")
     aria_label = _("Remove tags from selected pages")
     action_type = "remove_tags"
-    result_template = "tag_management/results.html"
 
-    @classmethod
-    def remove_tags_from_page(cls, page, tags_to_remove, user, instance=None):
-        if str(page.id) not in tags_to_remove:
-            return False
+    def form_valid(self, form):
+        super(ManageTagsBulkAction, self).form_valid(form)
 
-        current = get_page_taxonomy_tags(page.specific)
-        codes = tags_to_remove[str(page.id)]
-        removed = [t for t in current if t.get("code") in codes]
-        final = [t for t in current if t.get("code") not in codes]
-
-        if not removed:
-            return False
-
-        cls.save_page_tags(page, final, user)
-        cls.track_changes(instance, page, current, final, removed, [], "remove")
-        return True
-
-    @classmethod
-    def process_page(cls, page, tags_to_remove="{}", user=None, **kwargs):
-        instance = kwargs.get("bulk_action_instance")
-        tags_dict = json.loads(tags_to_remove) if tags_to_remove else {}
-        return cls.remove_tags_from_page(page, tags_dict, user, instance)
-
-
-class CopyTagsBulkAction(ManageTagsBulkAction):
-    """Bulk action to copy tags from another resource to selected pages."""
-
-    display_name = "Copy Tags from Another Resource"
-    aria_label = "Copy tags from another resource to selected pages"
-    action_type = "copy_tags"
-    result_template = "tag_management/results.html"
-    template_name = "tag_management/copy-tags-form.html"
-
-    @classmethod
-    def process_page(
-        cls,
-        page,
-        source_page_id=None,
-        tag_operation_mode="merge",
-        user=None,
-        **kwargs,
-    ):
-        instance = kwargs.get("bulk_action_instance")
-        source_tags = get_page_taxonomy_tags(
-            Page.objects.get(id=source_page_id).specific
-        )
-        current_tags = get_page_taxonomy_tags(page.specific)
-
-        if tag_operation_mode == "replace":
-            final = source_tags.copy()
-            removed = current_tags.copy()
-            added = source_tags.copy()
-        else:
-            existing = {t.get("code") for t in current_tags}
-            added = [t for t in source_tags if t.get("code") not in existing]
-            final = current_tags + added
-            removed = []
-
-        had_changes = bool(added or removed)
-
-        if had_changes:
-            cls.save_page_tags(page, final, user)
-
-        cls.track_changes(
-            instance,
-            page,
-            current_tags,
-            final,
-            removed,
-            added,
-            tag_operation_mode,
-            had_changes,
+        return render(
+            self.request,
+            self.result_template,
+            {
+                "change_details": self.calculated_changes,
+                "num_modified": self.num_parent_objects,
+                "num_failed": self.num_child_objects,
+                "operation_mode": "remove",
+                "next_url": self.next_url,
+            },
         )
 
-        return had_changes
+    def calculate_changes(self, items):
+        tags_to_remove = json.loads(self.request.POST.get("tags_to_remove", "{}"))
+        changes = []
+
+        for item in items:
+            page = item["item"]
+            page_id = str(page.id)
+
+            original_tags = item.get("taxonomy_tags", [])
+            
+            if page_id in tags_to_remove:
+                codes_to_remove = set(tags_to_remove[page_id])
+                removed = [t for t in original_tags if t.get("code") in codes_to_remove]
+                final_tags = [t for t in original_tags if t.get("code") not in codes_to_remove]
+            else:
+                removed = []
+                final_tags = original_tags
+
+            changes.append({
+                "page_id": page.id,
+                "page_title": page.title,
+                "original_tags": json.loads(json.dumps(original_tags)),
+                "final_tags": final_tags,
+                "tags_removed": removed,
+                "tags_added": [],
+                "had_changes": bool(removed),
+            })
+
+        return changes
+
+
+class AddTagsBulkAction(ManageTagsBulkAction):
+    display_name = _("Add Tags")
+    aria_label = _("Add tags to selected pages")
+    action_type = "add_tags"
+    template_name = "tag_management/add-tags-form.html"
+    result_template = "tag_management/results.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
+            context["taxonomy_terms_json"] = taxonomy_data.terms_json
+        except TaxonomyTerms.DoesNotExist:
+            context["taxonomy_terms_json"] = "[]"
+            context["taxonomy_error"] = "Taxonomy terms not found"
+        return context
+
+    def calculate_changes(self, items):
+        tags_to_add = json.loads(self.request.POST.get("tags_to_add", "[]"))
+        operation_mode = self.request.POST.get("tag_operation_mode", "merge")
+        changes = []
+
+        for item in items:
+            page = item["item"]
+            original_tags = item.get("taxonomy_tags", [])
+            
+            if operation_mode == "replace":
+                final_tags = tags_to_add.copy()
+                removed = original_tags.copy()
+                added = tags_to_add.copy()
+            else:
+                existing_codes = {t.get("code") for t in original_tags}
+                added = [t for t in tags_to_add if t.get("code") not in existing_codes]
+                final_tags = original_tags + added
+                removed = []
+
+            changes.append({
+                "page_id": page.id,
+                "page_title": page.title,
+                "original_tags": json.loads(json.dumps(original_tags)),
+                "final_tags": final_tags,
+                "tags_added": added,
+                "tags_removed": removed,
+                "operation_mode": operation_mode,
+                "had_changes": bool(added or removed),
+            })
+
+        return changes
