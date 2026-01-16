@@ -6,7 +6,7 @@ from wagtail.test.utils import WagtailPageTests
 from campaignresourcecentre.core.tag_management.bulk_actions import (
     ManageTagsBulkAction,
     RemoveTagsBulkAction,
-    CopyTagsBulkAction,
+    AddTagsBulkAction,
 )
 from campaignresourcecentre.campaigns.models import CampaignPage, CampaignHubPage
 from campaignresourcecentre.resources.models import ResourcePage
@@ -181,14 +181,18 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
         self.assertIn("error", action.change_details[0])
 
 
-class CopyTagsBulkActionTestCase(BaseTestCase):
-    """Test CopyTagsBulkAction functionality."""
+class AddTagsBulkActionTestCase(BaseTestCase):
+    """Test AddTagsBulkAction functionality."""
 
     def test_process_page_merge_adds_new_tags(self):
         """process_page in merge mode should add new tags."""
-        result = CopyTagsBulkAction.process_page(
+        tags_to_add = [
+            {"code": "health:dental", "label": "Dental"},
+            {"code": "health:mental", "label": "Mental Health"}
+        ]
+        result = AddTagsBulkAction.process_page(
             self.campaign_page_2,
-            source_page_id=self.campaign_page_1.id,
+            tags_to_add=json.dumps(tags_to_add),
             tag_operation_mode="merge",
             user=self.user,
         )
@@ -200,9 +204,10 @@ class CopyTagsBulkActionTestCase(BaseTestCase):
 
     def test_process_page_merge_skips_duplicates(self):
         """process_page in merge mode should skip duplicates and return False."""
-        result = CopyTagsBulkAction.process_page(
+        tags_to_add = [{"code": "health:pharmacy", "label": "Pharmacy"}]
+        result = AddTagsBulkAction.process_page(
             self.campaign_page_2,
-            source_page_id=self.campaign_page_2.id,
+            tags_to_add=json.dumps(tags_to_add),
             tag_operation_mode="merge",
             user=self.user,
         )
@@ -210,9 +215,13 @@ class CopyTagsBulkActionTestCase(BaseTestCase):
 
     def test_process_page_replace_mode(self):
         """process_page in replace mode should replace all tags."""
-        result = CopyTagsBulkAction.process_page(
+        tags_to_add = [
+            {"code": "health:dental", "label": "Dental"},
+            {"code": "health:vision", "label": "Vision"}
+        ]
+        result = AddTagsBulkAction.process_page(
             self.campaign_page_2,
-            source_page_id=self.campaign_page_1.id,
+            tags_to_add=json.dumps(tags_to_add),
             tag_operation_mode="replace",
             user=self.user,
         )
@@ -220,13 +229,14 @@ class CopyTagsBulkActionTestCase(BaseTestCase):
         self.campaign_page_2.refresh_from_db()
         tags = json.loads(self.campaign_page_2.specific.taxonomy_json)
         self.assertEqual(len(tags), 2)
-        self.assertIn("health:gp", [t["code"] for t in tags])
+        self.assertIn("health:dental", [t["code"] for t in tags])
 
     def test_execute_action(self):
-        """execute_action should copy tags successfully."""
-        num_modified, num_failed = CopyTagsBulkAction.execute_action(
+        """execute_action should add tags successfully."""
+        tags_to_add = [{"code": "health:gp", "label": "GP"}]
+        num_modified, num_failed = AddTagsBulkAction.execute_action(
             [self.resource_page],
-            source_page_id=self.campaign_page_1.id,
+            tags_to_add=json.dumps(tags_to_add),
             tag_operation_mode="merge",
             user=self.user,
         )

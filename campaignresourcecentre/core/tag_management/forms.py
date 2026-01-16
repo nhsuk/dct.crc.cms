@@ -1,13 +1,12 @@
 from django import forms
-from wagtail.admin.widgets import AdminPageChooser
-from campaignresourcecentre.campaigns.models import CampaignPage
-from campaignresourcecentre.resources.models import ResourcePage
-from wagtail.models import Page
 
 
 class ManageTagsForm(forms.Form):
     tags_to_remove = forms.CharField(
-        widget=forms.HiddenInput(), required=False, initial="{}"
+        widget=forms.Textarea(attrs={"hidden": True}), required=False,
+    )
+    tags_to_add = forms.CharField(
+        widget=forms.Textarea(attrs={"hidden": True}), required=False
     )
     tag_operation_mode = forms.ChoiceField(
         choices=[
@@ -19,27 +18,3 @@ class ManageTagsForm(forms.Form):
         label="Tag Operation Mode",
         required=False,
     )
-    source_page = forms.ModelChoiceField(
-        queryset=Page.objects.none(),
-        required=False,
-        widget=AdminPageChooser(target_models=[CampaignPage, ResourcePage]),
-        label="Select Source Resource/Campaign",
-        help_text="Choose a page to copy tags from",
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["source_page"].queryset = Page.objects.type(
-            CampaignPage, ResourcePage
-        ).all()
-
-    def clean(self):
-        cleaned_data = super().clean()
-        source_page = cleaned_data.get("source_page")
-
-        if not source_page:
-            self.add_error(
-                "source_page", "Please select a source page to copy tags from."
-            )
-
-        return cleaned_data

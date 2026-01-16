@@ -8,7 +8,7 @@ from wagtail import hooks
 
 from campaignresourcecentre.core.tag_management.bulk_actions import (
     RemoveTagsBulkAction,
-    CopyTagsBulkAction,
+    AddTagsBulkAction,
 )
 
 logger = getLogger(__name__)
@@ -28,5 +28,5 @@ class RegisterRemoveTagsBulkAction(RemoveTagsBulkAction):
 
 
 @hooks.register("register_bulk_action")
-class RegisterCopyTagsBulkAction(CopyTagsBulkAction):
+class RegisterAddTagsBulkAction(AddTagsBulkAction):
     pass
