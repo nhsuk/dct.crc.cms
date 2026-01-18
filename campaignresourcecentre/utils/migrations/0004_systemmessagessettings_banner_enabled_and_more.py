@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("utils", "0003_alter_calltoactionsnippet_link"),
+        ('utils', '0003_alter_calltoactionsnippet_link'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="systemmessagessettings",
-            name="banner_enabled",
-            field=models.BooleanField(default=False, verbose_name="Enabled"),
+            model_name='systemmessagessettings',
+            name='banner_enabled',
+            field=models.BooleanField(default=False, verbose_name='Enabled'),
         ),
         migrations.AddField(
-            model_name="systemmessagessettings",
-            name="green_banner",
-            field=models.TextField(blank=True, default="", verbose_name="Green banner"),
+            model_name='systemmessagessettings',
+            name='green_banner',
+            field=models.TextField(blank=True, default='', verbose_name='Green banner'),
         ),
         migrations.AddField(
-            model_name="systemmessagessettings",
-            name="red_banner",
-            field=models.TextField(blank=True, default="", verbose_name="Red banner"),
+            model_name='systemmessagessettings',
+            name='red_banner',
+            field=models.TextField(blank=True, default='', verbose_name='Red banner'),
         ),
     ]
