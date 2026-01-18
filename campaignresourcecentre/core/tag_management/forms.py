@@ -3,7 +3,8 @@ from django import forms
 
 class ManageTagsForm(forms.Form):
     tags_to_remove = forms.CharField(
-        widget=forms.Textarea(attrs={"hidden": True}), required=False,
+        widget=forms.Textarea(attrs={"hidden": True}),
+        required=False,
     )
     tags_to_add = forms.CharField(
         widget=forms.Textarea(attrs={"hidden": True}), required=False

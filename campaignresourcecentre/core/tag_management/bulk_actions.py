@@ -72,13 +72,15 @@ class ManageTagsBulkAction(PageBulkAction):
             ctx["calculated_changes_json"] = json.dumps(self.calculated_changes)
             ctx["operation_mode"] = request.POST.get("tag_operation_mode", "merge")
             return self.render_to_response(ctx)
-        
+
         if request.POST.get("confirm") and request.POST.get("calculated_changes"):
             try:
-                self.calculated_changes = json.loads(request.POST.get("calculated_changes"))
+                self.calculated_changes = json.loads(
+                    request.POST.get("calculated_changes")
+                )
             except (json.JSONDecodeError, TypeError):
                 self.calculated_changes = []
-        
+
         return super().post(request, *args, **kwargs)
 
     def get_execution_context(self):
@@ -91,11 +93,14 @@ class ManageTagsBulkAction(PageBulkAction):
     def execute_action(cls, objects, **kwargs):
         instance = kwargs.get("bulk_action_instance")
         user = kwargs.get("user")
-        
+
         if not instance:
             return 0, len(objects)
-        
-        if not hasattr(instance, "calculated_changes") or not instance.calculated_changes:
+
+        if (
+            not hasattr(instance, "calculated_changes")
+            or not instance.calculated_changes
+        ):
             return 0, len(objects)
 
         return instance.apply_changes(user)
@@ -147,24 +152,28 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
             page_id = str(page.id)
 
             original_tags = item.get("taxonomy_tags", [])
-            
+
             if page_id in tags_to_remove:
                 codes_to_remove = set(tags_to_remove[page_id])
                 removed = [t for t in original_tags if t.get("code") in codes_to_remove]
-                final_tags = [t for t in original_tags if t.get("code") not in codes_to_remove]
+                final_tags = [
+                    t for t in original_tags if t.get("code") not in codes_to_remove
+                ]
             else:
                 removed = []
                 final_tags = original_tags
 
-            changes.append({
-                "page_id": page.id,
-                "page_title": page.title,
-                "original_tags": json.loads(json.dumps(original_tags)),
-                "final_tags": final_tags,
-                "tags_removed": removed,
-                "tags_added": [],
-                "had_changes": bool(removed),
-            })
+            changes.append(
+                {
+                    "page_id": page.id,
+                    "page_title": page.title,
+                    "original_tags": json.loads(json.dumps(original_tags)),
+                    "final_tags": final_tags,
+                    "tags_removed": removed,
+                    "tags_added": [],
+                    "had_changes": bool(removed),
+                }
+            )
 
         return changes
 
@@ -194,7 +203,7 @@ class AddTagsBulkAction(ManageTagsBulkAction):
         for item in items:
             page = item["item"]
             original_tags = item.get("taxonomy_tags", [])
-            
+
             if operation_mode == "replace":
                 final_tags = tags_to_add.copy()
                 removed = original_tags.copy()
@@ -205,15 +214,17 @@ class AddTagsBulkAction(ManageTagsBulkAction):
                 final_tags = original_tags + added
                 removed = []
 
-            changes.append({
-                "page_id": page.id,
-                "page_title": page.title,
-                "original_tags": json.loads(json.dumps(original_tags)),
-                "final_tags": final_tags,
-                "tags_added": added,
-                "tags_removed": removed,
-                "operation_mode": operation_mode,
-                "had_changes": bool(added or removed),
-            })
+            changes.append(
+                {
+                    "page_id": page.id,
+                    "page_title": page.title,
+                    "original_tags": json.loads(json.dumps(original_tags)),
+                    "final_tags": final_tags,
+                    "tags_added": added,
+                    "tags_removed": removed,
+                    "operation_mode": operation_mode,
+                    "had_changes": bool(added or removed),
+                }
+            )
 
         return changes
