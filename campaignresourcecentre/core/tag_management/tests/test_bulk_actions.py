@@ -1,243 +1,330 @@
 import json
 from unittest.mock import patch, Mock
 from django.contrib.auth import get_user_model
-from wagtail.test.utils import WagtailPageTests
+from django.test import RequestFactory, TestCase
 
 from campaignresourcecentre.core.tag_management.bulk_actions import (
-    ManageTagsBulkAction,
     RemoveTagsBulkAction,
     AddTagsBulkAction,
 )
-from campaignresourcecentre.campaigns.models import CampaignPage, CampaignHubPage
-from campaignresourcecentre.resources.models import ResourcePage
-from campaignresourcecentre.home.models import HomePage
+from campaignresourcecentre.core.preparetestdata import PrepareTestData
 
 
 User = get_user_model()
 
 
-class BaseTestCase(WagtailPageTests):
-    """Base test case with shared setup."""
-
+class BaseTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        """Set up test data once for the entire test class."""
-        root = HomePage.objects.first()
-        if not root:
-            root = HomePage.objects.create(
-                title="Home", slug="home", path="00010001", depth=2
-            )
+        td = PrepareTestData()
+        cls.campaign_page = td.campaign_page
+        cls.campaign_hub_page = td.campaign_hub_page
+        cls.resource_page = td.resource_page
+        cls.user = User.objects.get(username="wagtail")
 
-        cls.user = User.objects.create_superuser(
-            username="testuser", email="test@example.com", password="testpass123"
+        # Set taxonomy_json on test pages for testing
+        cls.campaign_page.taxonomy_json = json.dumps(
+            [
+                {"code": "health:gp", "label": "GP"},
+                {"code": "health:hospital", "label": "Hospital"},
+            ]
         )
+        cls.campaign_page.save_revision().publish()
 
-        from wagtail.images.tests.utils import get_test_image_file
-        from wagtail.images import get_image_model
+        cls.resource_page.taxonomy_json = json.dumps([])
+        cls.resource_page.save_revision().publish()
 
-        Image = get_image_model()
-        cls.test_image = Image.objects.create(
-            title="Test image", file=get_test_image_file()
-        )
+    def setUp(self):
+        self.factory = RequestFactory()
 
-        cls.campaign_hub = CampaignHubPage(
-            title="Campaigns", slug="campaigns", introduction="Campaign Hub"
-        )
-        root.add_child(instance=cls.campaign_hub)
-
-        cls.campaign_page_1 = CampaignPage(
-            title="Campaign 1",
-            slug="campaign-1",
-            description="<p>Test description</p>",
-            summary="<p>Test summary</p>",
-            image=cls.test_image,
-            taxonomy_json='[{"code": "health:gp", "label": "GP"}, {"code": "health:hospital", "label": "Hospital"}]',
-        )
-        cls.campaign_hub.add_child(instance=cls.campaign_page_1)
-
-        cls.campaign_page_2 = CampaignPage(
-            title="Campaign 2",
-            slug="campaign-2",
-            description="<p>Test description 2</p>",
-            summary="<p>Test summary 2</p>",
-            image=cls.test_image,
-            taxonomy_json='[{"code": "health:pharmacy", "label": "Pharmacy"}]',
-        )
-        cls.campaign_hub.add_child(instance=cls.campaign_page_2)
-
-        cls.resource_page = ResourcePage(
-            title="Resource 1",
-            slug="resource-1",
-            description="<p>Test resource description</p>",
-            summary="Test resource summary",
-            taxonomy_json="[]",
-        )
-        root.add_child(instance=cls.resource_page)
+    def _create_mock_request(self, method="GET", data=None, user=None):
+        if method == "POST":
+            post_data = data or {}
+            post_data["next"] = "/"
+            request = self.factory.post("/", data=post_data)
+        else:
+            request = self.factory.get("/", {"next": "/"})
+        request.user = user or self.user
+        return request
 
 
 class ManageTagsBulkActionTestCase(BaseTestCase):
     """Test the ManageTagsBulkAction base class shared functionality."""
 
-    def test_save_page_tags(self):
-        """save_page_tags should update page's taxonomy_json field."""
+    def test_save_tags_updates_taxonomy_json(self):
+        """_save_tags should update page's taxonomy_json field."""
+        action = object.__new__(AddTagsBulkAction)
         new_tags = [{"code": "new:tag", "label": "New Tag"}]
-        ManageTagsBulkAction.save_page_tags(self.resource_page, new_tags, self.user)
+
+        action._save_tags(self.resource_page, new_tags, self.user)
 
         self.resource_page.refresh_from_db()
-        self.assertEqual(
-            json.loads(self.resource_page.specific.taxonomy_json), new_tags
+        self.assertEqual(json.loads(self.resource_page.taxonomy_json), new_tags)
+
+    def test_save_tags_creates_revision(self):
+        """_save_tags should create a revision."""
+        action = object.__new__(AddTagsBulkAction)
+        new_tags = [{"code": "new:tag", "label": "New Tag"}]
+
+        initial_revisions = self.resource_page.revisions.count()
+        action._save_tags(self.resource_page, new_tags, self.user)
+
+        self.assertEqual(self.resource_page.revisions.count(), initial_revisions + 1)
+
+    def test_apply_changes_success(self):
+        """apply_changes should successfully update pages with changes."""
+        action = object.__new__(AddTagsBulkAction)
+        action.calculated_changes = [
+            {
+                "page_id": self.resource_page.id,
+                "final_tags": [{"code": "test:tag", "label": "Test"}],
+                "had_changes": True,
+            }
+        ]
+
+        num_modified, num_failed = action.apply_changes(self.user)
+
+        self.assertEqual(num_modified, 1)
+        self.assertEqual(num_failed, 0)
+        self.resource_page.refresh_from_db()
+        self.assertIn("test:tag", self.resource_page.taxonomy_json)
+
+    def test_apply_changes_skips_no_changes(self):
+        """apply_changes should skip pages without changes."""
+        action = object.__new__(AddTagsBulkAction)
+        action.calculated_changes = [
+            {
+                "page_id": self.resource_page.id,
+                "final_tags": [],
+                "had_changes": False,
+            }
+        ]
+
+        num_modified, num_failed = action.apply_changes(self.user)
+
+        self.assertEqual(num_modified, 0)
+        self.assertEqual(num_failed, 0)
+
+    def test_apply_changes_handles_errors(self):
+        """apply_changes should handle errors and track failed changes."""
+        action = object.__new__(AddTagsBulkAction)
+        action.calculated_changes = [
+            {
+                "page_id": 99999,
+                "final_tags": [{"code": "test", "label": "Test"}],
+                "had_changes": True,
+            }
+        ]
+
+        num_modified, num_failed = action.apply_changes(self.user)
+
+        self.assertEqual(num_modified, 0)
+        self.assertEqual(num_failed, 1)
+        self.assertIn("error", action.calculated_changes[0])
+        self.assertFalse(action.calculated_changes[0]["had_changes"])
+
+    def test_execute_action_with_instance(self):
+        """execute_action should call apply_changes when instance provided."""
+        instance = object.__new__(AddTagsBulkAction)
+        instance.calculated_changes = [
+            {
+                "page_id": self.resource_page.id,
+                "final_tags": [{"code": "test", "label": "Test"}],
+                "had_changes": True,
+            }
+        ]
+
+        num_modified, num_failed = AddTagsBulkAction.execute_action(
+            [self.resource_page],
+            bulk_action_instance=instance,
+            user=self.user,
         )
 
-    def test_track_changes(self):
-        """track_changes should track changes with had_changes flag."""
-        action = Mock(change_details=[])
-        original = [{"code": "old", "label": "Old"}]
-        final = [{"code": "new", "label": "New"}]
+        self.assertEqual(num_modified, 1)
+        self.assertEqual(num_failed, 0)
 
-        ManageTagsBulkAction.track_changes(
-            action,
-            self.campaign_page_1,
-            original,
-            final,
-            removed=original,
-            added=final,
-            mode="replace",
-            had_changes=True,
+    def test_execute_action_without_instance(self):
+        """execute_action should fail gracefully without instance."""
+        num_modified, num_failed = AddTagsBulkAction.execute_action(
+            [self.resource_page],
+            user=self.user,
         )
 
-        self.assertEqual(action.change_details[0]["operation_mode"], "replace")
-        self.assertTrue(action.change_details[0]["had_changes"])
-
-        ManageTagsBulkAction.track_changes(
-            action,
-            self.campaign_page_1,
-            final,
-            final,
-            removed=[],
-            added=[],
-            mode="merge",
-            had_changes=False,
-        )
-
-        self.assertFalse(action.change_details[1]["had_changes"])
+        self.assertEqual(num_modified, 0)
+        self.assertEqual(num_failed, 1)
 
 
 class RemoveTagsBulkActionTestCase(BaseTestCase):
     """Test RemoveTagsBulkAction functionality."""
 
-    def test_remove_tags_from_page_success(self):
-        """remove_tags_from_page should remove specified tags."""
-        result = RemoveTagsBulkAction.remove_tags_from_page(
-            self.campaign_page_1,
-            {str(self.campaign_page_1.id): ["health:gp"]},
-            self.user,
+    def test_calculate_changes_removes_tags(self):
+        """calculate_changes should correctly remove specified tags."""
+        action = object.__new__(RemoveTagsBulkAction)
+        action.request = self._create_mock_request(
+            method="POST",
+            data={
+                "tag_operation_mode": "remove",
+                "tags_to_remove": json.dumps(
+                    {str(self.campaign_page.id): ["health:gp"]}
+                ),
+            },
         )
-        self.assertTrue(result)
-        self.campaign_page_1.refresh_from_db()
-        remaining = json.loads(self.campaign_page_1.specific.taxonomy_json)
-        self.assertEqual(len(remaining), 1)
-        self.assertEqual(remaining[0]["code"], "health:hospital")
 
-    def test_remove_tags_from_page_not_in_dict(self):
-        """remove_tags_from_page should return False when page not in removal dict."""
-        result = RemoveTagsBulkAction.remove_tags_from_page(
-            self.campaign_page_1, {"999": ["tag"]}, self.user
-        )
-        self.assertFalse(result)
+        items = [
+            {
+                "item": self.campaign_page,
+                "taxonomy_tags": json.loads(self.campaign_page.taxonomy_json),
+            }
+        ]
 
-    def test_remove_tags_from_page_tags_dont_exist(self):
-        """remove_tags_from_page should return False when tags don't exist on page."""
-        result = RemoveTagsBulkAction.remove_tags_from_page(
-            self.campaign_page_1,
-            {str(self.campaign_page_1.id): ["nonexistent"]},
-            self.user,
-        )
-        self.assertFalse(result)
+        changes = action.calculate_changes(items)
 
-    def test_execute_action(self):
-        """execute_action should remove tags successfully."""
+        self.assertEqual(len(changes), 1)
+        self.assertEqual(len(changes[0]["final_tags"]), 1)
+        self.assertEqual(changes[0]["final_tags"][0]["code"], "health:hospital")
+        self.assertEqual(len(changes[0]["tags_removed"]), 1)
+        self.assertTrue(changes[0]["had_changes"])
+
+    def test_removed_tags_are_saved_after_preview(self):
+        """Integration test: remove tags through complete flow."""
+        instance = object.__new__(RemoveTagsBulkAction)
+        original_tags = json.loads(self.campaign_page.taxonomy_json)
+        instance.calculated_changes = [
+            {
+                "page_id": self.campaign_page.id,
+                "final_tags": [original_tags[1]],  # Keep only hospital
+                "had_changes": True,
+            }
+        ]
+
         num_modified, num_failed = RemoveTagsBulkAction.execute_action(
-            [self.campaign_page_1],
-            tags_to_remove=json.dumps({str(self.campaign_page_1.id): ["health:gp"]}),
+            [self.campaign_page],
+            bulk_action_instance=instance,
             user=self.user,
         )
-        self.assertEqual((num_modified, num_failed), (1, 0))
 
-    def test_execute_action_error_tracking(self):
-        """execute_action should track errors in change_details."""
-        action = Mock(change_details=[])
-        with patch.object(
-            RemoveTagsBulkAction,
-            "process_page",
-            side_effect=Exception("Test error"),
-        ):
-            num_modified, num_failed = RemoveTagsBulkAction.execute_action(
-                [self.campaign_page_1],
-                tags_to_remove="{}",
-                user=self.user,
-                bulk_action_instance=action,
-            )
-        self.assertEqual((num_modified, num_failed), (0, 1))
-        self.assertIn("error", action.change_details[0])
+        self.assertEqual(num_modified, 1)
+        self.assertEqual(num_failed, 0)
+        self.campaign_page.refresh_from_db()
+        saved_tags = json.loads(self.campaign_page.taxonomy_json)
+        self.assertEqual(len(saved_tags), 1)
+        self.assertEqual(saved_tags[0]["code"], "health:hospital")
 
 
 class AddTagsBulkActionTestCase(BaseTestCase):
     """Test AddTagsBulkAction functionality."""
 
-    def test_process_page_merge_adds_new_tags(self):
-        """process_page in merge mode should add new tags."""
-        tags_to_add = [
-            {"code": "health:dental", "label": "Dental"},
-            {"code": "health:mental", "label": "Mental Health"}
-        ]
-        result = AddTagsBulkAction.process_page(
-            self.campaign_page_2,
-            tags_to_add=json.dumps(tags_to_add),
-            tag_operation_mode="merge",
-            user=self.user,
+    def test_calculate_changes_merge_mode(self):
+        """calculate_changes should add tags in merge mode."""
+        action = object.__new__(AddTagsBulkAction)
+        action.request = self._create_mock_request(
+            method="POST",
+            data={
+                "tag_operation_mode": "merge",
+                "tags_to_add": json.dumps(
+                    [
+                        {"code": "health:dental", "label": "Dental"},
+                        {"code": "health:mental", "label": "Mental Health"},
+                    ]
+                ),
+            },
         )
-        self.assertTrue(result)
-        self.campaign_page_2.refresh_from_db()
+
+        items = [
+            {
+                "item": self.campaign_page,
+                "taxonomy_tags": json.loads(self.campaign_page.taxonomy_json),
+            }
+        ]
+
+        changes = action.calculate_changes(items)
+
+        self.assertEqual(len(changes), 1)
+        self.assertEqual(len(changes[0]["final_tags"]), 4)  # 2 existing + 2 new
+        self.assertEqual(len(changes[0]["tags_added"]), 2)
+        self.assertTrue(changes[0]["had_changes"])
+
+    def test_calculate_changes_merge_skips_duplicates(self):
+        """calculate_changes should skip duplicate tags in merge mode."""
+        action = object.__new__(AddTagsBulkAction)
+
+        action.request = self._create_mock_request(
+            method="POST",
+            data={
+                "tag_operation_mode": "merge",
+                "tags_to_add": json.dumps([{"code": "health:gp", "label": "GP"}]),
+            },
+        )
+
+        items = [
+            {
+                "item": self.campaign_page,
+                "taxonomy_tags": json.loads(self.campaign_page.taxonomy_json),
+            }
+        ]
+
+        changes = action.calculate_changes(items)
+
+        self.assertEqual(len(changes[0]["tags_added"]), 0)
+        self.assertFalse(changes[0]["had_changes"])
+
+    def test_calculate_changes_replace_mode(self):
+        """calculate_changes should replace all tags in replace mode."""
+        action = object.__new__(AddTagsBulkAction)
+        action.request = self._create_mock_request(
+            method="POST",
+            data={
+                "tag_operation_mode": "replace",
+                "tags_to_add": json.dumps(
+                    [
+                        {"code": "health:dental", "label": "Dental"},
+                        {"code": "health:vision", "label": "Vision"},
+                    ]
+                ),
+            },
+        )
+
+        items = [
+            {
+                "item": self.campaign_page,
+                "taxonomy_tags": json.loads(self.campaign_page.taxonomy_json),
+            }
+        ]
+
+        changes = action.calculate_changes(items)
+
+        self.assertEqual(len(changes[0]["final_tags"]), 2)
+        self.assertEqual(len(changes[0]["tags_added"]), 2)
         self.assertEqual(
-            len(json.loads(self.campaign_page_2.specific.taxonomy_json)), 3
-        )
+            len(changes[0]["tags_removed"]), 2
+        )  # Removes both existing tags
+        self.assertTrue(changes[0]["had_changes"])
 
-    def test_process_page_merge_skips_duplicates(self):
-        """process_page in merge mode should skip duplicates and return False."""
-        tags_to_add = [{"code": "health:pharmacy", "label": "Pharmacy"}]
-        result = AddTagsBulkAction.process_page(
-            self.campaign_page_2,
-            tags_to_add=json.dumps(tags_to_add),
-            tag_operation_mode="merge",
-            user=self.user,
-        )
-        self.assertFalse(result)
-
-    def test_process_page_replace_mode(self):
-        """process_page in replace mode should replace all tags."""
-        tags_to_add = [
-            {"code": "health:dental", "label": "Dental"},
-            {"code": "health:vision", "label": "Vision"}
-        ]
-        result = AddTagsBulkAction.process_page(
-            self.campaign_page_2,
-            tags_to_add=json.dumps(tags_to_add),
-            tag_operation_mode="replace",
-            user=self.user,
-        )
-        self.assertTrue(result)
-        self.campaign_page_2.refresh_from_db()
-        tags = json.loads(self.campaign_page_2.specific.taxonomy_json)
-        self.assertEqual(len(tags), 2)
-        self.assertIn("health:dental", [t["code"] for t in tags])
-
-    def test_execute_action(self):
-        """execute_action should add tags successfully."""
+    def test_integration_add_tags_end_to_end(self):
+        """Integration test: add tags through complete flow."""
+        instance = object.__new__(AddTagsBulkAction)
         tags_to_add = [{"code": "health:gp", "label": "GP"}]
+        instance.calculated_changes = [
+            {
+                "page_id": self.resource_page.id,
+                "final_tags": tags_to_add,
+                "had_changes": True,
+            }
+        ]
+
         num_modified, num_failed = AddTagsBulkAction.execute_action(
             [self.resource_page],
-            tags_to_add=json.dumps(tags_to_add),
-            tag_operation_mode="merge",
+            bulk_action_instance=instance,
             user=self.user,
         )
-        self.assertEqual((num_modified, num_failed), (1, 0))
+
+        self.assertEqual(num_modified, 1)
+        self.assertEqual(num_failed, 0)
+        self.resource_page.refresh_from_db()
+        saved_tags = json.loads(self.resource_page.taxonomy_json)
+        self.assertEqual(len(saved_tags), 1)
+        self.assertEqual(saved_tags[0]["code"], "health:gp")
+        self.resource_page.refresh_from_db()
+        saved_tags = json.loads(self.resource_page.taxonomy_json)
+        self.assertEqual(len(saved_tags), 1)
+        self.assertEqual(saved_tags[0]["code"], "health:gp")
