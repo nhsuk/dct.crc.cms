@@ -6,7 +6,7 @@ resource "azurerm_consumption_budget_subscription" "standard" {
   count           = local.deploy_budget ? 1 : 0
   name            = data.azurerm_subscription.sub.display_name
   subscription_id = "/subscriptions/${var.subscription_id}"
-  amount          = var.dr_deployed ? 800 : 400
+  amount          = var.dr_deployed ? 1000 : 400
   time_grain      = "Monthly"
   time_period {
     start_date = "2026-01-01T00:00:00Z"
