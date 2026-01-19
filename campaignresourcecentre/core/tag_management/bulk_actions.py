@@ -28,6 +28,8 @@ class ManageTagsBulkAction(PageBulkAction):
         return context
 
     def check_perm(self, page):
+        if page.alias_of_id:
+            return False
         return isinstance(page.specific, (CampaignPage, ResourcePage))
 
     def calculate_changes(self, items):
@@ -43,6 +45,13 @@ class ManageTagsBulkAction(PageBulkAction):
 
             try:
                 page = Page.objects.get(id=change["page_id"])
+
+                if page.alias_of_id:
+                    change["error"] = "Cannot modify alias pages"
+                    change["had_changes"] = False
+                    num_failed += 1
+                    continue
+
                 self._save_tags(page, change["final_tags"], user)
                 num_modified += 1
             except Exception as e:
@@ -53,6 +62,9 @@ class ManageTagsBulkAction(PageBulkAction):
         return num_modified, num_failed
 
     def _save_tags(self, page, tags, user):
+        if page.alias_of_id:
+            raise ValueError("Cannot modify tags on alias pages")
+
         page_specific = page.specific
         page_specific.taxonomy_json = json.dumps(tags)
         page_specific.save()

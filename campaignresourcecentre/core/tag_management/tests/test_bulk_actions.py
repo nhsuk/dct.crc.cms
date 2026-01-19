@@ -153,6 +153,44 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
         self.assertEqual(num_modified, 0)
         self.assertEqual(num_failed, 1)
 
+    def test_check_perm_excludes_alias_pages(self):
+        """check_perm should return False for alias pages."""
+        action = object.__new__(AddTagsBulkAction)
+        alias_page = self.campaign_page.create_alias(update_slug="alias-campaign")
+
+        self.assertFalse(action.check_perm(alias_page))
+        self.assertTrue(action.check_perm(self.campaign_page))
+
+    def test_save_tags_raises_error_for_alias(self):
+        """_save_tags should raise ValueError for alias pages."""
+        action = object.__new__(AddTagsBulkAction)
+        alias_page = self.campaign_page.create_alias(update_slug="alias-campaign")
+
+        with self.assertRaises(ValueError) as context:
+            action._save_tags(alias_page, [], self.user)
+
+        self.assertIn("alias", str(context.exception).lower())
+
+    def test_apply_changes_skips_alias_pages(self):
+        """apply_changes should skip alias pages with error."""
+        alias_page = self.campaign_page.create_alias(update_slug="alias-campaign")
+        action = object.__new__(AddTagsBulkAction)
+        action.calculated_changes = [
+            {
+                "page_id": alias_page.id,
+                "final_tags": [{"code": "test", "label": "Test"}],
+                "had_changes": True,
+            }
+        ]
+
+        num_modified, num_failed = action.apply_changes(self.user)
+
+        self.assertEqual(num_modified, 0)
+        self.assertEqual(num_failed, 1)
+        self.assertIn("error", action.calculated_changes[0])
+        self.assertIn("alias", action.calculated_changes[0]["error"].lower())
+        self.assertFalse(action.calculated_changes[0]["had_changes"])
+
 
 class RemoveTagsBulkActionTestCase(BaseTestCase):
     """Test RemoveTagsBulkAction functionality."""
