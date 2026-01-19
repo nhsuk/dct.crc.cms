@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("documents", "0003_customdocument_file_hash"),
+        ('documents', '0003_customdocument_file_hash'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="customdocument",
-            name="file_size",
+            model_name='customdocument',
+            name='file_size',
             field=models.PositiveBigIntegerField(editable=False, null=True),
         ),
     ]

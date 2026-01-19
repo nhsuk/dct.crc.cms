@@ -7,18 +7,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("images", "0004_alter_customimage_file_alter_rendition_file"),
+        ('images', '0004_alter_customimage_file_alter_rendition_file'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="rendition",
-            name="file",
-            field=wagtail.images.models.WagtailImageField(
-                height_field="height",
-                storage=wagtail.images.models.get_rendition_storage,
-                upload_to=wagtail.images.models.get_rendition_upload_to,
-                width_field="width",
-            ),
+            model_name='rendition',
+            name='file',
+            field=wagtail.images.models.WagtailImageField(height_field='height', storage=wagtail.images.models.get_rendition_storage, upload_to=wagtail.images.models.get_rendition_upload_to, width_field='width'),
         ),
     ]
