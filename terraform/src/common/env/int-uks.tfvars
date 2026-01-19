@@ -1,7 +1,8 @@
-env            = "int"
-environment    = "integration"
-location       = "uks"
-resource_group = "dct-crccms-rg-int-uks"
+env             = "int"
+environment     = "integration"
+location        = "uks"
+resource_group  = "dct-crccms-rg-int-uks"
+subscription_id = "6a1350a9-9b14-4f69-9653-c8ccec15b48e"
 
 storage = {
   account   = "campaignsstrgintuks"
