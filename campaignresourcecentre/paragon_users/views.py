@@ -134,7 +134,7 @@ def signup(request):
                             "organisation": organisation,
                             "jobTitle": job_title,
                             "role": get_role(email, job_title),
-                            "postcode": postcode,
+                            "postcode": postcode.strip(),
                             "longitude": postcode_data.get("longitude"),
                             "latitude": postcode_data.get("latitude"),
                             "region": postcode_data.get("region"),
