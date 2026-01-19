@@ -98,7 +98,7 @@ def signup(request):
                 organisation = f.cleaned_data.get("organisation")
             else:
                 organisation = " "
-            postcode = f.data["postcode"]
+            postcode = f.cleaned_data.get("postcode")
 
             # Need to set created_at (ProductRegistrationVar10) when creating a new user
             # Paragon sets its own created_at field but this is only available from the
@@ -134,7 +134,7 @@ def signup(request):
                             "organisation": organisation,
                             "jobTitle": job_title,
                             "role": get_role(email, job_title),
-                            "postcode": postcode.strip(),
+                            "postcode": postcode,
                             "longitude": postcode_data.get("longitude"),
                             "latitude": postcode_data.get("latitude"),
                             "region": postcode_data.get("region"),
