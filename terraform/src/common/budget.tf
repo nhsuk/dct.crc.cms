@@ -13,9 +13,18 @@ resource "azurerm_consumption_budget_subscription" "standard" {
     end_date   = "2035-12-31T23:59:59Z"
   }
   notification {
-    threshold      = 100
+    threshold      = 120
     operator       = "GreaterThan"
     threshold_type = "Forecasted"
+    contact_emails = [
+      module.config.campaigns_monitoring_email,
+      module.config.nhsuk_infra_email,
+    ]
+  }
+  notification {
+    threshold      = 80
+    operator       = "GreaterThan"
+    threshold_type = "Actual"
     contact_emails = [
       module.config.campaigns_monitoring_email,
       module.config.nhsuk_infra_email,
