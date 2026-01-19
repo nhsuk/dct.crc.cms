@@ -33,7 +33,8 @@ locals {
     "basicAuth"
   ]
 
-  deploy_database = var.location == "uks" # Only deploy database module for primary regions (replica will be deployed to dr)
+  deploy_budget   = var.location == "uks" && var.subscription_id != null # Only deploy budget once per subscription
+  deploy_database = var.location == "uks"                                # Only deploy database module for primary regions (replica will be deployed to dr)
 
   law_name                = var.environment != "production" ? "nhsuk-law-nonprod-uks" : "nhsuk-law-prod-uks"
   law_resource_group_name = var.environment != "production" ? "nhsuk-law-rg-nonprod-uks" : "nhsuk-law-rg-prod-uks"

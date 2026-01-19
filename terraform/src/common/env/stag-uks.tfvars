@@ -1,7 +1,8 @@
-env            = "stag"
-environment    = "staging"
-location       = "uks"
-resource_group = "dct-crccms-rg-stag-uks"
+env             = "stag"
+environment     = "staging"
+location        = "uks"
+resource_group  = "dct-crccms-rg-stag-uks"
+subscription_id = "575a903b-95a0-4f6c-b80e-4a1e0a04da75"
 
 storage = {
   account   = "campaignsstrgstaguks"
