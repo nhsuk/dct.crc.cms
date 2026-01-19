@@ -69,16 +69,6 @@ private_urlpatterns = [
     ),
     path("crc-admin/search_orphans/", search_orphans, name="search_orphans"),
     path("crc-admin/manage_files/", manage_files, name="manage_files"),
-    path(
-        "crc-admin/tag-management/results/",
-        tag_management_results,
-        name="tag_management_results",
-    ),
-    path(
-        "crc-admin/tag-management/page/<int:page_id>/tags/",
-        get_page_tags,
-        name="get_page_tags",
-    ),
     path("crc-admin/", include(wagtailadmin_urls)),
     path("crc-admin/pub", publish_pages, name="publish_pages"),
     path("crc-documents/", include(wagtaildocs_urls)),
