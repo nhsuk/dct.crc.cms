@@ -143,7 +143,7 @@ def place_order(request):
                 data_dump = json.dumps(
                     {
                         "userToken": user_token,
-                        "postcode": postcode,
+                        "postcode": postcode.strip(),
                         "crcOrderNumber": order_number,
                         "orderItems": checkout_items,
                         "orderDate": date,
