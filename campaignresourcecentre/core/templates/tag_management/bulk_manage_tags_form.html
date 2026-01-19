@@ -11,7 +11,7 @@
     <p>Please go back and select at least one page.</p>
     {% include 'wagtailadmin/bulk_actions/confirmation/go_back.html' %}
   {% else %}
-    {% if not confirming %}
+    {% if not preview_changes %}
       <form method="post" novalidate>
         {% csrf_token %}
         {% for key, values in request.GET.lists %}
@@ -23,9 +23,9 @@
         
         {% block form_fields %}{% endblock %}
         
-        <input type="hidden" name="preview" value="clear">
+        <input type="hidden" name="next_action" value="preview_changes">
         <footer class="form-actions">
-          <button type="submit" class="button serious">Preview changes</button>
+          <button type="submit" class="button">Preview changes</button>
           {% include "wagtailadmin/bulk_actions/confirmation/go_back.html" %}
         </footer>
       </form>
@@ -46,10 +46,9 @@
         <input type="hidden" name="tags_to_add" value="{{ request.POST.tags_to_add }}">
         <input type="hidden" name="tags_to_remove" value="{{ request.POST.tags_to_remove }}">
         <input type="hidden" name="tag_operation_mode" value="{{ request.POST.tag_operation_mode }}">
-        <input type="hidden" name="confirm" value="yes">
         <footer class="form-actions">
-          <button type="submit" class="button serious">Save changes</button>
-          {% include "wagtailadmin/bulk_actions/confirmation/go_back.html" %}
+          <button type="submit" class="button" name="next_action" value="apply_changes">Save changes</button>
+          <button type="submit" class="button serious" name="next_action" value="go_back">Go back</button>
         </footer>
       </form>
     {% endif %}

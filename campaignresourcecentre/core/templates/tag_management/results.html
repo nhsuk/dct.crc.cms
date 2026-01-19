@@ -102,10 +102,10 @@
               </td>
               <td>
                 {% if change.tags_added %}
-                  <span class="change-badge added">{{ change.tags_added|length }} added</span>
+                  <span>{{ change.tags_added|length }} added</span>
                 {% endif %}
                 {% if change.tags_removed %}
-                  <span class="change-badge removed">{{ change.tags_removed|length }} removed</span>
+                  <span>{{ change.tags_removed|length }} removed</span>
                 {% endif %}
                 {% if not change.tags_added and not change.tags_removed %}
                   <em class="help-text">None</em>
@@ -114,16 +114,12 @@
 
               <td>
                 {% if change.error %}
-                  <span class="status-tag warning">
-                    <svg class="icon" aria-hidden="true">
-                      <use href="#icon-warning"></use>
-                    </svg>Failed
-                  </span>
+                  <span>Failed</span>
                   <br /><small>{{ change.error }}</small>
                 {% elif change.had_changes %}
-                  <span class="status-tag primary">Updated</span>
+                  <span>Updated</span>
                 {% else %}
-                  <span class="status-tag">No changes</span>
+                  <span>No changes</span>
                 {% endif %}
               </td>
             </tr>

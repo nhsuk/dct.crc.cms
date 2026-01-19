@@ -61,10 +61,15 @@ class ManageTagsBulkAction(PageBulkAction):
             revision.publish(user=user)
 
     def post(self, request, *args, **kwargs):
-        if request.POST.get("preview") == "clear" and not request.POST.get("confirm"):
+        if request.POST.get("next_action") == "go_back":
+            ctx = self.get_context_data(**kwargs)
+            ctx["form"] = self.form_class(request.POST or None)
+            return self.render_to_response(ctx)
+
+        if request.POST.get("next_action") == "preview_changes":
             ctx = self.get_context_data(**kwargs)
             self.calculated_changes = self.calculate_changes(ctx.get("items", []))
-            ctx["confirming"] = True
+            ctx["preview_changes"] = True
             ctx["items"] = [
                 {**item, **change}
                 for item, change in zip(ctx["items"], self.calculated_changes)
@@ -73,7 +78,7 @@ class ManageTagsBulkAction(PageBulkAction):
             ctx["operation_mode"] = request.POST.get("tag_operation_mode", "merge")
             return self.render_to_response(ctx)
 
-        if request.POST.get("confirm") and request.POST.get("calculated_changes"):
+        if request.POST.get("next_action") == "apply_changes" and request.POST.get("calculated_changes"):
             try:
                 self.calculated_changes = json.loads(
                     request.POST.get("calculated_changes")
