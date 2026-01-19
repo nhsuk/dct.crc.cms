@@ -78,7 +78,9 @@ class ManageTagsBulkAction(PageBulkAction):
             ctx["operation_mode"] = request.POST.get("tag_operation_mode", "merge")
             return self.render_to_response(ctx)
 
-        if request.POST.get("next_action") == "apply_changes" and request.POST.get("calculated_changes"):
+        if request.POST.get("next_action") == "apply_changes" and request.POST.get(
+            "calculated_changes"
+        ):
             try:
                 self.calculated_changes = json.loads(
                     request.POST.get("calculated_changes")
