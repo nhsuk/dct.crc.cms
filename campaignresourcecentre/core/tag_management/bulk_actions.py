@@ -9,6 +9,25 @@ from campaignresourcecentre.resources.models import ResourcePage
 from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 from .utils import get_page_taxonomy_tags
 from .forms import ManageTagsForm
+from wagtail import hooks
+
+
+@hooks.register("register_log_actions")
+def remove_tags_action(actions):
+    actions.register_action(
+        "remove_tags",
+        "Bulk action: Remove tags",
+        "Bulk action: Remove tags"
+    )
+
+
+@hooks.register("register_log_actions")
+def add_tags_action(actions):
+    actions.register_action(
+        "add_tags",
+        "Bulk action: Add tags",
+        "Bulk action: Add tags",
+    )
 
 
 class ManageTagsBulkAction(PageBulkAction):
@@ -70,7 +89,7 @@ class ManageTagsBulkAction(PageBulkAction):
         page_specific.save()
         revision = page_specific.save_revision(
             user=user,
-            log_action=True,
+            log_action=self.action_type,
             changed=True,
         )
         if page.live:
