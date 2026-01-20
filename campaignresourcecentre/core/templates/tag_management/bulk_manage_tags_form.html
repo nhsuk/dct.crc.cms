@@ -1,0 +1,68 @@
+{% extends 'wagtailadmin/bulk_actions/confirmation/base.html' %}
+{% load wagtailadmin_tags static %}
+
+{% block titletag %}
+  {% block page_title %}Manage Tags{% endblock %}
+{% endblock %}
+
+{% block form_section %}
+  {% if not items %}
+    <p>This bulk action only works when a campaign or resource page is selected.</p>
+    <p>Please go back and select at least one page.</p>
+    {% include 'wagtailadmin/bulk_actions/confirmation/go_back.html' %}
+  {% else %}
+    {% if not preview_changes %}
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for key, values in request.GET.lists %}
+          {% for val in values %}
+            <input type="hidden" name="{{ key }}" value="{{ val }}">
+          {% endfor %}
+        {% endfor %}
+        {% include 'wagtailadmin/shared/non_field_errors.html' %}
+        
+        {% block form_fields %}{% endblock %}
+        
+        <input type="hidden" name="next_action" value="preview_changes">
+        <footer class="form-actions">
+          <button type="submit" class="button">Preview changes</button>
+          {% include "wagtailadmin/bulk_actions/confirmation/go_back.html" %}
+        </footer>
+      </form>
+    {% else %}
+      <h2>Preview Changes</h2>
+      <p class="help-block help-info">Review the changes below. Click "Save changes" to apply them.</p>
+      
+      {% block preview_content %}{% endblock %}
+      
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for key, values in request.GET.lists %}
+          {% for val in values %}
+            <input type="hidden" name="{{ key }}" value="{{ val }}">
+          {% endfor %}
+        {% endfor %}
+        <input type="hidden" name="calculated_changes" value="{{ calculated_changes_json }}">
+        <input type="hidden" name="tags_to_add" value="{{ request.POST.tags_to_add }}">
+        <input type="hidden" name="tags_to_remove" value="{{ request.POST.tags_to_remove }}">
+        <input type="hidden" name="tag_operation_mode" value="{{ request.POST.tag_operation_mode }}">
+        <footer class="form-actions">
+          <button type="submit" class="button" name="next_action" value="apply_changes">Save changes</button>
+          <button type="submit" class="button serious" name="next_action" value="go_back">Go back</button>
+        </footer>
+      </form>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'tag_management/css/bulk_manage_tags.css' %}" />
+  <link rel="stylesheet" href="{% static 'wagtailadmin/css/wagtail-react-taxonomy.css' %}" />
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script src="{% static 'tag_management/js/bulk_manage_tags.js' %}"></script>
+  <script src="{% static 'js/taxonomy.js' %}"></script>
+{% endblock %}

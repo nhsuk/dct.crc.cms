@@ -1,3 +1,4 @@
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from 'react-jss';
 
@@ -10,16 +11,18 @@ window.onload = function (){
   if (document.getElementById('taxonomy-terms-json')) {
     const taxonomyTerms = document.getElementById('taxonomy-terms-json').value;
     const taxonomyTermsJson = JSON.parse(taxonomyTerms);
+    const container = document.getElementById('react-taxonomy');
+
     ReactDOM.render(
       <ThemeProvider theme={{}}>
         <Taxonomy
-          outputFieldId="id_taxonomy_json"
+          outputFieldId={container.dataset.fieldId || 'id_taxonomy_json'}
           taxonomyTerms={taxonomyTermsJson}
           termsDisplayText="Choose from the following keywords:"
           assignedDisplayText="Selected keywords"
         />
       </ThemeProvider>,
-      document.getElementById('react-taxonomy')
+      container
     );
   }
 

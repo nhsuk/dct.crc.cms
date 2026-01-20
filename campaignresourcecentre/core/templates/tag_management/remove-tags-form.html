@@ -1,0 +1,59 @@
+{% extends 'tag_management/bulk_manage_tags_form.html' %}
+{% load wagtailadmin_tags static %}
+
+{% block page_title %}Remove Tags{% endblock %}
+
+{% block header %}
+  {% include 'wagtailadmin/shared/header.html' with title='Bulk Action: Remove Tags' icon='tag' %}
+{% endblock %}
+
+{% block form_fields %}
+  <p class="help-block help-info">Click the × to remove a tag from a page</p>
+  {% include 'tag_management/includes/pages_list_table.html' with show_remove_button=True %}
+  {{ form.tags_to_remove }}
+{% endblock %}
+
+{% block preview_content %}
+  <p class="operation-text">
+    <strong>Operation Mode:</strong> Remove tags
+  </p>
+  
+  <table class="listing">
+    <thead>
+      <tr>
+        <th>Page</th>
+        <th>Updated Tags</th>
+        <th>Changes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for page_data in items %}
+        <tr>
+          <td>
+            <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">
+              {{ page_data.item.get_admin_display_title }}
+            </a>
+          </td>
+          <td>
+            {% if page_data.final_tags %}
+              <div class="tags-container">
+                {% for tag in page_data.final_tags %}
+                  <span class="taxonomy-tag"><span class="tag-label">{{ tag.label }}</span></span>
+                {% endfor %}
+              </div>
+            {% else %}
+              <em class="help-text">No tags</em>
+            {% endif %}
+          </td>
+          <td>
+            {% if page_data.tags_removed %}
+              <span class="change-badge removed">{{ page_data.tags_removed|length }} removed</span>
+            {% else %}
+              <em class="help-text">No changes</em>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

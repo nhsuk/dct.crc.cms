@@ -1,0 +1,124 @@
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.tags-container.--inline-form {
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.tags-container .taxonomy-tag {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 0;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0;
+    color: #333;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .tags-container .taxonomy-tag {
+    background-color: #ffffff;
+    border-color: #999;
+    color: #333;
+}
+
+.tags-container .taxonomy-tag .tag-label {
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.tags-container .taxonomy-tag.removing {
+    background-color: #ffe6e6;
+}
+
+[data-theme="dark"] .tags-container .taxonomy-tag.removing {
+    background-color: #ffe6e6;
+}
+
+.tags-container .taxonomy-tag .btn-remove {
+    background: transparent;
+    border: none;
+    border-left: 1px solid #ccc;
+    padding: 0.25rem 0.5rem;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tags-container .taxonomy-tag .btn-remove:hover {
+    background-color: #d32f2f;
+    color: white;
+}
+
+[data-theme="dark"] .tags-container .taxonomy-tag .btn-remove {
+    background: transparent;
+    border-left-color: #999;
+    color: #666;
+}
+
+[data-theme="dark"] .tags-container .taxonomy-tag .btn-remove:hover {
+    background-color: #d32f2f;
+    color: white;
+}
+
+.bulk-manage-tags-form table.listing {
+    margin-bottom: 0;
+}
+
+.bulk-manage-tags-form .selected-tags-preview {
+    display: none;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bulk-manage-tags-form .selected-tags-preview.visible {
+    display: block;
+}
+
+.bulk-manage-tags-form .selected-tags-preview strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.bulk-manage-tags-form .selected-tags-preview .tags-container {
+    margin: 0;
+}
+
+.tag-management-results table.listing {
+    table-layout: fixed;
+}
+
+.tag-management-results table.listing colgroup col:first-child {
+    width: 30%;
+}
+
+.tag-management-results table.listing colgroup col:last-child {
+    width: 150px;
+}
+
+.tag-help-text {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+}

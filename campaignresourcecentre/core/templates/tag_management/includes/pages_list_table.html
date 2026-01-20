@@ -1,0 +1,35 @@
+<table class="listing">
+  <thead>
+    <tr>
+      <th class="title">Page</th>
+      <th>Tags</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for page_data in items %}
+      <tr>
+        <td class="title">
+          <div class="title-wrapper">
+            <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">{{ page_data.item.get_admin_display_title }}</a>
+          </div>
+        </td>
+        <td>
+          {% if page_data.taxonomy_tags %}
+            <div class="tags-container">
+              {% for term in page_data.taxonomy_tags %}
+                <span class="taxonomy-tag" data-tag-code="{{ term.code }}">
+                  <span class="tag-label">{{ term.label }}</span>
+                  {% if show_remove_button %}
+                    <button type="button" class="btn-remove" data-page-id="{{ page_data.item.id }}" data-tag-code="{{ term.code }}" title="Remove tag">×</button>
+                  {% endif %}
+                </span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <span class="help-text">No tags</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
