@@ -15,9 +15,7 @@ from wagtail import hooks
 @hooks.register("register_log_actions")
 def remove_tags_action(actions):
     actions.register_action(
-        "remove_tags",
-        "Bulk action: Remove tags",
-        "Bulk action: Remove tags"
+        "remove_tags", "Bulk action: Remove tags", "Bulk action: Remove tags"
     )
 
 
