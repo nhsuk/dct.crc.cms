@@ -15,9 +15,7 @@ from wagtail import hooks
 @hooks.register("register_log_actions")
 def remove_tags_action(actions):
     actions.register_action(
-        "remove_tags",
-        "Bulk action: Remove tags",
-        "Bulk action: Remove tags"
+        "remove_tags", "Bulk action: Remove tags", "Bulk action: Remove tags"
     )
 
 
@@ -41,7 +39,14 @@ class ManageTagsBulkAction(PageBulkAction):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["items"] = [
-            {**item, "taxonomy_tags": get_page_taxonomy_tags(item["item"].specific)}
+            {
+                **item,
+                "taxonomy_tags": get_page_taxonomy_tags(
+                    item["item"].latest_revision
+                    if item["item"].has_unpublished_changes
+                    else item["item"].specific
+                ),
+            }
             for item in context.get("items", [])
         ]
         return context
@@ -84,16 +89,46 @@ class ManageTagsBulkAction(PageBulkAction):
         if page.alias_of_id:
             raise ValueError("Cannot modify tags on alias pages")
 
-        page_specific = page.specific
-        page_specific.taxonomy_json = json.dumps(tags)
-        page_specific.save()
-        revision = page_specific.save_revision(
+        # Draft-only page: just update the draft
+        if not page.live:
+            source = page.latest_revision or page
+            target = (
+                source.as_object() if hasattr(source, "as_object") else source.specific
+            )
+            target.taxonomy_json = json.dumps(tags)
+            target.save_revision(user=user, log_action=self.action_type, changed=True)
+            return
+
+        # Published page: check if a draft also exists
+        draft_revision = (
+            page.latest_revision
+            if page.latest_revision
+            and (
+                not page.live_revision
+                or page.latest_revision.id != page.live_revision.id
+            )
+            else None
+        )
+
+        # Update and publish the live version
+        source = page.live_revision or page
+        target = source.as_object() if hasattr(source, "as_object") else source.specific
+        target.taxonomy_json = json.dumps(tags)
+        target.save()
+        revision = target.save_revision(
             user=user,
-            log_action=self.action_type,
+            log_action=False if draft_revision else self.action_type,
             changed=True,
         )
-        if page.live:
-            revision.publish(user=user)
+        revision.publish(user=user)
+
+        # If there was a draft, also update it and keep it as the latest revision
+        if draft_revision:
+            draft_target = draft_revision.as_object()
+            draft_target.taxonomy_json = json.dumps(tags)
+            draft_target.save_revision(
+                user=user, log_action=self.action_type, changed=True
+            )
 
     def post(self, request, *args, **kwargs):
         if request.POST.get("next_action") == "go_back":
