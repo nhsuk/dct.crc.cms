@@ -68,7 +68,11 @@ class ManageTagsBulkAction(PageBulkAction):
         page_specific = page.specific
         page_specific.taxonomy_json = json.dumps(tags)
         page_specific.save()
-        revision = page_specific.save_revision(user=user, log_action=True, changed=True)
+        revision = page_specific.save_revision(
+            user=user,
+            log_action=True,
+            changed=True,
+        )
         if page.live:
             revision.publish(user=user)
 
@@ -123,6 +127,16 @@ class ManageTagsBulkAction(PageBulkAction):
             return 0, len(objects)
 
         return instance.apply_changes(user)
+
+    def get_success_message(self, num_parent_objects, num_child_objects):
+        """Return success message showing how many pages were modified."""
+        if num_parent_objects > 0:
+            return ngettext(
+                "%(num_parent_objects)d page has been updated successfully.",
+                "%(num_parent_objects)d pages have been updated successfully.",
+                num_parent_objects,
+            ) % {"num_parent_objects": num_parent_objects}
+        return _("No pages were modified.")
 
     def form_valid(self, form):
         super().form_valid(form)
