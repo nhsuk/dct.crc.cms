@@ -1,6 +1,10 @@
 # Pipeline to remove ACA review environments when no longer needed
 
-trigger: none
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
 pr: none
 
 pool:
