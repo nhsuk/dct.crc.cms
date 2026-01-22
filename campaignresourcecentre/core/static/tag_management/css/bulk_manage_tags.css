@@ -38,43 +38,27 @@
 }
 
 .tags-container .taxonomy-tag.removing {
-    background-color: #ffe6e6;
-}
-
-[data-theme="dark"] .tags-container .taxonomy-tag.removing {
-    background-color: #ffe6e6;
-}
-
-.tags-container .taxonomy-tag .btn-remove {
-    background: transparent;
-    border: none;
-    border-left: 1px solid #ccc;
-    padding: 0.25rem 0.5rem;
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1;
-    cursor: pointer;
-    color: #666;
-    font-weight: bold;
-    transition: background-color 0.2s, color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tags-container .taxonomy-tag .btn-remove:hover {
-    background-color: #d32f2f;
+    background-color: #E74C3C;
     color: white;
 }
 
-[data-theme="dark"] .tags-container .taxonomy-tag .btn-remove {
-    background: transparent;
-    border-left-color: #999;
-    color: #666;
+[data-theme="dark"] .tags-container .taxonomy-tag.removing {
+    background-color: #E74C3C;
+    color: white;
+    border: 1px solid #C0392B;
 }
 
-[data-theme="dark"] .tags-container .taxonomy-tag .btn-remove:hover {
-    background-color: #d32f2f;
+.tags-container .taxonomy-tag.btn-remove {
+   padding: .5rem 1rem;
+}
+
+.tags-container .taxonomy-tag.btn-remove:hover {
+    background-color: #e3e3e3;
+    color: black;
+}
+
+[data-theme="dark"] .tags-container .taxonomy-tag.btn-remove:hover {
+    background-color: #E74C3C;
     color: white;
 }
 

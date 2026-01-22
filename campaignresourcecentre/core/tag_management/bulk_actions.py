@@ -39,7 +39,10 @@ class ManageTagsBulkAction(PageBulkAction):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["items"] = [
-            {**item, "taxonomy_tags": get_page_taxonomy_tags(item["item"].specific)}
+            {
+                **item,
+                "taxonomy_tags": get_page_taxonomy_tags(item["item"].specific),
+            }
             for item in context.get("items", [])
         ]
         return context
@@ -51,6 +54,9 @@ class ManageTagsBulkAction(PageBulkAction):
 
     def calculate_changes(self, items):
         raise NotImplementedError("Subclasses must implement calculate_changes")
+
+    def _calculate_draft_changes(self, page, draft_tags, operation_mode):
+        raise NotImplementedError("Subclasses must implement calculate_draft_changes")
 
     def apply_changes(self, user):
         num_modified = 0
@@ -69,7 +75,12 @@ class ManageTagsBulkAction(PageBulkAction):
                     num_failed += 1
                     continue
 
-                self._save_tags(page, change["final_tags"], user)
+                self._save_tags(
+                    page,
+                    change["final_tags"],
+                    user,
+                    operation_mode=change.get("operation_mode"),
+                )
                 num_modified += 1
             except Exception as e:
                 change["error"] = str(e)
@@ -78,20 +89,56 @@ class ManageTagsBulkAction(PageBulkAction):
 
         return num_modified, num_failed
 
-    def _save_tags(self, page, tags, user):
+    def _save_tags(self, page, tags, user, operation_mode="merge"):
         if page.alias_of_id:
             raise ValueError("Cannot modify tags on alias pages")
 
-        page_specific = page.specific
-        page_specific.taxonomy_json = json.dumps(tags)
-        page_specific.save()
-        revision = page_specific.save_revision(
+        # Draft-only page: just update the draft
+        if not page.live:
+            source = page.latest_revision or page
+            target = (
+                source.as_object() if hasattr(source, "as_object") else source.specific
+            )
+            target.taxonomy_json = json.dumps(tags)
+            target.save_revision(user=user, log_action=self.action_type, changed=True)
+            return
+
+        # Published page: check if a draft also exists
+        draft_revision = (
+            page.latest_revision
+            if page.latest_revision
+            and (
+                not page.live_revision
+                or page.latest_revision.id != page.live_revision.id
+            )
+            else None
+        )
+
+        # Update and publish the live version
+        source = page.live_revision or page
+        target = source.as_object() if hasattr(source, "as_object") else source.specific
+        target.taxonomy_json = json.dumps(tags)
+        target.save()
+        revision = target.save_revision(
             user=user,
-            log_action=self.action_type,
+            log_action=False if draft_revision else self.action_type,
             changed=True,
         )
-        if page.live:
-            revision.publish(user=user)
+        revision.publish(user=user)
+
+        # If there was a draft, also update it and keep it as the latest revision
+        if draft_revision:
+            draft_target = draft_revision.as_object()
+            draft_tags = json.loads(draft_target.taxonomy_json)
+
+            final_draft_tags = self.calculate_draft_tags(
+                page, draft_tags, operation_mode
+            )
+
+            draft_target.taxonomy_json = json.dumps(final_draft_tags)
+            draft_target.save_revision(
+                user=user, log_action=self.action_type, changed=True
+            )
 
     def post(self, request, *args, **kwargs):
         if request.POST.get("next_action") == "go_back":
@@ -170,6 +217,30 @@ class ManageTagsBulkAction(PageBulkAction):
             },
         )
 
+    def _merge_tags(self, original_tags=[], tags_to_merge=[], operation_mode="merge"):
+        if operation_mode == "replace":
+            return tags_to_merge.copy()
+        else:
+            existing_codes = {t.get("code") for t in original_tags}
+            added = [t for t in tags_to_merge if t.get("code") not in existing_codes]
+            final_tags = original_tags + added
+            return final_tags
+
+    def _remove_tags(self, original_tags=[], codes_to_remove=[]):
+        final_tags = [
+            t for t in original_tags if t.get("code") not in set(codes_to_remove)
+        ]
+        return final_tags
+
+    def _calculate_diff(self, original_tags=[], final_tags=[]):
+        original_codes = {t.get("code") for t in original_tags}
+        final_codes = {t.get("code") for t in final_tags}
+
+        added = [t for t in final_tags if t.get("code") not in original_codes]
+        removed = [t for t in original_tags if t.get("code") not in final_codes]
+
+        return added, removed
+
 
 class RemoveTagsBulkAction(ManageTagsBulkAction):
     template_name = "tag_management/remove-tags-form.html"
@@ -193,6 +264,11 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
             },
         )
 
+    def calculate_draft_tags(self, page, draft_tags, operation_mode):
+        tags_to_remove = json.loads(self.request.POST.get("tags_to_remove", "{}"))
+        codes_to_remove = tags_to_remove.get(str(page.id), [])
+        return self._remove_tags(draft_tags, codes_to_remove)
+
     def calculate_changes(self, items):
         tags_to_remove = json.loads(self.request.POST.get("tags_to_remove", "{}"))
         changes = []
@@ -200,18 +276,11 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
         for item in items:
             page = item["item"]
             page_id = str(page.id)
-
             original_tags = item.get("taxonomy_tags", [])
 
-            if page_id in tags_to_remove:
-                codes_to_remove = set(tags_to_remove[page_id])
-                removed = [t for t in original_tags if t.get("code") in codes_to_remove]
-                final_tags = [
-                    t for t in original_tags if t.get("code") not in codes_to_remove
-                ]
-            else:
-                removed = []
-                final_tags = original_tags
+            codes_to_remove = tags_to_remove.get(page_id, [])
+            final_tags = self._remove_tags(original_tags, codes_to_remove)
+            _, removed = self._calculate_diff(original_tags, final_tags)
 
             changes.append(
                 {
@@ -245,6 +314,10 @@ class AddTagsBulkAction(ManageTagsBulkAction):
             context["taxonomy_error"] = "Taxonomy terms not found"
         return context
 
+    def calculate_draft_tags(self, page, draft_tags, operation_mode):
+        tags_to_add = json.loads(self.request.POST.get("tags_to_add", "[]"))
+        return self._merge_tags(draft_tags, tags_to_add, operation_mode)
+
     def calculate_changes(self, items):
         tags_to_add = json.loads(self.request.POST.get("tags_to_add", "[]"))
         operation_mode = self.request.POST.get("tag_operation_mode", "merge")
@@ -253,16 +326,8 @@ class AddTagsBulkAction(ManageTagsBulkAction):
         for item in items:
             page = item["item"]
             original_tags = item.get("taxonomy_tags", [])
-
-            if operation_mode == "replace":
-                final_tags = tags_to_add.copy()
-                removed = original_tags.copy()
-                added = tags_to_add.copy()
-            else:
-                existing_codes = {t.get("code") for t in original_tags}
-                added = [t for t in tags_to_add if t.get("code") not in existing_codes]
-                final_tags = original_tags + added
-                removed = []
+            final_tags = self._merge_tags(original_tags, tags_to_add, operation_mode)
+            added, removed = self._calculate_diff(original_tags, final_tags)
 
             changes.append(
                 {

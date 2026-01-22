@@ -8,8 +8,8 @@
 {% endblock %}
 
 {% block form_fields %}
-  <p class="help-block help-info">Click the × to remove a tag from a page</p>
-  {% include 'tag_management/includes/pages_list_table.html' with show_remove_button=True %}
+  <p class="help-block help-info">Click the the tag to mark it for removal</p>
+  {% include 'tag_management/includes/pages_list_table.html' %}
   {{ form.tags_to_remove }}
 {% endblock %}
 
