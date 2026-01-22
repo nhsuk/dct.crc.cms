@@ -30,10 +30,6 @@ steps:
     pip3 install black==24.3.0
     black --check ./ --config poetry/pyproject.toml
   displayName: Installs Black & Checks if the python scripts are formatted properly with black
-- script: |
-    export DJANGO_SETTINGS_MODULE=campaignresourcecentre.settings.test
-    python manage.py makemigrations --check --dry-run --no-input
-  displayName: Check for missing migrations
 - task: DownloadPipelineArtifact@2
   displayName: Download OWASP artifact
   inputs:
@@ -60,6 +56,9 @@ steps:
     testRunner: JUnit
     testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
     testRunTitle: "OWASP Dependency check"
+- script: |
+    docker compose run --rm web python manage.py makemigrations --check --dry-run --no-input
+  displayName: Check for missing migrations
 - script: |
     docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
