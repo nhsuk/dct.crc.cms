@@ -8,3 +8,11 @@ repos:
     hooks:
     -   id: black
         args: [--check, --config=./poetry/pyproject.toml]
+  - repo: local
+    hooks:
+      - id: check-migrations
+        name: Check for missing migrations
+        entry: python manage.py makemigrations --check --dry-run --no-input
+        language: system
+        pass_filenames: false
+        files: 'models\.py$'
