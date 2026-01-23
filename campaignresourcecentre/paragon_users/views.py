@@ -35,6 +35,8 @@ from .forms import (
     PasswordSetForm,
     RegisterForm,
     EmailUpdatesForm,
+    JOB_CHOICES,
+    HEALTH_CHOICES,
 )
 from .helpers.newsletter import (
     deserialise,
@@ -80,7 +82,7 @@ def signup(request):
 
         organisation = f.fields["organisation"]
         job_title = f.fields["job_title"]
-        if not f.data["job_title"] == "student":
+        if f.data["job_title"] != "student":
             organisation.required = True
             job_title.required = True
 
@@ -89,16 +91,13 @@ def signup(request):
             password = f.cleaned_data.get("password")
             first_name = f.cleaned_data.get("first_name")
             last_name = f.cleaned_data.get("last_name")
-
-            if f.cleaned_data.get("job_title") == "health":
-                job_title = f.cleaned_data.get("area_work")
-            else:
-                job_title = f.cleaned_data.get("job_title")
-            if not job_title == "student":
-                organisation = f.cleaned_data.get("organisation")
-            else:
-                organisation = " "
+            job_title = f.cleaned_data.get("job_title")
+            area_work = f.cleaned_data.get("area_work")
+            organisation = (
+                f.cleaned_data.get("organisation") if job_title != "student" else " "
+            )
             postcode = f.cleaned_data.get("postcode")
+            postcode_region = get_region(postcode)
 
             # Need to set created_at (ProductRegistrationVar10) when creating a new user
             # Paragon sets its own created_at field but this is only available from the
@@ -115,7 +114,9 @@ def signup(request):
                     last_name,
                     organisation,
                     job_title,
+                    area_work,
                     postcode,
+                    postcode_region,
                     created_at,
                 )
 
@@ -244,38 +245,51 @@ def resend_verification(request):
     return redirect("/")
 
 
-def verification(request):
-    if request.GET.get("q"):
-        # unsign Token from URL Query
-        try:
-            unsigned_token = unsign(request.GET.get("q"), max_age=86400)
-        except Exception as e:
-            logger.error("Failed to unsign token: %s" % (e,))
-            return HttpResponseBadRequest()
-        todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
-        # set user parameters
-        client = Client()
-        client_user = client.get_user_profile(unsigned_token)["content"]
-        verified = client_user.get("ProductRegistrationVar2")
-        if verified != "True":
-            email = client_user["EmailAddress"]
-            user_job = client_user["ProductRegistrationVar4"]
-            postcode = client_user["ProductRegistrationVar9"]
+def unsign_user_token(signed_token: str):
+    try:
+        unsigned_token = unsign(signed_token, max_age=86400)
+        return unsigned_token
+    except Exception as e:
+        logger.error("Failed to unsign token: %s" % (e,))
+        return None
 
-            # update role
-            if client.update_user_profile(
-                user_token=unsigned_token,
-                role=get_role(email, user_job),
-                active="True",
-                verified_at=todays_date,
-                postcode=postcode + "|" + get_region(postcode),
-            ):
-                if request.session.get("ParagonUser") == unsigned_token:
-                    request.session["Verified"] = "True"
-                return render(request, "users/confirmation_user_verification.html")
-            else:
-                return HttpResponseServerError()
-    return redirect("/")
+
+def verification(request):
+    if not request.GET.get("q"):
+        return redirect("/")
+
+    unsigned_token = unsign_user_token(request.GET.get("q"))
+
+    if not unsigned_token:
+        return HttpResponseBadRequest()
+
+    todays_date = date.today().strftime("%Y-%m-%dT%H:%M:%S")
+    client = Client()
+    client_user = client.get_user_profile(unsigned_token)["content"]
+    is_verified = client_user.get("ProductRegistrationVar2") == "True"
+
+    if is_verified:
+        return redirect("/")
+
+    email = client_user["EmailAddress"]
+    user_job = (
+        client_user["ContactVar2"]
+        if client_user["ContactVar2"]
+        else client_user["ProductRegistrationVar4"]
+    )
+
+    if not client.update_user_profile(
+        user_token=unsigned_token,
+        role=get_role(email, user_job),
+        active="True",
+        verified_at=todays_date,
+    ):
+        return HttpResponseServerError()
+
+    if request.session.get("ParagonUser") == unsigned_token:
+        request.session["Verified"] = "True"
+
+    return render(request, "users/confirmation_user_verification.html")
 
 
 def get_role(user_email: str, user_job: str):
@@ -516,43 +530,24 @@ def user_profile(request):
         "content"
     ]
 
-    job_choices = {
-        "director": "Director / Board Member / CEO",
-        "admin": "Administration",
-        "comms": "Communications",
-        "education": "Education and Teaching",
-        "marketing": "Marketing",
-        "hr": "HR / Training / Organisational Development",
-        "community": "Community and Social Services / Charity / Volunteering",
-        "student": "Student / Unemployed / Retired",
-        "health": "Health",
-        "other": "Other",
-        "health:pharmacy": "Pharmacy",
-        "health:nurse": "Nurse",
-        "health:management": "Practice Management",
-        "health:infantteam": "Infant feeding team",
-        "health:childrensteam": "Childrens centre team",
-        "health:oralhealth": "Oral health",
-        "health:improvement": "Health Improvement / Public Health",
-        "health:healthvisitor": "Health visitor",
-        "health:gp": "GP",
-        "health:midwife": "Midwife",
-        "health:smokingcessation": "Smoking cessation",
-        "health:healthwellbeing": "Health and Wellbeing coach",
-        "health:healthassistant": "Health Care Assistant",
-        "health:socialprescribing": "Social Prescribing Link Worker",
-        "health:carecoordinator": "Care Coordinator",
-        "health:immunisation": "Immunisation Coordinator",
-        "health:other": "Other",
-    }
+    job_choices = {**dict(JOB_CHOICES[1:]), **dict(HEALTH_CHOICES)}
+    job_title_raw = (
+        user.get("ContactVar2")
+        if user.get("ContactVar2")
+        else user["ProductRegistrationVar4"]
+    )
+    job_title = job_choices.get(job_title_raw, "")
+
+    postcode_raw = user["ProductRegistrationVar9"]
+    postcode = postcode_raw.split("|")[0] if "|" in postcode_raw else postcode_raw
 
     context = {
         "first_name": user["FirstName"],
         "last_name": user["LastName"],
         "email_address": user["EmailAddress"],
         "organisation": user["ProductRegistrationVar3"],
-        "job_title": job_choices.get(user["ProductRegistrationVar4"]),
-        "postcode": user["ProductRegistrationVar9"].split("|")[0],
+        "job_title": job_title,
+        "postcode": postcode,
         "user_type": user["ProductRegistrationVar1"],
     }
 
