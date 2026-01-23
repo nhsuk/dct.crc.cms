@@ -17,15 +17,15 @@ class Registration:
     last_name: str
     organisation: str
     job_title: str
-    area_work: Optional[str]
+    job_role: Optional[str]
     postcode: str
     postcode_region: Optional[str]
     created_at: datetime
 
     def valid(self):
         for key, value in self.__dict__.items():
-            if key in ["area_work", "postcode_region"]:
-                # area_work and postcode_region can be None
+            if key in ["job_role", "postcode_region"]:
+                # job_role and postcode_region can be None
                 continue
             if not value:
                 raise ValueError(EMPTY_ERROR.format(key))
@@ -39,7 +39,7 @@ class Registration:
             "Password": self.password,
             "FirstName": self.first_name,
             "LastName": self.last_name,
-            "ContactVar2": self.area_work,
+            "ContactVar2": self.job_role,
             "ContactVar3": self.postcode_region,
             "ProductRegistrationVar2": "False",  # Is active
             "ProductRegistrationVar3": self.organisation,
@@ -59,7 +59,7 @@ class User:
     last_name: str
     organisation: str
     job_title: str
-    area_work: Optional[str]
+    job_role: Optional[str]
     role: str
     active: str
     created_at: datetime
@@ -105,8 +105,8 @@ class User:
             result["ProductRegistrationVar10"] = self.created_at
         if self.postcode_region:
             result["ContactVar3"] = self.postcode_region
-        if self.area_work:
-            result["ContactVar2"] = self.area_work
+        if self.job_role:
+            result["ContactVar2"] = self.job_role
 
         return result
 
@@ -145,7 +145,7 @@ def user_from_dict(user_dict):
         subscriptions=user_dict["ProductRegistrationVar7"],
         postcode=user_dict["ProductRegistrationVar9"],
         postcode_region=user_dict["ContactVar3"],
-        area_work=user_dict["ContactVar2"],
+        job_role=user_dict["ContactVar2"],
     )
 
 

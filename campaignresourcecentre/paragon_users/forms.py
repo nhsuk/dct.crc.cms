@@ -147,17 +147,17 @@ class RegisterForm(forms.Form):
         error_messages={"required": "Select your job function"},
     )
 
-    area_work = forms.CharField(
+    job_role = forms.CharField(
         max_length=100,
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
-                "aria-describedby": "area_work-error",
+                "aria-describedby": "job_role-error",
             },
             choices=HEALTH_CHOICES,
         ),
         required=False,
-        error_messages={"required": "Select an area of work"},
+        error_messages={"required": "Select a job role"},
     )
 
     organisation = forms.CharField(
@@ -241,7 +241,7 @@ class RegisterForm(forms.Form):
             "last_name",
             "organisation",
             "job_title",
-            "area_work",
+            "job_role",
             "postcode",
             "terms",
         ]
@@ -306,7 +306,7 @@ class UserAdminForm(forms.Form):
     last_name = forms.CharField()
     organisation = forms.CharField()
     job_title = forms.ChoiceField(choices=JOB_CHOICES)
-    area_work = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    job_role = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
     role = forms.ChoiceField(choices=ROLE_CHOICES)
     postcode = forms.CharField()
 
@@ -320,7 +320,7 @@ class UserAdminForm(forms.Form):
                 "last_name",
                 "organisation",
                 "job_title",
-                "area_work",
+                "job_role",
                 "postcode",
             )
             for field in disabled_fields:
@@ -334,7 +334,7 @@ class UserAdminForm(forms.Form):
         if self.initial["job_title"] is not None:
             self.initial["job_title"] = job_title.split(":")[0]
         if self.initial["job_title"] == "health":
-            self.initial["area_work"] = job_title
+            self.initial["job_role"] = job_title
 
 
 class LoginForm(forms.Form):

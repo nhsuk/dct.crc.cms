@@ -13,21 +13,21 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const jobTitleElement = document.getElementById('id_job_title');
-            const areaWorkElement = document.getElementById('id_area_work');
-            const areaWorkRow = areaWorkElement.closest('li');
+            const jobRoleElement = document.getElementById('id_job_role');
+            const jobRoleRow = jobRoleElement.closest('li');
 
-            function hideShowAreaWorkRow(jobTitle) {
+            function hideShowJobRoleRow(jobTitle) {
                 if (jobTitle === 'health') {
-                    areaWorkRow.style.display = 'block';
+                    jobRoleRow.style.display = 'block';
                 } else {
-                    areaWorkRow.style.display = 'none';
-                    areaWorkElement.value = '';
+                    jobRoleRow.style.display = 'none';
+                    jobRoleElement.value = '';
                 }
             }
 
-            hideShowAreaWorkRow(jobTitleElement.value);
+            hideShowJobRoleRow(jobTitleElement.value);
 
-            jobTitleElement.addEventListener('change', (event) => hideShowAreaWorkRow(event.target.value));
+            jobTitleElement.addEventListener('change', (event) => hideShowJobRoleRow(event.target.value));
         });
     </script>
 {% endblock %}

@@ -92,7 +92,7 @@ def signup(request):
             first_name = f.cleaned_data.get("first_name")
             last_name = f.cleaned_data.get("last_name")
             job_title = f.cleaned_data.get("job_title")
-            area_work = f.cleaned_data.get("area_work")
+            job_role = f.cleaned_data.get("job_role")
             organisation = (
                 f.cleaned_data.get("organisation") if job_title != "student" else " "
             )
@@ -114,7 +114,7 @@ def signup(request):
                     last_name,
                     organisation,
                     job_title,
-                    area_work,
+                    job_role,
                     postcode,
                     postcode_region,
                     created_at,

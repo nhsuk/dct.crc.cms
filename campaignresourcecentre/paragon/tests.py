@@ -46,7 +46,7 @@ class TestClient(TestCase):
         last_name = "Last Name"
         organisation = "NHS"
         job_title = "Health"
-        area_work = "GP"
+        job_role = "GP"
         postcode = "S221LZ"
         postcode_region = "South Yorkshire"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -57,7 +57,7 @@ class TestClient(TestCase):
             last_name,
             organisation,
             job_title,
-            area_work,
+            job_role,
             postcode,
             postcode_region,
             created_at,
@@ -66,7 +66,7 @@ class TestClient(TestCase):
         self.assertEqual({"code": 200, "content": "Token", "status": "ok"}, resp)
 
     @responses.activate
-    def test_create_account_includes_area_work_and_postcode_region(self):
+    def test_create_account_includes_job_role_and_postcode_region(self):
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Signup"),
@@ -80,7 +80,7 @@ class TestClient(TestCase):
         last_name = "Doe"
         organisation = "Test Org"
         job_title = "Developer"
-        area_work = "Software Development"
+        job_role = "Software Development"
         postcode = "SW1A 1AA"
         postcode_region = "London"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -92,7 +92,7 @@ class TestClient(TestCase):
             last_name,
             organisation,
             job_title,
-            area_work,
+            job_role,
             postcode,
             postcode_region,
             created_at,
@@ -101,7 +101,7 @@ class TestClient(TestCase):
         self.assertEqual(len(responses.calls), 1)
         request_data = json.loads(responses.calls[0].request.body)
 
-        self.assertEqual(request_data["ContactVar2"], area_work)
+        self.assertEqual(request_data["ContactVar2"], job_role)
         self.assertEqual(request_data["ContactVar3"], postcode_region)
         self.assertEqual(request_data["EmailAddress"], email)
         self.assertEqual(request_data["ProductRegistrationVar3"], organisation)
@@ -200,7 +200,7 @@ class TestClient(TestCase):
         )
 
     @responses.activate
-    def test_update_user_profile_with_area_work_and_postcode_region(self):
+    def test_update_user_profile_with_job_role_and_postcode_region(self):
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/UpdateProfile"),
@@ -209,7 +209,7 @@ class TestClient(TestCase):
         )
 
         user_token = "test_token"
-        area_work = "Healthcare"
+        job_role = "Healthcare"
         postcode_region = "West Midlands"
 
         resp = self.client.update_user_profile(
@@ -217,14 +217,14 @@ class TestClient(TestCase):
             email="updated@example.com",
             first_name="Updated",
             last_name="User",
-            area_work=area_work,
+            job_role=job_role,
             postcode_region=postcode_region,
             postcode="B1 1AA",
         )
 
         self.assertEqual(len(responses.calls), 1)
         request_data = json.loads(responses.calls[0].request.body)
-        self.assertEqual(request_data["ContactVar2"], area_work)
+        self.assertEqual(request_data["ContactVar2"], job_role)
         self.assertEqual(request_data["ContactVar3"], postcode_region)
         self.assertEqual(
             {"code": 200, "content": {"success": True}, "status": "ok"}, resp
@@ -582,8 +582,8 @@ class TestUserDataClass(TestCase):
             update_user_profile.params()
         self.assertEqual(str(error.exception), "user_token is empty!")
 
-    def test_user_area_work_mapping(self):
-        """Test that User area_work maps to ContactVar2"""
+    def test_user_job_role_mapping(self):
+        """Test that User job_role maps to ContactVar2"""
         verified_at = datetime.datetime.now()
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -594,7 +594,7 @@ class TestUserDataClass(TestCase):
             "Last Name",
             "NHS",
             "Health",
-            "Emergency Medicine",  # area_work
+            "Emergency Medicine",  # job_role
             "role",
             True,
             created_at,
