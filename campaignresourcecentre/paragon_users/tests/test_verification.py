@@ -57,7 +57,7 @@ class VerificationTestCase(TestCase):
             "content": {
                 "ProductRegistrationVar2": "False",
                 "EmailAddress": "test@example.com",
-                "ContactVar2": "comms",
+                "ContactVar2": "marketing",
                 "ProductRegistrationVar4": "health:nurse",
             }
         }
@@ -90,7 +90,7 @@ class VerificationTestCase(TestCase):
             "content": {
                 "ProductRegistrationVar2": "False",
                 "EmailAddress": "test@example.com",
-                "ContactVar2": "comms",
+                "ContactVar2": "marketing",
                 "ProductRegistrationVar4": None,
             }
         }
@@ -107,9 +107,9 @@ class VerificationTestCase(TestCase):
 
         test_cases = [
             {
-                "ContactVar2": "comms",
+                "ContactVar2": "marketing",
                 "ProductRegistrationVar4": "health:nurse",
-                "expected": "comms",
+                "expected": "marketing",
             },
             {
                 "ContactVar2": None,

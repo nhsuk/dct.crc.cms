@@ -172,7 +172,7 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "name": "falls_back_to_productregistrationvar4_when_contactvar2_none",
                 "ContactVar2": None,
                 "ProductRegistrationVar4": "marketing",
-                "expected_job_title": "Marketing",
+                "expected_job_title": "Marketing and communications",
             },
         ]
 

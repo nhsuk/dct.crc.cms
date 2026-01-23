@@ -298,11 +298,7 @@ def get_role(user_email: str, user_job: str):
         user_email.endswith("@nhs.net")
         or user_email.endswith("@gov.uk")
         or user_email.endswith(".gov.uk")
-    ) and (
-        user_job == "comms"
-        or user_job == "health:improvement"
-        or user_job == "marketing"
-    ):
+    ) and (user_job == "health:improvement" or user_job == "marketing"):
         return "uber"
     else:
         return "standard"
