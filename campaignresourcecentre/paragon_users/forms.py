@@ -14,7 +14,6 @@ from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
 )
 
-from wagtail.models import Site
 from campaignresourcecentre.utils.models import FeatureFlags
 
 logger = getLogger(__name__)
@@ -28,6 +27,11 @@ JOB_CHOICES = (
     ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
     ("student", "Student / Unemployed / Retired"),
+    ("projectmanagement", "Project Management"),
+    ("planning", "Planning and Development"),
+    ("policy", "Policy"),
+    ("environmental", "Environmental Health"),
+    ("substance", "Substance Abuse and Addiction Services"),
     ("health", "Health"),
     ("other", "Other"),
 )

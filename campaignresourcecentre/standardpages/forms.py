@@ -10,6 +10,11 @@ JOB_CHOICES = (
     ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
     ("student", "Student / Unemployed / Retired"),
+    ("projectmanagement", "Project Management"),
+    ("planning", "Planning and Development"),
+    ("policy", "Policy"),
+    ("environmental", "Environmental Health"),
+    ("substance", "Substance Abuse and Addiction Services"),
     ("health", "Health"),
     ("other", "Other"),
 )
