@@ -59,6 +59,9 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
                 "page_id": self.resource_page.id,
                 "final_tags": [{"code": "test:tag", "label": "Test"}],
                 "had_changes": True,
+                "live_tags": [{"code": "test:tag", "label": "Test"}],
+                "draft_tags": None,
+                "operation_mode": "merge",
             }
         ]
 
@@ -93,6 +96,9 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
                 "page_id": 99999,
                 "final_tags": [{"code": "test", "label": "Test"}],
                 "had_changes": True,
+                "live_tags": [{"code": "test", "label": "Test"}],
+                "draft_tags": None,
+                "operation_mode": "merge",
             }
         ]
 
@@ -111,6 +117,9 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
                 "page_id": self.resource_page.id,
                 "final_tags": [{"code": "test", "label": "Test"}],
                 "had_changes": True,
+                "live_tags": [{"code": "test", "label": "Test"}],
+                "draft_tags": None,
+                "operation_mode": "merge",
             }
         ]
 
@@ -147,7 +156,7 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
         alias_page = self.campaign_page.create_alias(update_slug="alias-campaign")
 
         with self.assertRaises(ValueError) as context:
-            action._save_tags(alias_page, [], self.user)
+            action._save_tags(alias_page, [], None, self.user)
 
         self.assertIn("alias", str(context.exception).lower())
 
@@ -160,6 +169,9 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
                 "page_id": alias_page.id,
                 "final_tags": [{"code": "test", "label": "Test"}],
                 "had_changes": True,
+                "live_tags": [{"code": "test", "label": "Test"}],
+                "draft_tags": None,
+                "operation_mode": "merge",
             }
         ]
 
@@ -192,8 +204,9 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
         )
 
         live_tags = [{"code": "live:tag", "label": "Live Tag"}]
+        draft_tags = draft_only_tags + [{"code": "extra:draft", "label": "Extra Draft"}]
         action._save_tags(
-            self.resource_page, live_tags, self.user, operation_mode="merge"
+            self.resource_page, live_tags, draft_tags, self.user, operation_mode="merge"
         )
 
         self.resource_page.refresh_from_db()
@@ -209,12 +222,8 @@ class ManageTagsBulkActionTestCase(BaseTestCase):
 
         latest_obj = latest_rev.as_object()
         latest_draft_tags = json.loads(latest_obj.taxonomy_json)
-        # Expected draft tags = original draft_only_tags merged with tags_to_add (no replace)
-        expected_draft_tags = draft_only_tags + [
-            {"code": "extra:draft", "label": "Extra Draft"}
-        ]
-        # Order should match merge behavior without duplicates
-        self.assertEqual(latest_draft_tags, expected_draft_tags)
+        # Expected draft tags should match what we passed in
+        self.assertEqual(latest_draft_tags, draft_tags)
 
 
 class RemoveTagsBulkActionTestCase(BaseTestCase):
@@ -257,14 +266,19 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
                 "page_id": self.campaign_page.id,
                 "final_tags": [original_tags[1]],  # Keep only hospital
                 "had_changes": True,
+                "live_tags": [original_tags[1]],
+                "draft_tags": None,
+                "operation_mode": "remove",
             }
         ]
 
-        num_modified, num_failed = RemoveTagsBulkAction.execute_action(
+        num_modified, num_failed = instance.execute_action(
             [self.campaign_page],
             bulk_action_instance=instance,
             user=self.user,
         )
+
+        print("Modified:", num_modified, "Failed:", num_failed)
 
         self.assertEqual(num_modified, 1)
         self.assertEqual(num_failed, 0)
@@ -304,7 +318,13 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
         action.action_type = "remove_tags"
 
         live_tags_after = [{"code": "health:hospital", "label": "Hospital"}]
-        action._save_tags(self.campaign_page, live_tags_after, self.user)
+        draft_tags_after = [
+            {"code": "health:hospital", "label": "Hospital"},
+            {"code": "health:dental", "label": "Dental"},
+        ]
+        action._save_tags(
+            self.campaign_page, live_tags_after, draft_tags_after, self.user
+        )
 
         self.campaign_page.refresh_from_db()
         live_saved = json.loads(self.campaign_page.taxonomy_json)
@@ -317,11 +337,7 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
 
         draft_obj = latest_rev.as_object()
         draft_tags = json.loads(draft_obj.taxonomy_json)
-        expected_draft = [
-            {"code": "health:hospital", "label": "Hospital"},
-            {"code": "health:dental", "label": "Dental"},
-        ]
-        self.assertEqual(draft_tags, expected_draft)
+        self.assertEqual(draft_tags, draft_tags_after)
 
 
 class AddTagsBulkActionTestCase(BaseTestCase):
@@ -422,6 +438,9 @@ class AddTagsBulkActionTestCase(BaseTestCase):
                 "page_id": self.resource_page.id,
                 "final_tags": tags_to_add,
                 "had_changes": True,
+                "live_tags": tags_to_add,
+                "draft_tags": None,
+                "operation_mode": "merge",
             }
         ]
 
@@ -473,8 +492,13 @@ class AddTagsBulkActionTestCase(BaseTestCase):
             {"code": "health:gp", "label": "GP"},
             {"code": "health:vision", "label": "Vision"},
         ]
+        draft_tags = [
+            {"code": "health:gp", "label": "GP"},
+            {"code": "health:dental", "label": "Dental"},
+            {"code": "health:vision", "label": "Vision"},
+        ]
         action._save_tags(
-            self.campaign_page, live_tags, self.user, operation_mode="merge"
+            self.campaign_page, live_tags, draft_tags, self.user, operation_mode="merge"
         )
 
         self.campaign_page.refresh_from_db()
@@ -521,8 +545,13 @@ class AddTagsBulkActionTestCase(BaseTestCase):
         action.action_type = "add_tags"
 
         live_tags = [{"code": "health:vision", "label": "Vision"}]
+        draft_tags = [{"code": "health:vision", "label": "Vision"}]
         action._save_tags(
-            self.campaign_page, live_tags, self.user, operation_mode="replace"
+            self.campaign_page,
+            live_tags,
+            draft_tags,
+            self.user,
+            operation_mode="replace",
         )
 
         self.campaign_page.refresh_from_db()
