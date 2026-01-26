@@ -99,7 +99,6 @@ def signup(request):
                 job_role = f.cleaned_data.get("education_role")
             else:
                 job_role = ""
-            logger.warning(f"Job role selected: {job_title} - {job_role}")
             organisation = (
                 f.cleaned_data.get("organisation") if job_title != "student" else " "
             )
