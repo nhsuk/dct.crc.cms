@@ -37,6 +37,7 @@ from .forms import (
     EmailUpdatesForm,
     JOB_CHOICES,
     HEALTH_CHOICES,
+    EDUCATION_CHOICES,
 )
 from .helpers.newsletter import (
     deserialise,
@@ -92,7 +93,13 @@ def signup(request):
             first_name = f.cleaned_data.get("first_name")
             last_name = f.cleaned_data.get("last_name")
             job_title = f.cleaned_data.get("job_title")
-            job_role = f.cleaned_data.get("job_role")
+            if job_title == "health":
+                job_role = f.cleaned_data.get("health_role")
+            elif job_title == "education":
+                job_role = f.cleaned_data.get("education_role")
+            else:
+                job_role = ""
+            logger.warning(f"Job role selected: {job_title} - {job_role}")
             organisation = (
                 f.cleaned_data.get("organisation") if job_title != "student" else " "
             )
@@ -526,7 +533,11 @@ def user_profile(request):
         "content"
     ]
 
-    job_choices = {**dict(JOB_CHOICES[1:]), **dict(HEALTH_CHOICES)}
+    job_choices = {
+        **dict(JOB_CHOICES[1:]),
+        **dict(HEALTH_CHOICES),
+        **dict(EDUCATION_CHOICES),
+    }
     job_title_raw = (
         user.get("ContactVar2")
         if user.get("ContactVar2")

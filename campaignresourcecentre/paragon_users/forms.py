@@ -56,6 +56,13 @@ HEALTH_CHOICES = (
     ("health:mentalhealth", "Mental Health"),
 )
 
+EDUCATION_CHOICES = (
+    ("education:teacher", "Teacher"),
+    ("education:headteacher", "Headteacher"),
+    ("education:teachingassistant", "Teaching Assistant"),
+    ("education:schoolsecretary", "School Secretary"),
+)
+
 
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
@@ -150,7 +157,7 @@ class RegisterForm(forms.Form):
         error_messages={"required": "Select your job function"},
     )
 
-    job_role = forms.CharField(
+    health_role = forms.CharField(
         max_length=100,
         widget=forms.Select(
             attrs={
@@ -158,6 +165,19 @@ class RegisterForm(forms.Form):
                 "aria-describedby": "job_role-error",
             },
             choices=HEALTH_CHOICES,
+        ),
+        required=False,
+        error_messages={"required": "Select a job role"},
+    )
+
+    education_role = forms.CharField(
+        max_length=100,
+        widget=forms.Select(
+            attrs={
+                "class": "govuk-select",
+                "aria-describedby": "job_role-error",
+            },
+            choices=EDUCATION_CHOICES,
         ),
         required=False,
         error_messages={"required": "Select a job role"},
@@ -244,7 +264,8 @@ class RegisterForm(forms.Form):
             "last_name",
             "organisation",
             "job_title",
-            "job_role",
+            "health_role",
+            "education_role",
             "postcode",
             "terms",
         ]
@@ -309,7 +330,8 @@ class UserAdminForm(forms.Form):
     last_name = forms.CharField()
     organisation = forms.CharField()
     job_title = forms.ChoiceField(choices=JOB_CHOICES)
-    job_role = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    health_role = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    education_role = forms.ChoiceField(required=False, choices=EDUCATION_CHOICES)
     role = forms.ChoiceField(choices=ROLE_CHOICES)
     postcode = forms.CharField()
 
@@ -323,7 +345,8 @@ class UserAdminForm(forms.Form):
                 "last_name",
                 "organisation",
                 "job_title",
-                "job_role",
+                "health_role",
+                "education_role",
                 "postcode",
             )
             for field in disabled_fields:
@@ -337,7 +360,9 @@ class UserAdminForm(forms.Form):
         if self.initial["job_title"] is not None:
             self.initial["job_title"] = job_title.split(":")[0]
         if self.initial["job_title"] == "health":
-            self.initial["job_role"] = job_title
+            self.initial["health_role"] = job_title
+        if self.initial["job_title"] == "education":
+            self.initial["education_role"] = job_title
 
 
 class LoginForm(forms.Form):

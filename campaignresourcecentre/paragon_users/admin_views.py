@@ -131,7 +131,12 @@ def edit(request, user_token):
                     user.last_name = form.cleaned_data["last_name"]
                     user.organisation = form.cleaned_data["organisation"]
                     user.job_title = form.cleaned_data["job_title"]
-                    user.job_role = form.cleaned_data["job_role"]
+                    if user.job_title == "health":
+                        user.job_role = form.cleaned_data["health_role"]
+                    elif user.job_title == "education":
+                        user.job_role = form.cleaned_data["education_role"]
+                    else:
+                        user.job_role = ""
                     user.postcode = form.cleaned_data["postcode"]
                     user.postcode_region = get_region(user.postcode)
 
