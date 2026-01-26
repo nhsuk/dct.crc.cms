@@ -498,7 +498,8 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "first_name": "John",
                 "last_name": "Doe",
                 "job_title": "education",
-                "job_role": "education:teacher",
+                "health_role": "health:gp",
+                "education_role": "education:teacher",
                 "organisation": "Test Org",
                 "postcode": "SW1A 1AA",
             }
