@@ -41,11 +41,50 @@ class ManageTagsBulkAction(PageBulkAction):
         context["items"] = [
             {
                 **item,
-                "taxonomy_tags": get_page_taxonomy_tags(item["item"].specific),
+                "taxonomy_tags": self._get_current_tags(item["item"]),
+                "live_tags": self._get_live_tags(item["item"]),
+                "draft_tags": self._get_draft_tags(item["item"]),
             }
             for item in context.get("items", [])
         ]
         return context
+
+    def _get_current_tags(self, page):
+        """Get tags to use as the base for operations.
+        
+        For published pages: always use live tags (what users see on the site)
+        For draft-only pages: use draft tags (only version that exists)
+        
+        This ensures:
+        - Add/Remove operations on published pages modify the live version
+        - Drafts are recalculated separately if they exist
+        - No confusion about which tags we're operating on
+        """
+        if page.live:
+            source = page.live_revision.as_object() if page.live_revision else page.specific
+        else:
+            source = page.latest_revision.as_object() if page.latest_revision else page.specific
+        
+        return get_page_taxonomy_tags(source)
+
+    def _get_live_tags(self, page):
+        """Get tags from the live version of the page."""
+        if not page.live:
+            return None
+        
+        source = page.live_revision.as_object() if page.live_revision else page.specific
+        return get_page_taxonomy_tags(source)
+
+    def _get_draft_tags(self, page):
+        """Get tags from the draft version of the page."""
+        if not page.latest_revision:
+            return None
+        
+        if page.live and page.live_revision and page.latest_revision.id == page.live_revision.id:
+            return None
+        
+        source = page.latest_revision.as_object()
+        return get_page_taxonomy_tags(source)
 
     def check_perm(self, page):
         if page.alias_of_id:
@@ -89,56 +128,50 @@ class ManageTagsBulkAction(PageBulkAction):
 
         return num_modified, num_failed
 
+    def _update_page_revision(self, page, tags, user, publish=False, log_action=True):
+        """Update page revision with new tags."""
+        source = page.latest_revision or page.live_revision or page
+        target = source.as_object() if hasattr(source, "as_object") else source.specific
+        target.taxonomy_json = json.dumps(tags)
+        
+        if publish:
+            target.save()
+        
+        revision = target.save_revision(
+            user=user,
+            log_action=self.action_type if log_action else False,
+            changed=True,
+        )
+        
+        if publish:
+            revision.publish(user=user)
+        
+        return revision
+
     def _save_tags(self, page, tags, user, operation_mode="merge"):
         if page.alias_of_id:
             raise ValueError("Cannot modify tags on alias pages")
 
         # Draft-only page: just update the draft
         if not page.live:
-            source = page.latest_revision or page
-            target = (
-                source.as_object() if hasattr(source, "as_object") else source.specific
-            )
-            target.taxonomy_json = json.dumps(tags)
-            target.save_revision(user=user, log_action=self.action_type, changed=True)
+            self._update_page_revision(page, tags, user, publish=False)
             return
 
         # Published page: check if a draft also exists
-        draft_revision = (
+        has_draft = (
             page.latest_revision
-            if page.latest_revision
-            and (
-                not page.live_revision
-                or page.latest_revision.id != page.live_revision.id
-            )
-            else None
+            and page.live_revision
+            and page.latest_revision.id != page.live_revision.id
         )
 
         # Update and publish the live version
-        source = page.live_revision or page
-        target = source.as_object() if hasattr(source, "as_object") else source.specific
-        target.taxonomy_json = json.dumps(tags)
-        target.save()
-        revision = target.save_revision(
-            user=user,
-            log_action=False if draft_revision else self.action_type,
-            changed=True,
-        )
-        revision.publish(user=user)
+        self._update_page_revision(page, tags, user, publish=True, log_action=not has_draft)
 
         # If there was a draft, also update it and keep it as the latest revision
-        if draft_revision:
-            draft_target = draft_revision.as_object()
-            draft_tags = json.loads(draft_target.taxonomy_json)
-
-            final_draft_tags = self.calculate_draft_tags(
-                page, draft_tags, operation_mode
-            )
-
-            draft_target.taxonomy_json = json.dumps(final_draft_tags)
-            draft_target.save_revision(
-                user=user, log_action=self.action_type, changed=True
-            )
+        if has_draft:
+            draft_tags = json.loads(page.latest_revision.as_object().taxonomy_json)
+            final_draft_tags = self.calculate_draft_tags(page, draft_tags, operation_mode)
+            self._update_page_revision(page, final_draft_tags, user, publish=False)
 
     def post(self, request, *args, **kwargs):
         if request.POST.get("next_action") == "go_back":
@@ -277,10 +310,14 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
             page = item["item"]
             page_id = str(page.id)
             original_tags = item.get("taxonomy_tags", [])
+            live_tags = item.get("live_tags")
+            draft_tags = item.get("draft_tags")
 
             codes_to_remove = tags_to_remove.get(page_id, [])
             final_tags = self._remove_tags(original_tags, codes_to_remove)
             _, removed = self._calculate_diff(original_tags, final_tags)
+
+            has_draft = live_tags is not None and draft_tags is not None
 
             changes.append(
                 {
@@ -291,6 +328,11 @@ class RemoveTagsBulkAction(ManageTagsBulkAction):
                     "tags_removed": removed,
                     "tags_added": [],
                     "had_changes": bool(removed),
+                    "is_draft_only": not page.live,
+                    "is_live_only": page.live and not has_draft,
+                    "has_draft": has_draft,
+                    "live_tags": live_tags,
+                    "draft_tags": draft_tags,
                 }
             )
 
@@ -326,8 +368,13 @@ class AddTagsBulkAction(ManageTagsBulkAction):
         for item in items:
             page = item["item"]
             original_tags = item.get("taxonomy_tags", [])
+            live_tags = item.get("live_tags")
+            draft_tags = item.get("draft_tags")
+            
             final_tags = self._merge_tags(original_tags, tags_to_add, operation_mode)
             added, removed = self._calculate_diff(original_tags, final_tags)
+
+            has_draft = live_tags is not None and draft_tags is not None
 
             changes.append(
                 {
@@ -339,6 +386,11 @@ class AddTagsBulkAction(ManageTagsBulkAction):
                     "tags_removed": removed,
                     "operation_mode": operation_mode,
                     "had_changes": bool(added or removed),
+                    "is_draft_only": not page.live,
+                    "is_live_only": page.live and not has_draft,
+                    "has_draft": has_draft,
+                    "live_tags": live_tags,
+                    "draft_tags": draft_tags,
                 }
             )
 

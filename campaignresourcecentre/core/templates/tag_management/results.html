@@ -77,10 +77,11 @@
       <table class="listing">
         <thead>
           <tr>
-            <th>Page</th>
-            <th>Updated Tags</th>
-            <th>Changes</th>
-            <th>Status</th>
+            <th style="width: 30%;">Page</th>
+            <th style="width: 15%;">Page Status</th>
+            <th style="width: 30%;">Updated Tags</th>
+            <th style="width: 15%;">Changes</th>
+            <th style="width: 10%;">Result</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +89,15 @@
             <tr>
               <td>
                 <a href="{% url 'wagtailadmin_pages:edit' change.page_id %}" target="_blank" rel="noreferrer">{{ change.page_title }}</a>
+              </td>
+              <td>
+                {% if change.is_draft_only %}
+                  <span class="w-status w-status--primary">Draft</span>
+                {% elif change.has_draft %}
+                  <span class="w-status w-status--label">Live + Draft</span>
+                {% else %}
+                  <span class="w-status">Live</span>
+                {% endif %}
               </td>
               <td>
                 {% if change.final_tags %}
@@ -111,15 +121,20 @@
                   <em class="help-text">None</em>
                 {% endif %}
               </td>
-
               <td>
                 {% if change.error %}
-                  <span>Failed</span>
+                  <span class="w-status w-status--critical">Failed</span>
                   <br /><small>{{ change.error }}</small>
                 {% elif change.had_changes %}
-                  <span>Updated</span>
+                  {% if change.is_draft_only %}
+                    <span class="help-text">Draft updated</span>
+                  {% elif change.has_draft %}
+                    <span class="help-text">Live + Draft updated</span>
+                  {% else %}
+                    <span class="help-text">Live updated</span>
+                  {% endif %}
                 {% else %}
-                  <span>No changes</span>
+                  <span class="help-text">No changes</span>
                 {% endif %}
               </td>
             </tr>
