@@ -96,17 +96,30 @@
                             {{ form.job_title }}
                         </div>
 
-                        <div id="jobRole" class="govuk-form-group {% if form.job_role.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
-                            <label id="jobRoleLabel" class="govuk-label" for="{{ form.job_role.id_for_label }}">Job role <span class="govuk-hint" id="non-js">If selected job function is "Health", choose a job role. Otherwise leave blank.</span></label>
-                            {% if form.job_roleerrors %}
-                                <p id="job_role-error" class="govuk-error-message">
+                        <div id="healthRole" class="govuk-form-group {% if form.health_role.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label id="healthRoleLabel" class="govuk-label" for="{{ form.health_role.id_for_label }}">Job role <span class="govuk-hint" id="health-non-js">If selected job function is "Health", choose a job role. Otherwise leave blank.</span></label>
+                            {% if form.health_roleerrors %}
+                                <p id="health_role-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
-                                    {% for error in form.job_role.errors %}
+                                    {% for error in form.health_role.errors %}
                                         {{ error}}
                                     {% endfor %}
                                 </p>
                             {% endif %}
-                            {{ form.job_role }}
+                            {{ form.health_role }}
+                        </div>
+
+                        <div id="educationRole" class="govuk-form-group {% if form.education_role.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label id="educationRoleLabel" class="govuk-label" for="{{ form.education_role.id_for_label }}">Job role <span class="govuk-hint" id="education-non-js">If selected job function is "Education", choose a job role. Otherwise leave blank.</span></label>
+                            {% if form.education_roleerrors %}
+                                <p id="education_role-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.education_role.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.education_role }}
                         </div>
 
                         <div id="organisation" class="govuk-form-group {% if form.organisation.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
@@ -216,37 +229,46 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            const hint = document.getElementById("non-js");
+            const healthHint = document.getElementById("health-non-js");
+            const educationHint = document.getElementById("education-non-js");
             const hintJS = document.getElementById("no-js");
 
-            const roleElement = document.getElementById("jobRole");
-            const roleElementLabel = document.getElementById("jobRoleLabel");
-            const roleInput = document.getElementById("id_job_role");
+            healthHint.classList.add("govuk-visually-hidden");
+            educationHint.classList.add("govuk-visually-hidden");
+            hintJS.classList.add("govuk-visually-hidden");
+
+            const jobTitle = document.getElementById("id_job_title").value;
+
+            const roleElements = {}
+            for (const jobTitleWithRole of ['health', 'education']) {
+                roleElements[jobTitleWithRole] = {
+                    element: document.getElementById(`${jobTitleWithRole}Role`),
+                    label: document.getElementById(`${jobTitleWithRole}RoleLabel`),
+                    input: document.getElementById(`id_${jobTitleWithRole}_role`)
+                };
+            }
+
+            for (const jobTitleWithRole in roleElements) {
+                const role = roleElements[jobTitleWithRole];
+                if (jobTitle === jobTitleWithRole) {
+                    role.element.classList.remove("govuk-visually-hidden");
+                    role.label.setAttribute("aria-hidden","false");
+                    role.input.setAttribute("aria-hidden","false");
+                    role.input.disabled = false;
+                } else {
+                    role.element.classList.add("govuk-visually-hidden");
+                    role.label.setAttribute("aria-hidden","true");
+                    role.input.setAttribute("aria-hidden","true");
+                    role.input.disabled = true;
+                }
+            }
 
             const orgElement = document.getElementById("organisation");
             const orgElementLabel = document.getElementById("organisationLabel");
             const orgInput = document.getElementById("id_organisation");
 
-            const jobElement = document.getElementById("id_job_title").value;
-
-            hint.classList.add("govuk-visually-hidden");
-            hintJS.classList.add("govuk-visually-hidden");
-
-            // Job role
-            if (jobElement === 'health') {
-                roleElement.classList.remove("govuk-visually-hidden");
-                roleElementLabel.setAttribute("aria-hidden","false");
-                roleInput.setAttribute("aria-hidden","false");
-                roleInput.disabled = false;
-            } else {
-                roleElement.classList.add("govuk-visually-hidden");
-                roleElementLabel.setAttribute("aria-hidden","true");
-                roleInput.setAttribute("aria-hidden","true");
-                roleInput.disabled = true;
-            }
-
             // Organisation name
-            if (jobElement === '' || jobElement === 'student'){
+            if (jobTitle === '' || jobTitle === 'student'){
                 orgElement.classList.add("govuk-visually-hidden");
                 orgElementLabel.setAttribute("aria-hidden","true");
                 orgInput.setAttribute("aria-hidden","true");
@@ -260,31 +282,38 @@
         }, false);
 
         function hideSelect() {
-            const jobElement = document.getElementById("id_job_title").value;
+            const jobTitle = document.getElementById("id_job_title").value;
 
-            const roleElement = document.getElementById("jobRole");
-            const roleElementLabel = document.getElementById("jobRoleLabel");
-            const roleInput = document.getElementById("id_job_role");
+            const roleElements = {}
+            for (const jobTitleWithRole of ['health', 'education']) {
+                roleElements[jobTitleWithRole] = {
+                    element: document.getElementById(`${jobTitleWithRole}Role`),
+                    label: document.getElementById(`${jobTitleWithRole}RoleLabel`),
+                    input: document.getElementById(`id_${jobTitleWithRole}_role`)
+                };
+            }
+
+            for (const jobTitleWithRole in roleElements) {
+                const role = roleElements[jobTitleWithRole];
+                if (jobTitle === jobTitleWithRole) {
+                    role.element.classList.remove("govuk-visually-hidden");
+                    role.label.setAttribute("aria-hidden","false");
+                    role.input.setAttribute("aria-hidden","false");
+                    role.input.disabled = false;
+                } else {
+                    role.element.classList.add("govuk-visually-hidden");
+                    role.label.setAttribute("aria-hidden","true");
+                    role.input.setAttribute("aria-hidden","true");
+                    role.input.disabled = true;
+                }
+            }
 
             const orgElement = document.getElementById("organisation");
             const orgElementLabel = document.getElementById("organisationLabel");
             const orgInput = document.getElementById("id_organisation");
             
-            // Job role
-            if (jobElement === 'health') {
-                roleElement.classList.remove("govuk-visually-hidden");
-                roleElementLabel.setAttribute("aria-hidden","false");
-                roleInput.setAttribute("aria-hidden","false");
-                roleInput.disabled = false;
-            } else {
-                roleElement.classList.add("govuk-visually-hidden");
-                roleElementLabel.setAttribute("aria-hidden","true");
-                roleInput.setAttribute("aria-hidden","true");
-                roleInput.disabled = true;
-            }
-            
             // Organisation name
-            if (jobElement === '' || jobElement === 'student'){
+            if (jobTitle === '' || jobTitle === 'student'){
                 orgElement.classList.add("govuk-visually-hidden");
                 orgElementLabel.setAttribute("aria-hidden","true");
                 orgInput.setAttribute("aria-hidden","true");

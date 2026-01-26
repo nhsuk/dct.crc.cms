@@ -13,15 +13,23 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const jobTitleElement = document.getElementById('id_job_title');
-            const jobRoleElement = document.getElementById('id_job_role');
-            const jobRoleRow = jobRoleElement.closest('li');
+            const roleElements = {}
+            for (const jobTitle of ['health', 'education']) {
+                roleElements[jobTitle] = {
+                    element: document.getElementById(`id_${jobTitle}_role`),
+                    row: document.getElementById(`id_${jobTitle}_role`).closest('li')
+                };
+            }
 
-            function hideShowJobRoleRow(jobTitle) {
-                if (jobTitle === 'health') {
-                    jobRoleRow.style.display = 'block';
-                } else {
-                    jobRoleRow.style.display = 'none';
-                    jobRoleElement.value = '';
+            function hideShowJobRoleRow(selectedJobTitle) {
+                for (const jobTitle in roleElements) {
+                    const role = roleElements[jobTitle];
+                    if (selectedJobTitle === jobTitle) {
+                        role.row.style.display = 'block';
+                    } else {
+                        role.row.style.display = 'none';
+                        role.element.value = '';
+                    }
                 }
             }
 
