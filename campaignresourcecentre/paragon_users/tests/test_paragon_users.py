@@ -329,7 +329,7 @@ class ParagonUsersTestCase(WagtailPageTests):
             "last_name": "Doe",
             "organisation": "NHS Trust",
             "job_title": "health",
-            "job_role": "health:gp",
+            "health_role": "health:gp",
             "postcode": "LS1 1AA",
         }
 
@@ -421,7 +421,7 @@ class ParagonUsersTestCase(WagtailPageTests):
         mock_client.get_user_profile.assert_called_once_with(user_token="test_token")
         self.assertEqual(response.status_code, 200)
 
-    def test_signup_extracts_job_role_from_form(self):
+    def test_signup_extracts_health_role_from_form(self):
         from campaignresourcecentre.paragon_users.views import RegisterForm
 
         form_data = {
@@ -429,19 +429,41 @@ class ParagonUsersTestCase(WagtailPageTests):
             "last_name": "Doe",
             "email": "test@example.com",
             "password": "TestPass123@",
-            "job_title": "health:gp",
-            "job_role": "health:gp",
+            "job_title": "health",
+            "health_role": "health:gp",
             "organisation": "Test Org",
             "postcode": "SW1A1AA",
         }
 
         form = RegisterForm(form_data)
         if form.is_valid():
-            job_role = form.cleaned_data.get("job_role")
-            self.assertEqual(job_role, "health:gp")
+            health_role = form.cleaned_data.get("health_role")
+            self.assertEqual(health_role, "health:gp")
         else:
-            job_role = form.data.get("job_role")
-            self.assertEqual(job_role, "health:gp")
+            health_role = form.data.get("health_role")
+            self.assertEqual(health_role, "health:gp")
+
+    def test_signup_extracts_education_role_from_form(self):
+        from campaignresourcecentre.paragon_users.views import RegisterForm
+
+        form_data = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@example.com",
+            "password": "TestPass123@",
+            "job_title": "education",
+            "education_role": "education:teacher",
+            "organisation": "Test Org",
+            "postcode": "SW1A1AA",
+        }
+
+        form = RegisterForm(form_data)
+        if form.is_valid():
+            education_role = form.cleaned_data.get("education_role")
+            self.assertEqual(education_role, "education:teacher")
+        else:
+            education_role = form.data.get("education_role")
+            self.assertEqual(education_role, "education:teacher")
 
     def test_signup_handles_student_organisation_logic(self):
         test_cases = [
