@@ -506,7 +506,6 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "organisation": type("obj", (object,), {"required": False})(),
                 "job_title": type("obj", (object,), {"required": False})(),
             }
-            mock_form.data = {"job_title": "health:gp"}
 
             from campaignresourcecentre.paragon_users.views import signup
 
