@@ -497,8 +497,8 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "password": "TestPass123@",
                 "first_name": "John",
                 "last_name": "Doe",
-                "job_title": "health",
-                "job_role": "health:gp",
+                "job_title": "education",
+                "job_role": "education:teacher",
                 "organisation": "Test Org",
                 "postcode": "SW1A 1AA",
             }
@@ -515,5 +515,5 @@ class ParagonUsersTestCase(WagtailPageTests):
 
             mock_client.create_account.assert_called_once()
             call_args = mock_client.create_account.call_args[0]
-            self.assertEqual(call_args[6], "health:gp")
+            self.assertEqual(call_args[6], "education:teacher")
             self.assertEqual(call_args[8], "Test Region")
