@@ -309,14 +309,14 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "FirstName": "John",
                 "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "GP",
+                "ProductRegistrationVar4": "health",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
                 "ProductRegistrationVar8": "",
                 "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "Emergency Medicine",
+                "ContactVar2": "health:gp",
                 "ContactVar3": "Manchester",
             }
         }
@@ -328,8 +328,8 @@ class ParagonUsersTestCase(WagtailPageTests):
             "first_name": "John",
             "last_name": "Doe",
             "organisation": "NHS Trust",
-            "job_title": "GP",
-            "job_role": "Primary Care",
+            "job_title": "health",
+            "job_role": "health:gp",
             "postcode": "LS1 1AA",
         }
 
@@ -391,7 +391,7 @@ class ParagonUsersTestCase(WagtailPageTests):
 
         mock_client.update_user_profile.assert_called_once()
         call_kwargs = mock_client.update_user_profile.call_args[1]
-        self.assertEqual(call_kwargs["job_role"], "Primary Care")
+        self.assertEqual(call_kwargs["job_role"], "health:gp")
         self.assertEqual(call_kwargs["postcode_region"], "Greater Manchester")
 
     @patch("campaignresourcecentre.paragon_users.admin_views.Client")
@@ -404,14 +404,14 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "FirstName": "John",
                 "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "GP",
+                "ProductRegistrationVar4": "health",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
                 "ProductRegistrationVar8": "",
                 "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "Primary Care",
+                "ContactVar2": "health:gp",
                 "ContactVar3": "Manchester",
             }
         }
@@ -497,8 +497,8 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "password": "TestPass123@",
                 "first_name": "John",
                 "last_name": "Doe",
-                "job_title": "health:gp",
-                "job_role": "Emergency Medicine",
+                "job_title": "health",
+                "job_role": "health:gp",
                 "organisation": "Test Org",
                 "postcode": "SW1A 1AA",
             }
@@ -516,5 +516,5 @@ class ParagonUsersTestCase(WagtailPageTests):
 
             mock_client.create_account.assert_called_once()
             call_args = mock_client.create_account.call_args[0]
-            self.assertEqual(call_args[6], "Emergency Medicine")
+            self.assertEqual(call_args[6], "health:gp")
             self.assertEqual(call_args[8], "Test Region")
