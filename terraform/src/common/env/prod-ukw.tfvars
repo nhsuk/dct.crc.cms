@@ -18,7 +18,7 @@ container_resources = {
   redis = {
     cpu          = 0.25
     memory       = "0.5Gi"
-    min_replicas = 2
+    min_replicas = 1
     max_replicas = 6
     concurrency  = 100
   },
