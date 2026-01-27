@@ -14,23 +14,32 @@
   {% include 'wagtailadmin/shared/header.html' with title='Tag Management Results' icon='success' %}
 
   <div class="nice-padding">
-    {% if num_failed == 0 and num_modified > 0 %}
-      <div class="help-block help-success">
-        <svg class="icon icon-success" aria-hidden="true">
-          <use href="#icon-success"></use>
-        </svg>Successfully updated {{ num_modified }} page{{ num_modified|pluralize }}!
+        {% if num_failed == 0 and num_modified > 0 %}
+      <div class="messages">
+        <ul>
+          <li class="success">
+            {% icon name="success" classname="messages-icon" %}
+            Successfully updated {{ num_modified }} page{{ num_modified|pluralize }}!
+          </li>
+        </ul>
       </div>
     {% elif num_failed > 0 and num_modified > 0 %}
-      <div class="help-block help-warning">
-        <svg class="icon icon-warning" aria-hidden="true">
-          <use href="#icon-warning"></use>
-        </svg>Updated {{ num_modified }} page{{ num_modified|pluralize }}, but {{ num_failed }} page{{ num_failed|pluralize }} failed to update.
+      <div class="messages">
+        <ul>
+          <li class="warning">
+            {% icon name="warning" classname="messages-icon" %}
+            Updated {{ num_modified }} page{{ num_modified|pluralize }}, but {{ num_failed }} page{{ num_failed|pluralize }} failed to update.
+          </li>
+        </ul>
       </div>
     {% elif num_failed > 0 %}
-      <div class="help-block help-critical">
-        <svg class="icon icon-cross" aria-hidden="true">
-          <use href="#icon-cross"></use>
-        </svg>Failed to update {{ num_failed }} page{{ num_failed|pluralize }}.
+      <div class="messages">
+        <ul>
+          <li class="error">
+            {% icon name="warning" classname="messages-icon" %}
+            Failed to update {{ num_failed }} page{{ num_failed|pluralize }}.
+          </li>
+        </ul>
       </div>
     {% endif %}
 

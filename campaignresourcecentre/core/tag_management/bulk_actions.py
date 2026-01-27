@@ -149,7 +149,7 @@ class BaseTagBulkAction(PageBulkAction):
         if not page.live:
             return self._update_page_revision(
                 page.latest_revision or page,
-                draft_tags,
+                draft_tags or live_tags,
                 user=user,
                 publish=False,
             )
@@ -192,6 +192,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         items = context.get("items", [])
+        
         for page in items:
             item = page["item"]
             page_tags = self._get_live_tags(item)
