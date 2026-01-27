@@ -167,9 +167,7 @@ class AddTagsBulkActionTestCase(BaseTestCase):
             {"code": "health:dental", "label": "Dental"},
             {"code": "health:vision", "label": "Vision"},
         ]
-        action._save_tags(
-            self.campaign_page, live_tags, draft_tags, self.user
-        )
+        action._save_tags(self.campaign_page, live_tags, draft_tags, self.user)
 
         self.campaign_page.refresh_from_db()
         live_saved = json.loads(self.campaign_page.taxonomy_json)
@@ -217,12 +215,7 @@ class AddTagsBulkActionTestCase(BaseTestCase):
 
         live_tags = [{"code": "health:vision", "label": "Vision"}]
         draft_tags = [{"code": "health:vision", "label": "Vision"}]
-        action._save_tags(
-            self.campaign_page,
-            live_tags,
-            draft_tags,
-            self.user
-        )
+        action._save_tags(self.campaign_page, live_tags, draft_tags, self.user)
 
         self.campaign_page.refresh_from_db()
         live_saved = json.loads(self.campaign_page.taxonomy_json)
