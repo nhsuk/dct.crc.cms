@@ -234,7 +234,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
                         draft_current, tags_to_remove
                     )
 
-                logger.error(f"Removing tags from page ID {page.id}: {tags_to_remove}")
+                logger.info(f"Removing tags from page ID {page.id}: {tags_to_remove}")
                 logger.info(
                     f"draft_tags {draft_tags}",
                 )
