@@ -2,6 +2,7 @@
   <thead>
     <tr>
       <th>Page</th>
+      <th>Status</th>
       <th>Tags</th>
     </tr>
   </thead>
@@ -12,6 +13,9 @@
           <div class="title-wrapper">
             <a href="{% url 'wagtailadmin_pages:edit' page_data.item.id %}" target="_blank" rel="noreferrer">{{ page_data.item.get_admin_display_title }}</a>
           </div>
+        </td>
+        <td>
+          {% include 'wagtailadmin/shared/page_status_tag.html' with page=page_data.item %}
         </td>
         <td>
           {% if page_data.tags %}

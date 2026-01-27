@@ -104,6 +104,20 @@ class BaseTagBulkAction(PageBulkAction):
 
         return get_page_taxonomy_tags(source)
 
+    def has_drafts(self, page):
+        """Check if the page has both live and draft versions."""
+        if not page.live:
+            return False
+
+        if (
+            page.live_revision
+            and page.latest_revision
+            and page.live_revision.id != page.latest_revision.id
+        ):
+            return True
+
+        return False
+
     def _update_page_revision(
         self, source, tags, user, publish=False, keep_draft_latest=False
     ):
@@ -111,9 +125,9 @@ class BaseTagBulkAction(PageBulkAction):
 
         page_object = source.as_object() if isinstance(source, Revision) else source
 
-        # Get current tags BEFORE updating to properly detect changes
         current_tags = get_page_taxonomy_tags(page_object)
         has_changes = current_tags != tags
+        page_object.taxonomy_json = json.dumps(tags)
 
         # Then we can update it
         page_object.taxonomy_json = json.dumps(tags)
@@ -134,6 +148,7 @@ class BaseTagBulkAction(PageBulkAction):
         if page.alias_of_id:
             raise ValueError("Cannot modify tags on alias pages")
 
+        # Draft only pages
         if not page.live:
             return self._update_page_revision(
                 page.latest_revision or page,
@@ -145,22 +160,19 @@ class BaseTagBulkAction(PageBulkAction):
         # Published page - check if draft exists as well
         draft_revision = (
             page.latest_revision
-            if page.latest_revision
-            and (
-                not page.live_revision
-                or page.latest_revision.id != page.live_revision.id
-            )
+            if self.has_drafts(page)
             else None
         )
-
-        # Published page - build from snapshot, update tags and then publish that revision
-        update_published = self._update_page_revision(
-            page.live_revision or page,
-            live_tags,
-            user=user,
-            publish=True,
-            keep_draft_latest=False,
-        )
+        
+        if page.live_revision:
+            # Published page - build from snapshot, update tags and then publish that revision
+            update_published = self._update_page_revision(
+                page.live_revision,
+                live_tags,
+                user=user,
+                publish=True,
+                keep_draft_latest=False,
+            )
 
         # If there was a draft, keep that as the latest revision and update its tags
         update_draft = False
@@ -222,14 +234,16 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
                     self._get_live_tags(page), tags_to_remove
                 )
                 draft_tags = None
-                if page.has_unpublished_changes:
+                if self.has_drafts(page):
                     draft_current = self._get_draft_tags(page)
                     draft_tags = self._calculate_final_tags(
                         draft_current, tags_to_remove
                     )
+                    
+                logger.error(f"Removing tags from page ID {page.id}: {tags_to_remove}")
+                logger.info(f"draft_tags {draft_tags}",)
+                logger.info(f"live_tags {live_tags}",)
 
-                print(f"Removing tags {tags_to_remove} from page ID {page.id}")
-                print(f"Live tags after removal: {live_tags}")
                 self._save_tags(page, live_tags, draft_tags, request.user)
                 modified += 1
             except Exception as e:
