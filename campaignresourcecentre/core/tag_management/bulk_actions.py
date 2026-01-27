@@ -234,14 +234,6 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
                         draft_current, tags_to_remove
                     )
 
-                logger.error(f"Removing tags from page ID {page.id}: {tags_to_remove}")
-                logger.info(
-                    f"draft_tags {draft_tags}",
-                )
-                logger.info(
-                    f"live_tags {live_tags}",
-                )
-
                 self._save_tags(page, live_tags, draft_tags, request.user)
                 modified += 1
             except Exception as e:
