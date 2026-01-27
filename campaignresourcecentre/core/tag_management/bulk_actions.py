@@ -155,12 +155,8 @@ class BaseTagBulkAction(PageBulkAction):
             )
 
         # Published page - check if draft exists as well
-        draft_revision = (
-            page.latest_revision
-            if self.has_drafts(page)
-            else None
-        )
-        
+        draft_revision = page.latest_revision if self.has_drafts(page) else None
+
         update_published = False
         if page.live_revision:
             # Published page - build from snapshot, update tags and then publish that revision
@@ -237,10 +233,14 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
                     draft_tags = self._calculate_final_tags(
                         draft_current, tags_to_remove
                     )
-                    
+
                 logger.error(f"Removing tags from page ID {page.id}: {tags_to_remove}")
-                logger.info(f"draft_tags {draft_tags}",)
-                logger.info(f"live_tags {live_tags}",)
+                logger.info(
+                    f"draft_tags {draft_tags}",
+                )
+                logger.info(
+                    f"live_tags {live_tags}",
+                )
 
                 self._save_tags(page, live_tags, draft_tags, request.user)
                 modified += 1
