@@ -111,14 +111,19 @@ class BaseTagBulkAction(PageBulkAction):
 
         page_object = source.as_object() if isinstance(source, Revision) else source
 
-        page_object.taxonomy_json = json.dumps(tags)
+        # Get current tags BEFORE updating to properly detect changes
         current_tags = get_page_taxonomy_tags(page_object)
         has_changes = current_tags != tags
 
+        # Then we can update it
+        page_object.taxonomy_json = json.dumps(tags)
+
         if tags or keep_draft_latest:
+            # For drafts we want to always mark as changed so has_unpublished_changes is set
+            mark_as_changed = has_changes if publish else True
             revision = page_object.save_revision(
                 user=user,
-                changed=has_changes,
+                changed=mark_as_changed,
                 log_action=self.action_type if has_changes else False,
             )
             if publish:
@@ -176,7 +181,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
     result_template = "tag_management/results.html"
     display_name = "Remove Tags"
     aria_label = "Remove tags from selected pages"
-    action_type = "remove"
+    action_type = "remove_tags"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -230,7 +235,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
             except Exception as e:
                 errors[page.id] = str(e)
                 failed += 1
-                logger.error(f"Error removing tags from page ID {item['item_id']}: {e}")
+                logger.error(f"Error removing tags from page ID {page.id}: {e}")
 
         page_ids = [item["item"].id for item in items]
         fresh_pages = Page.objects.filter(id__in=page_ids).specific()
@@ -301,7 +306,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
 class AddTagsBulkAction(BaseTagBulkAction):
     display_name = "Add Tags"
     aria_label = "Add tags to selected pages"
-    action_type = "add"
+    action_type = "add_tags"
     template_name = "tag_management/add-tags-form.html"
     result_template = "tag_management/results.html"
 
@@ -348,7 +353,7 @@ class AddTagsBulkAction(BaseTagBulkAction):
             except Exception as e:
                 errors[page.id] = str(e)
                 failed += 1
-                logger.error(f"Error adding tags to page ID {item['item_id']}: {e}")
+                logger.error(f"Error adding tags to page ID {page.id}: {e}")
 
         page_ids = [item["item"].id for item in items]
         fresh_pages = Page.objects.filter(id__in=page_ids).specific()
