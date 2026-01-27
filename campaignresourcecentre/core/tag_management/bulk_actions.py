@@ -129,9 +129,6 @@ class BaseTagBulkAction(PageBulkAction):
         has_changes = current_tags != tags
         page_object.taxonomy_json = json.dumps(tags)
 
-        # Then we can update it
-        page_object.taxonomy_json = json.dumps(tags)
-
         if tags or keep_draft_latest:
             # For drafts we want to always mark as changed so has_unpublished_changes is set
             mark_as_changed = has_changes if publish else True
@@ -164,6 +161,7 @@ class BaseTagBulkAction(PageBulkAction):
             else None
         )
         
+        update_published = False
         if page.live_revision:
             # Published page - build from snapshot, update tags and then publish that revision
             update_published = self._update_page_revision(
