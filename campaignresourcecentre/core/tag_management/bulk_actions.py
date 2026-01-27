@@ -192,7 +192,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         items = context.get("items", [])
-        
+
         for page in items:
             item = page["item"]
             page_tags = self._get_live_tags(item)
