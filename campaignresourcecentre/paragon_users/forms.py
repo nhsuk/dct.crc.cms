@@ -162,7 +162,7 @@ class RegisterForm(forms.Form):
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
-                "aria-describedby": "job_role-error",
+                "aria-describedby": "health_role-error",
             },
             choices=HEALTH_CHOICES,
         ),
@@ -175,7 +175,7 @@ class RegisterForm(forms.Form):
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
-                "aria-describedby": "job_role-error",
+                "aria-describedby": "education_role-error",
             },
             choices=EDUCATION_CHOICES,
         ),
