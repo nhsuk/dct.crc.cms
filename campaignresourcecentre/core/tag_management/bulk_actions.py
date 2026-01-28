@@ -118,9 +118,7 @@ class BaseTagBulkAction(PageBulkAction):
 
         return False
 
-    def _update_page_revision(
-        self, source, tags, user, publish=False, keep_draft_latest=False
-    ):
+    def _update_page_revision(self, source, tags, user, publish=False):
         """Update page revision with new tags."""
 
         page_object = source.as_object() if isinstance(source, Revision) else source
@@ -129,16 +127,15 @@ class BaseTagBulkAction(PageBulkAction):
         has_changes = current_tags != tags
         page_object.taxonomy_json = json.dumps(tags)
 
-        if tags or keep_draft_latest:
-            # For drafts we want to always mark as changed so has_unpublished_changes is set
-            mark_as_changed = has_changes if publish else True
-            revision = page_object.save_revision(
-                user=user,
-                changed=mark_as_changed,
-                log_action=self.action_type if has_changes else False,
-            )
-            if publish:
-                revision.publish(user=user, log_action=True)
+        # For draft onlys we want to always mark as changed so has_unpublished_changes is set
+        mark_as_changed = has_changes if publish else True
+        revision = page_object.save_revision(
+            user=user,
+            changed=mark_as_changed,
+            log_action=self.action_type if has_changes else False,
+        )
+        if publish:
+            revision.publish(user=user, log_action=True)
         return has_changes
 
     def _save_tags(self, page, live_tags, draft_tags, user):
@@ -165,7 +162,6 @@ class BaseTagBulkAction(PageBulkAction):
                 live_tags,
                 user=user,
                 publish=True,
-                keep_draft_latest=False,
             )
 
         # If there was a draft, keep that as the latest revision and update its tags
@@ -176,7 +172,6 @@ class BaseTagBulkAction(PageBulkAction):
                 draft_tags or live_tags,
                 user=user,
                 publish=False,
-                keep_draft_latest=True,
             )
 
         return update_published or update_draft
