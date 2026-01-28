@@ -106,3 +106,17 @@
     font-weight: 700;
     font-size: 1.1rem;
 }
+
+
+
+.tags-container .taxonomy-tag--added {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.tags-container .taxonomy-tag--removed {
+  background-color: #ffebee;
+  border-color: #f44336;
+  text-decoration: line-through;
+  opacity: 0.5;
+}

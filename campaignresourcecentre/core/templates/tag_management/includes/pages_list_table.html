@@ -1,22 +1,26 @@
 <table class="listing">
   <thead>
     <tr>
-      <th class="title">Page</th>
+      <th>Page</th>
+      <th>Status</th>
       <th>Tags</th>
     </tr>
   </thead>
   <tbody>
     {% for page_data in items %}
       <tr>
-        <td class="title">
+        <td>
           <div class="title-wrapper">
-            <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">{{ page_data.item.get_admin_display_title }}</a>
+            <a href="{% url 'wagtailadmin_pages:edit' page_data.item.id %}" target="_blank" rel="noreferrer">{{ page_data.item.get_admin_display_title }}</a>
           </div>
         </td>
         <td>
-          {% if page_data.taxonomy_tags %}
+          {% include 'wagtailadmin/shared/page_status_tag.html' with page=page_data.item %}
+        </td>
+        <td>
+          {% if page_data.tags %}
             <div class="tags-container">
-              {% for term in page_data.taxonomy_tags %}
+              {% for term in page_data.tags %}
                 <button class="taxonomy-tag btn-remove" data-tag-code="{{ term.code }}" data-page-id="{{ page_data.item.id }}">
                   {{ term.label }}
                 </span>
