@@ -1,0 +1,51 @@
+<table class="listing">
+  <thead>
+    <tr>
+      <th>Page</th>
+      <th>Page Status</th>
+      <th>Tags</th>
+      {% if not show_results %}
+        <th>Changes</th>
+      {% else %}
+        <th>Result</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for page in items %}
+      <tr>
+        <td>
+          <a href="{% url 'wagtailadmin_pages:edit' page.item.id %}" target="_blank" rel="noreferrer">{{ page.item.get_admin_display_title }}</a>
+        </td>
+        <td>
+          {% include 'wagtailadmin/shared/page_status_tag.html' with page=page.item %}
+        </td>
+        <td>
+          {% include 'tag_management/includes/tags.html' with tags=page.tags %}
+        </td>
+        {% if not show_results %}
+          <td>
+            {% if page.added_count %}
+              <span class="tag-change-added">{{ page.added_count }} Added</span>
+            {% endif %}
+            {% if page.removed_count %}
+              <span class="tag-change-removed">{{ page.removed_count }} Removed</span>
+            {% endif %}
+            {% if not page.has_changes %}
+              <em class="help-text">None</em>
+            {% endif %}
+          </td>
+        {% else %}
+          <td>
+            {% if page.error %}
+              <span class="w-status w-status--critical">Failed</span>
+              <br /><small>{{ page.error }}</small>
+            {% else %}
+              <span class="w-status w-status--label">Updated</span>
+            {% endif %}
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

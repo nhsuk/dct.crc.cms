@@ -1,0 +1,9 @@
+<div class="tags-container">
+  {% for tag in tags %}
+    <span class="taxonomy-tag taxonomy-tag--{{ tag.status }}">
+      <span class="tag-label">
+        {{ tag.label }}
+      </span>
+    </span>
+  {% endfor %}
+</div>
