@@ -152,7 +152,9 @@ class BaseTagBulkAction(PageBulkAction):
             )
 
         # Published page - check if draft exists as well
-        draft_revision = page.latest_revision if self._has_unpublished_changes(page) else None
+        draft_revision = (
+            page.latest_revision if self._has_unpublished_changes(page) else None
+        )
 
         update_published = False
         if page.live_revision:
