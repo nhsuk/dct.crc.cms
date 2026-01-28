@@ -89,7 +89,7 @@ class BaseTagBulkAction(PageBulkAction):
         source = page.latest_revision.as_object()
         return get_page_taxonomy_tags(source)
 
-    def _get_live_tags(self, page):
+    def _get_current_tags(self, page):
         """Get tags to use as the base for operations."""
         if page.live:
             source = (
@@ -104,7 +104,7 @@ class BaseTagBulkAction(PageBulkAction):
 
         return get_page_taxonomy_tags(source)
 
-    def has_drafts(self, page):
+    def _has_unpublished_changes(self, page):
         """Check if the page has both live and draft versions."""
         if not page.live:
             return False
@@ -152,7 +152,7 @@ class BaseTagBulkAction(PageBulkAction):
             )
 
         # Published page - check if draft exists as well
-        draft_revision = page.latest_revision if self.has_drafts(page) else None
+        draft_revision = page.latest_revision if self._has_unpublished_changes(page) else None
 
         update_published = False
         if page.live_revision:
@@ -190,7 +190,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
 
         for page in items:
             item = page["item"]
-            page_tags = self._get_live_tags(item)
+            page_tags = self._get_current_tags(item)
             page.update(
                 {
                     "tags": page_tags,
@@ -221,10 +221,10 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
 
             try:
                 live_tags = self._calculate_final_tags(
-                    self._get_live_tags(page), tags_to_remove
+                    self._get_current_tags(page), tags_to_remove
                 )
                 draft_tags = None
-                if self.has_drafts(page):
+                if self._has_unpublished_changes(page):
                     draft_current = self._get_draft_tags(page)
                     draft_tags = self._calculate_final_tags(
                         draft_current, tags_to_remove
@@ -244,7 +244,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
             fresh_items.append(
                 {
                     "item": page,
-                    "tags": self._get_live_tags(page),
+                    "tags": self._get_current_tags(page),
                     "status": "error" if page.id in errors else "updated",
                     "error": errors.get(page.id),
                 }
@@ -273,7 +273,7 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
             item = page["item"]
 
             tags_to_remove = tags.get(str(item.id), [])
-            current_tags = self._get_live_tags(item)
+            current_tags = self._get_current_tags(item)
             new_tags = []
 
             for tag in current_tags:
@@ -288,8 +288,6 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
 
             return_items.append(
                 {
-                    "item_id": item.id,
-                    "item_name": item.get_admin_display_title(),
                     "item": item,
                     "tags": new_tags,
                     "removed_count": removed_count,
@@ -338,7 +336,7 @@ class AddTagsBulkAction(BaseTagBulkAction):
 
             try:
                 live_tags = self._calculate_final_tags(
-                    self._get_live_tags(page), tags_to_add, operation_mode
+                    self._get_current_tags(page), tags_to_add, operation_mode
                 )
 
                 draft_tags = None
@@ -362,7 +360,7 @@ class AddTagsBulkAction(BaseTagBulkAction):
             fresh_items.append(
                 {
                     "item": page,
-                    "tags": self._get_live_tags(page),
+                    "tags": self._get_current_tags(page),
                     "status": "error" if page.id in errors else "updated",
                     "error": errors.get(page.id),
                 }
@@ -394,8 +392,6 @@ class AddTagsBulkAction(BaseTagBulkAction):
 
             return_items.append(
                 {
-                    "item_id": item.id,
-                    "item_name": item.get_admin_display_title(),
                     "item": item,
                     "tags": result["tags"],
                     "draft_page_tags": page.get("draft_page_tags", []),
@@ -417,7 +413,7 @@ class AddTagsBulkAction(BaseTagBulkAction):
             ]
 
     def _get_tags_with_status(self, page, tags, operation_mode="merge"):
-        current_tags = self._get_live_tags(page)
+        current_tags = self._get_current_tags(page)
         if tags is None:
             return {
                 "tags": [{**tag, "status": "unchanged"} for tag in current_tags],

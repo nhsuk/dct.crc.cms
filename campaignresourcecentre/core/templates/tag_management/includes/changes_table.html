@@ -12,34 +12,34 @@
     </tr>
   </thead>
   <tbody>
-    {% for item in items %}
+    {% for page in items %}
       <tr>
         <td>
-          <a href="{% url 'wagtailadmin_pages:edit' item.item.id %}" target="_blank" rel="noreferrer">{{ item.item.get_admin_display_title }}</a>
+          <a href="{% url 'wagtailadmin_pages:edit' page.item.id %}" target="_blank" rel="noreferrer">{{ page.item.get_admin_display_title }}</a>
         </td>
         <td>
-          {% include 'wagtailadmin/shared/page_status_tag.html' with page=item.item %}
+          {% include 'wagtailadmin/shared/page_status_tag.html' with page=page.item %}
         </td>
         <td>
-          {% include 'tag_management/includes/tags.html' with tags=item.tags %}
+          {% include 'tag_management/includes/tags.html' with tags=page.tags %}
         </td>
         {% if not show_results %}
           <td>
-            {% if item.added_count %}
-              <span class="tag-change-added">{{ item.added_count }} Added</span>
+            {% if page.added_count %}
+              <span class="tag-change-added">{{ page.added_count }} Added</span>
             {% endif %}
-            {% if item.removed_count %}
-              <span class="tag-change-removed">{{ item.removed_count }} Removed</span>
+            {% if page.removed_count %}
+              <span class="tag-change-removed">{{ page.removed_count }} Removed</span>
             {% endif %}
-            {% if not item.has_changes %}
+            {% if not page.has_changes %}
               <em class="help-text">None</em>
             {% endif %}
           </td>
         {% else %}
           <td>
-            {% if item.error %}
+            {% if page.error %}
               <span class="w-status w-status--critical">Failed</span>
-              <br /><small>{{ item.error }}</small>
+              <br /><small>{{ page.error }}</small>
             {% else %}
               <span class="w-status w-status--label">Updated</span>
             {% endif %}
