@@ -2,7 +2,9 @@
 {% load wagtailadmin_tags static %}
 
 {% block titletag %}
-  {% block page_title %}Manage Tags{% endblock %}
+  {% block page_title %}
+    Manage Tags
+  {% endblock %}
 {% endblock %}
 
 {% block form_section %}
@@ -16,36 +18,43 @@
         {% csrf_token %}
         {% for key, values in request.GET.lists %}
           {% for val in values %}
-            <input type="hidden" name="{{ key }}" value="{{ val }}">
+            <input type="hidden" name="{{ key }}" value="{{ val }}" />
           {% endfor %}
         {% endfor %}
         {% include 'wagtailadmin/shared/non_field_errors.html' %}
-        
-        {% block form_fields %}{% endblock %}
-        
-        <input type="hidden" name="next_action" value="preview_changes">
+
+        {% block form_fields %}
+        {% endblock %}
+
+        <input type="hidden" name="next_action" value="preview_changes" />
         <footer class="form-actions">
           <button type="submit" class="button">Preview changes</button>
-          {% include "wagtailadmin/bulk_actions/confirmation/go_back.html" %}
+          {% include 'wagtailadmin/bulk_actions/confirmation/go_back.html' %}
         </footer>
       </form>
     {% else %}
       <h2>Preview Changes</h2>
-      <p class="help-block help-info">Review the changes below. Click "Save changes" to apply them.</p>
-      
-      {% block preview_content %}{% endblock %}
-      
+      <div class="help-block help-info">
+        <svg class="icon icon-help" aria-hidden="true">
+          <use href="#icon-help"></use>
+        </svg>Review the changes below. Click "Save changes" to apply them.
+      </div>
+
+      {% block preview_content %}
+      {% endblock %}
+
       <form method="post" novalidate>
         {% csrf_token %}
         {% for key, values in request.GET.lists %}
           {% for val in values %}
-            <input type="hidden" name="{{ key }}" value="{{ val }}">
+            <input type="hidden" name="{{ key }}" value="{{ val }}" />
           {% endfor %}
         {% endfor %}
-        <input type="hidden" name="calculated_changes" value="{{ calculated_changes_json }}">
+
         <input type="hidden" name="tags_to_add" value="{{ request.POST.tags_to_add }}">
         <input type="hidden" name="tags_to_remove" value="{{ request.POST.tags_to_remove }}">
         <input type="hidden" name="tag_operation_mode" value="{{ request.POST.tag_operation_mode }}">
+
         <footer class="form-actions">
           <button type="submit" class="button" name="next_action" value="apply_changes">Save changes</button>
           <button type="submit" class="button serious" name="next_action" value="go_back">Go back</button>

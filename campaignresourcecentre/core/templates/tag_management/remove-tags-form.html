@@ -18,42 +18,5 @@
     <strong>Operation Mode:</strong> Remove tags
   </p>
   
-  <table class="listing">
-    <thead>
-      <tr>
-        <th>Page</th>
-        <th>Updated Tags</th>
-        <th>Changes</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for page_data in items %}
-        <tr>
-          <td>
-            <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">
-              {{ page_data.item.get_admin_display_title }}
-            </a>
-          </td>
-          <td>
-            {% if page_data.final_tags %}
-              <div class="tags-container">
-                {% for tag in page_data.final_tags %}
-                  <span class="taxonomy-tag"><span class="tag-label">{{ tag.label }}</span></span>
-                {% endfor %}
-              </div>
-            {% else %}
-              <em class="help-text">No tags</em>
-            {% endif %}
-          </td>
-          <td>
-            {% if page_data.tags_removed %}
-              <span class="change-badge removed">{{ page_data.tags_removed|length }} removed</span>
-            {% else %}
-              <em class="help-text">No changes</em>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% include 'tag_management/includes/changes_table.html' with show_results=False %}
 {% endblock %}
