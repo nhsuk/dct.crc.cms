@@ -94,11 +94,11 @@
     "prettier": "^2.5.1",
     "sass": "^1.45.1",
     "sass-loader": "^8.0.2",
-    "stylelint": "^14.11.0",
-    "stylelint-config-torchbox": "^1.1.0",
+    "stylelint": "^16.26.1",
+    "stylelint-config-torchbox": "^4.0.0",
     "url-loader": "^3.0.0",
-    "webpack": "^4.47.0",
-    "webpack-cli": "^4.10.0"
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
