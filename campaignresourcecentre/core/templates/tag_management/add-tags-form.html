@@ -8,60 +8,19 @@
 {% endblock %}
 
 {% block form_fields %}
-  {% include 'wagtailadmin/panels/taxonomy_panel.html' with field=form.tags_to_add taxonomy_terms_json=taxonomy_terms_json taxonomy_terms_error_message=taxonomy_terms_error_message %}
+  {% include 'wagtailadmin/panels/taxonomy_panel.html' with field=form.tags_to_add taxonomy_terms_json=taxonomy_terms_json %}
   {% include 'wagtailadmin/shared/field.html' with field=form.tag_operation_mode %}
 {% endblock %}
 
 {% block preview_content %}
   <p class="operation-text">
     <strong>Operation Mode:</strong>
-    {% if operation_mode == 'replace' %}
+    {% if form.tag_operation_mode.value == 'replace' %}
       Replace (removed existing tags, added new tags)
     {% else %}
       Merge (added to existing tags)
     {% endif %}
   </p>
   
-  <table class="listing">
-    <thead>
-      <tr>
-        <th>Page</th>
-        <th>Updated Tags</th>
-        <th>Changes</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for page_data in items %}
-        <tr>
-          <td>
-            <a href="{{ page_data.item.edit_url }}" target="_blank" rel="noreferrer">
-              {{ page_data.item.get_admin_display_title }}
-            </a>
-          </td>
-          <td>
-            {% if page_data.final_tags %}
-              <div class="tags-container">
-                {% for tag in page_data.final_tags %}
-                  <span class="taxonomy-tag"><span class="tag-label">{{ tag.label }}</span></span>
-                {% endfor %}
-              </div>
-            {% else %}
-              <em class="help-text">No tags</em>
-            {% endif %}
-          </td>
-          <td>
-            {% if page_data.tags_added %}
-              <span class="change-badge added">{{ page_data.tags_added|length }} added</span>
-            {% endif %}
-            {% if page_data.tags_removed %}
-              <span class="change-badge removed">{{ page_data.tags_removed|length }} removed</span>
-            {% endif %}
-            {% if not page_data.had_changes %}
-              <em class="help-text">No changes</em>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% include 'tag_management/includes/changes_table.html' with show_results=False %}
 {% endblock %}
