@@ -14,7 +14,6 @@ from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
 )
 
-from wagtail.models import Site
 from campaignresourcecentre.utils.models import FeatureFlags
 
 logger = getLogger(__name__)
@@ -23,12 +22,16 @@ JOB_CHOICES = (
     ("", "Select a job function"),
     ("director", "Director / Board Member / CEO"),
     ("admin", "Administration"),
-    ("comms", "Communications"),
     ("education", "Education and Teaching"),
-    ("marketing", "Marketing"),
+    ("marketing", "Marketing and communications"),
     ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
     ("student", "Student / Unemployed / Retired"),
+    ("projectmanagement", "Project Management"),
+    ("planning", "Planning and Development"),
+    ("policy", "Policy"),
+    ("environmental", "Environmental Health"),
+    ("substance", "Substance Abuse and Addiction Services"),
     ("health", "Health"),
     ("other", "Other"),
 )
@@ -51,6 +54,13 @@ HEALTH_CHOICES = (
     ("health:carecoordinator", "Care Coordinator"),
     ("health:immunisation", "Immunisation Coordinator"),
     ("health:mentalhealth", "Mental Health"),
+)
+
+EDUCATION_CHOICES = (
+    ("education:teacher", "Teacher"),
+    ("education:headteacher", "Headteacher"),
+    ("education:teachingassistant", "Teaching Assistant"),
+    ("education:schoolsecretary", "School Secretary"),
 )
 
 
@@ -147,17 +157,30 @@ class RegisterForm(forms.Form):
         error_messages={"required": "Select your job function"},
     )
 
-    area_work = forms.CharField(
+    health_role = forms.CharField(
         max_length=100,
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
-                "aria-describedby": "area_work-error",
+                "aria-describedby": "health_role-error",
             },
             choices=HEALTH_CHOICES,
         ),
         required=False,
-        error_messages={"required": "Select an area of work"},
+        error_messages={"required": "Select a job role"},
+    )
+
+    education_role = forms.CharField(
+        max_length=100,
+        widget=forms.Select(
+            attrs={
+                "class": "govuk-select",
+                "aria-describedby": "education_role-error",
+            },
+            choices=EDUCATION_CHOICES,
+        ),
+        required=False,
+        error_messages={"required": "Select a job role"},
     )
 
     organisation = forms.CharField(
@@ -241,7 +264,8 @@ class RegisterForm(forms.Form):
             "last_name",
             "organisation",
             "job_title",
-            "area_work",
+            "health_role",
+            "education_role",
             "postcode",
             "terms",
         ]
@@ -306,7 +330,8 @@ class UserAdminForm(forms.Form):
     last_name = forms.CharField()
     organisation = forms.CharField()
     job_title = forms.ChoiceField(choices=JOB_CHOICES)
-    area_work = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    health_role = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    education_role = forms.ChoiceField(required=False, choices=EDUCATION_CHOICES)
     role = forms.ChoiceField(choices=ROLE_CHOICES)
     postcode = forms.CharField()
 
@@ -320,7 +345,8 @@ class UserAdminForm(forms.Form):
                 "last_name",
                 "organisation",
                 "job_title",
-                "area_work",
+                "health_role",
+                "education_role",
                 "postcode",
             )
             for field in disabled_fields:
@@ -334,7 +360,9 @@ class UserAdminForm(forms.Form):
         if self.initial["job_title"] is not None:
             self.initial["job_title"] = job_title.split(":")[0]
         if self.initial["job_title"] == "health":
-            self.initial["area_work"] = job_title
+            self.initial["health_role"] = job_title
+        if self.initial["job_title"] == "education":
+            self.initial["education_role"] = job_title
 
 
 class LoginForm(forms.Form):

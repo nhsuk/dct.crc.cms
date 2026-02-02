@@ -37,6 +37,7 @@ from .forms import (
     EmailUpdatesForm,
     JOB_CHOICES,
     HEALTH_CHOICES,
+    EDUCATION_CHOICES,
 )
 from .helpers.newsletter import (
     deserialise,
@@ -92,7 +93,12 @@ def signup(request):
             first_name = f.cleaned_data.get("first_name")
             last_name = f.cleaned_data.get("last_name")
             job_title = f.cleaned_data.get("job_title")
-            area_work = f.cleaned_data.get("area_work")
+            if job_title == "health":
+                job_role = f.cleaned_data.get("health_role")
+            elif job_title == "education":
+                job_role = f.cleaned_data.get("education_role")
+            else:
+                job_role = ""
             organisation = (
                 f.cleaned_data.get("organisation") if job_title != "student" else " "
             )
@@ -114,7 +120,7 @@ def signup(request):
                     last_name,
                     organisation,
                     job_title,
-                    area_work,
+                    job_role,
                     postcode,
                     postcode_region,
                     created_at,
@@ -298,11 +304,7 @@ def get_role(user_email: str, user_job: str):
         user_email.endswith("@nhs.net")
         or user_email.endswith("@gov.uk")
         or user_email.endswith(".gov.uk")
-    ) and (
-        user_job == "comms"
-        or user_job == "health:improvement"
-        or user_job == "marketing"
-    ):
+    ) and (user_job == "health:improvement" or user_job == "marketing"):
         return "uber"
     else:
         return "standard"
@@ -530,7 +532,11 @@ def user_profile(request):
         "content"
     ]
 
-    job_choices = {**dict(JOB_CHOICES[1:]), **dict(HEALTH_CHOICES)}
+    job_choices = {
+        **dict(JOB_CHOICES[1:]),
+        **dict(HEALTH_CHOICES),
+        **dict(EDUCATION_CHOICES),
+    }
     job_title_raw = (
         user.get("ContactVar2")
         if user.get("ContactVar2")

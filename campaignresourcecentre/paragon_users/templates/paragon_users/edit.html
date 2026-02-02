@@ -13,21 +13,29 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const jobTitleElement = document.getElementById('id_job_title');
-            const areaWorkElement = document.getElementById('id_area_work');
-            const areaWorkRow = areaWorkElement.closest('li');
+            const roleElements = {}
+            for (const jobTitle of ['health', 'education']) {
+                roleElements[jobTitle] = {
+                    element: document.getElementById(`id_${jobTitle}_role`),
+                    row: document.getElementById(`id_${jobTitle}_role`).closest('li')
+                };
+            }
 
-            function hideShowAreaWorkRow(jobTitle) {
-                if (jobTitle === 'health') {
-                    areaWorkRow.style.display = 'block';
-                } else {
-                    areaWorkRow.style.display = 'none';
-                    areaWorkElement.value = '';
+            function hideShowJobRoleRow(selectedJobTitle) {
+                for (const jobTitle in roleElements) {
+                    const role = roleElements[jobTitle];
+                    if (selectedJobTitle === jobTitle) {
+                        role.row.style.display = 'block';
+                    } else {
+                        role.row.style.display = 'none';
+                        role.element.value = '';
+                    }
                 }
             }
 
-            hideShowAreaWorkRow(jobTitleElement.value);
+            hideShowJobRoleRow(jobTitleElement.value);
 
-            jobTitleElement.addEventListener('change', (event) => hideShowAreaWorkRow(event.target.value));
+            jobTitleElement.addEventListener('change', (event) => hideShowJobRoleRow(event.target.value));
         });
     </script>
 {% endblock %}

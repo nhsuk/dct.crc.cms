@@ -143,7 +143,7 @@ class Client:
         last_name,
         organisation,
         job_title,
-        area_work,
+        job_role,
         postcode,
         postcode_region,
         created_at,
@@ -156,7 +156,7 @@ class Client:
             last_name,
             organisation,
             job_title,
-            area_work,
+            job_role,
             postcode,
             postcode_region,
             created_at,
@@ -235,7 +235,7 @@ class Client:
         subscriptions=None,
         postcode=None,
         postcode_region=None,
-        area_work=None,
+        job_role=None,
     ):
         self.call_method = "/UpdateProfile"
         user_profile = User(
@@ -245,7 +245,7 @@ class Client:
             last_name,
             organisation,
             job_title,
-            area_work,
+            job_role,
             role,
             active,
             "",

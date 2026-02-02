@@ -172,7 +172,7 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "name": "falls_back_to_productregistrationvar4_when_contactvar2_none",
                 "ContactVar2": None,
                 "ProductRegistrationVar4": "marketing",
-                "expected_job_title": "Marketing",
+                "expected_job_title": "Marketing and communications",
             },
         ]
 
@@ -229,7 +229,7 @@ class ParagonUsersTestCase(WagtailPageTests):
 
     @patch("campaignresourcecentre.paragon_users.helpers.postcodes.get_region")
     @patch("campaignresourcecentre.paragon.client.Client")
-    def test_signup_with_area_work_and_location_data(
+    def test_signup_with_job_role_and_location_data(
         self, mock_client_class, mock_get_region
     ):
         from campaignresourcecentre.paragon_users.helpers.postcodes import get_region
@@ -237,7 +237,7 @@ class ParagonUsersTestCase(WagtailPageTests):
         mock_get_region.return_value = "London"
         mock_client = mock_client_class.return_value
 
-        area_work = "Primary Care"
+        job_role = "Primary Care"
         postcode = "SW1A 1AA"
         postcode_region = get_region(postcode)
 
@@ -251,7 +251,7 @@ class ParagonUsersTestCase(WagtailPageTests):
             "Doe",
             "NHS Trust",
             "health:gp",
-            area_work,
+            job_role,
             postcode,
             postcode_region,
             "2025-11-25 10:00:00",
@@ -262,7 +262,7 @@ class ParagonUsersTestCase(WagtailPageTests):
         self.assertEqual(call_args[8], "London")
 
     @patch("campaignresourcecentre.paragon.client.Client")
-    def test_user_profile_update_with_work_area_and_location(self, mock_client_class):
+    def test_user_profile_update_with_job_role_and_location(self, mock_client_class):
         from campaignresourcecentre.paragon.client import Client
 
         mock_client = mock_client_class.return_value
@@ -270,14 +270,14 @@ class ParagonUsersTestCase(WagtailPageTests):
 
         client.update_user_profile(
             user_token="test_token",
-            area_work="General Practice",
+            job_role="General Practice",
             postcode_region="Yorkshire",
             postcode="LS1 1AA",
         )
 
         mock_client.update_user_profile.assert_called_once_with(
             user_token="test_token",
-            area_work="General Practice",
+            job_role="General Practice",
             postcode_region="Yorkshire",
             postcode="LS1 1AA",
         )
@@ -309,14 +309,14 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "FirstName": "John",
                 "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "GP",
+                "ProductRegistrationVar4": "health",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
                 "ProductRegistrationVar8": "",
                 "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "Emergency Medicine",
+                "ContactVar2": "health:gp",
                 "ContactVar3": "Manchester",
             }
         }
@@ -328,8 +328,8 @@ class ParagonUsersTestCase(WagtailPageTests):
             "first_name": "John",
             "last_name": "Doe",
             "organisation": "NHS Trust",
-            "job_title": "GP",
-            "area_work": "Primary Care",
+            "job_title": "health",
+            "health_role": "health:gp",
             "postcode": "LS1 1AA",
         }
 
@@ -375,7 +375,7 @@ class ParagonUsersTestCase(WagtailPageTests):
     @patch("campaignresourcecentre.paragon_users.admin_views.UserAdminForm")
     @patch("campaignresourcecentre.paragon_users.admin_views.get_region")
     @patch("campaignresourcecentre.paragon_users.admin_views.Client")
-    def test_edit_view_updates_user_with_area_work_and_region(
+    def test_edit_view_updates_user_with_job_role_and_region(
         self, mock_client_class, mock_get_region, mock_form_class
     ):
         mock_get_region.return_value = "Greater Manchester"
@@ -391,7 +391,7 @@ class ParagonUsersTestCase(WagtailPageTests):
 
         mock_client.update_user_profile.assert_called_once()
         call_kwargs = mock_client.update_user_profile.call_args[1]
-        self.assertEqual(call_kwargs["area_work"], "Primary Care")
+        self.assertEqual(call_kwargs["job_role"], "health:gp")
         self.assertEqual(call_kwargs["postcode_region"], "Greater Manchester")
 
     @patch("campaignresourcecentre.paragon_users.admin_views.Client")
@@ -404,14 +404,14 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "FirstName": "John",
                 "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "GP",
+                "ProductRegistrationVar4": "health",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
                 "ProductRegistrationVar8": "",
                 "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "Primary Care",
+                "ContactVar2": "health:gp",
                 "ContactVar3": "Manchester",
             }
         }
@@ -421,7 +421,7 @@ class ParagonUsersTestCase(WagtailPageTests):
         mock_client.get_user_profile.assert_called_once_with(user_token="test_token")
         self.assertEqual(response.status_code, 200)
 
-    def test_signup_extracts_area_work_from_form(self):
+    def test_signup_extracts_health_role_from_form(self):
         from campaignresourcecentre.paragon_users.views import RegisterForm
 
         form_data = {
@@ -429,19 +429,41 @@ class ParagonUsersTestCase(WagtailPageTests):
             "last_name": "Doe",
             "email": "test@example.com",
             "password": "TestPass123@",
-            "job_title": "health:gp",
-            "area_work": "health:gp",
+            "job_title": "health",
+            "health_role": "health:gp",
             "organisation": "Test Org",
             "postcode": "SW1A1AA",
         }
 
         form = RegisterForm(form_data)
         if form.is_valid():
-            area_work = form.cleaned_data.get("area_work")
-            self.assertEqual(area_work, "health:gp")
+            health_role = form.cleaned_data.get("health_role")
+            self.assertEqual(health_role, "health:gp")
         else:
-            area_work = form.data.get("area_work")
-            self.assertEqual(area_work, "health:gp")
+            health_role = form.data.get("health_role")
+            self.assertEqual(health_role, "health:gp")
+
+    def test_signup_extracts_education_role_from_form(self):
+        from campaignresourcecentre.paragon_users.views import RegisterForm
+
+        form_data = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@example.com",
+            "password": "TestPass123@",
+            "job_title": "education",
+            "education_role": "education:teacher",
+            "organisation": "Test Org",
+            "postcode": "SW1A1AA",
+        }
+
+        form = RegisterForm(form_data)
+        if form.is_valid():
+            education_role = form.cleaned_data.get("education_role")
+            self.assertEqual(education_role, "education:teacher")
+        else:
+            education_role = form.data.get("education_role")
+            self.assertEqual(education_role, "education:teacher")
 
     def test_signup_handles_student_organisation_logic(self):
         test_cases = [
@@ -497,8 +519,9 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "password": "TestPass123@",
                 "first_name": "John",
                 "last_name": "Doe",
-                "job_title": "health:gp",
-                "area_work": "Emergency Medicine",
+                "job_title": "education",
+                "health_role": "health:gp",
+                "education_role": "education:teacher",
                 "organisation": "Test Org",
                 "postcode": "SW1A 1AA",
             }
@@ -506,7 +529,6 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "organisation": type("obj", (object,), {"required": False})(),
                 "job_title": type("obj", (object,), {"required": False})(),
             }
-            mock_form.data = {"job_title": "health:gp"}
 
             from campaignresourcecentre.paragon_users.views import signup
 
@@ -516,5 +538,5 @@ class ParagonUsersTestCase(WagtailPageTests):
 
             mock_client.create_account.assert_called_once()
             call_args = mock_client.create_account.call_args[0]
-            self.assertEqual(call_args[6], "Emergency Medicine")
+            self.assertEqual(call_args[6], "education:teacher")
             self.assertEqual(call_args[8], "Test Region")
