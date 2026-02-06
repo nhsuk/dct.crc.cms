@@ -1,0 +1,74 @@
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: testEnv
+    displayName: Test Environment
+    type: string
+    values:
+      - Review
+      - Integration
+      - Staging
+      - Production
+  - name: reviewBaseUrl
+    displayName: Base Url (of Review Environment)
+    default: 'https://dct-crccms-fde-...'
+  - name: tags
+    displayName: Frontend test tags (default Smoke)
+    type: string
+    default: Smoke
+
+stages:
+  - stage: Test
+    displayName: Test ${{ parameters.testEnv }}
+    jobs:
+      - job: Review
+        displayName: Review
+        condition: eq(${{ parameters.testEnv }}, 'Review')
+        variables:
+          - group: Review
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: STAGING_AUTHORIZATION
+              baseUrl: ${{ parameters.reviewBaseUrl }}
+              tags: ${{ parameters.tags }}
+
+      - job: Integration
+        displayName: Integration
+        condition: eq(${{ parameters.testEnv }}, 'Integration')
+        variables:
+          - group: Integration
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: STAGING_AUTHORIZATION
+              baseUrl: https://int.campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
+
+      - job: Staging
+        displayName: Staging
+        condition: eq(${{ parameters.testEnv }}, 'Staging')
+        variables:
+          - group: Staging
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: STAGING_AUTHORIZATION
+              baseUrl: https://staging.campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
+
+  - stage: Production
+    displayName: Production
+    condition: eq(${{ parameters.testEnv }}, 'Production')
+    jobs:
+      - deployment: approval
+        environment: production
+      - job: Production
+        variables:
+          - group: Production
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              baseUrl: https://campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
