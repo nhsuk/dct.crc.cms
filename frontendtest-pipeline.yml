@@ -21,6 +21,9 @@ parameters:
   - name: reviewBaseUrl
     displayName: Base Url (of Review Environment)
     default: 'https://dct-crccms-fde-...'
+  - name: auth
+    displayName: Authorization (for Non-Production Environments)
+    default: 'usermame:password'
   - name: tags
     displayName: Frontend test tags (default Smoke)
     type: string
@@ -39,7 +42,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: STAGING_AUTHORIZATION
+              authorize: ${{ parameters.auth }}
               baseUrl: ${{ parameters.reviewBaseUrl }}
               tags: ${{ parameters.tags }}
 
@@ -52,7 +55,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: STAGING_AUTHORIZATION
+              authorize: ${{ parameters.auth }}
               baseUrl: https://int.campaignresources.dhsc.gov.uk
               tags: ${{ parameters.tags }}
 
@@ -65,7 +68,7 @@ stages:
         steps:
           - template: azure-pipeline-templates/frontendtest.yml
             parameters:
-              authorize: STAGING_AUTHORIZATION
+              authorize: ${{ parameters.auth }}
               baseUrl: https://staging.campaignresources.dhsc.gov.uk
               tags: ${{ parameters.tags }}
               
