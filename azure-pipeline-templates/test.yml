@@ -57,6 +57,9 @@ steps:
     testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
     testRunTitle: "OWASP Dependency check"
 - script: |
+    docker compose run --rm web python manage.py makemigrations --check --dry-run --no-input
+  displayName: Check for missing migrations
+- script: |
     docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
   displayName: 'Run Coverage Test'
 - task: PublishTestResults@2
