@@ -229,7 +229,7 @@ class ParagonUsersTestCase(WagtailPageTests):
 
     @patch("campaignresourcecentre.paragon_users.helpers.postcodes.get_region")
     @patch("campaignresourcecentre.paragon.client.Client")
-    def test_signup_with_job_role_and_location_data(
+    def test_signup_with_job_title_with_role_and_location_data(
         self, mock_client_class, mock_get_region
     ):
         from campaignresourcecentre.paragon_users.helpers.postcodes import get_region
@@ -237,7 +237,7 @@ class ParagonUsersTestCase(WagtailPageTests):
         mock_get_region.return_value = "London"
         mock_client = mock_client_class.return_value
 
-        job_role = "Primary Care"
+        job_title_with_role = "education:teacher"
         postcode = "SW1A 1AA"
         postcode_region = get_region(postcode)
 
@@ -250,19 +250,20 @@ class ParagonUsersTestCase(WagtailPageTests):
             "John",
             "Doe",
             "NHS Trust",
-            "health:gp",
-            job_role,
+            job_title_with_role,
             postcode,
             postcode_region,
             "2025-11-25 10:00:00",
         )
 
         call_args = mock_client.create_account.call_args[0]
-        self.assertEqual(call_args[6], "Primary Care")
-        self.assertEqual(call_args[8], "London")
+        self.assertEqual(call_args[5], "education:teacher")
+        self.assertEqual(call_args[7], "London")
 
     @patch("campaignresourcecentre.paragon.client.Client")
-    def test_user_profile_update_with_job_role_and_location(self, mock_client_class):
+    def test_user_profile_update_with_job_title_with_role_and_location(
+        self, mock_client_class
+    ):
         from campaignresourcecentre.paragon.client import Client
 
         mock_client = mock_client_class.return_value
@@ -270,14 +271,14 @@ class ParagonUsersTestCase(WagtailPageTests):
 
         client.update_user_profile(
             user_token="test_token",
-            job_role="General Practice",
+            job_title="health:gp",
             postcode_region="Yorkshire",
             postcode="LS1 1AA",
         )
 
         mock_client.update_user_profile.assert_called_once_with(
             user_token="test_token",
-            job_role="General Practice",
+            job_title="health:gp",
             postcode_region="Yorkshire",
             postcode="LS1 1AA",
         )
@@ -309,14 +310,13 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "FirstName": "John",
                 "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "health",
+                "ProductRegistrationVar4": "health:gp",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
                 "ProductRegistrationVar8": "",
                 "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "health:gp",
                 "ContactVar3": "Manchester",
             }
         }
@@ -391,7 +391,7 @@ class ParagonUsersTestCase(WagtailPageTests):
 
         mock_client.update_user_profile.assert_called_once()
         call_kwargs = mock_client.update_user_profile.call_args[1]
-        self.assertEqual(call_kwargs["job_role"], "health:gp")
+        self.assertEqual(call_kwargs["job_title"], "health:gp")
         self.assertEqual(call_kwargs["postcode_region"], "Greater Manchester")
 
     @patch("campaignresourcecentre.paragon_users.admin_views.Client")
@@ -404,7 +404,7 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "FirstName": "John",
                 "LastName": "Doe",
                 "ProductRegistrationVar3": "NHS Trust",
-                "ProductRegistrationVar4": "health",
+                "ProductRegistrationVar4": "health:gp",
                 "ProductRegistrationVar1": "health",
                 "ProductRegistrationVar2": "True",
                 "ProductRegistrationVar10": "2025-11-25T10:00:00",
@@ -538,5 +538,5 @@ class ParagonUsersTestCase(WagtailPageTests):
 
             mock_client.create_account.assert_called_once()
             call_args = mock_client.create_account.call_args[0]
-            self.assertEqual(call_args[6], "education:teacher")
-            self.assertEqual(call_args[8], "Test Region")
+            self.assertEqual(call_args[5], "education:teacher")
+            self.assertEqual(call_args[7], "Test Region")
