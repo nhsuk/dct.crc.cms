@@ -1,0 +1,82 @@
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: testReview
+    displayName: Test Review Environment
+    type: boolean
+    default: false
+  - name: testIntegration
+    displayName: Test Integration Environment
+    type: boolean
+    default: false
+  - name: testStaging
+    displayName: Test Staging Environment
+    type: boolean
+    default: false
+  - name: testProduction
+    displayName: Test Production Environment
+    type: boolean
+    default: false
+  - name: reviewBaseUrl
+    displayName: Base Url (of Review Environment)
+    default: 'https://dct-crccms-fde-...'
+  - name: tags
+    displayName: Frontend test tags (default Smoke)
+    type: string
+    default: Smoke
+
+stages:
+  - stage: Test
+    displayName: Test Environments
+    jobs:
+      - job: Review
+        displayName: Review
+        condition: ${{ eq(parameters.testReview, true) }}
+        dependsOn: []
+        variables:
+          - group: Review
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: STAGING_AUTHORIZATION
+              baseUrl: ${{ parameters.reviewBaseUrl }}
+              tags: ${{ parameters.tags }}
+
+      - job: Integration
+        displayName: Integration
+        condition: ${{ eq(parameters.testIntegration, true) }}
+        dependsOn: []
+        variables:
+          - group: Integration
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: STAGING_AUTHORIZATION
+              baseUrl: https://int.campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
+
+      - job: Staging
+        displayName: Staging
+        condition: ${{ eq(parameters.testStaging, true) }}
+        dependsOn: []
+        variables:
+          - group: Staging
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              authorize: STAGING_AUTHORIZATION
+              baseUrl: https://staging.campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
+              
+      - job: Production
+        displayName: Production
+        condition: ${{ eq(parameters.testProduction, true) }}
+        dependsOn: []
+        variables:
+          - group: Production
+        steps:
+          - template: azure-pipeline-templates/frontendtest.yml
+            parameters:
+              baseUrl: https://campaignresources.dhsc.gov.uk
+              tags: ${{ parameters.tags }}
