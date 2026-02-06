@@ -2,14 +2,22 @@ pool:
   vmImage: ubuntu-latest
 
 parameters:
-  - name: testEnv
-    displayName: Test Environment
-    type: string
-    values:
-      - Review
-      - Integration
-      - Staging
-      - Production
+  - name: testReview
+    displayName: Test Review Environment
+    type: boolean
+    default: false
+  - name: testIntegration
+    displayName: Test Integration Environment
+    type: boolean
+    default: false
+  - name: testStaging
+    displayName: Test Staging Environment
+    type: boolean
+    default: false
+  - name: testProduction
+    displayName: Test Production Environment
+    type: boolean
+    default: false
   - name: reviewBaseUrl
     displayName: Base Url (of Review Environment)
     default: 'https://dct-crccms-fde-...'
@@ -20,11 +28,12 @@ parameters:
 
 stages:
   - stage: Test
-    displayName: Test ${{ parameters.testEnv }}
+    displayName: Test Environments
     jobs:
       - job: Review
         displayName: Review
-        condition: eq(${{ parameters.testEnv }}, 'Review')
+        condition: ${{ eq(parameters.testReview, true) }}
+        dependsOn: []
         variables:
           - group: Review
         steps:
@@ -36,7 +45,8 @@ stages:
 
       - job: Integration
         displayName: Integration
-        condition: eq(${{ parameters.testEnv }}, 'Integration')
+        condition: ${{ eq(parameters.testIntegration, true) }}
+        dependsOn: []
         variables:
           - group: Integration
         steps:
@@ -48,7 +58,8 @@ stages:
 
       - job: Staging
         displayName: Staging
-        condition: eq(${{ parameters.testEnv }}, 'Staging')
+        condition: ${{ eq(parameters.testStaging, true) }}
+        dependsOn: []
         variables:
           - group: Staging
         steps:
@@ -57,14 +68,11 @@ stages:
               authorize: STAGING_AUTHORIZATION
               baseUrl: https://staging.campaignresources.dhsc.gov.uk
               tags: ${{ parameters.tags }}
-
-  - stage: Production
-    displayName: Production
-    condition: eq(${{ parameters.testEnv }}, 'Production')
-    jobs:
-      - deployment: approval
-        environment: production
+              
       - job: Production
+        displayName: Production
+        condition: ${{ eq(parameters.testProduction, true) }}
+        dependsOn: []
         variables:
           - group: Production
         steps:
