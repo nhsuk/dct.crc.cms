@@ -21,7 +21,7 @@ steps:
       displayName: "Dry Run Warning"
   - bash: |
       suffix="${{ coalesce(parameters.devInstance, format('{0}-{1}', parameters.env, parameters.region)) }}"
-      shortSuffix="${suffix:0:20}"
+      shortSuffix=$(echo "${suffix:0:20}" | sed 's:-*$::')
       echo "Trimmed suffix: $shortSuffix"
       appName="ca-wagtail-$shortSuffix"
       echo "Full name: $appName"

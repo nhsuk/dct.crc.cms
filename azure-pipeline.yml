@@ -177,7 +177,7 @@ stages:
 
           - task: AzureKeyVault@2
             displayName: 'Azure Key Vault: Database'
-            condition: and(succeeded(), ne(variables['existingDeployment'], true))
+            condition: and(succeeded(), ne(variables['existingDeployment'], 'true'))
             inputs:
               azureSubscription: dct-crccms-dev
               KeyVaultName: dct-crc-kv-app-dev-uks
@@ -185,7 +185,7 @@ stages:
 
           - task: AzureKeyVault@2
             displayName: 'Azure Key Vault: Admin'
-            condition: and(succeeded(), ne(variables['existingDeployment'], true))
+            condition: and(succeeded(), ne(variables['existingDeployment'], 'true'))
             inputs:
               azureSubscription: dct-crccms-dev
               KeyVaultName: dct-crccms-kv2-dev-uks
@@ -204,13 +204,13 @@ stages:
                 -c "CREATE DATABASE \"$(devInstance)\" WITH TEMPLATE $(default--db-name) OWNER $(default--db-user);" \
                 -c "\connect \"$(devInstance)\";"
             displayName: Create review database
-            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], true))
+            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], 'true'))
             env:
               PGPASSWORD: $(postgresqlAdminPassword)
 
           - task: AzureCLI@2
             displayName: Copy default app config
-            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], true))
+            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], 'true'))
             inputs:
               azureSubscription: dct-crccms-dev
               scriptType: bash
@@ -272,6 +272,18 @@ stages:
             displayName: Get Base URL
             workingDirectory: terraform/src/review
 
+          - task: AzureCLI@2
+            displayName: Update primary-host secret value
+            condition: and(succeeded(), ne('${{ lower(parameters.dryRun) }}', 'true'), ne(variables['existingDeployment'], 'true'))
+            inputs:
+              azureSubscription: dct-crccms-dev
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                host=$(echo "$(terraformOutput.BASE_URL)" | cut -d/ -f3) # Extract host from URL
+                az keyvault secret set --vault-name dct-crc-kv-app-dev-uks --name "$(devInstance)--primary-host" --value $host
+
           - template: azure-pipeline-templates/run-init-container-app-job.yml
             parameters:
               env: dev
@@ -297,6 +309,7 @@ stages:
               curl -X POST -H 'Content-type: application/json' --data "$body" $(notificationSlackWebhook)
             displayName: Send Slack Notification
             condition: and(succeeded(), ne(variables['existingDeployment'], 'true'))
+
           - ${{ if ne('${{ lower(parameters.dryRun) }}', 'true') }}:
             - template: azure-pipeline-templates/frontendtest.yml
               parameters:
