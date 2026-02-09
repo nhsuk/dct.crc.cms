@@ -3,12 +3,12 @@ steps:
     mkdir psql_commands_scripts
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" \
+      psql -d "$(default--db-name)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' DROP CONSTRAINT '||constraint_name||';'
         FROM (
             SELECT
@@ -26,12 +26,12 @@ steps:
     mkdir psql_commands_scripts
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" \
+      psql -d "$(default--db-name)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||on_delete||' '||def||';'
         FROM (
             SELECT
@@ -68,12 +68,12 @@ steps:
     mkdir psql_commands_scripts
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" \
+      psql -d "$(default--db-name)" \
       -c "\copy (SELECT 'ALTER TABLE '||constrained_table||' ADD CONSTRAINT '||constraint_name||' FOREIGN KEY ('||fk_column||') REFERENCES users_user('||ref_column||') '||def||';'
         FROM (
             SELECT
@@ -102,64 +102,64 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" -f "/psql_commands_scripts/drop_user_constraints.csv"
+      psql -d "$(default--db-name)" -f "/psql_commands_scripts/drop_user_constraints.csv"
   displayName: 'Drop user based constraints'
 
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" -f "/psql_commands_scripts/add_modified_user_constraints.csv"
+      psql -d "$(default--db-name)" -f "/psql_commands_scripts/add_modified_user_constraints.csv"
   displayName: 'Add modified user based constraints'
 
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       postgres:16 \
-      psql -d "$(DBName)" -c "DELETE FROM users_user"
+      psql -d "$(default--db-name)" -c "DELETE FROM users_user"
   displayName: 'Delete prod users'
 
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" -f "/psql_commands_scripts/drop_user_constraints.csv"
+      psql -d "$(default--db-name)" -f "/psql_commands_scripts/drop_user_constraints.csv"
   displayName: Drop user based constraints again
 
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:16 \
-      pg_restore --no-acl --no-owner --data-only -d "$(DBName)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump
+      pg_restore --no-acl --no-owner --data-only -d "$(default--db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump
   displayName: Restore ${{parameters.dumpPrefix}} users to target database
 
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(DBHost)" \
-      -e PGPASSWORD="$(DBPass)" \
-      -e PGUSER="$(DBUser)" \
+      -e PGHOST="$(default--db-host)" \
+      -e PGPASSWORD="$(default--db-pass)" \
+      -e PGUSER="$(default--db-user)" \
       -v $(pwd)/psql_commands_scripts/:/psql_commands_scripts/ \
       postgres:16 \
-      psql -d "$(DBName)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
+      psql -d "$(default--db-name)" -f "/psql_commands_scripts/add_original_user_constraints.csv"
   displayName: Re-add original user based constraints
