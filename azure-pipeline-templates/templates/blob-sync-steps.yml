@@ -22,8 +22,8 @@ steps:
   - task: AzureKeyVault@2
     displayName:
     inputs:
-      azureSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
-      KeyVaultName: dct-crc-v3-vlt-prod-uks
+      azureSubscription: dct-crccms-prod
+      KeyVaultName: dct-crc-kv-app-prod-uks
       SecretsFilter: storageAccountKey
       RunAsPreJob: false
 
