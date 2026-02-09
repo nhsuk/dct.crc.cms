@@ -113,7 +113,7 @@ stages:
             inputs:
               version: "0.68.2" # pinned until 'latest' (> 0.69.0) recoginises terraform trivy:ignore comments
               type: filesystem
-              target: terraform/src/common
+              target: terraform/src
               severities: CRITICAL,HIGH,MEDIUM
               scanners: misconfig,vuln,secret
               options: --tf-vars terraform/src/common/tests/test.tfvars
