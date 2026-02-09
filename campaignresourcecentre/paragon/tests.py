@@ -45,8 +45,7 @@ class TestClient(TestCase):
         first_name = "First Name"
         last_name = "Last Name"
         organisation = "NHS"
-        job_title = "Health"
-        job_role = "GP"
+        job_title = "title"
         postcode = "S221LZ"
         postcode_region = "South Yorkshire"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -57,7 +56,6 @@ class TestClient(TestCase):
             last_name,
             organisation,
             job_title,
-            job_role,
             postcode,
             postcode_region,
             created_at,
@@ -66,7 +64,7 @@ class TestClient(TestCase):
         self.assertEqual({"code": 200, "content": "Token", "status": "ok"}, resp)
 
     @responses.activate
-    def test_create_account_includes_job_role_and_postcode_region(self):
+    def test_create_account_includes_job_title_with_role_and_postcode_region(self):
         responses.add(
             responses.POST,
             "{0}{1}".format(settings.PARAGON_API_ENDPOINT, "/Signup"),
@@ -79,8 +77,7 @@ class TestClient(TestCase):
         first_name = "John"
         last_name = "Doe"
         organisation = "Test Org"
-        job_title = "Developer"
-        job_role = "Software Development"
+        job_title_with_role = "health:gp"
         postcode = "SW1A 1AA"
         postcode_region = "London"
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -91,8 +88,7 @@ class TestClient(TestCase):
             first_name,
             last_name,
             organisation,
-            job_title,
-            job_role,
+            job_title_with_role,
             postcode,
             postcode_region,
             created_at,
@@ -101,11 +97,10 @@ class TestClient(TestCase):
         self.assertEqual(len(responses.calls), 1)
         request_data = json.loads(responses.calls[0].request.body)
 
-        self.assertEqual(request_data["ContactVar2"], job_role)
         self.assertEqual(request_data["ContactVar3"], postcode_region)
         self.assertEqual(request_data["EmailAddress"], email)
         self.assertEqual(request_data["ProductRegistrationVar3"], organisation)
-        self.assertEqual(request_data["ProductRegistrationVar4"], job_title)
+        self.assertEqual(request_data["ProductRegistrationVar4"], job_title_with_role)
         self.assertEqual(request_data["ProductRegistrationVar9"], postcode)
 
     @responses.activate
@@ -209,7 +204,7 @@ class TestClient(TestCase):
         )
 
         user_token = "test_token"
-        job_role = "Healthcare"
+        job_title_with_role = "health:gp"
         postcode_region = "West Midlands"
 
         resp = self.client.update_user_profile(
@@ -217,14 +212,14 @@ class TestClient(TestCase):
             email="updated@example.com",
             first_name="Updated",
             last_name="User",
-            job_role=job_role,
+            job_title=job_title_with_role,
             postcode_region=postcode_region,
             postcode="B1 1AA",
         )
 
         self.assertEqual(len(responses.calls), 1)
         request_data = json.loads(responses.calls[0].request.body)
-        self.assertEqual(request_data["ContactVar2"], job_role)
+        self.assertEqual(request_data["ProductRegistrationVar4"], job_title_with_role)
         self.assertEqual(request_data["ContactVar3"], postcode_region)
         self.assertEqual(
             {"code": 200, "content": {"success": True}, "status": "ok"}, resp
@@ -315,8 +310,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -326,11 +320,10 @@ class TestRegistrationDataClass(TestCase):
             "Password": "Test@123",
             "FirstName": "First Name",
             "LastName": "Last Name",
-            "ContactVar2": "GP",
             "ContactVar3": "South Yorkshire",
             "ProductRegistrationVar2": "False",
             "ProductRegistrationVar3": "NHS",
-            "ProductRegistrationVar4": "Health",
+            "ProductRegistrationVar4": "health:gp",
             "ProductRegistrationVar6": "true",
             "ProductRegistrationVar7": "000000000000000000000000000000",
             "ProductRegistrationVar9": "SE1 9LT",
@@ -347,7 +340,6 @@ class TestRegistrationDataClass(TestCase):
             "Last Name",
             "NHS",
             "marketing",
-            None,
             "SE1 9LT",
             None,
             created_at,
@@ -357,7 +349,6 @@ class TestRegistrationDataClass(TestCase):
             "Password": "Test@123",
             "FirstName": "First Name",
             "LastName": "Last Name",
-            "ContactVar2": None,
             "ContactVar3": None,
             "ProductRegistrationVar2": "False",
             "ProductRegistrationVar3": "NHS",
@@ -380,8 +371,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -401,8 +391,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -419,8 +408,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -437,8 +425,7 @@ class TestRegistrationDataClass(TestCase):
             "",
             "Last Name",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -455,8 +442,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -473,8 +459,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "",
-            "Health",
-            "GP",
+            "health:gp",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -492,7 +477,6 @@ class TestRegistrationDataClass(TestCase):
             "Last Name",
             "NHS",
             "",
-            "GP",
             "SE1 9LT",
             "South Yorkshire",
             created_at,
@@ -509,8 +493,7 @@ class TestRegistrationDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Developer",
-            "GP",
+            "health:gp",
             "",
             "South Yorkshire",
             created_at,
@@ -530,8 +513,7 @@ class TestUserDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Health",
-            "GP",
+            "health:gp",
             "role",
             True,
             created_at,
@@ -545,12 +527,11 @@ class TestUserDataClass(TestCase):
             "EmailAddress": "test@gmail.com",
             "FirstName": "First Name",
             "LastName": "Last Name",
-            "ContactVar2": "GP",
             "ContactVar3": "postcode_region",
             "ProductRegistrationVar1": "role",
             "ProductRegistrationVar2": True,
             "ProductRegistrationVar3": "NHS",
-            "ProductRegistrationVar4": "Health",
+            "ProductRegistrationVar4": "health:gp",
             "ProductRegistrationVar7": "news",
             "ProductRegistrationVar8": verified_at,
             "ProductRegistrationVar9": "AB25 1CD",
@@ -568,8 +549,7 @@ class TestUserDataClass(TestCase):
             "Last Name",
             "NHS",
             "Developer",
-            "GP",
-            "role",
+            "health:gp",
             True,
             created_at,
             verified_at,
@@ -583,7 +563,7 @@ class TestUserDataClass(TestCase):
         self.assertEqual(str(error.exception), "user_token is empty!")
 
     def test_user_job_role_mapping(self):
-        """Test that User job_role maps to ContactVar2"""
+        """Test that User job title with role maps to ProductRegistrationVar4"""
         verified_at = datetime.datetime.now()
         created_at = timezone.now().strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -593,8 +573,7 @@ class TestUserDataClass(TestCase):
             "First Name",
             "Last Name",
             "NHS",
-            "Health",
-            "Emergency Medicine",  # job_role
+            "health:gp",  # job title includes role
             "role",
             True,
             created_at,
@@ -605,7 +584,7 @@ class TestUserDataClass(TestCase):
         )
 
         params = update_user_profile.params()
-        self.assertEqual(params["ContactVar2"], "Emergency Medicine")
+        self.assertEqual(params["ProductRegistrationVar4"], "health:gp")
         self.assertEqual(params["ContactVar3"], "Scotland")
 
 

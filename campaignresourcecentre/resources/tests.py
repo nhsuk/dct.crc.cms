@@ -1,6 +1,5 @@
 import json
 from uuid import uuid4
-from unittest import skip, skipIf
 
 from django.contrib import admin
 from django.contrib.messages import get_messages
@@ -13,7 +12,6 @@ from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from .models import ResourcePage, ResourceItem
 from .admin import ResourcePageAdmin, ResourceItemAdmin
-from datetime import datetime
 
 # Mock a request object and user with all permissions
 
