@@ -92,7 +92,6 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "ProductRegistrationVar4": "health:gp",
                 "ProductRegistrationVar9": "SW1A 1AA",
                 "ProductRegistrationVar1": "standard",
-                "ContactVar2": "health:gp",
             }
         }
 
@@ -137,7 +136,6 @@ class ParagonUsersTestCase(WagtailPageTests):
                         "ProductRegistrationVar4": "health:gp",
                         "ProductRegistrationVar9": case["postcode_data"],
                         "ProductRegistrationVar1": "standard",
-                        "ContactVar2": "health:gp",
                     }
                 }
 
@@ -145,58 +143,6 @@ class ParagonUsersTestCase(WagtailPageTests):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.context["postcode"], case["expected"])
-
-    @patch("campaignresourcecentre.paragon_users.views.Client")
-    def test_user_profile_job_title_fallback_logic(self, mock_client_class):
-        mock_client = mock_client_class.return_value
-
-        session = self.client.session
-        session["ParagonUser"] = "test_token"
-        session["Verified"] = "True"
-        session.save()
-
-        test_cases = [
-            {
-                "name": "uses_contactvar2_when_available",
-                "ContactVar2": "health:gp",
-                "ProductRegistrationVar4": "health:nurse",
-                "expected_job_title": "General Practice",
-            },
-            {
-                "name": "falls_back_to_productregistrationvar4_when_contactvar2_empty",
-                "ContactVar2": "",
-                "ProductRegistrationVar4": "health:nurse",
-                "expected_job_title": "Nurse",
-            },
-            {
-                "name": "falls_back_to_productregistrationvar4_when_contactvar2_none",
-                "ContactVar2": None,
-                "ProductRegistrationVar4": "marketing",
-                "expected_job_title": "Marketing and communications",
-            },
-        ]
-
-        for case in test_cases:
-            with self.subTest(case=case["name"]):
-                mock_client.get_user_profile.return_value = {
-                    "content": {
-                        "FirstName": "Test",
-                        "LastName": "User",
-                        "EmailAddress": "test@example.com",
-                        "ProductRegistrationVar3": "Test Org",
-                        "ProductRegistrationVar4": case["ProductRegistrationVar4"],
-                        "ProductRegistrationVar9": "SW1A 1AA",
-                        "ProductRegistrationVar1": "standard",
-                        "ContactVar2": case["ContactVar2"],
-                    }
-                }
-
-                response = self.client.get(reverse("account"))
-
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(
-                    response.context["job_title"], case["expected_job_title"]
-                )
 
     def getDummyResponse(self):
         return {
@@ -209,7 +155,7 @@ class ParagonUsersTestCase(WagtailPageTests):
                     "LastName": "c",
                     "EmailAddress": "testemail@email.com",
                     "ContactVar1": "1",
-                    "ContactVar2": "Emergency Medicine",
+                    "ContactVar2": "1",
                     "ContactVar3": "London",
                     "ContactVar4": "1",
                     "ContactVar5": "1",
@@ -411,7 +357,6 @@ class ParagonUsersTestCase(WagtailPageTests):
                 "ProductRegistrationVar8": "",
                 "ProductRegistrationVar7": "news",
                 "ProductRegistrationVar9": "M1 1AA",
-                "ContactVar2": "health:gp",
                 "ContactVar3": "Manchester",
             }
         }

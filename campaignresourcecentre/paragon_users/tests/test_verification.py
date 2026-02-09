@@ -57,7 +57,6 @@ class VerificationTestCase(TestCase):
             "content": {
                 "ProductRegistrationVar2": "False",
                 "EmailAddress": "test@example.com",
-                "ContactVar2": "marketing",
                 "ProductRegistrationVar4": "health:nurse",
             }
         }
@@ -90,7 +89,6 @@ class VerificationTestCase(TestCase):
             "content": {
                 "ProductRegistrationVar2": "False",
                 "EmailAddress": "test@example.com",
-                "ContactVar2": "marketing",
                 "ProductRegistrationVar4": None,
             }
         }
@@ -101,63 +99,3 @@ class VerificationTestCase(TestCase):
         response = verification(request)
 
         self.assertEqual(response.status_code, 500)
-
-    def test_verification_job_title_fallback(self):
-        from campaignresourcecentre.paragon_users.views import verification
-
-        test_cases = [
-            {
-                "ContactVar2": "marketing",
-                "ProductRegistrationVar4": "health:nurse",
-                "expected": "marketing",
-            },
-            {
-                "ContactVar2": None,
-                "ProductRegistrationVar4": "health:nurse",
-                "expected": "health:nurse",
-            },
-            {
-                "ContactVar2": "",
-                "ProductRegistrationVar4": "marketing",
-                "expected": "marketing",
-            },
-        ]
-
-        for case in test_cases:
-            with self.subTest(case=case):
-                with patch(
-                    "campaignresourcecentre.paragon_users.views.unsign_user_token",
-                    return_value="token",
-                ), patch(
-                    "campaignresourcecentre.paragon_users.views.Client"
-                ) as mock_client_class, patch(
-                    "campaignresourcecentre.paragon_users.views.get_role"
-                ) as mock_get_role, patch(
-                    "campaignresourcecentre.paragon_users.views.date"
-                ) as mock_date, patch(
-                    "campaignresourcecentre.paragon_users.views.render",
-                    return_value="response",
-                ):
-
-                    mock_date.today.return_value.strftime.return_value = (
-                        "2023-12-04T10:30:00"
-                    )
-                    mock_client = mock_client_class.return_value
-                    mock_client.get_user_profile.return_value = {
-                        "content": {
-                            "ProductRegistrationVar2": "False",
-                            "EmailAddress": "test@example.com",
-                            "ContactVar2": case["ContactVar2"],
-                            "ProductRegistrationVar4": case["ProductRegistrationVar4"],
-                        }
-                    }
-                    mock_client.update_user_profile.return_value = True
-
-                    request = self.factory.get("/verification/?q=token")
-                    request.session = {}
-
-                    verification(request)
-
-                    mock_get_role.assert_called_once_with(
-                        "test@example.com", case["expected"]
-                    )

@@ -94,11 +94,9 @@ def signup(request):
             last_name = f.cleaned_data.get("last_name")
             job_title = f.cleaned_data.get("job_title")
             if job_title == "health":
-                job_role = f.cleaned_data.get("health_role")
+                job_title = f.cleaned_data.get("health_role")
             elif job_title == "education":
-                job_role = f.cleaned_data.get("education_role")
-            else:
-                job_role = ""
+                job_title = f.cleaned_data.get("education_role")
             organisation = (
                 f.cleaned_data.get("organisation") if job_title != "student" else " "
             )
@@ -120,7 +118,6 @@ def signup(request):
                     last_name,
                     organisation,
                     job_title,
-                    job_role,
                     postcode,
                     postcode_region,
                     created_at,
@@ -278,11 +275,7 @@ def verification(request):
         return redirect("/")
 
     email = client_user["EmailAddress"]
-    user_job = (
-        client_user["ContactVar2"]
-        if client_user["ContactVar2"]
-        else client_user["ProductRegistrationVar4"]
-    )
+    user_job = client_user["ProductRegistrationVar4"]
 
     if not client.update_user_profile(
         user_token=unsigned_token,
@@ -537,12 +530,7 @@ def user_profile(request):
         **dict(HEALTH_CHOICES),
         **dict(EDUCATION_CHOICES),
     }
-    job_title_raw = (
-        user.get("ContactVar2")
-        if user.get("ContactVar2")
-        else user["ProductRegistrationVar4"]
-    )
-    job_title = job_choices.get(job_title_raw, "")
+    job_title = job_choices.get(user["ProductRegistrationVar4"], "")
 
     postcode_raw = user["ProductRegistrationVar9"]
     postcode = postcode_raw.split("|")[0] if "|" in postcode_raw else postcode_raw
