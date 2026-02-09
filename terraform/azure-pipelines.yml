@@ -108,12 +108,16 @@ stages:
               command: fmt
               workingDirectory: terraform/src/common
 
-          - task: trivy@1
+          - task: trivy@2
             displayName: Trivy scan
             inputs:
-              path: terraform/src/common
-              severities: HIGH,CRITICAL,MEDIUM
-              options: --skip-check-update --scanners vuln,misconfig,secret --tf-vars terraform/src/common/tests/test.tfvars
+              version: "0.68.2" # pinned until 'latest' (> 0.69.0) recoginises terraform trivy:ignore comments
+              type: filesystem
+              target: terraform/src/common
+              severities: CRITICAL,HIGH,MEDIUM
+              scanners: misconfig,vuln,secret
+              options: --tf-vars terraform/src/common/tests/test.tfvars
+              publish: true
 
           - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
             displayName: Initialise
