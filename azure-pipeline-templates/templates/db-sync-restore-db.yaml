@@ -2,24 +2,24 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
-      -e PGUSER="$(default--db-user)" \
+      -e PGHOST="$(db-host)" \
+      -e PGUSER="$(db-user)" \
       -e PGPASSWORD \
       postgres:16 \
-      psql -d "$(default--db-name)" \
-      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(default--db-name)' AND pid <> pg_backend_pid();"
+      psql -d "$(db-name)" \
+      -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(db-name)' AND pid <> pg_backend_pid();"
   displayName: End connections to target database
   env:
-    PGPASSWORD: $(default--db-pass)
+    PGPASSWORD: $(db-pass)
 
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
+      -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       postgres:16 \
-      dropdb --if-exists $(default--db-name)
+      dropdb --if-exists $(db-name)
   displayName: Delete target database
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
@@ -27,11 +27,11 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
+      -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       postgres:16 \
-      createdb --owner=$(default--db-user) $(default--db-name)
+      createdb --owner=$(db-user) $(db-name)
   displayName: Recreate target database
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
@@ -39,12 +39,12 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
+      -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       postgres:16 \
-      psql -d "$(default--db-name)" \
-      -c "ALTER SCHEMA public OWNER TO $(default--db-user);"
+      psql -d "$(db-name)" \
+      -c "ALTER SCHEMA public OWNER TO $(db-user);"
   displayName: Change schema ownership
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
@@ -58,12 +58,12 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
+      -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
       postgres:16 \
-      pg_restore --no-acl --no-owner -d "$(default--db-name)" ${{parameters.dumpPrefix}}-db.dump
+      pg_restore --no-acl --no-owner -d "$(db-name)" ${{parameters.dumpPrefix}}-db.dump
   displayName: Copy ${{parameters.dumpPrefix}} to target database
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
@@ -71,12 +71,12 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
+      -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       postgres:16 \
-      psql -d "$(default--db-name)" \
-      -c "ALTER DATABASE $(default--db-name) OWNER TO $(default--db-user);"
+      psql -d "$(db-name)" \
+      -c "ALTER DATABASE $(db-name) OWNER TO $(db-user);"
   displayName: Change database ownership
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
@@ -84,12 +84,12 @@ steps:
 - script: |
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
+      -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
       postgres:16 \
-      psql -d "$(default--db-name)" \
-      -c "REASSIGN OWNED BY $(postgresqlAdminUser) TO $(default--db-user);"
+      psql -d "$(db-name)" \
+      -c "REASSIGN OWNED BY $(postgresqlAdminUser) TO $(db-user);"
   displayName: Change tables ownership
   env:
     PGPASSWORD: $(postgresqlAdminPassword)

@@ -4,7 +4,7 @@ steps:
   inputs:
     azureSubscription: ${{parameters.azureVaultSubscription}}
     KeyVaultName: ${{parameters.VaultId}}
-    SecretsFilter: default--db-pass, default--db-name, default--db-host, default--db-user
+    SecretsFilter: db-pass, db-name, db-host, db-user
 
 - task: AzureKeyVault@2
   displayName: 'Azure Key Vault: Admin'

@@ -45,7 +45,7 @@ stages:
             inputs:
               azureSubscription: dct-crccms-prod
               KeyVaultName: dct-crc-kv-app-prod-uks
-              SecretsFilter: default--db-pass, default--db-name, default--db-host, default--db-user
+              SecretsFilter: db-pass, db-name, db-host, db-user
           - template: templates/db-sync-download-dump.yaml
             parameters:
               dumpPrefix: prod

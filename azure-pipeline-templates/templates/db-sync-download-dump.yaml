@@ -3,11 +3,11 @@ steps:
     set -x
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
-      -e PGPASSWORD="$(default--db-pass)" \
-      -e PGUSER="$(default--db-user)" \
+      -e PGHOST="$(db-host)" \
+      -e PGPASSWORD="$(db-pass)" \
+      -e PGUSER="$(db-user)" \
       postgres:16 \
-      pg_dump -Fc "$(default--db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
+      pg_dump -Fc "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ eq(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_Copy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
@@ -16,11 +16,11 @@ steps:
     set -x
     set -e
     docker run \
-      -e PGHOST="$(default--db-host)" \
-      -e PGPASSWORD="$(default--db-pass)" \
-      -e PGUSER="$(default--db-user)" \
+      -e PGHOST="$(db-host)" \
+      -e PGPASSWORD="$(db-pass)" \
+      -e PGUSER="$(db-user)" \
       postgres:16 \
-      pg_dump -Fc "$(default--db-name)" > ${{parameters.dumpPrefix}}-db-dump.dump
+      pg_dump -Fc "$(db-name)" > ${{parameters.dumpPrefix}}-db-dump.dump
   condition: ${{ ne(parameters.usersOnly, True) }}
   name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
   displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
