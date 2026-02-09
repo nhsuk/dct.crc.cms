@@ -115,13 +115,13 @@ opentelemetry-sdk = "1.39"
 
 [[package]]
 name = "azure-monitor-opentelemetry-exporter"
-version = "1.0.0b47"
+version = "1.0.0b48"
 description = "Microsoft Azure Monitor Opentelemetry Exporter Client Library for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "azure_monitor_opentelemetry_exporter-1.0.0b47-py2.py3-none-any.whl", hash = "sha256:be1eca7ddfc07436793981313a68662e14713902f7e7fa7cf81736f1cf6d8bf8"},
-    {file = "azure_monitor_opentelemetry_exporter-1.0.0b47.tar.gz", hash = "sha256:c1207bd1c356aa77255e256f1af8eb2ac40a3bf51f90735f456056def7ac38c0"},
+    {file = "azure_monitor_opentelemetry_exporter-1.0.0b48-py2.py3-none-any.whl", hash = "sha256:da17ac143b84516e639ce06f2d7119b7a7af99214bb773c652137e620e868eb7"},
+    {file = "azure_monitor_opentelemetry_exporter-1.0.0b48.tar.gz", hash = "sha256:5773def013e508efffa55a17768409be4b2ba369724766a89775fdc0101cc4c1"},
 ]
 
 [package.dependencies]
@@ -294,18 +294,17 @@ typecheck = ["mypy"]
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.14.3"
+version = "4.12.3"
 description = "Screen-scraping library"
 optional = false
-python-versions = ">=3.7.0"
+python-versions = ">=3.6.0"
 files = [
-    {file = "beautifulsoup4-4.14.3-py3-none-any.whl", hash = "sha256:0918bfe44902e6ad8d57732ba310582e98da931428d231a5ecb9e7c703a735bb"},
-    {file = "beautifulsoup4-4.14.3.tar.gz", hash = "sha256:6292b1c5186d356bba669ef9f7f051757099565ad9ada5dd630bd9de5fa7fb86"},
+    {file = "beautifulsoup4-4.12.3-py3-none-any.whl", hash = "sha256:b80878c9f40111313e55da8ba20bdba06d8fa3969fc68304167741bbf9e082ed"},
+    {file = "beautifulsoup4-4.12.3.tar.gz", hash = "sha256:74e3d1928edc070d21748185c46e3fb33490f22f52a3addee9aee0f4f7781051"},
 ]
 
 [package.dependencies]
-soupsieve = ">=1.6.1"
-typing-extensions = ">=4.0.0"
+soupsieve = ">1.2"
 
 [package.extras]
 cchardet = ["cchardet"]
@@ -1097,21 +1096,6 @@ libcloud = ["apache-libcloud"]
 sftp = ["paramiko"]
 
 [[package]]
-name = "django-stubs-ext"
-version = "5.2.9"
-description = "Monkey-patching and extensions for django-stubs"
-optional = false
-python-versions = ">=3.10"
-files = [
-    {file = "django_stubs_ext-5.2.9-py3-none-any.whl", hash = "sha256:230c51575551b0165be40177f0f6805f1e3ebf799b835c85f5d64c371ca6cf71"},
-    {file = "django_stubs_ext-5.2.9.tar.gz", hash = "sha256:6db4054d1580657b979b7d391474719f1a978773e66c7070a5e246cd445a25a9"},
-]
-
-[package.dependencies]
-django = "*"
-typing-extensions = "*"
-
-[[package]]
 name = "django-taggit"
 version = "6.1.0"
 description = "django-taggit is a reusable Django application for simple tagging."
@@ -1124,28 +1108,6 @@ files = [
 
 [package.dependencies]
 Django = ">=4.1"
-
-[[package]]
-name = "django-tasks"
-version = "0.7.0"
-description = "An implementation and backport of background workers and tasks in Django"
-optional = false
-python-versions = ">=3.9"
-files = [
-    {file = "django_tasks-0.7.0-py3-none-any.whl", hash = "sha256:8a8d64f2dc6e29ac2f45092d90e2dd82dc1dca100dfe3a4f2ce1209db99f3527"},
-    {file = "django_tasks-0.7.0.tar.gz", hash = "sha256:499f80d1a051566443cfa88a300d8b03435af7fc5708cad4d8da6d285614f739"},
-]
-
-[package.dependencies]
-Django = ">=4.2"
-django-stubs-ext = "*"
-typing_extensions = "*"
-
-[package.extras]
-dev = ["coverage", "dj-database-url", "django-stubs[compatible-mypy]", "django-tasks[rq]", "fakeredis", "ruff"]
-mysql = ["mysqlclient"]
-postgres = ["psycopg[binary]"]
-rq = ["django-rq", "rq_scheduler"]
 
 [[package]]
 name = "django-treebeard"
@@ -1253,13 +1215,13 @@ doc = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
 
 [[package]]
 name = "faker"
-version = "40.1.2"
+version = "40.4.0"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "faker-40.1.2-py3-none-any.whl", hash = "sha256:93503165c165d330260e4379fd6dc07c94da90c611ed3191a0174d2ab9966a42"},
-    {file = "faker-40.1.2.tar.gz", hash = "sha256:b76a68163aa5f171d260fc24827a8349bc1db672f6a665359e8d0095e8135d30"},
+    {file = "faker-40.4.0-py3-none-any.whl", hash = "sha256:486d43c67ebbb136bc932406418744f9a0bdf2c07f77703ea78b58b77e9aa443"},
+    {file = "faker-40.4.0.tar.gz", hash = "sha256:76f8e74a3df28c3e2ec2caafa956e19e37a132fdc7ea067bc41783affcfee364"},
 ]
 
 [package.dependencies]
@@ -1509,6 +1471,21 @@ files = [
 colors = ["colorama (>=0.4.3,<0.5.0)"]
 pipfile-deprecated-finder = ["pipreqs", "requirementslib"]
 requirements-deprecated-finder = ["pip-api", "pipreqs"]
+
+[[package]]
+name = "l18n"
+version = "2021.3"
+description = "Internationalization for pytz timezones and territories"
+optional = false
+python-versions = "*"
+files = [
+    {file = "l18n-2021.3-py3-none-any.whl", hash = "sha256:78495d1df95b6f7dcc694d1ba8994df709c463a1cbac1bf016e1b9a5ce7280b9"},
+    {file = "l18n-2021.3.tar.gz", hash = "sha256:1956e890d673d17135cc20913253c154f6bc1c00266c22b7d503cc1a5a42d848"},
+]
+
+[package.dependencies]
+pytz = ">=2020.1"
+six = "*"
 
 [[package]]
 name = "laces"
@@ -2682,6 +2659,17 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "pytz"
+version = "2025.2"
+description = "World timezone definitions, modern and historical"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00"},
+    {file = "pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.3"
 description = "YAML parser and emitter for Python"
@@ -3151,27 +3139,27 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [[package]]
 name = "wagtail"
-version = "7.0"
+version = "6.3.6"
 description = "A Django content management system."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "wagtail-7.0-py3-none-any.whl", hash = "sha256:6a254ef84a740689dd844aabc5254828ecb62840257721e639929cb0e1a2b3c1"},
-    {file = "wagtail-7.0.tar.gz", hash = "sha256:7c267ead43da3aa9469f233b111624aa1a508a5840f1ddda72d104957fdb3426"},
+    {file = "wagtail-6.3.6-py3-none-any.whl", hash = "sha256:edc5eef5d8ee84a51db2875cfda83c3f2bc0f0060f6ae2b7e59d636f803e6f70"},
+    {file = "wagtail-6.3.6.tar.gz", hash = "sha256:53831f6febd7c00b572ca6494bda7de8dd28e10e648d56c721e8e8a61aba0515"},
 ]
 
 [package.dependencies]
 anyascii = ">=0.1.5"
-beautifulsoup4 = ">=4.8,<5"
-Django = ">=4.2"
+beautifulsoup4 = ">=4.8,<4.13"
+Django = ">=4.2,<6.0"
 django-filter = ">=23.3"
 django-modelcluster = ">=6.2.1,<7.0"
 django-permissionedforms = ">=0.1,<1.0"
-django-taggit = ">=5.0,<7"
-django-tasks = ">=0.7,<0.8"
+django-taggit = ">=5.0,<6.2"
 django-treebeard = ">=4.5.1,<5.0"
 djangorestframework = ">=3.15.1,<4.0"
-draftjs_exporter = ">=2.1.5,<6.0"
+draftjs-exporter = ">=2.1.5,<6.0"
+l18n = ">=2018.5"
 laces = ">=0.1,<0.2"
 openpyxl = ">=3.0.10,<4.0"
 Pillow = ">=9.1.0,<12.0.0"
@@ -3180,8 +3168,8 @@ telepath = ">=0.3.1,<1"
 Willow = {version = ">=1.10.0,<2", extras = ["heif"]}
 
 [package.extras]
-docs = ["Sphinx (>=7.3)", "myst_parser (==2.0.0)", "pyenchant (>=3.1.1,<4)", "sphinx-autobuild (>=0.6.0)", "sphinx-wagtail-theme (==6.5.0)", "sphinxcontrib-spelling (>=7,<8)"]
-testing = ["Jinja2 (>=3.0,<3.2)", "azure-mgmt-cdn (>=12.0,<13.0)", "azure-mgmt-frontdoor (>=1.0,<1.1)", "boto3 (>=1.28,<2)", "coverage (>=3.7.0)", "curlylint (==0.13.1)", "django-pattern-library (>=0.7)", "djhtml (==3.0.6)", "doc8 (==1.1.2)", "factory-boy (>=3.2)", "freezegun (>=0.3.8)", "polib (>=1.1,<2.0)", "python-dateutil (>=2.7)", "ruff (==0.9.6)", "semgrep (==1.40.0)", "tblib (>=2.0,<3.0)"]
+docs = ["Sphinx (>=7.3)", "myst-parser (==2.0.0)", "pyenchant (>=3.1.1,<4)", "sphinx-autobuild (>=0.6.0)", "sphinx-wagtail-theme (==6.4.0)", "sphinxcontrib-spelling (>=7,<8)"]
+testing = ["Jinja2 (>=3.0,<3.2)", "azure-mgmt-cdn (>=12.0,<13.0)", "azure-mgmt-frontdoor (>=1.0,<1.1)", "boto3 (>=1.28,<2)", "coverage (>=3.7.0)", "curlylint (==0.13.1)", "django-pattern-library (>=0.7)", "djhtml (==3.0.6)", "doc8 (==0.8.1)", "factory-boy (>=3.2)", "freezegun (>=0.3.8)", "polib (>=1.1,<2.0)", "python-dateutil (>=2.7)", "ruff (==0.1.5)", "semgrep (==1.40.0)", "tblib (>=2.0,<3.0)"]
 
 [[package]]
 name = "wagtail-2fa"
@@ -3462,4 +3450,4 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "808866e828e1805ff2b16e342c2a2217ce18d4f047bc138dbd6663b9066aa0be"
+content-hash = "14ba9f6ebdf1463d1ebf28dabd5868b3f3b6031641fabddb45d0c160fb4f4ea0"
