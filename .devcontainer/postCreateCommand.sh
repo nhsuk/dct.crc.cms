@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail
+
+
+sudo apt-get update -y && sudo apt-get install -y openssh-client
 
 # This comes up a lot with mounting stuff into stuff
 git config --global --add safe.directory /workspaces/dct-campaign-resource-centre

@@ -1,24 +1,7 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
   "name": "Python 3 (with SSH forwarding)",
-  // Multi-arch base; on M2 under Colima this will be linux/arm64
   "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
 
-  // ----- Forward the host's SSH agent socket into the container -----
-  // These run args mount your host SSH agent into /ssh-agent in the container and set SSH_AUTH_SOCK accordingly.
-  "runArgs": [
-    "-v", "${env:SSH_AUTH_SOCK}:/ssh-agent",
-    "-e", "SSH_AUTH_SOCK=/ssh-agent"
-  ],
-
-  // ----- Also mount your ~/.ssh into the container (keys, config, known_hosts) -----
-  // This provides a fallback if agent forwarding isn't available, and gives known_hosts persistence.
-  "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
-  ],
-
-  // ----- Features -----
   "features": {
     "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/desktop-lite:1": {},
@@ -28,27 +11,14 @@
     "ghcr.io/devcontainers-extra/features/terraform-asdf:2": {},
     "ghcr.io/devcontainers-extra/features/wget-apt-get:1": {},
     "ghcr.io/eitsupi/devcontainer-features/jq-likes:1": {},
-    "ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {},
-    // Optional but helpful: ensures ssh client is present and sets up agent socket path
-    "ghcr.io/devcontainers/features/ssh-client:1": {}
+    "ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {}
   },
 
-  // ----- Make sure the container knows where the agent socket is -----
-  "remoteEnv": {
-    "SSH_AUTH_SOCK": "/ssh-agent"
-  },
-
-  // ----- VS Code customizations to copy Git/SSH config into the container -----
   "customizations": {
     "vscode": {
       "settings": {
-        // Helps VS Code copy your host Git config and SSH keys into the container for Git operations
         "dev.containers.copyGitConfig": true,
-        "dev.containers.copySSHKeys": true,
-        // Enable SSH agent support
-        "remote.SSH.agentSupport": true,
-        // Optional: trust workspace (prevents prompts in some setups)
-        "security.workspace.trust.enabled": true
+        "dev.containers.copySSHKeys": true
       },
       "extensions": [
         "ms-python.python",
@@ -59,9 +29,6 @@
     }
   },
 
-  // ----- Post-create setup (your existing script) -----
   "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-
-  // Use the non-root default user provided by the image
   "remoteUser": "vscode"
 }
