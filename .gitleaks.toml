@@ -1,0 +1,9 @@
+title = "Minimal allowlist for safe files"
+
+[allowlist]
+description = "Ignore test fixtures and Base64 blob false positives"
+
+paths = [
+  "campaignresourcecentre/fixtures/.*",
+  "campaignresourcecentre/core/assetdata.py"
+]

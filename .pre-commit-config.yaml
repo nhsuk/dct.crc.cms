@@ -1,10 +1,14 @@
 repos:
-  - repo: https://github.com/zricethezav/gitleaks
-    rev: v8.11.2
-    hooks:
-      - id: gitleaks
   - repo: https://github.com/psf/black
     rev: 24.3.0
     hooks:
-    -   id: black
-        args: [--check, --config=./poetry/pyproject.toml]
+      - id: black
+        # Remove --check so the hook auto-formats; if you want strict mode, keep --check and run black manually first
+        args: [--config=./poetry/pyproject.toml]
+
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks
+        language: system
+        entry: gitleaks detect --no-git --source . --config .gitleaks.toml

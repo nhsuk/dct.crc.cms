@@ -470,6 +470,7 @@ class CRCV3MainPage(BasePage):
     Postcode = PageElement(By.ID, "id_postcode")
     Email = PageElement(By.ID, "id_email")
     Job_function = PageElement(By.ID, "id_job_title")
+    Area_of_work = PageElement(By.ID, "id_area_work")
     Terms_Conditions = PageElement(By.ID, "id_terms")
     register_Success = PageElement(By.XPATH, "//h1[text()='Thank you for registering']")
     register_empty_error_problem_list = PageElement(
@@ -1564,15 +1565,50 @@ class CRCV3MainPage(BasePage):
             "Register link in Home page is not working",
         )
 
-    def Register_form(self, First_Name, Last_Name, Org_Name, Postcode, Email, Password):
+    def Register_form(
+        self, First_Name, Last_Name, Job_Function, Org_Name, Postcode, Email, Password
+    ):
         self.interact.send_keys(self.FirstName, First_Name)
         self.interact.send_keys(self.LastName, Last_Name)
+        self.interact.select_by_value(self.Job_function, Job_Function)
         if Postcode == "SL109LS":
             self.interact.select_by_value(self.Job_function, "director")
             self.interact.send_keys(self.OrgName, Org_Name)
         self.interact.send_keys(self.Postcode, Postcode)
         self.interact.send_keys(self.Email, Email)
         self.interact.send_keys(self.Password, Password)
+        self.interact.click_element(self.Terms_Conditions)
+
+    def fill_with_org(self, data: dict):
+        """
+        Adds data with organisation name
+        """
+        self.interact.send_keys(self.FirstName, data["FirstName"])
+        self.interact.send_keys(self.LastName, data["LastName"])
+        self.interact.select_by_value(self.Job_function, data["JobFunction"])
+        self.interact.send_keys(self.OrgName, data["OrgName"])
+        self.interact.send_keys(self.Postcode, data["Postcode"])
+        self.interact.send_keys(self.Email, data["Email"])
+        self.interact.send_keys(self.Password, data["Password"])
+        self.interact.click_element(self.Terms_Conditions)
+
+    def fill_with_area_of_work(self, data: dict):
+        """
+        Includes JobFunction, AreaOfWork + Org_Name
+        """
+        self.fill_with_org(data)
+        self.interact.select_by_value(self.Area_of_work, data.get("AreaOfWork"))
+
+    def fill_without_org(self, data: dict):
+        """
+        Includes JobFunction but not Org_Name
+        """
+        self.interact.send_keys(self.FirstName, data["FirstName"])
+        self.interact.send_keys(self.LastName, data["LastName"])
+        self.interact.select_by_value(self.Job_function, data["JobFunction"])
+        self.interact.send_keys(self.Postcode, data["Postcode"])
+        self.interact.send_keys(self.Email, data["Email"])
+        self.interact.send_keys(self.Password, data["Password"])
         self.interact.click_element(self.Terms_Conditions)
 
     def Register_button(self, option):

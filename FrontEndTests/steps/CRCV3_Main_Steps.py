@@ -1,11 +1,14 @@
 import csv
+from datetime import datetime
 from behave import Step
 from pages.CRCV3_Main_Page import *
+from pages.CRCV3_Main_Page import CRCV3MainPage
 from AcceptanceTests.common.common_test_methods import *
 from pages.CRCV3_Main_Page import CRCV3MainPage
 from selenium.webdriver.support import expected_conditions as EC
 import os
 import pyotp
+from support.data import build_runtime_user
 
 # from common.common_test_methods import create_list_from_feature_table_column
 
@@ -294,6 +297,135 @@ def S4l_Breastfeeding_related_resources(context):
 def CRCV3_Register_link(context):
     context.support_page = CRCV3MainPage(context.browser, context.logger)
     context.support_page.Register()
+
+
+@Step(
+    'I enter valid details for registeration with "{firstname}" "{lastname}" "{jobfunction}" "{orgname}" "{postcode}" "{email}" "{password}"'
+)
+def CRCV3_Valid_Registration(
+    context, firstname, lastname, jobfunction, orgname, postcode, email, password
+):
+
+    # ---- Generate Random Number ----
+    rand = datetime.now().strftime("%H%M%S")  # gives 6-digit unique timestamp
+
+    # ---- Override FirstName to your required format ----
+    dynamic_firstname = f"QATester{rand}"
+
+    # ---- Override Email to your required format ----
+    dynamic_email = f"QAtesting+{rand}@gmail.com"
+
+    password = "Testing123456$"  # Example of dynamic password if needed
+
+    # Store in context if needed later
+    context.generated_firstname = dynamic_firstname
+    context.generated_email = dynamic_email
+    context.generated_password = password
+
+    # Logging (optional)
+    print("Generated FirstName:", dynamic_firstname)
+    print("Generated Email:", dynamic_email)
+
+    # Call PAGE OBJECT method using generated values
+    page = CRCV3MainPage(context.driver)
+    page.Register_form(
+        dynamic_firstname,
+        lastname,
+        jobfunction,
+        orgname,
+        postcode,
+        dynamic_email,
+        password,
+    )
+
+
+def _prepare_user_and_store(context, incoming: dict):
+    user = build_runtime_user(incoming)
+    context.user = user
+    return user
+
+
+@Step(
+    'I enter all valid details for registration with "{FirstName}" "{LastName}" "{JobFunction}" "{AreaOfWork}" "{OrgName}" "{Postcode}" "{Email}" "{Password}"'
+)
+def details_with_org(
+    context,
+    firstName,
+    lastName,
+    jobFunction,
+    areaOfWork,
+    orgName,
+    postcode,
+    email,
+    password,
+):
+
+    page = CRCV3MainPage(context.driver)
+    # ---- Generate Random Number ----
+    rand = datetime.now().strftime("%H%M%S")  # gives 6-digit unique timestamp
+
+    # ---- Override FirstName to your required format ----
+    dynamicFirstname = f"QATester{rand}"
+
+    # ---- Override Email to your required format ----
+    dynamicEmail = f"QAtesting+{rand}@gmail.com"
+
+    password = "Testing123456$"  # Example of dynamic password if needed
+
+    # Store in context if needed later
+    context.generated_firstname = dynamicFirstname
+    context.generated_email = dynamicEmail
+    context.generated_password = password
+
+    # Logging (optional)
+    print("Generated FirstName:", dynamicFirstname)
+    print("Generated Email:", dynamicEmail)
+
+    if jobFunction == "Health":
+        user = _prepare_user_and_store(
+            context,
+            {
+                "FirstName": dynamicFirstname,
+                "LastName": lastName,
+                "JobFunction": jobFunction,
+                "AreaOfWork": areaOfWork,
+                "OrgName": orgName,
+                "Postcode": postcode,
+                "Email": dynamicEmail,
+                "Password": password,
+            },
+        )
+        page.fill_with_area_of_work(user)
+    elif orgName == "":
+        user = _prepare_user_and_store(
+            context,
+            {
+                "FirstName": dynamicFirstname,
+                "LastName": lastName,
+                "JobFunction": jobFunction,
+                "Postcode": postcode,
+                "Email": dynamicEmail,
+                "Password": password,
+            },
+        )
+        page.fill_without_org(user)
+    else:
+        user = _prepare_user_and_store(
+            context,
+            {
+                "FirstName": dynamicFirstname,
+                "LastName": lastName,
+                "JobFunction": jobFunction,
+                "OrgName": orgName,
+                "Postcode": postcode,
+                "Email": dynamicEmail,
+                "Password": password,
+            },
+        )
+        page.fill_with_org(user)
+
+    page.fill_with_org(user)
+    # context.register_page.fill_with_org(user)
 
 
 @Step(
@@ -645,3 +777,104 @@ def check_search_results_are_found(context):
         greater_than(0),
         f"Search did not return results: {context.search_results_heading}",
     )
+
+
+# -------------------------------
+# STEP 4: Verify email confirmation message
+# -------------------------------
+@Step("I verify the email confirmation message displayed")
+def step_impl_verify_confirmation_message(context):
+    context.page.verify_confirmation_message()
+    print("✔ Email confirmation message verified")
+
+
+# -------------------------------
+# STEP 5: Activate email using API
+# -------------------------------
+@Step(
+    "I activate the email account using an API call to get the activation link and click on it to activate the account"
+)
+def step_impl_activate_via_api(context):
+
+    registered_email = context.generated_email  # from earlier step
+    print(f"Fetching activation email for: {registered_email}")
+
+    # Poll API until activation email is found
+    activation_link = None
+    attempts = 0
+
+    while attempts < 10:
+        attempts += 1
+        print(f"Attempt {attempts}: Checking mailbox...")
+
+        # Call API mailbox
+        response = requests.get(f"{API_BASE}/mailbox/{registered_email}")
+
+        if response.status_code == 200 and response.json():
+
+            # Assume API returns array of email objects
+            messages = response.json()
+
+            for msg in messages:
+                if "activate" in msg.get("body", "").lower():
+                    # Extract activation URL
+                    activation_link = extract_activation_url(msg["body"])
+                    break
+
+        if activation_link:
+            print("✔ Activation link found:", activation_link)
+            break
+
+        time.sleep(2)
+
+    if not activation_link:
+        raise AssertionError("❌ Activation email not found in the API mailbox")
+
+    # Visit activation URL in the browser
+    context.driver.get(activation_link)
+    print("✔ Account activated using API activation link")
+
+
+# Utility to extract activation URL from email body
+def extract_activation_url(email_body):
+    """
+    Extracts the first URL containing '/activate/' from the email text.
+    Adjust logic depending on exact email format.
+    """
+    import re
+
+    match = re.search(r'https?://[^\s"]+/activate/[^\s"]+', email_body)
+    return match.group(0) if match else None
+
+
+@Step("I login with the registered email and password")
+def login_registered_user(context):
+    email = context.generated_email
+    password = context.generated_password
+
+    context.page.login(email, password)
+    print("✔ Login successful")
+
+
+@Step("verify all details are saved correctly for registration")
+def verify_registration_details(context):
+    expected_firstname = context.generated_firstname
+    expected_email = context.generated_email
+    expected_lastname = context.lastname
+    expected_org = context.orgname
+
+    context.page.verify_saved_details(
+        firstname=expected_firstname,
+        lastname=expected_lastname,
+        email=expected_email,
+        org=expected_org,
+    )
+
+    print("✔ Registration details verified successfully")
+
+
+@then("click Sign Out link and verify its logged out successfully")
+def step_impl_signout(context):
+    context.page.sign_out()
+    context.page.verify_logged_out()
+    print("✔ Successfully logged out")

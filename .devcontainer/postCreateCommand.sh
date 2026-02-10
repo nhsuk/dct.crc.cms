@@ -3,19 +3,46 @@
 # This comes up a lot with mounting stuff into stuff
 git config --global --add safe.directory /workspaces/dct-campaign-resource-centre
 
-# Install go
-wget https://go.dev/dl/go1.19.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz
-rm go1.19.linux-amd64.tar.gz
-echo 'export PATH="$PATH:/usr/local/go/bin"' >> ~/.bashrc
+# --------------------------
+# Install correct ARM64 Go
+# --------------------------
+GO_VERSION=1.19   # stick to your project’s required version, or bump to a newer if allowed
+wget "https://go.dev/dl/go${GO_VERSION}.linux-arm64.tar.gz"
+sudo tar -C /usr/local -xzf "go${GO_VERSION}.linux-arm64.tar.gz"
+rm "go${GO_VERSION}.linux-arm64.tar.gz"
 
-# Install gitleaks
-wget https://github.com/gitleaks/gitleaks/releases/download/v8.16.2/gitleaks_8.16.2_linux_x64.tar.gz
-sudo tar -C /usr/local/bin -xzf gitleaks_8.16.2_linux_x64.tar.gz
-rm gitleaks_8.16.2_linux_x64.tar.gz
+
+# --------------------------
+# Install correct ARM64 gitleaks
+# --------------------------
+
+sudo rm -f /usr/local/bin/gitleaks 2>/dev/null || true
+
+GITLEAKS_VERSION=8.16.2
+wget "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_arm64.tar.gz"
+tar -xzf "gitleaks_${GITLEAKS_VERSION}_linux_arm64.tar.gz"
+sudo mv gitleaks /usr/local/bin/
+rm "gitleaks_${GITLEAKS_VERSION}_linux_arm64.tar.gz"
+
+which gitleaks
+gitleaks version
+
+
 
 # Configure the environment
-echo 'export PATH="$PATH:/opt/poetry/bin"' >> ~/.bashrc
+
+# Ensure PATH includes the new Go
+if ! grep -q '/usr/local/go/bin' ~/.bashrc; then
+  echo 'export PATH="$PATH:/usr/local/go/bin"' >> ~/.bashrc
+fi
+# Reload shell rc (or open a new terminal)
+source ~/.bashrc || true
+
+# Verify
+which go
+go version
+go env GOARCH
+
 az config set extension.use_dynamic_install=yes_without_prompt
 pre-commit install
 
