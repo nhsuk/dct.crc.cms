@@ -24,7 +24,7 @@ steps:
     inputs:
       azureSubscription: dct-crccms-prod
       KeyVaultName: dct-crc-kv-app-prod-uks
-      SecretsFilter: storageAccountKey
+      SecretsFilter: azure-account-key
       RunAsPreJob: false
 
   - task: AzureCLI@2
