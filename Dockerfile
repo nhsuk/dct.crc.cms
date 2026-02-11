@@ -19,7 +19,7 @@ RUN apk update \
     && pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.8.5
+ARG POETRY_VERSION=2.2.1
 
 RUN adduser campaignresourcecentre -D && mkdir /app && chown campaignresourcecentre /app
 
@@ -67,8 +67,8 @@ COPY --chown=campaignresourcecentre ./poetry ./poetry
 
 WORKDIR /app/poetry
 RUN if [ "$BUILD_ENV" = "dev" ]; \
-    then poetry install --extras gunicorn; \
-    else poetry install --no-dev --extras gunicorn; \
+    then poetry install --no-root --extras gunicorn; \
+    else poetry install --no-root --only main --extras gunicorn; \
     fi;
 WORKDIR /app
 
