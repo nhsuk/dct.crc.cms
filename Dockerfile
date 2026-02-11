@@ -68,7 +68,7 @@ COPY --chown=campaignresourcecentre ./poetry ./poetry
 WORKDIR /app/poetry
 RUN if [ "$BUILD_ENV" = "dev" ]; \
     then poetry install --extras gunicorn; \
-    else poetry install --no-dev --extras gunicorn; \
+    else poetry install --only main --extras gunicorn; \
     fi;
 WORKDIR /app
 
