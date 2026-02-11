@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.core.exceptions import ValidationError
 
 logger = logging.getLogger("django")
 
@@ -92,6 +93,21 @@ def to_json(data):
 
 class TaxonomyMixin(models.Model):
     taxonomy_json = models.TextField(null=True, blank=True)
+
+    def clean(self):
+        crc_taxonomy = json.loads(TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json)
+        topic_vocab = next((v for v in crc_taxonomy if v["code"] == "TOPIC"), None)
+        if not topic_vocab:
+            raise ValidationError('No topic vocabulary found in taxonomy')
+
+        topics = {child["code"] for child in topic_vocab["children"]}
+
+        # Check for at least one topic tag in the taxonomy_json
+        tags = json.loads(self.taxonomy_json or "[]")
+        if not any(item["code"] in topics for item in tags):
+            raise ValidationError('Please select at least one topic tag')
+
+        return super().clean()
 
     @property
     def taxonomy(self):
