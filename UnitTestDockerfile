@@ -69,7 +69,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 
 COPY --chown=campaignresourcecentre ./poetry ./poetry
 
-RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --extras gunicorn; else poetry install --only main --extras gunicorn; fi; cd ../
+RUN cd ./poetry && if [ "$BUILD_ENV" = "dev" ]; then poetry install --no-root --extras gunicorn; else poetry install --no-root --only main --extras gunicorn; fi; cd ../
 
 COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
 
