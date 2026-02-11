@@ -99,6 +99,6 @@ steps:
     env:
       ACCOUNT: campaignsstrg${{ parameters.env }}uks
       CONTAINER: ${{ parameters.containerPrefix }}-${{ parameters.environment }}
-      PROD_ACCOUNT_KEY: $(storageAccountKey)
+      PROD_ACCOUNT_KEY: $(azure-account-key)
       PROD_ACCOUNT: campaignscrcv3produks
       PROD_CONTAINER: campaign-resource-centre-v3-production
