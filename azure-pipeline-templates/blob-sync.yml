@@ -34,7 +34,7 @@ stages:
             inputs:
               azureSubscription: dct-crccms-prod
               KeyVaultName: dct-crc-kv-app-prod-uks
-              SecretsFilter: storageAccountKey
+              SecretsFilter: azure-account-key
               RunAsPreJob: false
           - task: AzureCLI@2
             name: QueryProd
@@ -53,7 +53,7 @@ stages:
                   --output tsv \
                 > production.log  2>&1
             env:
-              ACCOUNT_KEY: $(storageAccountKey)
+              ACCOUNT_KEY: $(azure-account-key)
               ACCOUNT: campaignscrcv3produks
               CONTAINER: campaign-resource-centre-v3-production
           - task: PublishPipelineArtifact@1
