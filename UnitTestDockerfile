@@ -22,7 +22,7 @@ RUN apk add curl postgresql-dev bash linux-headers py3-pip
 RUN pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.3.2
+ARG POETRY_VERSION=2.2.1
 
 WORKDIR /app
 

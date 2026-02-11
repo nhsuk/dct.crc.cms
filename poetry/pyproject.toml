@@ -38,6 +38,7 @@ django-otp = "<1.7.0" # 1.7.0 has breaking change not supported by wagtail-2fa
 azure-search-documents = "^11.3.0"
 azure-search = "^1.0.0b2"
 wagtail-modeladmin = "^2.0.0"
+cryptography = "^46.0.5"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
