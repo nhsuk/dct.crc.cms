@@ -54,4 +54,14 @@
         <packageUrl regex="true">^pkg:npm/sha.js@.*$</packageUrl>
         <vulnerabilityName>GHSA-95m3-7q98-8xr5</vulnerabilityName>
     </suppress>
+    <suppress until="2026-08-12Z">
+        <notes><![CDATA[
+        Package: pillow
+        CVE-2026-25990: Out-of-bounds write when loading specially crafted PSD images.
+        Fixed in Pillow 12.1.1, but Wagtail 7.0.4 constrains Pillow to <12.0.0.
+        Suppressed until Wagtail is upgraded to a version supporting Pillow 12.x.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:pypi/pillow@.*$</packageUrl>
+        <vulnerabilityName>CVE-2026-25990</vulnerabilityName>
+    </suppress>
 </suppressions>
