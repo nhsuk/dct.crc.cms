@@ -90,6 +90,26 @@ def to_json(data):
     return json.dumps(data)
 
 
+def load_campaign_topics(taxonomy_data):
+    """Load campaign topics from the database into the taxonomy JSON structure.
+
+    Replaces the Campaign Topics with entries from the Topic model, which
+    includes a default pre-defined list and any manually added within the
+    "Campaign Topics" admin panel.
+    """
+    from campaignresourcecentre.campaigns.models import Topic
+
+    topic_children = [
+        {"label": topic.name, "code": topic.code, "type": "term", "children": []}
+        for topic in Topic.objects.all()
+    ]
+    for vocab in taxonomy_data:
+        if vocab.get("code") == "TOPIC":
+            vocab["children"] = topic_children
+            break
+    return taxonomy_data
+
+
 class TaxonomyMixin(models.Model):
     taxonomy_json = models.TextField(null=True, blank=True)
 
