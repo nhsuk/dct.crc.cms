@@ -1,34 +1,16 @@
 TAXONOMY_TERMS_ID = "crc_taxonomy"
+
+# Campaign Topics are managed via the Wagtail admin panel.
+# Initial topics are defined by migration campaigns.0034_populate_topics.
+
 TAXONOMY_TERMS_JSON = """
 [
   {
     "label":"Health Topics",
     "code":"TOPIC",
     "type":"vocabulary",
-    "description":"Health topics",
-    "children":[
-      {"label":"Antimicrobial resistance","code":"ANTMBREST","type":"term","children":[]},
-      {"label":"Blood pressure","code":"BLOODPRESSURE","type":"term","children":[]},
-      {"label":"Cancer","code":"CANCER","type":"term","children":[]},
-      {"label":"Childhood Health","code":"CHILDHOODHEALTH","type":"term","children":[]},
-      {"label":"Coronavirus","code":"COVID","type":"term","children":[]},
-      {"label":"Dental health","code":"DENTAL","type":"term","children":[]},
-      {"label":"Drinking less","code":"DRINKING","type":"term","children":[]},
-      {"label":"Early diagnosis","code":"EARLYDIAG","type":"term","children":[]},
-      {"label":"Eating well","code":"EATING","type":"term","children":[]},
-      {"label":"Early Years","code":"EARLYYEARS","type":"term","children":[]},
-      {"label":"Flu","code":"FLU","type":"term","children":[]},
-      {"label":"Maternity","code":"MATERNITY","type":"term","children":[]},
-      {"label":"Mental health","code":"MENTALHEALTH","type":"term","children":[]},
-      {"label":"MMR","code":"MMR","type":"term","children":[]},
-      {"label":"NHS","code":"NHS","type":"term","children":[]},
-      {"label":"NHS 111","code":"NHS111","type":"term","children":[]},
-      {"label":"Physical Activity","code":"PHYSICALACTIVITY","type":"term","children":[]},
-      {"label":"Quitting Smoking","code":"QUITTINGSMOKING","type":"term","children":[]},
-      {"label":"Schools","code":"SCHOOLS","type":"term","children":[]},
-      {"label":"Screening","code":"SCREENING","type":"term","children":[]},
-      {"label":"Sepsis","code":"SEPSIS","type":"term","children":[]}
-    ]
+    "description":"Health topics - managed via Campaign Topics in Wagtail",
+    "children":[]
   },
   {
     "label":"Target Audience",
