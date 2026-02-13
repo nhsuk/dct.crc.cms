@@ -39,10 +39,10 @@ logger = logging.getLogger(__name__)
 
 
 class Topic(models.Model):
-    """Campaign topics. Managed in the Taxonomy section of the Wagtail admin,
-    which itself is defined in `utils.wagtail_hooks.py`"""
+    """Campaign topics. Managed in the Campaign Topics section of the Wagtail admin."""
 
     name = models.CharField(max_length=50)
+    code = models.CharField(max_length=50, unique=True)
 
     class Meta:
         ordering = ["name"]
@@ -163,12 +163,13 @@ class CampaignHubPage(BasePage):
         campaigns = CampaignPage.objects.live().public().child_of(self).order_by("path")
 
         def get_taxonomy_JSON(campaign):
+            if not campaign.taxonomy_json:
+                logger.debug(f"Campaign ID {campaign.id} has no taxonomy tags assigned")
+                return []
             try:
                 return json.loads(campaign.taxonomy_json)
             except json.JSONDecodeError:
-                logger.error(
-                    f"Invalid JSON/JSON not found for campaign ID {campaign.id}"
-                )
+                logger.warning(f"Campaign ID {campaign.id} has invalid taxonomy JSON")
                 return []
 
         campaign_taxonomy_data = [
@@ -201,17 +202,10 @@ class CampaignHubPage(BasePage):
 
     def get_context(self, request, *args, **kwargs):
         from_azure_search = settings.CAMPAIGNS_FROM_AZ
-        filter_codes = settings.CAMPAIGN_HUB_PAGE_FILTERS
 
         """Adds data to the template context for display on the page."""
-        taxonomy_json = json.loads(
-            TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
-        )
-        health_topics = next((x for x in taxonomy_json if x["code"] == "TOPIC"), None)[
-            "children"
-        ]
         topics_for_filter = [
-            obj for obj in health_topics if obj["code"] in filter_codes
+            {"label": topic.name, "code": topic.code} for topic in Topic.objects.all()
         ]
 
         selected_topic = request.GET.get("topic") or "ALL"
@@ -447,9 +441,6 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return context
 
     content_panels = BasePage.content_panels + [
-        FieldPanel(
-            "topics", heading="Campaign Topics", widget=forms.CheckboxSelectMultiple
-        ),
         MultiFieldPanel(
             [
                 FieldPanel("summary"),
