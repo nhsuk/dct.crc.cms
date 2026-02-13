@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from wagtail.admin.panels import FieldPanel, Panel
 
-from .models import TaxonomyTerms
+from .models import TaxonomyTerms, load_campaign_topics
 
 
 class TaxonomyPanel(FieldPanel):
@@ -55,12 +55,14 @@ class TaxonomyPanel(FieldPanel):
             try:
                 data = TaxonomyTerms.objects.get(taxonomy_id=self.taxonomy_terms_id)
                 try:
-                    json.loads(data.terms_json)
+                    taxonomy_data = json.loads(data.terms_json)
+                    load_campaign_topics(taxonomy_data)
+                    taxonomy_terms_json = json.dumps(taxonomy_data)
                 except json.decoder.JSONDecodeError:
                     self.taxonomy_terms_error_message = (
                         '"Taxonomy Terms" json wrong format'
                     )
-                taxonomy_terms_json = data.terms_json
+                    taxonomy_terms_json = data.terms_json
             except TaxonomyTerms.DoesNotExist:
                 self.taxonomy_terms_error_message = (
                     'No "Taxonomy Terms" for this id: "{}"'.format(

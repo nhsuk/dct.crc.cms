@@ -94,8 +94,7 @@ def load_campaign_topics(taxonomy_data):
     """Load campaign topics from the database into the taxonomy JSON structure.
 
     Replaces the Campaign Topics with entries from the Topic model, which
-    includes a default pre-defined list and any manually added within the
-    "Campaign Topics" admin panel.
+    includes a default pre-defined list from migration 0034 and any manually added within the "Campaign Topics" admin panel.
     """
     from campaignresourcecentre.campaigns.models import Topic
 
