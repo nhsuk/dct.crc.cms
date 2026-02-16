@@ -22,6 +22,16 @@ INITIAL_TOPICS = [
     {"name": "Recruitment", "code": "RECRUITMENT"},
     {"name": "Schools", "code": "SCHOOLS"},
     {"name": "Vaccinations", "code": "VACCINATIONS"},
+    # Legacy topics carried over from taxonomies-list.json.
+    # To be removed in CV-1410.
+    {"name": "Blood pressure", "code": "BLOODPRESSURE"},
+    {"name": "Eating well", "code": "EATING"},
+    {"name": "Flu", "code": "FLU"},
+    {"name": "MMR", "code": "MMR"},
+    {"name": "NHS", "code": "NHS"},
+    {"name": "NHS 111", "code": "NHS111"},
+    {"name": "Screening", "code": "SCREENING"},
+    {"name": "Sepsis", "code": "SEPSIS"},
 ]
 
 

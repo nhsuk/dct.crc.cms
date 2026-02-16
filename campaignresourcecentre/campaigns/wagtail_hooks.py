@@ -7,7 +7,7 @@ class CampaignTopicModelAdmin(ModelAdmin):
     model = Topic
     menu_icon = "tag"
     menu_label = "Campaign Topics"
-    list_display = ("name", "code")
+    list_display = ("name", "code", "show_in_filter")
     search_fields = ("name", "code")
 
 

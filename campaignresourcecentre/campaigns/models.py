@@ -43,6 +43,10 @@ class Topic(models.Model):
 
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=50, unique=True)
+    show_in_filter = models.BooleanField(
+        default=True,
+        help_text="Show this topic as a filter option on the campaigns page.",
+    )
 
     class Meta:
         ordering = ["name"]
@@ -205,7 +209,8 @@ class CampaignHubPage(BasePage):
 
         """Adds data to the template context for display on the page."""
         topics_for_filter = [
-            {"label": topic.name, "code": topic.code} for topic in Topic.objects.all()
+            {"label": topic.name, "code": topic.code}
+            for topic in Topic.objects.filter(show_in_filter=True)
         ]
 
         selected_topic = request.GET.get("topic") or "ALL"

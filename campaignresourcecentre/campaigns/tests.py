@@ -53,7 +53,8 @@ class TopicAppearsAsCampaignFilterTest(TestCase):
 
     def _get_filter_topics(self):
         return [
-            {"label": topic.name, "code": topic.code} for topic in Topic.objects.all()
+            {"label": topic.name, "code": topic.code}
+            for topic in Topic.objects.filter(show_in_filter=True)
         ]
 
     def test_new_topic_included_in_filter_list(self):
@@ -62,5 +63,11 @@ class TopicAppearsAsCampaignFilterTest(TestCase):
             {"label": "New Test Topic", "code": "TESTTOPIC"}, self._get_filter_topics()
         )
 
+    def test_topic_hidden_from_filter_when_show_in_filter_is_false(self):
+        Topic.objects.create(name="Hidden Topic", code="HIDDEN", show_in_filter=False)
+        codes = [topic["code"] for topic in self._get_filter_topics()]
+        self.assertNotIn("HIDDEN", codes)
+
     def test_seeded_topics_included_in_filter_list(self):
-        self.assertEqual(len(self._get_filter_topics()), len(INITIAL_TOPICS))
+        # 18 topics from migration 0034 have show_in_filter=True (8 legacy ones are hidden)
+        self.assertEqual(len(self._get_filter_topics()), 18)
