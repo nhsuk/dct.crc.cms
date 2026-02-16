@@ -7,6 +7,8 @@ from django.utils.html import strip_tags
 from html import unescape
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from wagtail.admin.panels import (
     FieldPanel,
@@ -494,3 +496,19 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     "description": f"The description cannot be longer than 480 characters. You have {description_len} characters."
                 }
             )
+
+
+@receiver(post_delete, sender=Topic)
+def remove_deleted_topic_from_pages(sender, instance, **kwargs):
+    """When a Topic is deleted, remove its tag from every page that uses it."""
+    contains_code = {"taxonomy_json__contains": f'"code":"{instance.code}"'}
+
+    for Model in [CampaignPage, ResourcePage]:
+        for page in Model.objects.filter(**contains_code):
+            tags = [
+                tag
+                for tag in json.loads(page.taxonomy_json)
+                if tag["code"] != instance.code
+            ]
+            page.taxonomy_json = json.dumps(tags, separators=(",", ":"))
+            page.save(update_fields=["taxonomy_json"])

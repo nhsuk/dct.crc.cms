@@ -1,8 +1,10 @@
 import importlib
+import json
 
 from django.test import TestCase
 
 from campaignresourcecentre.campaigns.models import Topic
+from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from campaignresourcecentre.wagtailreacttaxonomy.models import load_campaign_topics
 
 _migration = importlib.import_module(
@@ -71,3 +73,39 @@ class TopicAppearsAsCampaignFilterTest(TestCase):
     def test_seeded_topics_included_in_filter_list(self):
         # 18 topics from migration 0034 have show_in_filter=True (8 legacy ones are hidden)
         self.assertEqual(len(self._get_filter_topics()), 18)
+
+
+class TopicDeletionRemovesTagsTest(TestCase):
+    """Deleting a Topic removes its tag from every campaign and resource page."""
+
+    def setUp(self):
+        test_data = PrepareTestData()
+        self.campaign_page = test_data.campaign_page
+        self.resource_page = test_data.resource_page
+
+        self.topic = Topic.objects.create(name="Test Topic", code="TESTTOPIC")
+
+        taxonomy_json = json.dumps(
+            [
+                {"code": "TESTTOPIC", "label": "Test Topic"},
+                {"code": "MENTALHEALTH", "label": "Mental health"},
+            ]
+        )
+        self.campaign_page.taxonomy_json = taxonomy_json
+        self.campaign_page.save(update_fields=["taxonomy_json"])
+        self.resource_page.taxonomy_json = taxonomy_json
+        self.resource_page.save(update_fields=["taxonomy_json"])
+
+    def test_deleting_topic_removes_tag_from_campaign_page(self):
+        self.topic.delete()
+        self.campaign_page.refresh_from_db()
+        codes = [item["code"] for item in json.loads(self.campaign_page.taxonomy_json)]
+        self.assertNotIn("TESTTOPIC", codes)
+        self.assertIn("MENTALHEALTH", codes)
+
+    def test_deleting_topic_removes_tag_from_resource_page(self):
+        self.topic.delete()
+        self.resource_page.refresh_from_db()
+        codes = [item["code"] for item in json.loads(self.resource_page.taxonomy_json)]
+        self.assertNotIn("TESTTOPIC", codes)
+        self.assertIn("MENTALHEALTH", codes)
