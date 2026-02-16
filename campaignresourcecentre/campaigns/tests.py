@@ -89,7 +89,8 @@ class TopicDeletionRemovesTagsTest(TestCase):
             [
                 {"code": "TESTTOPIC", "label": "Test Topic"},
                 {"code": "MENTALHEALTH", "label": "Mental health"},
-            ]
+            ],
+            separators=(",", ":"),
         )
         self.campaign_page.taxonomy_json = taxonomy_json
         self.campaign_page.save(update_fields=["taxonomy_json"])
@@ -99,13 +100,11 @@ class TopicDeletionRemovesTagsTest(TestCase):
     def test_deleting_topic_removes_tag_from_campaign_page(self):
         self.topic.delete()
         self.campaign_page.refresh_from_db()
-        codes = [item["code"] for item in json.loads(self.campaign_page.taxonomy_json)]
-        self.assertNotIn("TESTTOPIC", codes)
-        self.assertIn("MENTALHEALTH", codes)
+        tags = json.loads(self.campaign_page.taxonomy_json)
+        self.assertEqual(tags, [{"code": "MENTALHEALTH", "label": "Mental health"}])
 
     def test_deleting_topic_removes_tag_from_resource_page(self):
         self.topic.delete()
         self.resource_page.refresh_from_db()
-        codes = [item["code"] for item in json.loads(self.resource_page.taxonomy_json)]
-        self.assertNotIn("TESTTOPIC", codes)
-        self.assertIn("MENTALHEALTH", codes)
+        tags = json.loads(self.resource_page.taxonomy_json)
+        self.assertEqual(tags, [{"code": "MENTALHEALTH", "label": "Mental health"}])
