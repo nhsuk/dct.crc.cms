@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _, ngettext
 from wagtail.models import Page, Revision
 from wagtail.admin.views.pages.bulk_actions.page_bulk_action import PageBulkAction
+from django.core.exceptions import ValidationError
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
@@ -178,6 +179,39 @@ class BaseTagBulkAction(PageBulkAction):
 
         return update_published or update_draft
 
+    def _get_topic_codes(self):
+        try:
+            taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
+        except TaxonomyTerms.DoesNotExist:
+            raise ValidationError('No "Taxonomy Terms" for this id: "crc_taxonomy"')
+
+        try:
+            data = json.loads(taxonomy_data.terms_json)
+        except json.JSONDecodeError:
+            raise ValidationError('"Taxonomy Terms" json wrong format')
+
+        topic_vocab = next((v for v in data if v.get("code") == "TOPIC"), None)
+        if not topic_vocab:
+            raise ValidationError("No topic vocabulary found in taxonomy")
+
+        topic_codes = {
+            child.get("code")
+            for child in topic_vocab.get("children", [])
+            if child.get("code")
+        }
+        if not topic_codes:
+            raise ValidationError("No topic vocabulary found in taxonomy")
+
+        return topic_codes
+
+    def _ensure_has_topic_tag(self, tags, topic_codes, action_type="add"):
+        """Validate that at least one TOPIC tag exists."""
+        if not any(tag.get("code") in topic_codes for tag in tags):
+            if action_type == "remove":
+                raise ValidationError("Please leave at least one topic tag")
+            else:
+                raise ValidationError("Please select at least one topic tag")
+
 
 class RemoveTagsBulkAction(BaseTagBulkAction):
     template_name = "tag_management/remove-tags-form.html"
@@ -205,6 +239,8 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
     def _on_apply(self, request, ctx):
         base_tags_for_removal = json.loads(request.POST.get("tags_to_remove", "{}"))
         items = ctx.get("items", [])
+        topic_codes = self._get_topic_codes()
+
         logger.info(
             "Starting tag removal bulk action",
             extra={
@@ -225,15 +261,26 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
                 live_tags = self._calculate_final_tags(
                     self._get_current_tags(page), tags_to_remove
                 )
+                self._ensure_has_topic_tag(live_tags, topic_codes, action_type="remove")
+
                 draft_tags = None
                 if self._has_unpublished_changes(page):
                     draft_current = self._get_draft_tags(page)
                     draft_tags = self._calculate_final_tags(
                         draft_current, tags_to_remove
                     )
+                    self._ensure_has_topic_tag(
+                        draft_tags, topic_codes, action_type="remove"
+                    )
 
                 self._save_tags(page, live_tags, draft_tags, request.user)
                 modified += 1
+            except ValidationError as e:
+                errors[page.id] = " ".join(e.messages)
+                failed += 1
+                logger.error(
+                    f"Error removing tags from page ID {page.id}: {errors[page.id]}"
+                )
             except Exception as e:
                 errors[page.id] = str(e)
                 failed += 1
@@ -329,6 +376,30 @@ class AddTagsBulkAction(BaseTagBulkAction):
         operation_mode = request.POST.get("tag_operation_mode", "merge")
         items = ctx.get("items", [])
 
+        # Get topic codes once for all pages
+        try:
+            topic_codes = self._get_topic_codes()
+        except ValidationError as e:
+            # If taxonomy is broken, fail all pages
+            ctx.update(
+                {
+                    "items": [
+                        {
+                            "item": item["item"],
+                            "tags": [],
+                            "status": "error",
+                            "error": " ".join(e.messages),
+                        }
+                        for item in items
+                    ],
+                    "num_modified": 0,
+                    "num_failed": len(items),
+                    "operation_mode": operation_mode,
+                    "next_url": self.next_url,
+                }
+            )
+            return render(request, self.result_template, ctx)
+
         failed = 0
         modified = 0
         errors = {}
@@ -340,6 +411,7 @@ class AddTagsBulkAction(BaseTagBulkAction):
                 live_tags = self._calculate_final_tags(
                     self._get_current_tags(page), tags_to_add, operation_mode
                 )
+                self._ensure_has_topic_tag(live_tags, topic_codes)
 
                 draft_tags = None
                 if page.has_unpublished_changes:
@@ -347,9 +419,16 @@ class AddTagsBulkAction(BaseTagBulkAction):
                     draft_tags = self._calculate_final_tags(
                         draft_current, tags_to_add, operation_mode
                     )
+                    self._ensure_has_topic_tag(draft_tags, topic_codes)
 
                 self._save_tags(page, live_tags, draft_tags, request.user)
                 modified += 1
+            except ValidationError as e:
+                errors[page.id] = " ".join(e.messages)
+                failed += 1
+                logger.error(
+                    f"Validation error adding tags to page ID {page.id}: {errors[page.id]}"
+                )
             except Exception as e:
                 errors[page.id] = str(e)
                 failed += 1
