@@ -3,6 +3,7 @@
 # Idempotent - makes no changes if it has already been run or if the
 # named content is already present from manual editing
 
+import json
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
@@ -155,6 +156,12 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
                 image=img,
                 show_in_menus=True,
                 last_published_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
+                taxonomy_json=json.dumps(
+                    [
+                        {"code": "EATING", "label": "Eating well"},
+                        {"code": "PHYSICALACTIVITY", "label": "Physical Activity"},
+                    ]
+                ),
             )
             self._chp.specific.add_child(instance=self._cp)
             self._cp.save_revision().publish()
@@ -170,6 +177,12 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
                 description=description,
                 permission_role=permission_role,
                 last_published_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
+                taxonomy_json=json.dumps(
+                    [
+                        {"code": "EATING", "label": "Eating well"},
+                        {"code": "PHYSICALACTIVITY", "label": "Physical Activity"},
+                    ]
+                ),
             )
             self._cp.specific.add_child(instance=self._rp)
             self._rp.save_revision().publish()
