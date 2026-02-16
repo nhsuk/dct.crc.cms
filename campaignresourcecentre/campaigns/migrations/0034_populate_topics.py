@@ -2,7 +2,6 @@
 
 from django.db import migrations
 
-
 INITIAL_TOPICS = [
     {"name": "Antimicrobial resistance", "code": "ANTMBREST"},
     {"name": "Cancer", "code": "CANCER"},
@@ -24,14 +23,14 @@ INITIAL_TOPICS = [
     {"name": "Vaccinations", "code": "VACCINATIONS"},
     # Legacy topics carried over from taxonomies-list.json.
     # To be removed in CV-1410.
-    {"name": "Blood pressure", "code": "BLOODPRESSURE"},
-    {"name": "Eating well", "code": "EATING"},
-    {"name": "Flu", "code": "FLU"},
-    {"name": "MMR", "code": "MMR"},
-    {"name": "NHS", "code": "NHS"},
-    {"name": "NHS 111", "code": "NHS111"},
-    {"name": "Screening", "code": "SCREENING"},
-    {"name": "Sepsis", "code": "SEPSIS"},
+    {"name": "Blood pressure", "code": "BLOODPRESSURE", "show_in_filter": False},
+    {"name": "Eating well", "code": "EATING", "show_in_filter": False},
+    {"name": "Flu", "code": "FLU", "show_in_filter": False},
+    {"name": "MMR", "code": "MMR", "show_in_filter": False},
+    {"name": "NHS", "code": "NHS", "show_in_filter": False},
+    {"name": "NHS 111", "code": "NHS111", "show_in_filter": False},
+    {"name": "Screening", "code": "SCREENING", "show_in_filter": False},
+    {"name": "Sepsis", "code": "SEPSIS", "show_in_filter": False},
 ]
 
 
@@ -41,21 +40,25 @@ def populate_topics(apps, schema_editor):
 
     for topic_data in INITIAL_TOPICS:
         Topic.objects.get_or_create(
-            code=topic_data["code"], defaults={"name": topic_data["name"]}
+            code=topic_data["code"],
+            defaults={
+                "name": topic_data["name"],
+                "show_in_filter": topic_data.get("show_in_filter", True),
+            },
         )
 
 
 def reverse_populate_topics(apps, schema_editor):
     """Reverse migration - only remove the topics seeded by this migration."""
     Topic = apps.get_model("campaigns", "Topic")
-    codes = [t["code"] for t in INITIAL_TOPICS]
+    codes = [topic["code"] for topic in INITIAL_TOPICS]
     Topic.objects.filter(code__in=codes).delete()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("campaigns", "0033_topic_code"),
+        ("campaigns", "0033_topic_code_and_show_in_filter"),
     ]
 
     operations = [
