@@ -41,11 +41,11 @@ stages:
       - job: ProdDBCopy
         steps:
           - task: AzureKeyVault@2
-            displayName: 'Azure Key Vault: dct-crc-v3-vlt-prod-uks'
+            displayName: 'Azure Key Vault: dct-crc-kv-app-prod-uks'
             inputs:
-              azureSubscription: dct-production-vault-uks-dct.campaign-resource-centre-v3
-              KeyVaultName: dct-crc-v3-vlt-prod-uks
-              SecretsFilter: DBPass, DBName, DBHost, DBUser
+              azureSubscription: dct-crccms-prod
+              KeyVaultName: dct-crc-kv-app-prod-uks
+              SecretsFilter: db-pass, db-name, db-host, db-user
           - template: templates/db-sync-download-dump.yaml
             parameters:
               dumpPrefix: prod
@@ -112,8 +112,8 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureVaultSubscription: dct-staging-vault-uks-dct.campaign-resource-centre-v3
-              azureStorageSubscription: dct-cms-postgres-rg-stag
-              VaultId: dct-crc-v3-vlt-stag-uks
+              azureVaultSubscription: dct-crccms-stag
+              azureStorageSubscription: dct-crccms-stag
+              VaultId: dct-crc-kv-app-stag-uks
               environment: staging
               env: stag
