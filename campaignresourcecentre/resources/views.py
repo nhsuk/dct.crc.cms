@@ -5,7 +5,10 @@ from django.template.response import TemplateResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
-from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
+from campaignresourcecentre.wagtailreacttaxonomy.models import (
+    TaxonomyTerms,
+    load_campaign_topics,
+)
 from campaignresourcecentre.search.azure import AzureSearchBackend
 
 logger = logging.getLogger(__name__)
@@ -20,6 +23,8 @@ def _search(request):
     taxonomy_json = json.loads(
         TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
     )
+    load_campaign_topics(taxonomy_json)
+
     parent_taxonomy_codes = [taxonomy.get("code") for taxonomy in taxonomy_json]
     search_query = query_string.get("q", "")
     sort = query_string.get("sort")

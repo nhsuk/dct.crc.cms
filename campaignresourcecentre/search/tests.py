@@ -321,7 +321,7 @@ class TestDatabaseSearch(TestCase):
 
         self.campaign_hub_page.from_database(request)
 
-        mock_logger.error.assert_called()
+        mock_logger.debug.assert_called()
 
 
 class TestAzureIndex(TestCase):

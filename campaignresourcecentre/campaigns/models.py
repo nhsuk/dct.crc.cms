@@ -7,6 +7,8 @@ from django.utils.html import strip_tags
 from html import unescape
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from wagtail.admin.panels import (
     FieldPanel,
@@ -39,10 +41,14 @@ logger = logging.getLogger(__name__)
 
 
 class Topic(models.Model):
-    """Campaign topics. Managed in the Taxonomy section of the Wagtail admin,
-    which itself is defined in `utils.wagtail_hooks.py`"""
+    """Campaign topics. Managed in the Campaign Topics section of the Wagtail admin."""
 
     name = models.CharField(max_length=50)
+    code = models.CharField(max_length=50, unique=True)
+    show_in_filter = models.BooleanField(
+        default=True,
+        help_text="Show this topic as a filter option on the campaigns page.",
+    )
 
     class Meta:
         ordering = ["name"]
@@ -163,12 +169,13 @@ class CampaignHubPage(BasePage):
         campaigns = CampaignPage.objects.live().public().child_of(self).order_by("path")
 
         def get_taxonomy_JSON(campaign):
+            if not campaign.taxonomy_json:
+                logger.debug(f"Campaign ID {campaign.id} has no taxonomy tags assigned")
+                return []
             try:
                 return json.loads(campaign.taxonomy_json)
             except json.JSONDecodeError:
-                logger.error(
-                    f"Invalid JSON/JSON not found for campaign ID {campaign.id}"
-                )
+                logger.warning(f"Campaign ID {campaign.id} has invalid taxonomy JSON")
                 return []
 
         campaign_taxonomy_data = [
@@ -201,17 +208,11 @@ class CampaignHubPage(BasePage):
 
     def get_context(self, request, *args, **kwargs):
         from_azure_search = settings.CAMPAIGNS_FROM_AZ
-        filter_codes = settings.CAMPAIGN_HUB_PAGE_FILTERS
 
         """Adds data to the template context for display on the page."""
-        taxonomy_json = json.loads(
-            TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
-        )
-        health_topics = next((x for x in taxonomy_json if x["code"] == "TOPIC"), None)[
-            "children"
-        ]
         topics_for_filter = [
-            obj for obj in health_topics if obj["code"] in filter_codes
+            {"label": topic.name, "code": topic.code}
+            for topic in Topic.objects.filter(show_in_filter=True)
         ]
 
         selected_topic = request.GET.get("topic") or "ALL"
@@ -447,9 +448,6 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return context
 
     content_panels = BasePage.content_panels + [
-        FieldPanel(
-            "topics", heading="Campaign Topics", widget=forms.CheckboxSelectMultiple
-        ),
         MultiFieldPanel(
             [
                 FieldPanel("summary"),
@@ -499,3 +497,19 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     "description": f"The description cannot be longer than 480 characters. You have {description_len} characters."
                 }
             )
+
+
+@receiver(post_delete, sender=Topic)
+def remove_deleted_topic_from_pages(sender, instance, **kwargs):
+    """When a Topic is deleted, remove its tag from every page that uses it."""
+    contains_code = {"taxonomy_json__contains": f'"code":"{instance.code}"'}
+
+    for Model in [CampaignPage, ResourcePage]:
+        for page in Model.objects.filter(**contains_code):
+            tags = [
+                tag
+                for tag in json.loads(page.taxonomy_json)
+                if tag["code"] != instance.code
+            ]
+            page.taxonomy_json = json.dumps(tags, separators=(",", ":"))
+            page.save(update_fields=["taxonomy_json"])
