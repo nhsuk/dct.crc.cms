@@ -7,7 +7,10 @@ from django.core.exceptions import ValidationError
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
-from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
+from campaignresourcecentre.wagtailreacttaxonomy.models import (
+    TaxonomyTerms,
+    load_campaign_topics,
+)
 from .utils import get_page_taxonomy_tags
 from .forms import ManageTagsForm
 from wagtail import hooks
@@ -189,6 +192,9 @@ class BaseTagBulkAction(PageBulkAction):
             data = json.loads(taxonomy_data.terms_json)
         except json.JSONDecodeError:
             raise ValidationError('"Taxonomy Terms" json wrong format')
+
+        # Load campaign topics from the Topic model
+        load_campaign_topics(data)
 
         topic_vocab = next((v for v in data if v.get("code") == "TOPIC"), None)
         if not topic_vocab:

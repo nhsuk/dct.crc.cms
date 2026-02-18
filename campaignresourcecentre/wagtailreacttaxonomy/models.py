@@ -117,6 +117,9 @@ class TaxonomyMixin(models.Model):
         crc_taxonomy = json.loads(
             TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
         )
+        # Load campaign topics from the Topic model
+        load_campaign_topics(crc_taxonomy)
+
         topic_vocab = next((v for v in crc_taxonomy if v["code"] == "TOPIC"), None)
         if not topic_vocab:
             raise ValidationError(

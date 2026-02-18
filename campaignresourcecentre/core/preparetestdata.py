@@ -16,7 +16,7 @@ from django.db.models import Model
 from wagtail.models import Page, Site
 from wagtail.documents import get_document_model
 
-from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
+from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage, Topic
 from campaignresourcecentre.resources.models import ResourcePage, ResourceItem
 from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 
@@ -68,6 +68,7 @@ class PrepareTestData:
             self._home.title = "Campaign Resource Centre"
         self._ensure_superuser("wagtail", "wagtail")
         self._ensure_taxonomy(TAXONOMY_TERMS_ID, TAXONOMY_TERMS_JSON)
+        self._ensure_topics()
         self._ensure_campaign_hub_page()
         self._ensure_campaign_page(
             "Change4Life",
@@ -117,6 +118,28 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
         except ObjectDoesNotExist:
             tt = TaxonomyTerms(taxonomy_id=terms_id, terms_json=terms_json)
             tt.save()
+
+    def _ensure_topics(self):
+        """Ensure required topic tags exist for test data."""
+        topics_to_create = [
+            {"code": "EATING", "name": "Eating well", "show_in_filter": False},
+            {
+                "code": "PHYSICALACTIVITY",
+                "name": "Physical Activity",
+                "show_in_filter": True,
+            },
+            {"code": "CANCER", "name": "Cancer", "show_in_filter": True},
+            {"code": "FLU", "name": "Flu", "show_in_filter": False},
+            {"code": "COVID", "name": "Coronavirus", "show_in_filter": True},
+        ]
+        for topic_data in topics_to_create:
+            Topic.objects.get_or_create(
+                code=topic_data["code"],
+                defaults={
+                    "name": topic_data["name"],
+                    "show_in_filter": topic_data["show_in_filter"],
+                },
+            )
 
     def _ensure_campaign_hub_page(self):
         # Does the campaign hub page exist?
