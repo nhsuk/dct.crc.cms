@@ -489,6 +489,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     )
 
     def clean(self):
+        super().clean()
         description_len = len(unescape(strip_tags(self.description)))
         if description_len > 480:
             raise ValidationError(

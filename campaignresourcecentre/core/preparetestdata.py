@@ -3,6 +3,7 @@
 # Idempotent - makes no changes if it has already been run or if the
 # named content is already present from manual editing
 
+import json
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
@@ -15,7 +16,7 @@ from django.db.models import Model
 from wagtail.models import Page, Site
 from wagtail.documents import get_document_model
 
-from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage
+from campaignresourcecentre.campaigns.models import CampaignHubPage, CampaignPage, Topic
 from campaignresourcecentre.resources.models import ResourcePage, ResourceItem
 from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 
@@ -67,6 +68,7 @@ class PrepareTestData:
             self._home.title = "Campaign Resource Centre"
         self._ensure_superuser("wagtail", "wagtail")
         self._ensure_taxonomy(TAXONOMY_TERMS_ID, TAXONOMY_TERMS_JSON)
+        self._ensure_topics()
         self._ensure_campaign_hub_page()
         self._ensure_campaign_page(
             "Change4Life",
@@ -117,6 +119,28 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
             tt = TaxonomyTerms(taxonomy_id=terms_id, terms_json=terms_json)
             tt.save()
 
+    def _ensure_topics(self):
+        """Ensure required topic tags exist for test data."""
+        topics_to_create = [
+            {"code": "EATING", "name": "Eating well", "show_in_filter": False},
+            {
+                "code": "PHYSICALACTIVITY",
+                "name": "Physical Activity",
+                "show_in_filter": True,
+            },
+            {"code": "CANCER", "name": "Cancer", "show_in_filter": True},
+            {"code": "FLU", "name": "Flu", "show_in_filter": False},
+            {"code": "COVID", "name": "Coronavirus", "show_in_filter": True},
+        ]
+        for topic_data in topics_to_create:
+            Topic.objects.get_or_create(
+                code=topic_data["code"],
+                defaults={
+                    "name": topic_data["name"],
+                    "show_in_filter": topic_data["show_in_filter"],
+                },
+            )
+
     def _ensure_campaign_hub_page(self):
         # Does the campaign hub page exist?
         try:
@@ -155,6 +179,12 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
                 image=img,
                 show_in_menus=True,
                 last_published_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
+                taxonomy_json=json.dumps(
+                    [
+                        {"code": "EATING", "label": "Eating well"},
+                        {"code": "PHYSICALACTIVITY", "label": "Physical Activity"},
+                    ]
+                ),
             )
             self._chp.specific.add_child(instance=self._cp)
             self._cp.save_revision().publish()
@@ -170,6 +200,12 @@ For queries, please contact NCMP@phe.gov.uk for information on the NCMP or Partn
                 description=description,
                 permission_role=permission_role,
                 last_published_at=datetime.fromisoformat("2021-01-01T00:00:00+00:00"),
+                taxonomy_json=json.dumps(
+                    [
+                        {"code": "EATING", "label": "Eating well"},
+                        {"code": "PHYSICALACTIVITY", "label": "Physical Activity"},
+                    ]
+                ),
             )
             self._cp.specific.add_child(instance=self._rp)
             self._rp.save_revision().publish()
