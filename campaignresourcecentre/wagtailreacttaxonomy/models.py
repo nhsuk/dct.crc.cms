@@ -23,6 +23,7 @@ class TaxonomyTerms(models.Model):
 def update_taxonomy_terms_on_blobstore(sender, instance, **kwargs):
     try:
         data = json.loads(instance.terms_json)
+        load_campaign_topics(data)
         terms_with_vocab = get_terms_from_terms_json(data)
         vocabs = get_vocabs_from_terms_json(data)
         content = dict()
