@@ -26,7 +26,7 @@ class TopicDeleteView(DeleteView):
     """Custom delete confirmation that shows how many pages are affected."""
 
     def confirmation_message(self):
-        contains_code = {"taxonomy_json__contains": f'"code":"{self.instance.code}"'}
+        contains_code = {"taxonomy_json__contains": f'"code": "{self.instance.code}"'}
         campaigns = CampaignPage.objects.filter(**contains_code).count()
         resources = ResourcePage.objects.filter(**contains_code).count()
         if campaigns or resources:

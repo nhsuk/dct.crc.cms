@@ -90,7 +90,6 @@ class TopicDeletionRemovesTagsTest(TestCase):
                 {"code": "TESTTOPIC", "label": "Test Topic"},
                 {"code": "MENTALHEALTH", "label": "Mental health"},
             ],
-            separators=(",", ":"),
         )
         self.campaign_page.taxonomy_json = taxonomy_json
         self.campaign_page.save(update_fields=["taxonomy_json"])
