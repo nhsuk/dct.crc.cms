@@ -513,3 +513,11 @@ def remove_deleted_topic_from_pages(sender, instance, **kwargs):
             ]
             page.taxonomy_json = json.dumps(tags)
             page.save(update_fields=["taxonomy_json"])
+
+            specific_page = page.specific
+            specific_page.taxonomy_json = json.dumps(tags)
+            revision = specific_page.save_revision(
+                log_action="delete_campaign_topic",
+            )
+            if page.live and page.live_revision:
+                revision.publish(log_action=True)

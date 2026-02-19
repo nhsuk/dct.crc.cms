@@ -107,3 +107,15 @@ class TopicDeletionRemovesTagsTest(TestCase):
         self.resource_page.refresh_from_db()
         tags = json.loads(self.resource_page.taxonomy_json)
         self.assertEqual(tags, [{"code": "MENTALHEALTH", "label": "Mental health"}])
+
+    def test_deleting_topic_creates_revision_on_campaign_page(self):
+        revisions_before = self.campaign_page.revisions.count()
+        self.topic.delete()
+        revisions_after = self.campaign_page.revisions.count()
+        self.assertGreater(revisions_after, revisions_before)
+
+    def test_deleting_topic_creates_revision_on_resource_page(self):
+        revisions_before = self.resource_page.revisions.count()
+        self.topic.delete()
+        revisions_after = self.resource_page.revisions.count()
+        self.assertGreater(revisions_after, revisions_before)
