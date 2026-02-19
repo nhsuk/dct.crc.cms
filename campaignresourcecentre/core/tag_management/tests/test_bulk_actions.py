@@ -8,6 +8,7 @@ from campaignresourcecentre.core.tag_management.bulk_actions import (
     AddTagsBulkAction,
 )
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
+from django.core.exceptions import ValidationError
 
 
 User = get_user_model()
@@ -22,16 +23,21 @@ class BaseTestCase(TestCase):
         cls.resource_page = td.resource_page
         cls.user = User.objects.get(username="wagtail")
 
-        # Set taxonomy_json on test pages for testing
+        # Set taxonomy_json on test pages for testing with at least one TOPIC tag
         cls.campaign_page.taxonomy_json = json.dumps(
             [
-                {"code": "health:gp", "label": "GP"},
-                {"code": "health:hospital", "label": "Hospital"},
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
             ]
         )
         cls.campaign_page.save_revision().publish()
 
-        cls.resource_page.taxonomy_json = json.dumps([])
+        cls.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "COVID", "label": "Coronavirus"},
+                {"code": "HEALTHPROFS", "label": "Healthcare professionals"},
+            ]
+        )
         cls.resource_page.save_revision().publish()
 
     def setUp(self):
@@ -78,17 +84,19 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
         self.campaign_page.refresh_from_db()
         self.campaign_page.taxonomy_json = json.dumps(
             [
-                {"code": "health:gp", "label": "GP"},
-                {"code": "health:hospital", "label": "Hospital"},
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "DENTAL", "label": "Dental health"},
+                {"code": "ADULTS", "label": "Adults"},
             ]
         )
         self.campaign_page.save_revision().publish()
 
         self.campaign_page.taxonomy_json = json.dumps(
             [
-                {"code": "health:gp", "label": "GP"},
-                {"code": "health:hospital", "label": "Hospital"},
-                {"code": "health:dental", "label": "Dental"},
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "DENTAL", "label": "Dental health"},
+                {"code": "COVID", "label": "Coronavirus"},
+                {"code": "ADULTS", "label": "Adults"},
             ]
         )
         self.campaign_page.save_revision(user=self.user)  # Draft only
@@ -97,17 +105,19 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
         action.request = self._create_mock_request(
             method="POST",
             data={
-                "tags_to_remove": json.dumps(
-                    {str(self.campaign_page.id): ["health:gp"]}
-                ),
+                "tags_to_remove": json.dumps({str(self.campaign_page.id): ["DENTAL"]}),
             },
         )
         action.action_type = "remove_tags"
 
-        live_tags_after = [{"code": "health:hospital", "label": "Hospital"}]
+        live_tags_after = [
+            {"code": "CANCER", "label": "Cancer"},
+            {"code": "ADULTS", "label": "Adults"},
+        ]
         draft_tags_after = [
-            {"code": "health:hospital", "label": "Hospital"},
-            {"code": "health:dental", "label": "Dental"},
+            {"code": "CANCER", "label": "Cancer"},
+            {"code": "COVID", "label": "Coronavirus"},
+            {"code": "ADULTS", "label": "Adults"},
         ]
         action._save_tags(
             self.campaign_page, live_tags_after, draft_tags_after, self.user
@@ -115,8 +125,9 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
 
         self.campaign_page.refresh_from_db()
         live_saved = json.loads(self.campaign_page.taxonomy_json)
-        self.assertEqual(len(live_saved), 1)
-        self.assertEqual(live_saved[0]["code"], "health:hospital")
+        self.assertEqual(len(live_saved), 2)
+        codes = {tag["code"] for tag in live_saved}
+        self.assertEqual(codes, {"CANCER", "ADULTS"})
 
         latest_rev = self.campaign_page.latest_revision
         live_rev = self.campaign_page.live_revision
@@ -126,6 +137,28 @@ class RemoveTagsBulkActionTestCase(BaseTestCase):
         draft_tags = json.loads(draft_obj.taxonomy_json)
         self.assertEqual(draft_tags, draft_tags_after)
 
+    def test_remove_tags_requires_at_least_one_topic_tag(self):
+        """Removing all TOPIC tags should fail validation."""
+        self.campaign_page.refresh_from_db()
+        self.campaign_page.taxonomy_json = json.dumps(
+            [
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
+        )
+        self.campaign_page.save_revision().publish()
+
+        action = object.__new__(RemoveTagsBulkAction)
+        action.action_type = "remove_tags"
+        topic_codes = action._get_topic_codes()
+
+        tags_after = [{"code": "ADULTS", "label": "Adults"}]
+
+        with self.assertRaises(ValidationError) as context:
+            action._ensure_has_topic_tag(tags_after, topic_codes, action_type="remove")
+
+        self.assertIn("leave at least one topic tag", str(context.exception).lower())
+
 
 class AddTagsBulkActionTestCase(BaseTestCase):
     """Test AddTagsBulkAction functionality."""
@@ -134,14 +167,18 @@ class AddTagsBulkActionTestCase(BaseTestCase):
         """Adding tags to live page with draft in merge mode should update live and merge into draft."""
         self.campaign_page.refresh_from_db()
         self.campaign_page.taxonomy_json = json.dumps(
-            [{"code": "health:gp", "label": "GP"}]
+            [
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
         )
         self.campaign_page.save_revision().publish()
 
         self.campaign_page.taxonomy_json = json.dumps(
             [
-                {"code": "health:gp", "label": "GP"},
-                {"code": "health:dental", "label": "Dental"},
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "DENTAL", "label": "Dental health"},
+                {"code": "ADULTS", "label": "Adults"},
             ]
         )
         self.campaign_page.save_revision(user=self.user)
@@ -151,29 +188,29 @@ class AddTagsBulkActionTestCase(BaseTestCase):
             method="POST",
             data={
                 "tag_operation_mode": "merge",
-                "tags_to_add": json.dumps(
-                    [{"code": "health:vision", "label": "Vision"}]
-                ),
+                "tags_to_add": json.dumps([{"code": "COVID", "label": "Coronavirus"}]),
             },
         )
         action.action_type = "add_tags"
 
         live_tags = [
-            {"code": "health:gp", "label": "GP"},
-            {"code": "health:vision", "label": "Vision"},
+            {"code": "CANCER", "label": "Cancer"},
+            {"code": "ADULTS", "label": "Adults"},
+            {"code": "COVID", "label": "Coronavirus"},
         ]
         draft_tags = [
-            {"code": "health:gp", "label": "GP"},
-            {"code": "health:dental", "label": "Dental"},
-            {"code": "health:vision", "label": "Vision"},
+            {"code": "CANCER", "label": "Cancer"},
+            {"code": "DENTAL", "label": "Dental health"},
+            {"code": "ADULTS", "label": "Adults"},
+            {"code": "COVID", "label": "Coronavirus"},
         ]
         action._save_tags(self.campaign_page, live_tags, draft_tags, self.user)
 
         self.campaign_page.refresh_from_db()
         live_saved = json.loads(self.campaign_page.taxonomy_json)
-        self.assertEqual(len(live_saved), 2)
+        self.assertEqual(len(live_saved), 3)
         codes = {tag["code"] for tag in live_saved}
-        self.assertEqual(codes, {"health:gp", "health:vision"})
+        self.assertEqual(codes, {"CANCER", "ADULTS", "COVID"})
 
         latest_rev = self.campaign_page.latest_revision
         live_rev = self.campaign_page.live_revision
@@ -181,22 +218,26 @@ class AddTagsBulkActionTestCase(BaseTestCase):
 
         draft_obj = latest_rev.as_object()
         draft_tags = json.loads(draft_obj.taxonomy_json)
-        self.assertEqual(len(draft_tags), 3)
+        self.assertEqual(len(draft_tags), 4)
         draft_codes = {tag["code"] for tag in draft_tags}
-        self.assertEqual(draft_codes, {"health:gp", "health:dental", "health:vision"})
+        self.assertEqual(draft_codes, {"CANCER", "DENTAL", "ADULTS", "COVID"})
 
     def test_add_tags_with_draft_replace_mode_replaces_draft(self):
         """Adding tags to live page with draft in replace mode should update live and replace draft tags."""
         self.campaign_page.refresh_from_db()
         self.campaign_page.taxonomy_json = json.dumps(
-            [{"code": "health:gp", "label": "GP"}]
+            [
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
         )
         self.campaign_page.save_revision().publish()
 
         self.campaign_page.taxonomy_json = json.dumps(
             [
-                {"code": "health:gp", "label": "GP"},
-                {"code": "health:dental", "label": "Dental"},
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "DENTAL", "label": "Dental health"},
+                {"code": "ADULTS", "label": "Adults"},
             ]
         )
         self.campaign_page.save_revision(user=self.user)
@@ -206,21 +247,19 @@ class AddTagsBulkActionTestCase(BaseTestCase):
             method="POST",
             data={
                 "tag_operation_mode": "replace",
-                "tags_to_add": json.dumps(
-                    [{"code": "health:vision", "label": "Vision"}]
-                ),
+                "tags_to_add": json.dumps([{"code": "COVID", "label": "Coronavirus"}]),
             },
         )
         action.action_type = "add_tags"
 
-        live_tags = [{"code": "health:vision", "label": "Vision"}]
-        draft_tags = [{"code": "health:vision", "label": "Vision"}]
+        live_tags = [{"code": "COVID", "label": "Coronavirus"}]
+        draft_tags = [{"code": "COVID", "label": "Coronavirus"}]
         action._save_tags(self.campaign_page, live_tags, draft_tags, self.user)
 
         self.campaign_page.refresh_from_db()
         live_saved = json.loads(self.campaign_page.taxonomy_json)
         self.assertEqual(len(live_saved), 1)
-        self.assertEqual(live_saved[0]["code"], "health:vision")
+        self.assertEqual(live_saved[0]["code"], "COVID")
 
         latest_rev = self.campaign_page.latest_revision
         live_rev = self.campaign_page.live_revision
@@ -229,4 +268,20 @@ class AddTagsBulkActionTestCase(BaseTestCase):
         draft_obj = latest_rev.as_object()
         draft_tags = json.loads(draft_obj.taxonomy_json)
         self.assertEqual(len(draft_tags), 1)
-        self.assertEqual(draft_tags[0]["code"], "health:vision")
+        self.assertEqual(draft_tags[0]["code"], "COVID")
+
+    def test_add_tags_replace_mode_requires_at_least_one_topic_tag(self):
+        """Replacing all tags with non-TOPIC tags should fail validation."""
+        action = object.__new__(AddTagsBulkAction)
+        action.action_type = "add_tags"
+        topic_codes = action._get_topic_codes()
+
+        tags_after = [
+            {"code": "ADULTS", "label": "Adults"},
+            {"code": "HEALTHPROFS", "label": "Healthcare professionals"},
+        ]
+
+        with self.assertRaises(ValidationError) as context:
+            action._ensure_has_topic_tag(tags_after, topic_codes, action_type="add")
+
+        self.assertIn("select at least one topic tag", str(context.exception).lower())

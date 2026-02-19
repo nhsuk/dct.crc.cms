@@ -53,7 +53,10 @@ class TestCampaignResourceFilterSet(TestCase):
 
     def test_filter_taxonomy_with_multiple_terms_partial_match(self):
         self.resource_page.taxonomy_json = json.dumps(
-            [{"code": "ADULTS", "label": "Adults"}]
+            [
+                {"code": "ADULTS", "label": "Adults"},
+                {"code": "CANCER", "label": "Cancer"},
+            ]
         )
         self.resource_page.save()
 
@@ -85,6 +88,7 @@ class TestCampaignResourceFilterSet(TestCase):
             summary="A sub campaign",
             description="Nested campaign",
             image=self.campaign_page.image,
+            taxonomy_json=json.dumps([{"code": "CANCER", "label": "Cancer"}]),
         )
         self.campaign_page.add_child(instance=sub_campaign)
         sub_campaign.save_revision().publish()
@@ -94,6 +98,7 @@ class TestCampaignResourceFilterSet(TestCase):
             summary="A resource",
             description="Test resource",
             permission_role="all",
+            taxonomy_json=json.dumps([{"code": "COVID", "label": "Coronavirus"}]),
         )
         sub_campaign.add_child(instance=nested_resource)
         nested_resource.save_revision().publish()

@@ -138,6 +138,7 @@ class TestResourceItemAdmin(AdminTestCase):
             last_published_at=self.campaign_page.last_reviewed,
             slug=uuid4(),
             translation_key=uuid4(),
+            taxonomy_json=json.dumps([{"code": "CANCER", "label": "Cancer"}]),
         )
         self.campaign_hub_page.specific.add_child(instance=new_campaign)
         new_campaign.save()
@@ -149,6 +150,7 @@ class TestResourceItemAdmin(AdminTestCase):
             description=uuid4(),
             permission_role=self.resource_page.permission_role,
             last_published_at=self.resource_page.last_published_at,
+            taxonomy_json=json.dumps([{"code": "COVID", "label": "Coronavirus"}]),
         )
         new_campaign.specific.add_child(instance=new_resource_page)
         new_resource_page.save()
@@ -197,6 +199,7 @@ class TestResourcePageProperties(AdminTestCase):
             summary="Child summary",
             description="Child description",
             image=self.campaign_page.image,
+            taxonomy_json=json.dumps([{"code": "CANCER", "label": "Cancer"}]),
         )
         self.campaign_page.add_child(instance=child_campaign)
         child_campaign.save()
@@ -205,6 +208,7 @@ class TestResourcePageProperties(AdminTestCase):
             title="Nested Resource",
             summary="Test summary",
             description="Test description",
+            taxonomy_json=json.dumps([{"code": "COVID", "label": "Coronavirus"}]),
         )
         child_campaign.add_child(instance=nested_resource)
         nested_resource.save()
