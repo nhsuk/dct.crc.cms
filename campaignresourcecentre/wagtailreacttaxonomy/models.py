@@ -92,17 +92,21 @@ def to_json(data):
     return json.dumps(data)
 
 
-def load_campaign_topics(taxonomy_data):
+def load_campaign_topics(taxonomy_data, visible_only=False):
     """Load campaign topics from the database into the taxonomy JSON structure.
 
-    Replaces the Campaign Topics with entries from the Topic model, which
-    includes a default pre-defined list from migration 0034 and any manually added within the "Campaign Topics" admin panel.
+    If visible_only=True, only topics with show_in_filter=True are included.
     """
     from campaignresourcecentre.campaigns.models import Topic
 
+    topics = (
+        Topic.objects.filter(show_in_filter=True)
+        if visible_only
+        else Topic.objects.all()
+    )
     topic_children = [
         {"label": topic.name, "code": topic.code, "type": "term", "children": []}
-        for topic in Topic.objects.all()
+        for topic in topics
     ]
     for vocab in taxonomy_data:
         if vocab.get("code") == "TOPIC":

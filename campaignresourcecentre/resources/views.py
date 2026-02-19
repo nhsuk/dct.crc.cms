@@ -23,7 +23,7 @@ def _search(request):
     taxonomy_json = json.loads(
         TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
     )
-    load_campaign_topics(taxonomy_json)
+    load_campaign_topics(taxonomy_json, visible_only=True)
 
     parent_taxonomy_codes = [taxonomy.get("code") for taxonomy in taxonomy_json]
     search_query = query_string.get("q", "")

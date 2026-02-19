@@ -47,7 +47,7 @@ class Topic(models.Model):
     code = models.CharField(max_length=50, unique=True)
     show_in_filter = models.BooleanField(
         default=True,
-        help_text="Show this topic as a filter option on the campaigns page.",
+        help_text="Show this topic as a filter option on the campaigns and resources pages.",
     )
 
     class Meta:
