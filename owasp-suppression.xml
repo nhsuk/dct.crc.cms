@@ -59,8 +59,7 @@
         Package: minimatch
         CVE-2026-26996 / GHSA-3ppc-4f35-3m26 - ReDoS via repeated wildcards.
         Fix requires minimatch >= 10.2.1 but all dependents (eslint, copy-webpack-plugin, npm-run-all, etc.) are pinned to ^3.x.
-        Dev-only dependency, not used in production. Backport PR for v3 is pending (isaacs/minimatch#277).
-        Suppressed until backport is published or parent packages are upgraded.
+        Dev-only dependency, not used in production. Suppressed until fix is published/parent packages are upgraded.
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/minimatch@.*$</packageUrl>
         <vulnerabilityName>GHSA-3ppc-4f35-3m26</vulnerabilityName>

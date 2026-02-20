@@ -56,6 +56,15 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        super().clean()
+        if not self.name or not self.name.strip():
+            raise ValidationError({"name": "Name is required."})
+        if not self.code or not self.code.strip():
+            raise ValidationError({"code": "Code is required."})
+        self.name = self.name.strip()
+        self.code = self.code.strip()
+
 
 class CampaignHubPage(BasePage):
     max_count = 1

@@ -1,6 +1,7 @@
 import importlib
 import json
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from campaignresourcecentre.campaigns.models import Topic
@@ -114,3 +115,41 @@ class TopicDeletionRemovesTagsTest(TestCase):
         self.topic.delete()
         revisions_after = self.resource_page.revisions.count()
         self.assertGreater(revisions_after, revisions_before)
+
+
+class TopicValidationTest(TestCase):
+    """Topic name and code are required and whitespace-only values are rejected."""
+
+    def test_blank_name_is_rejected(self):
+        topic = Topic(name="", code="VALID")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("name", ctx.exception.message_dict)
+
+    def test_blank_code_is_rejected(self):
+        topic = Topic(name="Valid", code="")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("code", ctx.exception.message_dict)
+
+    def test_whitespace_only_name_is_rejected(self):
+        topic = Topic(name="   ", code="VALID")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("name", ctx.exception.message_dict)
+
+    def test_whitespace_only_code_is_rejected(self):
+        topic = Topic(name="Valid", code="   ")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("code", ctx.exception.message_dict)
+
+    def test_valid_topic_passes_clean(self):
+        topic = Topic(name="Good Topic", code="GOOD")
+        topic.full_clean()
+
+    def test_clean_strips_whitespace(self):
+        topic = Topic(name="  Padded  ", code="  PAD  ")
+        topic.full_clean()
+        self.assertEqual(topic.name, "Padded")
+        self.assertEqual(topic.code, "PAD")
