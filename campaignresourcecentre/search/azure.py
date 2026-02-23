@@ -21,6 +21,7 @@ from campaignresourcecentre.wagtailreacttaxonomy.models import (
     TaxonomyTerms,
     get_terms_from_terms_json,
     get_vocabs_from_terms_json,
+    load_campaign_topics,
 )
 
 logger = logging.getLogger(__name__)
@@ -251,7 +252,9 @@ class AzureIndex:
             except TaxonomyTerms.DoesNotExist:
                 logger.error(f"Taxonomy terms for: {taxonomy_id} not found")
                 return None
-            data = self._format_taxonomy_for_storage(json.loads(terms.terms_json))
+            taxonomy_data = json.loads(terms.terms_json)
+            load_campaign_topics(taxonomy_data)
+            data = self._format_taxonomy_for_storage(taxonomy_data)
             self._storage.add_taxonomy_terms(taxonomy_id, data)
         return data
 

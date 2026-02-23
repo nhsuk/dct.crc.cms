@@ -372,7 +372,9 @@ class AddTagsBulkAction(BaseTagBulkAction):
     def _get_taxonomy_terms(self):
         try:
             taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
-            return taxonomy_data.terms_json
+            data = json.loads(taxonomy_data.terms_json)
+            load_campaign_topics(data)
+            return json.dumps(data)
         except TaxonomyTerms.DoesNotExist:
             logger.error("Taxonomy terms not found")
             return []

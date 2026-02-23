@@ -47,7 +47,7 @@ class Topic(models.Model):
     code = models.CharField(max_length=50, unique=True)
     show_in_filter = models.BooleanField(
         default=True,
-        help_text="Show this topic as a filter option on the campaigns page.",
+        help_text="Show this topic as a filter option on the campaigns and resources pages.",
     )
 
     class Meta:
@@ -55,6 +55,15 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        super().clean()
+        if not self.name or not self.name.strip():
+            raise ValidationError({"name": "Name is required."})
+        if not self.code or not self.code.strip():
+            raise ValidationError({"code": "Code is required."})
+        self.name = self.name.strip()
+        self.code = self.code.strip()
 
 
 class CampaignHubPage(BasePage):
@@ -502,7 +511,7 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
 @receiver(post_delete, sender=Topic)
 def remove_deleted_topic_from_pages(sender, instance, **kwargs):
     """When a Topic is deleted, remove its tag from every page that uses it."""
-    contains_code = {"taxonomy_json__contains": f'"code":"{instance.code}"'}
+    contains_code = {"taxonomy_json__contains": f'"code": "{instance.code}"'}
 
     for Model in [CampaignPage, ResourcePage]:
         for page in Model.objects.filter(**contains_code):
@@ -511,5 +520,13 @@ def remove_deleted_topic_from_pages(sender, instance, **kwargs):
                 for tag in json.loads(page.taxonomy_json)
                 if tag["code"] != instance.code
             ]
-            page.taxonomy_json = json.dumps(tags, separators=(",", ":"))
+            page.taxonomy_json = json.dumps(tags)
             page.save(update_fields=["taxonomy_json"])
+
+            specific_page = page.specific
+            specific_page.taxonomy_json = json.dumps(tags)
+            revision = specific_page.save_revision(
+                log_action="delete_campaign_topic",
+            )
+            if page.live and page.live_revision:
+                revision.publish(log_action=True)
