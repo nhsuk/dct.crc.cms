@@ -1,6 +1,7 @@
 import importlib
 import json
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from campaignresourcecentre.campaigns.models import Topic
@@ -11,6 +12,10 @@ _migration = importlib.import_module(
     "campaignresourcecentre.campaigns.migrations.0034_populate_topics"
 )
 INITIAL_TOPICS = _migration.INITIAL_TOPICS
+
+TOPIC_TAXONOMY = [
+    {"label": "Health Topics", "code": "TOPIC", "type": "vocabulary", "children": []},
+]
 
 
 class MigrationPopulatesTopicsTest(TestCase):
@@ -25,54 +30,45 @@ class MigrationPopulatesTopicsTest(TestCase):
 class TopicAppearsInTaxonomySelectorTest(TestCase):
     """Adding a Topic makes it available in the taxonomy JSON selector."""
 
-    def _load_taxonomy_with_topics(self):
-        taxonomy_data = [
-            {
-                "label": "Health Topics",
-                "code": "TOPIC",
-                "type": "vocabulary",
-                "children": [],
-            },
-        ]
-        load_campaign_topics(taxonomy_data)
-        return taxonomy_data[0]["children"]
-
     def test_new_topic_appears_in_taxonomy(self):
         Topic.objects.create(name="New Test Topic", code="TESTTOPIC")
-        children = self._load_taxonomy_with_topics()
-        codes = [child["code"] for child in children]
+        taxonomy = json.loads(json.dumps(TOPIC_TAXONOMY))
+        load_campaign_topics(taxonomy)
+        codes = [c["code"] for c in taxonomy[0]["children"]]
         self.assertIn("TESTTOPIC", codes)
 
     def test_taxonomy_children_have_correct_structure(self):
-        children = self._load_taxonomy_with_topics()
-        for child in children:
+        taxonomy = json.loads(json.dumps(TOPIC_TAXONOMY))
+        load_campaign_topics(taxonomy)
+        for child in taxonomy[0]["children"]:
             self.assertEqual(child["type"], "term")
             self.assertEqual(child["children"], [])
 
 
-class TopicAppearsAsCampaignFilterTest(TestCase):
-    """Adding a Topic makes it appear as a filter option on the main Campaigns page."""
-
-    def _get_filter_topics(self):
-        return [
-            {"label": topic.name, "code": topic.code}
-            for topic in Topic.objects.filter(show_in_filter=True)
-        ]
-
-    def test_new_topic_included_in_filter_list(self):
-        Topic.objects.create(name="New Test Topic", code="TESTTOPIC")
-        self.assertIn(
-            {"label": "New Test Topic", "code": "TESTTOPIC"}, self._get_filter_topics()
-        )
-
-    def test_topic_hidden_from_filter_when_show_in_filter_is_false(self):
+class TopicShowInFilterTest(TestCase):
+    def test_default_includes_all_topics(self):
         Topic.objects.create(name="Hidden Topic", code="HIDDEN", show_in_filter=False)
-        codes = [topic["code"] for topic in self._get_filter_topics()]
-        self.assertNotIn("HIDDEN", codes)
+        Topic.objects.create(name="Visible Topic", code="VISIBLE", show_in_filter=True)
+        taxonomy = json.loads(json.dumps(TOPIC_TAXONOMY))
+        load_campaign_topics(taxonomy)
+        codes = [c["code"] for c in taxonomy[0]["children"]]
+        self.assertIn("HIDDEN", codes)
+        self.assertIn("VISIBLE", codes)
 
-    def test_seeded_topics_included_in_filter_list(self):
-        # 18 topics from migration 0034 have show_in_filter=True (8 legacy ones are hidden)
-        self.assertEqual(len(self._get_filter_topics()), 18)
+    def test_visible_only_excludes_hidden_topics(self):
+        Topic.objects.create(name="Hidden Topic", code="HIDDEN", show_in_filter=False)
+        Topic.objects.create(name="Visible Topic", code="VISIBLE", show_in_filter=True)
+        taxonomy = json.loads(json.dumps(TOPIC_TAXONOMY))
+        load_campaign_topics(taxonomy, visible_only=True)
+        codes = [c["code"] for c in taxonomy[0]["children"]]
+        self.assertNotIn("HIDDEN", codes)
+        self.assertIn("VISIBLE", codes)
+
+    def test_visible_only_returns_correct_seeded_count(self):
+        # 18 of the 26 seeded topics from migration 0034 have show_in_filter=True
+        taxonomy = json.loads(json.dumps(TOPIC_TAXONOMY))
+        load_campaign_topics(taxonomy, visible_only=True)
+        self.assertEqual(len(taxonomy[0]["children"]), 18)
 
 
 class TopicDeletionRemovesTagsTest(TestCase):
@@ -90,7 +86,6 @@ class TopicDeletionRemovesTagsTest(TestCase):
                 {"code": "TESTTOPIC", "label": "Test Topic"},
                 {"code": "MENTALHEALTH", "label": "Mental health"},
             ],
-            separators=(",", ":"),
         )
         self.campaign_page.taxonomy_json = taxonomy_json
         self.campaign_page.save(update_fields=["taxonomy_json"])
@@ -108,3 +103,53 @@ class TopicDeletionRemovesTagsTest(TestCase):
         self.resource_page.refresh_from_db()
         tags = json.loads(self.resource_page.taxonomy_json)
         self.assertEqual(tags, [{"code": "MENTALHEALTH", "label": "Mental health"}])
+
+    def test_deleting_topic_creates_revision_on_campaign_page(self):
+        revisions_before = self.campaign_page.revisions.count()
+        self.topic.delete()
+        revisions_after = self.campaign_page.revisions.count()
+        self.assertGreater(revisions_after, revisions_before)
+
+    def test_deleting_topic_creates_revision_on_resource_page(self):
+        revisions_before = self.resource_page.revisions.count()
+        self.topic.delete()
+        revisions_after = self.resource_page.revisions.count()
+        self.assertGreater(revisions_after, revisions_before)
+
+
+class TopicValidationTest(TestCase):
+    """Topic name and code are required and whitespace-only values are rejected."""
+
+    def test_blank_name_is_rejected(self):
+        topic = Topic(name="", code="VALID")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("name", ctx.exception.message_dict)
+
+    def test_blank_code_is_rejected(self):
+        topic = Topic(name="Valid", code="")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("code", ctx.exception.message_dict)
+
+    def test_whitespace_only_name_is_rejected(self):
+        topic = Topic(name="   ", code="VALID")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("name", ctx.exception.message_dict)
+
+    def test_whitespace_only_code_is_rejected(self):
+        topic = Topic(name="Valid", code="   ")
+        with self.assertRaises(ValidationError) as ctx:
+            topic.full_clean()
+        self.assertIn("code", ctx.exception.message_dict)
+
+    def test_valid_topic_passes_clean(self):
+        topic = Topic(name="Good Topic", code="GOOD")
+        topic.full_clean()
+
+    def test_clean_strips_whitespace(self):
+        topic = Topic(name="  Padded  ", code="  PAD  ")
+        topic.full_clean()
+        self.assertEqual(topic.name, "Padded")
+        self.assertEqual(topic.code, "PAD")
