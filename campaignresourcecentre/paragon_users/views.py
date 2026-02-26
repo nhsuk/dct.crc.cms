@@ -270,8 +270,8 @@ def verification(request):
                 verified_at=todays_date,
                 postcode=postcode + "|" + get_region(postcode),
             ):
-                if request.session.get("ParagonUser") == unsigned_token:
-                    request.session["Verified"] = "True"
+                # Flush the session so the user must log in again to get updated role
+                request.session.flush()
                 return render(request, "users/confirmation_user_verification.html")
             else:
                 return HttpResponseServerError()
