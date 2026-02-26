@@ -270,7 +270,7 @@ def verification(request):
                 verified_at=todays_date,
                 postcode=postcode + "|" + get_region(postcode),
             ):
-                # Flush the session so the user must log in again
+                # Flush the session so the user must log in again to get updated role
                 request.session.flush()
                 return render(request, "users/confirmation_user_verification.html")
             else:
