@@ -111,7 +111,6 @@ stages:
           - task: trivy@2
             displayName: Trivy scan
             inputs:
-              version: "0.68.2" # pinned until 'latest' (> 0.69.0) recoginises terraform trivy:ignore comments
               type: filesystem
               target: terraform/src
               severities: CRITICAL,HIGH,MEDIUM

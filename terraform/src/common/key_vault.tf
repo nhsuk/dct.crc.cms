@@ -1,5 +1,5 @@
-#trivy:ignore:avd-azu-0016 no purge protection required
-#trivy:ignore:avd-azu-0013 enable access from public networks to support ADO hosted agents
+#trivy:ignore:AZU-0016 no purge protection required
+#trivy:ignore:AZU-0013 enable access from public networks to support ADO hosted agents
 resource "azurerm_key_vault" "kv" {
   name                      = local.key_vault_name
   location                  = data.azurerm_resource_group.rg.location
