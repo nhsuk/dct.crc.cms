@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name="show_in_filter",
             field=models.BooleanField(
                 default=True,
-                help_text="Show this topic as a filter option on the campaigns page.",
+                help_text="Show this topic as a filter option on the campaigns and resources pages.",
             ),
         ),
     ]
