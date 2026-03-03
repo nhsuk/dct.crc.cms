@@ -236,7 +236,12 @@
          */
         function unCheckSubmitForm(elem) {
             // Select the corresponding checkbox if there is one.
-            const checkbox = document.getElementById(elem.getAttribute("value").replaceAll(' ', '-').toLowerCase());
+            const targetId = elem.getAttribute("value").replaceAll(' ', '-').replaceAll('_', '-').toLowerCase();
+            const filterForm = document.getElementById("resource-filter-form");
+            let checkbox = document.getElementById(targetId);
+            if(!checkbox || checkbox.classList.contains("taxonomy-tags__child")) {
+                checkbox = filterForm ? filterForm.querySelector("#" + targetId) : null;
+            }
             // Check if the selected filter is a topic.
             if(document.activeElement.getAttribute("parent") === "TOPIC") {
                 // Check if the next filter has an attribute of value, save the value if so, otherwise save the select list id.
