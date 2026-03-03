@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import ValidationError
+from django.template import engines
 from django.test import TestCase
 from django.test import RequestFactory
 
@@ -243,3 +244,47 @@ class TestResourcePageProperties(AdminTestCase):
 
     def test_objecttype(self):
         self.assertEqual(self.resource_page.objecttype(), "resource")
+
+
+class TestRemoveTopicFilterTagRegression(TestCase):
+    def _render_topic_tag(self, code):
+        template = engines["django"].get_template(
+            "molecules/search-result/refresh-search.html"
+        )
+        return template.render(
+            {
+                "count": 1,
+                "search_results": [],
+                "taxonomies": [
+                    {
+                        "label": "Health topics",
+                        "code": "TOPIC",
+                        "type": "vocabulary",
+                        "children": [
+                            {
+                                "label": "test topic",
+                                "code": code,
+                                "type": "term",
+                                "children": [],
+                            }
+                        ],
+                    }
+                ],
+                "facets_queryset": {"TOPIC": [code]},
+                "sort": "relevant",
+            }
+        )
+
+    def test_lowercase_topic_tag_button_has_parent_topic_attribute(self):
+        html = self._render_topic_tag("testtopic")
+        self.assertIn(
+            '<button class="taxonomy-tags__child" value="testtopic-input" parent="TOPIC"',
+            html,
+        )
+
+    def test_uppercase_topic_tag_button_has_parent_topic_attribute(self):
+        html = self._render_topic_tag("TESTTOPIC")
+        self.assertIn(
+            '<button class="taxonomy-tags__child" value="TESTTOPIC-input" parent="TOPIC"',
+            html,
+        )
