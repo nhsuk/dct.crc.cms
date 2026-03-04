@@ -3288,14 +3288,14 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [[package]]
 name = "wagtail"
-version = "7.0.4"
+version = "7.0.6"
 description = "A Django content management system."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "wagtail-7.0.4-py3-none-any.whl", hash = "sha256:dc455f321223a8a22656298b8324bad1ede7e5fe8c12b674b74668b3919c052a"},
-    {file = "wagtail-7.0.4.tar.gz", hash = "sha256:241841ff27019accbc73055c7a39249dec21262f94a9c5db8239659d2e6916af"},
+    {file = "wagtail-7.0.6-py3-none-any.whl", hash = "sha256:67616060f3336691691a5653c4568fe55e3529baa39559d0dc9add89ade166cc"},
+    {file = "wagtail-7.0.6.tar.gz", hash = "sha256:dca609072ce558970b5852fabcbe10dbf4bbbf314a913851814ddb7737ef60fd"},
 ]
 
 [package.dependencies]
@@ -3312,7 +3312,7 @@ djangorestframework = ">=3.15.1,<4.0"
 draftjs_exporter = ">=2.1.5,<6.0"
 laces = ">=0.1,<0.2"
 openpyxl = ">=3.0.10,<4.0"
-Pillow = ">=9.1.0,<12.0.0"
+Pillow = ">=9.1.0"
 requests = ">=2.11.1,<3.0"
 telepath = ">=0.3.1,<1"
 Willow = {version = ">=1.11.0,<2", extras = ["heif"]}
@@ -3611,4 +3611,4 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12"
-content-hash = "8bfe9114c977aa199cf1aba89d97c09395cfb485db00d7890ce27ba9bc2c6045"
+content-hash = "6ac2b6daaf60eca2be62bdf7a03fe81f8a79ff8270a1036635527bd311fa7fca"
