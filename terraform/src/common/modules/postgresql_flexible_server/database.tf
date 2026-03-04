@@ -6,6 +6,11 @@ resource "random_password" "administrator_password" {
   min_lower   = 1
 }
 
+#trivy:ignore:AZU-0019 Logs are configured to be sent to a Log Analytics workspace
+#trivy:ignore:AZU-0021 Missing throttling (https://ukhsa.atlassian.net/browse/BH-2261)
+#trivy:ignore:AZU-0022 Database is accessed from public network currently (https://ukhsa.atlassian.net/browse/BH-1814)
+#trivy:ignore:AZU-0024 Missing checkpoint logging (https://ukhsa.atlassian.net/browse/BH-2261)
+#trivy:ignore:AZU-0026 Missing minimum TLS version (https://ukhsa.atlassian.net/browse/BH-2261)
 resource "azurerm_postgresql_flexible_server" "database" {
   name                = var.name
   resource_group_name = var.resource_group.name
@@ -38,6 +43,11 @@ resource "azurerm_postgresql_flexible_server" "database" {
   }
 }
 
+#trivy:ignore:AZU-0019 Logs are configured to be sent to a Log Analytics workspace
+#trivy:ignore:AZU-0021 Missing throttling (https://ukhsa.atlassian.net/browse/BH-2261)
+#trivy:ignore:AZU-0022 Database is accessed from public network currently (https://ukhsa.atlassian.net/browse/BH-1814)
+#trivy:ignore:AZU-0024 Missing checkpoint logging (https://ukhsa.atlassian.net/browse/BH-2261)
+#trivy:ignore:AZU-0026 Missing minimum TLS version (https://ukhsa.atlassian.net/browse/BH-2261)
 resource "azurerm_postgresql_flexible_server" "replica" {
   count = local.database_replica != null ? 1 : 0
 
