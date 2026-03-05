@@ -186,3 +186,32 @@ class TestCampaignResourceOrderableFilterSet(TestCase):
             ResourcePage.objects.all(), "campaign", [self.campaign_page]
         )
         self.assertIn(self.resource_page, result)
+
+    def test_filter_campaign_with_multiple_campaigns(self):
+        hub = self.campaign_page.get_parent()
+        second_campaign = CampaignPage(
+            title="Second Campaign",
+            summary="Summary",
+            description="Description",
+            show_in_menus=True,
+        )
+        hub.add_child(instance=second_campaign)
+        second_campaign.save_revision().publish()
+
+        second_resource = ResourcePage(
+            title="Second Resource",
+            summary="Summary",
+            description="Description",
+            permission_role="all",
+        )
+        second_campaign.add_child(instance=second_resource)
+        second_resource.save_revision().publish()
+
+        filterset = CampaignResourceOrderableFilterSet()
+        result = filterset.filter_campaign(
+            ResourcePage.objects.all(),
+            "campaign",
+            [self.campaign_page, second_campaign],
+        )
+        self.assertIn(self.resource_page, result)
+        self.assertIn(second_resource, result)

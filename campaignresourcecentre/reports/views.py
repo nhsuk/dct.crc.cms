@@ -43,9 +43,10 @@ class CampaignResourceFilterSet(WagtailFilterSet):
         if not value:
             return queryset
 
+        filtered = queryset.none()
         for campaign in value:
-            filtered = queryset.descendant_of(campaign)
-        return filtered
+            filtered = filtered | queryset.descendant_of(campaign)
+        return filtered.distinct()
 
     def filter_taxonomy(self, queryset, name, value):
         """Filter resources by taxonomy terms."""
@@ -125,9 +126,10 @@ class CampaignResourceOrderableFilterSet(WagtailFilterSet):
         if not value:
             return queryset
 
+        filtered = queryset.none()
         for campaign in value:
-            filtered = queryset.descendant_of(campaign)
-        return filtered
+            filtered = filtered | queryset.descendant_of(campaign)
+        return filtered.distinct()
 
     def filter_orderable(self, queryset, name, value):
         """Filter resources by whether they have orderable items."""
