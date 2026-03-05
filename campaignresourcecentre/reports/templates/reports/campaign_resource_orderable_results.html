@@ -1,0 +1,35 @@
+{% extends 'wagtailadmin/reports/base_report_results.html' %}
+{% load i18n wagtailadmin_tags %}
+
+{% block results %}
+    <table class="listing">
+        <thead>
+            <tr>
+                <th>{% trans "Campaign Hierarchy" %}</th>
+                <th>{% trans "Title" %}</th>
+                <th>{% trans "SKU" %}</th>
+                <th>{% trans "Orderable" %}</th>
+                <th>{% trans "Status" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resource in object_list %}
+                <tr>
+                    <td>{{ resource.parent_campaign_chain }}</td>
+                    <td>
+                        <a href="{% url 'wagtailadmin_pages:edit' resource.id %}">
+                            {{ resource.get_admin_display_title }}
+                        </a>
+                    </td>
+                    <td>{{ resource.resource_skus|default:"—" }}</td>
+                    <td>{{ resource.resource_orderable }}</td>
+                    <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=resource %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block no_results_message %}
+    <p>{% trans "No resources found." %}</p>
+{% endblock %}
