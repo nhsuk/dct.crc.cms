@@ -157,7 +157,7 @@ class CampaignResourceOrderableReportView(ReportView):
     index_results_url_name = "campaign_resource_orderable_report_results"
     template_name = "reports/campaign_resource_orderable.html"
     results_template_name = "reports/campaign_resource_orderable_results.html"
-    page_title = _("Campaign Resource Orderable")
+    page_title = _("Orderable Resources")
     header_icon = "doc-full-inverse"
     paginate_by = 50
     filterset_class = CampaignResourceOrderableFilterSet
