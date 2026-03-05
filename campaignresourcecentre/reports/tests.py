@@ -10,7 +10,7 @@ from campaignresourcecentre.reports.views import (
     CampaignResourceOrderableFilterSet,
     get_all_taxonomy_terms,
 )
-from campaignresourcecentre.resources.models import ResourceItem, ResourcePage
+from campaignresourcecentre.resources.models import ResourcePage
 
 
 class TestCampaignResourceFilterSet(TestCase):
