@@ -16,6 +16,79 @@ from .models import ResourcePage, ResourceItem
 from .admin import ResourcePageAdmin, ResourceItemAdmin
 from datetime import datetime
 
+
+class TestResourceSkusProperty(TestCase):
+    def setUp(self):
+        test_data = PrepareTestData()
+        self.resource_page = test_data.resource_page
+        self.resource_item = test_data.resource_item
+
+    def test_resource_skus_returns_sku(self):
+        self.assertEqual(self.resource_page.resource_skus, "C4L301B")
+
+    def test_resource_skus_returns_empty_string_when_no_skus(self):
+        self.resource_item.sku = ""
+        self.resource_item.save()
+        self.assertEqual(self.resource_page.resource_skus, "")
+
+    def test_resource_skus_returns_comma_separated_for_multiple(self):
+        ResourceItem.objects.create(
+            resource_page=self.resource_page,
+            title="Second item",
+            can_order=True,
+            sku="C4L302A",
+            maximum_order_quantity=500,
+            sort_order=1,
+        )
+        result = self.resource_page.resource_skus
+        self.assertIn("C4L301B", result)
+        self.assertIn("C4L302A", result)
+        self.assertIn(", ", result)
+
+    def test_resource_skus_excludes_blank_skus(self):
+        ResourceItem.objects.create(
+            resource_page=self.resource_page,
+            title="No SKU item",
+            can_download=True,
+            can_order=False,
+            sku="",
+            sort_order=1,
+        )
+        self.assertEqual(self.resource_page.resource_skus, "C4L301B")
+
+
+class TestResourceOrderableProperty(TestCase):
+    def setUp(self):
+        test_data = PrepareTestData()
+        self.resource_page = test_data.resource_page
+        self.resource_item = test_data.resource_item
+
+    def test_resource_orderable_returns_yes_when_orderable(self):
+        self.assertEqual(self.resource_page.resource_orderable, "Yes")
+
+    def test_resource_orderable_returns_no_when_not_orderable(self):
+        self.resource_item.can_order = False
+        self.resource_item.save()
+        self.assertEqual(self.resource_page.resource_orderable, "No")
+
+    def test_resource_orderable_returns_no_when_no_items(self):
+        self.resource_page.resource_items.all().delete()
+        self.assertEqual(self.resource_page.resource_orderable, "No")
+
+    def test_resource_orderable_yes_if_any_item_orderable(self):
+        self.resource_item.can_order = False
+        self.resource_item.save()
+        ResourceItem.objects.create(
+            resource_page=self.resource_page,
+            title="Orderable item",
+            can_order=True,
+            sku="SKU123",
+            maximum_order_quantity=10,
+            sort_order=1,
+        )
+        self.assertEqual(self.resource_page.resource_orderable, "Yes")
+
+
 # Mock a request object and user with all permissions
 
 
