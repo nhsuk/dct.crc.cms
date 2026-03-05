@@ -22,7 +22,7 @@ def get_all_taxonomy_terms():
 class CampaignResourceFilterSet(WagtailFilterSet):
     campaign = django_filters.ModelMultipleChoiceFilter(
         label="Campaign",
-        queryset=CampaignPage.objects.live().order_by("title"),
+        queryset=CampaignPage.objects.all().order_by("title"),
         widget=CheckboxSelectMultiple,
         method="filter_campaign",
     )
@@ -100,7 +100,7 @@ class CampaignResourceAuditReportView(ReportView):
 class CampaignResourceOrderableFilterSet(WagtailFilterSet):
     campaign = django_filters.ModelMultipleChoiceFilter(
         label="Campaign",
-        queryset=CampaignPage.objects.live().order_by("title"),
+        queryset=CampaignPage.objects.all().order_by("title"),
         widget=CheckboxSelectMultiple,
         method="filter_campaign",
     )
