@@ -105,12 +105,6 @@ class CampaignResourceOrderableFilterSet(WagtailFilterSet):
         method="filter_campaign",
     )
 
-    orderable = django_filters.ChoiceFilter(
-        label="Orderable",
-        choices=[("yes", "Yes"), ("no", "No")],
-        method="filter_orderable",
-    )
-
     status = django_filters.ChoiceFilter(
         label="Status",
         choices=[("live", "Published"), ("draft", "Draft")],
@@ -119,7 +113,7 @@ class CampaignResourceOrderableFilterSet(WagtailFilterSet):
 
     class Meta:
         model = ResourcePage
-        fields = ["campaign", "orderable", "status"]
+        fields = ["campaign", "status"]
 
     def filter_campaign(self, queryset, name, value):
         """Filter resources that are children of the selected campaigns."""
@@ -130,16 +124,6 @@ class CampaignResourceOrderableFilterSet(WagtailFilterSet):
         for campaign in value:
             filtered = filtered | queryset.descendant_of(campaign)
         return filtered.distinct()
-
-    def filter_orderable(self, queryset, name, value):
-        """Filter resources by whether they have orderable items."""
-        if not value:
-            return queryset
-
-        if value == "yes":
-            return queryset.filter(resource_items__can_order=True).distinct()
-        else:
-            return queryset.exclude(resource_items__can_order=True).distinct()
 
     def filter_status(self, queryset, name, value):
         """Filter resources by published status."""
@@ -167,13 +151,15 @@ class CampaignResourceOrderableReportView(ReportView):
         "parent_campaign_chain": "Campaign Hierarchy",
         "title": "Title",
         "admin_url": "Wagtail URL",
-        "taxonomy_resource_type": "Resource Type",
         "resource_skus": "SKU",
-        "resource_orderable": "Orderable",
         "live": "Published Status",
     }
 
     list_export = list(export_headings.keys())
 
     def get_queryset(self):
-        return ResourcePage.objects.all().prefetch_related("resource_items")
+        return (
+            ResourcePage.objects.filter(resource_items__can_order=True)
+            .distinct()
+            .prefetch_related("resource_items")
+        )

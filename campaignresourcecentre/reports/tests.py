@@ -120,44 +120,6 @@ class TestCampaignResourceOrderableFilterSet(TestCase):
         self.campaign_page = test_data.campaign_page
         self.resource_item = test_data.resource_item
 
-    def test_filter_orderable_with_no_value(self):
-        filterset = CampaignResourceOrderableFilterSet()
-        queryset = ResourcePage.objects.all()
-        result = filterset.filter_orderable(queryset, "orderable", "")
-        self.assertEqual(list(result), list(queryset))
-
-    def test_filter_orderable_yes_returns_orderable_resources(self):
-        filterset = CampaignResourceOrderableFilterSet()
-        result = filterset.filter_orderable(
-            ResourcePage.objects.all(), "orderable", "yes"
-        )
-        self.assertIn(self.resource_page, result)
-
-    def test_filter_orderable_no_excludes_orderable_resources(self):
-        filterset = CampaignResourceOrderableFilterSet()
-        result = filterset.filter_orderable(
-            ResourcePage.objects.all(), "orderable", "no"
-        )
-        self.assertNotIn(self.resource_page, result)
-
-    def test_filter_orderable_yes_excludes_non_orderable(self):
-        self.resource_item.can_order = False
-        self.resource_item.save()
-        filterset = CampaignResourceOrderableFilterSet()
-        result = filterset.filter_orderable(
-            ResourcePage.objects.all(), "orderable", "yes"
-        )
-        self.assertNotIn(self.resource_page, result)
-
-    def test_filter_orderable_no_returns_non_orderable(self):
-        self.resource_item.can_order = False
-        self.resource_item.save()
-        filterset = CampaignResourceOrderableFilterSet()
-        result = filterset.filter_orderable(
-            ResourcePage.objects.all(), "orderable", "no"
-        )
-        self.assertIn(self.resource_page, result)
-
     def test_filter_status_with_no_value(self):
         filterset = CampaignResourceOrderableFilterSet()
         queryset = ResourcePage.objects.all()

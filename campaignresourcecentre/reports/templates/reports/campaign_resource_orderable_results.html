@@ -8,7 +8,6 @@
                 <th>{% trans "Campaign Hierarchy" %}</th>
                 <th>{% trans "Title" %}</th>
                 <th>{% trans "SKU" %}</th>
-                <th>{% trans "Orderable" %}</th>
                 <th>{% trans "Status" %}</th>
             </tr>
         </thead>
@@ -22,7 +21,6 @@
                         </a>
                     </td>
                     <td>{{ resource.resource_skus|default:"—" }}</td>
-                    <td>{{ resource.resource_orderable }}</td>
                     <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=resource %}</td>
                 </tr>
             {% endfor %}
