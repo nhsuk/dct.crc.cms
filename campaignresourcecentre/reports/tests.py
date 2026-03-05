@@ -110,7 +110,7 @@ class TestCampaignResourceFilterSet(TestCase):
         )
 
         self.assertIn(nested_resource, result)
-        self.assertNotIn(self.resource_page, result)
+        self.assertIn(self.resource_page, result)
 
 
 class TestCampaignResourceOrderableFilterSet(TestCase):
@@ -193,6 +193,8 @@ class TestCampaignResourceOrderableFilterSet(TestCase):
             title="Second Campaign",
             summary="Summary",
             description="Description",
+            image=self.campaign_page.image,
+            taxonomy_json=self.campaign_page.taxonomy_json,
             show_in_menus=True,
         )
         hub.add_child(instance=second_campaign)
@@ -203,6 +205,7 @@ class TestCampaignResourceOrderableFilterSet(TestCase):
             summary="Summary",
             description="Description",
             permission_role="all",
+            taxonomy_json=json.dumps([{"code": "CANCER", "label": "Cancer"}]),
         )
         second_campaign.add_child(instance=second_resource)
         second_resource.save_revision().publish()
