@@ -48,7 +48,7 @@ def register_audit_report_menu_item():
 def register_orderable_report_menu_item():
     """Add the orderable report to the Reports menu in Wagtail admin."""
     return MenuItem(
-        _("Campaign Resource Orderable"),
+        _("Orderable Resources"),
         reverse("campaign_resource_orderable_report"),
         icon_name="doc-full-inverse",
     )
