@@ -22,7 +22,7 @@ def get_all_taxonomy_terms():
 class CampaignResourceFilterSet(WagtailFilterSet):
     campaign = django_filters.ModelMultipleChoiceFilter(
         label="Campaign",
-        queryset=CampaignPage.objects.live().order_by("title"),
+        queryset=CampaignPage.objects.all().order_by("title"),
         widget=CheckboxSelectMultiple,
         method="filter_campaign",
     )
@@ -43,9 +43,10 @@ class CampaignResourceFilterSet(WagtailFilterSet):
         if not value:
             return queryset
 
+        filtered = queryset.none()
         for campaign in value:
-            filtered = queryset.descendant_of(campaign)
-        return filtered
+            filtered = filtered | queryset.descendant_of(campaign)
+        return filtered.distinct()
 
     def filter_taxonomy(self, queryset, name, value):
         """Filter resources by taxonomy terms."""
@@ -94,3 +95,71 @@ class CampaignResourceAuditReportView(ReportView):
 
     def get_queryset(self):
         return ResourcePage.objects.all()
+
+
+class CampaignResourceOrderableFilterSet(WagtailFilterSet):
+    campaign = django_filters.ModelMultipleChoiceFilter(
+        label="Campaign",
+        queryset=CampaignPage.objects.all().order_by("title"),
+        widget=CheckboxSelectMultiple,
+        method="filter_campaign",
+    )
+
+    status = django_filters.ChoiceFilter(
+        label="Status",
+        choices=[("live", "Published"), ("draft", "Draft")],
+        method="filter_status",
+    )
+
+    class Meta:
+        model = ResourcePage
+        fields = ["campaign", "status"]
+
+    def filter_campaign(self, queryset, name, value):
+        """Filter resources that are children of the selected campaigns."""
+        if not value:
+            return queryset
+
+        filtered = queryset.none()
+        for campaign in value:
+            filtered = filtered | queryset.descendant_of(campaign)
+        return filtered.distinct()
+
+    def filter_status(self, queryset, name, value):
+        """Filter resources by published status."""
+        if not value:
+            return queryset
+
+        if value == "live":
+            return queryset.filter(live=True)
+        else:
+            return queryset.filter(live=False)
+
+
+class CampaignResourceOrderableReportView(ReportView):
+    index_url_name = "campaign_resource_orderable_report"
+    index_results_url_name = "campaign_resource_orderable_report_results"
+    template_name = "reports/campaign_resource_orderable.html"
+    results_template_name = "reports/campaign_resource_orderable_results.html"
+    page_title = _("Orderable Resources")
+    header_icon = "doc-full-inverse"
+    paginate_by = 50
+    filterset_class = CampaignResourceOrderableFilterSet
+
+    export_headings = {
+        "objecttype": "Type",
+        "parent_campaign_chain": "Campaign Hierarchy",
+        "title": "Title",
+        "admin_url": "Wagtail URL",
+        "resource_skus": "SKU",
+        "live": "Published Status",
+    }
+
+    list_export = list(export_headings.keys())
+
+    def get_queryset(self):
+        return (
+            ResourcePage.objects.filter(resource_items__can_order=True)
+            .distinct()
+            .prefetch_related("resource_items")
+        )

@@ -121,6 +121,19 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
         return " > ".join(campaigns)
 
     @property
+    def resource_skus(self):
+        """Returns comma-separated SKUs from all resource items."""
+        skus = [item.sku for item in self.resource_items.all() if item.sku]
+        return ", ".join(skus) if skus else ""
+
+    @property
+    def resource_orderable(self):
+        """Returns 'Yes' if any resource item is orderable, otherwise 'No'"""
+        return (
+            "Yes" if any(item.can_order for item in self.resource_items.all()) else "No"
+        )
+
+    @property
     def admin_url(self):
         base_url = settings.WAGTAILADMIN_BASE_URL.rstrip("/")
         return f"{base_url}/crc-admin/pages/{self.id}/edit/"

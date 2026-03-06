@@ -20,4 +20,14 @@
         <packageUrl regex="true">^pkg:npm/serialize-javascript@.*$</packageUrl>
         <vulnerabilityName>GHSA-5c6j-r48x-rmvq</vulnerabilityName>
     </suppress>
+    <suppress until="2026-09-30Z">
+        <notes><![CDATA[
+        Package: immutable
+        GHSA-wf6x-7x77-mvgw (CVSS 10.0) - Prototype pollution via setIn/updateIn.
+        Fix requires immutable >= 4.x but browser-sync pins to ^3. No 3.x patch available.
+        Dev-only dependency (browser-sync), not used in production
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/immutable@.*$</packageUrl>
+        <vulnerabilityName>GHSA-wf6x-7x77-mvgw</vulnerabilityName>
+    </suppress>
 </suppressions>
