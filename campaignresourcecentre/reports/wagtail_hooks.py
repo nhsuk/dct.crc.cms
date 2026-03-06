@@ -2,7 +2,7 @@ from django.urls import path, reverse
 from django.utils.translation import gettext_lazy as _
 
 from wagtail import hooks
-from wagtail.admin.menu import AdminOnlyMenuItem
+from wagtail.admin.menu import MenuItem
 
 from .views import CampaignResourceAuditReportView, CampaignResourceOrderableReportView
 
@@ -37,7 +37,7 @@ def register_report_urls():
 @hooks.register("register_reports_menu_item")
 def register_audit_report_menu_item():
     """Add the audit report to the Reports menu in Wagtail admin."""
-    return AdminOnlyMenuItem(
+    return MenuItem(
         _("Campaign Resource Audit"),
         reverse("campaign_resource_audit_report"),
         icon_name="doc-full-inverse",
@@ -47,7 +47,7 @@ def register_audit_report_menu_item():
 @hooks.register("register_reports_menu_item")
 def register_orderable_report_menu_item():
     """Add the orderable report to the Reports menu in Wagtail admin."""
-    return AdminOnlyMenuItem(
+    return MenuItem(
         _("Campaign Resource Orderable"),
         reverse("campaign_resource_orderable_report"),
         icon_name="doc-full-inverse",
