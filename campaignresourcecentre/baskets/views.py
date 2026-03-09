@@ -8,6 +8,7 @@ from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.baskets.exceptions import ItemNotInBasketError
 from campaignresourcecentre.paragon_users.decorators import paragon_user_logged_in
 from campaignresourcecentre.resources.models import ResourceItem
+from campaignresourcecentre.utils.feature_flags import require_ordering_enabled
 
 VIEW_BASKET_PATH = "/baskets/view_basket/"
 
@@ -15,6 +16,7 @@ logger = getLogger("__name__")
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["DELETE", "GET"])
 def empty_basket(request):
     basket = Basket(request.session)
@@ -60,6 +62,7 @@ def _add_item(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def add_item(request):
     item_obj = _add_item(request)
@@ -67,6 +70,7 @@ def add_item(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def render_resource_basket(request):
     item_obj = _add_item(request)
@@ -76,6 +80,7 @@ def render_resource_basket(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["GET"])
 def view_basket(request):
     basket = Basket(request.session)
@@ -89,6 +94,7 @@ def view_basket(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def change_item_quantity(request):
     _change_item_quantity(request)
@@ -107,6 +113,7 @@ def _change_item_quantity(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def render_basket(request):
     item = _change_item_quantity(request)
@@ -114,6 +121,7 @@ def render_basket(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["GET"])
 def render_basket_errors(request):
     basket = Basket(request.session)
@@ -143,6 +151,7 @@ def render_basket_errors(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def remove_item(request):
     _remove_item(request)
@@ -150,6 +159,7 @@ def remove_item(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def _remove_item(request):
     basket = Basket(request.session)
@@ -163,6 +173,7 @@ def _remove_item(request):
 
 
 @paragon_user_logged_in
+@require_ordering_enabled
 @require_http_methods(["POST"])
 def render_remove_item(request):
     _remove_item(request)

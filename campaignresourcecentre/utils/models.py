@@ -337,6 +337,12 @@ class Tracking(BaseSiteSetting):
 class FeatureFlags(BaseSiteSetting):
     class Meta:
         verbose_name = "Feature flags"
+        permissions = [
+            (
+                "change_ordering_history_flags",
+                "Can change ordering and order history feature flags",
+            )
+        ]
 
     sz_email_variant = models.BooleanField(
         "School Zone email journey",
@@ -350,8 +356,38 @@ class FeatureFlags(BaseSiteSetting):
         help_text="Enable or disable the School Zone email year groups feature flag",
     )
 
+    disable_ordering_and_checkout = models.BooleanField(
+        "Disable ordering and checkout",
+        default=False,
+        help_text="Enable this flag to hide the basket and checkout process.",
+    )
+
+    disable_order_history = models.BooleanField(
+        "Disable order history",
+        default=False,
+        help_text="Enable this flag to hide the order history feature. Will return 404 for order history page.",
+    )
+
     panels = [
         HelpPanel(content="Custom feature flags which can be toggled on and off."),
-        FieldPanel("sz_email_variant"),
-        FieldPanel("sz_email_year_groups"),
+        MultiFieldPanel(
+            [
+                FieldPanel("sz_email_variant"),
+                FieldPanel("sz_email_year_groups"),
+            ],
+            heading="SchoolZone",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel(
+                    "disable_ordering_and_checkout",
+                    permission="utils.change_ordering_history_flags",
+                ),
+                FieldPanel(
+                    "disable_order_history",
+                    permission="utils.change_ordering_history_flags",
+                ),
+            ],
+            heading="Ordering & Checkout",
+        ),
     ]

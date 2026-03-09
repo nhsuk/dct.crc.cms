@@ -49,6 +49,10 @@ from .helpers.token_signing import sign, unsign
 from .helpers.verification import send_verification
 
 from campaignresourcecentre.utils.models import FeatureFlags
+from campaignresourcecentre.utils.feature_flags import (
+    is_order_history_disabled,
+    require_order_history_enabled,
+)
 
 logger = getLogger(__name__)
 
@@ -554,6 +558,7 @@ def user_profile(request):
         "job_title": job_choices.get(user["ProductRegistrationVar4"]),
         "postcode": user["ProductRegistrationVar9"].split("|")[0],
         "user_type": user["ProductRegistrationVar1"],
+        "show_order_history": not is_order_history_disabled(request=request),
     }
 
     return render(request, "users/account.html", context)
@@ -645,6 +650,7 @@ class NewslettersView(View):
                     if FeatureFlags.for_request(request).sz_email_year_groups
                     else "schoolzone"
                 ),
+                "show_order_history": not is_order_history_disabled(request=request),
             },
         )
 
@@ -673,6 +679,7 @@ class NewsletterRegisteringView(NewslettersView):
 
 
 @paragon_user_logged_in
+@require_order_history_enabled
 def order_history(request):
     paragon_client = Client()
     todays_date = date.today().strftime("%d/%m/%Y")

@@ -29,6 +29,7 @@ from campaignresourcecentre.utils.models import BasePage
 from campaignresourcecentre.baskets.basket import Basket
 from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 from campaignresourcecentre.paragon_users.helpers.token_signing import sign
+from campaignresourcecentre.utils.feature_flags import is_ordering_and_checkout_disabled
 from campaignresourcecentre.wagtailreacttaxonomy.panels import TaxonomyPanel
 from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyMixin
 
@@ -172,6 +173,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def get_resources(self, request):
         """Get the resources to show on the page."""
         basket = Basket(request.session)
+        ordering_disabled = is_ordering_and_checkout_disabled(request=request)
         user_details = request.session.get("UserDetails")
         user_role = (
             user_details.get("ProductRegistrationVar1") if user_details else None
@@ -189,7 +191,11 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "document": resource.document,
                 "document_content": resource.document_content,
                 "can_order": resource.can_order,
-                "permission_to_order": self._can_order(user_role, resource),
+                "permission_to_order": (
+                    False
+                    if ordering_disabled
+                    else self._can_order(user_role, resource)
+                ),
                 "maximum_order_quantity": resource.maximum_order_quantity,
                 "sku": resource.sku,
                 "image_alt_text": resource.image_alt_text,
@@ -257,6 +263,9 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
             resources=resources,
             logged_in=request.session.get("ParagonUser"),
             allowed=allowed,
+            disable_ordering_and_checkout=is_ordering_and_checkout_disabled(
+                request=request
+            ),
             taxonomy_json=json_data,
             topics_present=get_taxonomies(json_data, "TOPIC"),
             targaud_present=get_taxonomies(json_data, "TARGAUD"),
@@ -356,6 +365,13 @@ class ResourceItem(Orderable):
     def clean(self):
         super().clean()
         errors = defaultdict(list)
+
+        site = self.resource_page.get_site() if self.resource_page_id else None
+        if self.can_order and is_ordering_and_checkout_disabled(site=site):
+            errors["can_order"].append(
+                "Ordering and checkout are currently disabled by feature flag"
+            )
+
         if self.can_download and not self.document:
             errors["document"].append("Please choose a document to download")
         if self.can_order and not self.maximum_order_quantity:
