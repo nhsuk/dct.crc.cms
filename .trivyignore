@@ -1,2 +1,5 @@
 # Vuln in jaraco.context
 GHSA-58pv-8j8x-9vj2
+
+# zlib contrib/untgz demo utility buffer overflow - not exploitable, alpine does not ship the untgz binary https://github.com/madler/zlib/issues/1142
+CVE-2026-22184  exp:2026-09-09
