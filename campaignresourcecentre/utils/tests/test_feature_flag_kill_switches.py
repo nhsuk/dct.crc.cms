@@ -14,7 +14,9 @@ class FeatureFlagKillSwitchTests(TestCase):
         self.resource_page = test_data.resource_page
         self.default_site = Site.objects.get(is_default_site=True)
 
-    def _set_flags(self, disable_ordering_and_checkout=False, disable_order_history=False):
+    def _set_flags(
+        self, disable_ordering_and_checkout=False, disable_order_history=False
+    ):
         FeatureFlags.objects.update_or_create(
             site=self.default_site,
             defaults={
@@ -55,7 +57,9 @@ class FeatureFlagKillSwitchTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     @patch("campaignresourcecentre.paragon_users.views.Client.get_user_profile")
-    def test_account_hides_order_history_link_when_disabled(self, mock_get_user_profile):
+    def test_account_hides_order_history_link_when_disabled(
+        self, mock_get_user_profile
+    ):
         mock_get_user_profile.return_value = {
             "content": {
                 "FirstName": "Test",

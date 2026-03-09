@@ -192,9 +192,7 @@ class ResourcePage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                 "document_content": resource.document_content,
                 "can_order": resource.can_order,
                 "permission_to_order": (
-                    False
-                    if ordering_disabled
-                    else self._can_order(user_role, resource)
+                    False if ordering_disabled else self._can_order(user_role, resource)
                 ),
                 "maximum_order_quantity": resource.maximum_order_quantity,
                 "sku": resource.sku,
