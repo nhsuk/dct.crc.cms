@@ -1,9 +1,12 @@
 from functools import wraps
+import logging
 
 from django.http import Http404
 from wagtail.models import Site
 
 from campaignresourcecentre.utils.models import FeatureFlags
+
+logger = logging.getLogger(__name__)
 
 
 def _get_feature_flags(request=None, site=None):
@@ -15,7 +18,10 @@ def _get_feature_flags(request=None, site=None):
         if site is None:
             return None
         return FeatureFlags.for_site(site)
-    except Exception:
+    except (Site.DoesNotExist, FeatureFlags.DoesNotExist):
+        return None
+    except Exception as error:
+        logger.exception(error)
         return None
 
 
