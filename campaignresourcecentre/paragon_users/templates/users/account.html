@@ -27,7 +27,9 @@
                     <ul>
                         <li><a href=".">Account details</a></li>
                         <li><a href="newsletters">Newsletter preferences</a></li>
+                        {% if show_order_history %}
                         <li><a href="orders">Order history</a></li>
+                        {% endif %}
                         <li><a href="/password-reset">Reset your password</a></li>
                         <li><a href="/logout">Sign out</a></li>
                     </ul>

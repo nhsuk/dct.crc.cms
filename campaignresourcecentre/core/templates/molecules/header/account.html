@@ -8,12 +8,14 @@
             <a class="nhsuk-header__account-link" href="{% if logged_in %}/account {% else %}/signup {% endif %}">{% if logged_in %} Account {% else %} Register {% endif %}</a>
           </li>
 
+          {% if not ORDERING_AND_CHECKOUT_DISABLED %}
           <li class="nhsuk-header__account-item-basket">
             <a class="nhsuk-header__account-link" href="{% if logged_in %}/baskets/view_basket {% else %}/login {% endif %}">
               <span class="sr-only">{{ BASKET_ITEM_COUNT }} {% if BASKET_ITEM_COUNT == 1 %}item{% else %}items{% endif %} in basket - view your basket</span>
               <svg aria-hidden="true" width="514.97" height="417.61" viewBox="0 0 514.97 417.61"><defs><style>.a,.b{fill:none;stroke:#fff;stroke-linecap:round;stroke-width:32px;}.a{stroke-miterlimit:10;}.b{stroke-linejoin:round;}</style></defs><line class="a" x1="221.57" y1="19" x2="114.15" y2="174.78"/><line class="a" x1="293.39" y1="16" x2="400.82" y2="171.78"/><line class="a" x1="16" y1="177.5" x2="498.97" y2="177.5"/><polygon class="b" points="34.77 177.5 105.78 401.61 401.56 401.61 470.23 177.5 34.77 177.5"/></svg><span class="basket-count" aria-hidden="true">{{ BASKET_ITEM_COUNT }}</span>
             </a>
           </li>
+          {% endif %}
 
     </ul>
     <noscript>
@@ -25,6 +27,7 @@
             </a>
         </li>
   
+        {% if not ORDERING_AND_CHECKOUT_DISABLED %}
         <li class="nhsuk-header__account-item-basket">
             <a class="nhsuk-header__account-link" target="_parent"
                 href="/baskets/view_basket"
@@ -33,6 +36,7 @@
               <svg aria-hidden="true" width="514.97" height="417.61" viewBox="0 0 514.97 417.61"><defs><style>.a,.b{fill:none;stroke:#fff;stroke-linecap:round;stroke-width:32px;}.a{stroke-miterlimit:10;}.b{stroke-linejoin:round;}</style></defs><line class="a" x1="221.57" y1="19" x2="114.15" y2="174.78"/><line class="a" x1="293.39" y1="16" x2="400.82" y2="171.78"/><line class="a" x1="16" y1="177.5" x2="498.97" y2="177.5"/><polygon class="b" points="34.77 177.5 105.78 401.61 401.56 401.61 470.23 177.5 34.77 177.5"/></svg>
             </a>
         </li>
+        {% endif %}
   
       </ul>
     </noscript>

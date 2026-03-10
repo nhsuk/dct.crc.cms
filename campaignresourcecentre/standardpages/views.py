@@ -17,6 +17,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.http import require_http_methods
 from campaignresourcecentre.core.helpers import verify_pubtoken
 from campaignresourcecentre.baskets.basket import Basket
+from campaignresourcecentre.utils.feature_flags import is_ordering_and_checkout_disabled
 from campaignresourcecentre.notifications.dataclasses import ContactUsData
 from campaignresourcecentre.notifications.adapters import gov_notify_factory
 from campaignresourcecentre.search.azure import AzureSearchBackend
@@ -189,6 +190,12 @@ def session_summary(request):
     t = loader.get_template("molecules/header/account.html")
     return HttpResponse(
         t.render(
-            {"logged_in": logged_in, "BASKET_ITEM_COUNT": basket.get_items_count()}
+            {
+                "logged_in": logged_in,
+                "BASKET_ITEM_COUNT": basket.get_items_count(),
+                "ORDERING_AND_CHECKOUT_DISABLED": is_ordering_and_checkout_disabled(
+                    request=request
+                ),
+            }
         )
     )

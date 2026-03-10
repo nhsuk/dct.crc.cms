@@ -15,6 +15,7 @@ from campaignresourcecentre.paragon.client import Client
 from campaignresourcecentre.paragon.exceptions import ParagonClientError
 from campaignresourcecentre.paragon_users.decorators import paragon_user_logged_in
 from campaignresourcecentre.utils.views import bad_request
+from campaignresourcecentre.utils.feature_flags import require_ordering_enabled
 from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_data
 from campaignresourcecentre.paragon.helpers.reporting import send_report
 
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 @require_http_methods(["GET"])
 @paragon_user_logged_in
+@require_ordering_enabled
 def summary(request):
     basket = Basket(request.session)
     items = basket.get_all_items().items()
@@ -56,6 +58,7 @@ def summary(request):
 
 @require_http_methods(["GET", "POST"])
 @paragon_user_logged_in
+@require_ordering_enabled
 def delivery_address(request):
     user_token = request.session.get("ParagonUser")
     basket = Basket(request.session)
@@ -82,7 +85,6 @@ def delivery_address(request):
         if number_of_items == 0:
             return redirect("/account/orders/")
         if basket.has_errors:
-            items = basket.get_all_items().items()
             return redirect("/baskets/view_basket")
 
     return render(request, "delivery_address.html", {"form": f})
@@ -90,6 +92,7 @@ def delivery_address(request):
 
 @require_http_methods(["POST"])
 @paragon_user_logged_in
+@require_ordering_enabled
 def place_order(request):
     user_token = request.session.get("ParagonUser")
     paragon_client = Client()

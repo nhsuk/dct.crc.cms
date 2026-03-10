@@ -102,7 +102,7 @@
                                             {% endif %}
                                         {% endif %}
 
-                                        {% if allowed and resource.can_order %}
+                                        {% if allowed and resource.can_order and not disable_ordering_and_checkout %}
                                             {% if resource.permission_to_order %}
                                                 <hr>
                                                 {% include "molecules/baskets/resource_basket.html" %}
@@ -123,8 +123,10 @@
         {% endif %}
     
     {% block extra_js %}
-        {% include "static/form_action.html" %}
-        {% include "static/render_resource_basket.html" %}
+        {% if not disable_ordering_and_checkout %}
+            {% include "static/form_action.html" %}
+            {% include "static/render_resource_basket.html" %}
+        {% endif %}
     {% endblock %}
     </section>
 
