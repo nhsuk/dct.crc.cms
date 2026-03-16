@@ -5,7 +5,6 @@ from django.conf import settings
 import os
 import logging
 
-
 logger = logging.getLogger(__name__)
 env = os.environ.copy()
 

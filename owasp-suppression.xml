@@ -10,16 +10,6 @@
         <packageUrl regex="true">^pkg:npm/minimatch@.*$</packageUrl>
         <cve>CVE-2026-26996</cve>
     </suppress>
-    <suppress until="2026-07-30Z">
-        <notes><![CDATA[
-        Package: serialize-javascript
-        CVE-2020-7660 / GHSA-5c6j-r48x-rmvq - RCE via RegExp.flags and Date.prototype.toISOString()
-        Fix requires upgrade to copy-webpack-plugin which requires an upgrade to Node 20+
-        Dev-only dependency, not used in production. Suppressed until node upgraded
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/serialize-javascript@.*$</packageUrl>
-        <vulnerabilityName>GHSA-5c6j-r48x-rmvq</vulnerabilityName>
-    </suppress>
     <suppress until="2026-09-30Z">
         <notes><![CDATA[
         Package: immutable

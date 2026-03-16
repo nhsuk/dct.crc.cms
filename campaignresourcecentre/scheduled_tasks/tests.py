@@ -1,7 +1,6 @@
 from django.test import TestCase, override_settings
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

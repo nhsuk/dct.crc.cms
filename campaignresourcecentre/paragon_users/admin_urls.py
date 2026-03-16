@@ -3,7 +3,6 @@ from django.urls import path
 
 from .admin_views import index, search_users, edit, set_password
 
-
 app_name = "paragon_users"
 
 urlpatterns = [
