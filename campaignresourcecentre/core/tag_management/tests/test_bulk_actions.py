@@ -10,7 +10,6 @@ from campaignresourcecentre.core.tag_management.bulk_actions import (
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from django.core.exceptions import ValidationError
 
-
 User = get_user_model()
 
 

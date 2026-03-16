@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from campaignresourcecentre.paragon.exceptions import PasswordError
 from django.utils.translation import gettext_lazy
 
-
 regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&£_<>~^.+=|-])[A-Za-z\d@$!%*#?&£_<>~^.+=|-]{8,128}$"
 error = "Password must be at least 9 characters long, and contain at least 1 number, 1 capital letter, 1 lowercase letter and 1 symbol"
 

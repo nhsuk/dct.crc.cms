@@ -15,7 +15,6 @@ from campaignresourcecentre.custom_storages.custom_azure_storage import (
 )
 from django.core.files.storage import default_storage
 
-
 TEST_CONTENT = b"test_content"
 
 
