@@ -23,16 +23,20 @@ const options = {
         filename: 'js/[name].js', // based on entry name, e.g. main.js
     },
     plugins: [
-        new CopyPlugin([
-            {
-                // Copy images to be referenced directly by Django to the "images" subfolder in static files.
-                // Ignore CSS background images as these are handled separately below
-                from: 'images',
-                context: path.resolve(`./${projectRoot}/static_src/`),
-                to: path.resolve(`./${projectRoot}/static_compiled/images`),
-                ignore: ['cssBackgrounds/*'],
-            },
-        ]),
+        new CopyPlugin({
+            patterns: [
+                {
+                    // Copy images to be referenced directly by Django to the "images" subfolder in static files.
+                    // Ignore CSS background images as these are handled separately below
+                    from: 'images',
+                    context: path.resolve(`./${projectRoot}/static_src/`),
+                    to: path.resolve(`./${projectRoot}/static_compiled/images`),
+                    globOptions: {
+                        ignore: ['cssBackgrounds/*'],
+                    },
+                },
+            ]
+        }),
         new MiniCssExtractPlugin({
             filename: 'css/[name].css',
         }),
