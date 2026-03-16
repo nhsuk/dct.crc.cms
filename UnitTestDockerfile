@@ -1,4 +1,4 @@
-FROM node:14-alpine AS frontend
+FROM node:24-alpine AS frontend
 
 # Make build & post-install scripts behave as if we were in a CI environment (e.g. for logging verbosity purposes).
 ARG CI=true
@@ -50,7 +50,7 @@ ENV PATH=$PATH:${POETRY_HOME}/bin \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     DJANGO_SETTINGS_MODULE=campaignresourcecentre.settings.production \
-    PORT=8000 
+    PORT=8000
 
 ARG BUILD_ENV
 
