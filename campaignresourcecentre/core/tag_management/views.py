@@ -159,7 +159,7 @@ def _resolve_tags(tag_names, tags_by_code, tags_by_label, ambiguous_labels):
 
 
 def _has_csv_tag_permission(user):
-    return user.is_superuser or user.has_perm("wagtailadmin.access_admin")
+    return user.is_superuser
 
 
 @csrf_exempt
@@ -183,14 +183,6 @@ def set_tags_from_csv(request):
         topic_codes = action._get_topic_codes()
     except ValidationError as exc:
         return JsonResponse({"detail": " ".join(exc.messages)}, status=400)
-
-    logger.info(
-        "Starting CSV tag set action",
-        extra={
-            "page_ids": [row["page_id_raw"] for row in rows],
-            "row_count": len(rows),
-        },
-    )
 
     valid_page_ids = []
     for row in rows:
@@ -289,7 +281,7 @@ def set_tags_from_csv(request):
                     "row": row_number,
                     "page_id": page.id,
                     "status": "error",
-                    "error": str(exc),
+                    "error": "An unexpected error occurred while updating tags for this page",
                 }
             )
             logger.error("CSV tag update failed for page ID %s: %s", page.id, exc)
