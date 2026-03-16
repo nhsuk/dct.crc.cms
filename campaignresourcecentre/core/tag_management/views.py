@@ -1,0 +1,332 @@
+import csv
+import io
+import json
+from logging import getLogger
+
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from wagtail.models import Page
+
+from campaignresourcecentre.wagtailreacttaxonomy.models import (
+    TaxonomyTerms,
+    load_campaign_topics,
+)
+
+from .bulk_actions import BaseTagBulkAction
+
+logger = getLogger(__name__)
+
+
+class SetTagsFromCsvBulkAction(BaseTagBulkAction):
+    display_name = "Set Tags from CSV"
+    aria_label = "Set tags from CSV"
+    action_type = "set_tags_from_csv"
+
+
+def _iter_taxonomy_terms(nodes):
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+
+        if node.get("type") == "term":
+            code = (node.get("code") or "").strip()
+            label = (node.get("label") or "").strip()
+            if code and label:
+                yield {"code": code, "label": label}
+
+        children = node.get("children") or []
+        if isinstance(children, list):
+            yield from _iter_taxonomy_terms(children)
+
+
+def _build_tag_lookup():
+    try:
+        taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
+    except TaxonomyTerms.DoesNotExist as exc:
+        raise ValidationError('No "Taxonomy Terms" for this id: "crc_taxonomy"') from exc
+
+    try:
+        data = json.loads(taxonomy_data.terms_json)
+    except json.JSONDecodeError as exc:
+        raise ValidationError('"Taxonomy Terms" json wrong format') from exc
+
+    load_campaign_topics(data)
+
+    tags_by_code = {}
+    tags_by_label = {}
+    ambiguous_labels = set()
+
+    for tag in _iter_taxonomy_terms(data):
+        tags_by_code[tag["code"].casefold()] = tag
+
+        label_key = tag["label"].casefold()
+        existing = tags_by_label.get(label_key)
+        if existing and existing["code"] != tag["code"]:
+            ambiguous_labels.add(label_key)
+            continue
+
+        if label_key not in ambiguous_labels:
+            tags_by_label[label_key] = tag
+
+    for label_key in ambiguous_labels:
+        tags_by_label.pop(label_key, None)
+
+    return tags_by_code, tags_by_label, ambiguous_labels
+
+
+def _parse_csv_rows(uploaded_file):
+    try:
+        csv_data = uploaded_file.read().decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise ValidationError("CSV file must be UTF-8 encoded") from exc
+
+    rows = []
+    reader = csv.reader(io.StringIO(csv_data))
+    for row_number, row in enumerate(reader, start=1):
+        if not row or not any(cell.strip() for cell in row):
+            continue
+
+        page_id_raw = row[0].strip()
+        if row_number == 1 and page_id_raw.casefold() in {"page_id", "id"}:
+            continue
+
+        tag_names = []
+        for cell in row[1:]:
+            cell = cell.strip()
+            if not cell:
+                continue
+
+            tag_names.extend(
+                token.strip() for token in cell.split(",") if token.strip()
+            )
+
+        rows.append(
+            {
+                "row_number": row_number,
+                "page_id_raw": page_id_raw,
+                "tag_names": tag_names,
+            }
+        )
+
+    if not rows:
+        raise ValidationError("CSV file is empty")
+
+    return rows
+
+
+def _resolve_tags(tag_names, tags_by_code, tags_by_label, ambiguous_labels):
+    resolved_tags = []
+    seen_codes = set()
+    unknown_tags = []
+    ambiguous_tag_labels = []
+
+    for tag_name in tag_names:
+        key = tag_name.casefold()
+
+        if key in tags_by_code:
+            tag = tags_by_code[key]
+        elif key in tags_by_label:
+            tag = tags_by_label[key]
+        elif key in ambiguous_labels:
+            ambiguous_tag_labels.append(tag_name)
+            continue
+        else:
+            unknown_tags.append(tag_name)
+            continue
+
+        code = tag["code"]
+        if code not in seen_codes:
+            resolved_tags.append(tag)
+            seen_codes.add(code)
+
+    errors = []
+    if unknown_tags:
+        unknown_list = ", ".join(sorted(set(unknown_tags), key=str.casefold))
+        errors.append(f"Unknown tags: {unknown_list}")
+
+    if ambiguous_tag_labels:
+        ambiguous_list = ", ".join(
+            sorted(set(ambiguous_tag_labels), key=str.casefold)
+        )
+        errors.append(f"Ambiguous tag labels: {ambiguous_list}")
+
+    if errors:
+        raise ValidationError(" ".join(errors))
+
+    return resolved_tags
+
+
+def _has_csv_tag_permission(user):
+    return user.is_superuser or user.has_perm("wagtailadmin.access_admin")
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def set_tags_from_csv(request):
+    if not _has_csv_tag_permission(request.user):
+        raise PermissionDenied
+
+    uploaded_file = request.FILES.get("file") or request.FILES.get("csv_file")
+    if not uploaded_file:
+        return JsonResponse(
+            {"detail": "Please upload a CSV file using the 'file' form field."},
+            status=400,
+        )
+
+    action = object.__new__(SetTagsFromCsvBulkAction)
+
+    try:
+        rows = _parse_csv_rows(uploaded_file)
+        tags_by_code, tags_by_label, ambiguous_labels = _build_tag_lookup()
+        topic_codes = action._get_topic_codes()
+    except ValidationError as exc:
+        return JsonResponse({"detail": " ".join(exc.messages)}, status=400)
+
+    logger.info(
+        "Starting CSV tag set action",
+        extra={
+            "page_ids": [row["page_id_raw"] for row in rows],
+            "row_count": len(rows),
+        },
+    )
+
+    valid_page_ids = []
+    for row in rows:
+        try:
+            valid_page_ids.append(int(row["page_id_raw"]))
+        except (TypeError, ValueError):
+            continue
+
+    pages_by_id = {
+        page.id: page for page in Page.objects.filter(id__in=valid_page_ids).specific()
+    }
+
+    modified = 0
+    unchanged = 0
+    failed = 0
+    results = []
+
+    for row in rows:
+        row_number = row["row_number"]
+        page_id_raw = row["page_id_raw"]
+
+        try:
+            page_id = int(page_id_raw)
+        except (TypeError, ValueError):
+            failed += 1
+            results.append(
+                {
+                    "row": row_number,
+                    "page_id": page_id_raw,
+                    "status": "error",
+                    "error": f"Invalid page ID '{page_id_raw}'",
+                }
+            )
+            continue
+
+        page = pages_by_id.get(page_id)
+        if page is None:
+            failed += 1
+            results.append(
+                {
+                    "row": row_number,
+                    "page_id": page_id,
+                    "status": "error",
+                    "error": f"Page with ID {page_id} was not found",
+                }
+            )
+            continue
+
+        if not action.check_perm(page):
+            failed += 1
+            results.append(
+                {
+                    "row": row_number,
+                    "page_id": page.id,
+                    "status": "error",
+                    "error": "Only campaign and resource pages can be updated",
+                }
+            )
+            continue
+
+        try:
+            resolved_tags = _resolve_tags(
+                row["tag_names"],
+                tags_by_code,
+                tags_by_label,
+                ambiguous_labels,
+            )
+            action._ensure_has_topic_tag(resolved_tags, topic_codes, action_type="add")
+            has_changes = action._save_tags(
+                page,
+                resolved_tags,
+                resolved_tags,
+                request.user,
+            )
+        except ValidationError as exc:
+            failed += 1
+            error_message = " ".join(exc.messages)
+            results.append(
+                {
+                    "row": row_number,
+                    "page_id": page.id,
+                    "status": "error",
+                    "error": error_message,
+                }
+            )
+            logger.error(
+                "CSV tag update validation error for page ID %s: %s",
+                page.id,
+                error_message,
+            )
+            continue
+        except Exception as exc:
+            failed += 1
+            results.append(
+                {
+                    "row": row_number,
+                    "page_id": page.id,
+                    "status": "error",
+                    "error": str(exc),
+                }
+            )
+            logger.error("CSV tag update failed for page ID %s: %s", page.id, exc)
+            continue
+
+        if has_changes:
+            modified += 1
+            status = "updated"
+        else:
+            unchanged += 1
+            status = "unchanged"
+
+        results.append(
+            {
+                "row": row_number,
+                "page_id": page.id,
+                "status": status,
+                "tags": resolved_tags,
+            }
+        )
+
+    response_payload = {
+        "num_processed": len(rows),
+        "num_modified": modified,
+        "num_unchanged": unchanged,
+        "num_failed": failed,
+        "results": results,
+    }
+
+    logger.info(
+        "Finished CSV tag set action",
+        extra={
+            "num_processed": len(rows),
+            "num_modified": modified,
+            "num_unchanged": unchanged,
+            "num_failed": failed,
+        },
+    )
+
+    return JsonResponse(response_payload)
