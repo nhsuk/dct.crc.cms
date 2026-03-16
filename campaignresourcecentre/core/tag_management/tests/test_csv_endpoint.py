@@ -49,8 +49,7 @@ class SetTagsFromCsvEndpointTestCase(TestCase):
         self.campaign_page.save_revision(user=self.user)
 
         csv_content = (
-            "page_id,tags\n"
-            f'{self.campaign_page.id},"Cancer, Coronavirus, Adults"\n'
+            "page_id,tags\n" f'{self.campaign_page.id},"Cancer, Coronavirus, Adults"\n'
         )
         response = self._post_csv(csv_content)
 
@@ -61,14 +60,18 @@ class SetTagsFromCsvEndpointTestCase(TestCase):
 
         self.campaign_page.refresh_from_db()
         live_tags = json.loads(self.campaign_page.taxonomy_json)
-        self.assertEqual({tag["code"] for tag in live_tags}, {"CANCER", "COVID", "ADULTS"})
+        self.assertEqual(
+            {tag["code"] for tag in live_tags}, {"CANCER", "COVID", "ADULTS"}
+        )
 
         latest_revision = self.campaign_page.latest_revision
         live_revision = self.campaign_page.live_revision
         self.assertNotEqual(latest_revision.id, live_revision.id)
 
         draft_tags = json.loads(latest_revision.as_object().taxonomy_json)
-        self.assertEqual({tag["code"] for tag in draft_tags}, {"CANCER", "COVID", "ADULTS"})
+        self.assertEqual(
+            {tag["code"] for tag in draft_tags}, {"CANCER", "COVID", "ADULTS"}
+        )
 
     def test_returns_row_errors_and_continues_processing(self):
         csv_content = (

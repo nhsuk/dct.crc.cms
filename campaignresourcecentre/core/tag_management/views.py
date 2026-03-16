@@ -45,7 +45,9 @@ def _build_tag_lookup():
     try:
         taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
     except TaxonomyTerms.DoesNotExist as exc:
-        raise ValidationError('No "Taxonomy Terms" for this id: "crc_taxonomy"') from exc
+        raise ValidationError(
+            'No "Taxonomy Terms" for this id: "crc_taxonomy"'
+        ) from exc
 
     try:
         data = json.loads(taxonomy_data.terms_json)
@@ -147,9 +149,7 @@ def _resolve_tags(tag_names, tags_by_code, tags_by_label, ambiguous_labels):
         errors.append(f"Unknown tags: {unknown_list}")
 
     if ambiguous_tag_labels:
-        ambiguous_list = ", ".join(
-            sorted(set(ambiguous_tag_labels), key=str.casefold)
-        )
+        ambiguous_list = ", ".join(sorted(set(ambiguous_tag_labels), key=str.casefold))
         errors.append(f"Ambiguous tag labels: {ambiguous_list}")
 
     if errors:
