@@ -27,7 +27,7 @@ steps:
     echo "##vso[task.setvariable variable=fullVersion]$full_version"
   displayName: Get Latest Version
 - bash: |
-    pip3 install black==24.3.0
+    pip3 install black==26.3.1
     black --check ./ --config poetry/pyproject.toml
   displayName: Installs Black & Checks if the python scripts are formatted properly with black
 - task: DownloadPipelineArtifact@2
