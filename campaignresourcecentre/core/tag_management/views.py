@@ -162,6 +162,86 @@ def _has_csv_tag_permission(user):
     return user.is_superuser
 
 
+def _process_row(
+    row,
+    pages_by_id,
+    action,
+    tags_by_code,
+    tags_by_label,
+    ambiguous_labels,
+    topic_codes,
+    user,
+):
+    """Process one CSV row and return (outcome, result_dict).
+
+    outcome is one of: 'modified', 'unchanged', 'failed'.
+    """
+    row_number = row["row_number"]
+    page_id_raw = row["page_id_raw"]
+
+    try:
+        page_id = int(page_id_raw)
+    except (TypeError, ValueError):
+        return "failed", {
+            "row": row_number,
+            "page_id": page_id_raw,
+            "status": "error",
+            "error": f"Invalid page ID '{page_id_raw}'",
+        }
+
+    page = pages_by_id.get(page_id)
+    if page is None:
+        return "failed", {
+            "row": row_number,
+            "page_id": page_id,
+            "status": "error",
+            "error": f"Page with ID {page_id} was not found",
+        }
+
+    if not action.check_perm(page):
+        return "failed", {
+            "row": row_number,
+            "page_id": page.id,
+            "status": "error",
+            "error": "Only campaign and resource pages can be updated",
+        }
+
+    try:
+        resolved_tags = _resolve_tags(
+            row["tag_names"], tags_by_code, tags_by_label, ambiguous_labels
+        )
+        action._ensure_has_topic_tag(resolved_tags, topic_codes, action_type="add")
+        has_changes = action._save_tags(page, resolved_tags, resolved_tags, user)
+    except ValidationError as exc:
+        error_message = " ".join(exc.messages)
+        logger.error(
+            "CSV tag update validation error for page ID %s: %s", page.id, error_message
+        )
+        return "failed", {
+            "row": row_number,
+            "page_id": page.id,
+            "status": "error",
+            "error": error_message,
+        }
+    except Exception as exc:
+        logger.error("CSV tag update failed for page ID %s: %s", page.id, exc)
+        return "failed", {
+            "row": row_number,
+            "page_id": page.id,
+            "status": "error",
+            "error": "An unexpected error occurred while updating tags for this page",
+        }
+
+    outcome = "modified" if has_changes else "unchanged"
+    status = "updated" if has_changes else "unchanged"
+    return outcome, {
+        "row": row_number,
+        "page_id": page.id,
+        "status": status,
+        "tags": resolved_tags,
+    }
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def set_tags_from_csv(request):
@@ -201,107 +281,23 @@ def set_tags_from_csv(request):
     results = []
 
     for row in rows:
-        row_number = row["row_number"]
-        page_id_raw = row["page_id_raw"]
-
-        try:
-            page_id = int(page_id_raw)
-        except (TypeError, ValueError):
-            failed += 1
-            results.append(
-                {
-                    "row": row_number,
-                    "page_id": page_id_raw,
-                    "status": "error",
-                    "error": f"Invalid page ID '{page_id_raw}'",
-                }
-            )
-            continue
-
-        page = pages_by_id.get(page_id)
-        if page is None:
-            failed += 1
-            results.append(
-                {
-                    "row": row_number,
-                    "page_id": page_id,
-                    "status": "error",
-                    "error": f"Page with ID {page_id} was not found",
-                }
-            )
-            continue
-
-        if not action.check_perm(page):
-            failed += 1
-            results.append(
-                {
-                    "row": row_number,
-                    "page_id": page.id,
-                    "status": "error",
-                    "error": "Only campaign and resource pages can be updated",
-                }
-            )
-            continue
-
-        try:
-            resolved_tags = _resolve_tags(
-                row["tag_names"],
-                tags_by_code,
-                tags_by_label,
-                ambiguous_labels,
-            )
-            action._ensure_has_topic_tag(resolved_tags, topic_codes, action_type="add")
-            has_changes = action._save_tags(
-                page,
-                resolved_tags,
-                resolved_tags,
-                request.user,
-            )
-        except ValidationError as exc:
-            failed += 1
-            error_message = " ".join(exc.messages)
-            results.append(
-                {
-                    "row": row_number,
-                    "page_id": page.id,
-                    "status": "error",
-                    "error": error_message,
-                }
-            )
-            logger.error(
-                "CSV tag update validation error for page ID %s: %s",
-                page.id,
-                error_message,
-            )
-            continue
-        except Exception as exc:
-            failed += 1
-            results.append(
-                {
-                    "row": row_number,
-                    "page_id": page.id,
-                    "status": "error",
-                    "error": "An unexpected error occurred while updating tags for this page",
-                }
-            )
-            logger.error("CSV tag update failed for page ID %s: %s", page.id, exc)
-            continue
-
-        if has_changes:
-            modified += 1
-            status = "updated"
-        else:
-            unchanged += 1
-            status = "unchanged"
-
-        results.append(
-            {
-                "row": row_number,
-                "page_id": page.id,
-                "status": status,
-                "tags": resolved_tags,
-            }
+        outcome, result = _process_row(
+            row,
+            pages_by_id,
+            action,
+            tags_by_code,
+            tags_by_label,
+            ambiguous_labels,
+            topic_codes,
+            request.user,
         )
+        results.append(result)
+        if outcome == "modified":
+            modified += 1
+        elif outcome == "unchanged":
+            unchanged += 1
+        else:
+            failed += 1
 
     response_payload = {
         "num_processed": len(rows),
@@ -310,15 +306,5 @@ def set_tags_from_csv(request):
         "num_failed": failed,
         "results": results,
     }
-
-    logger.info(
-        "Finished CSV tag set action",
-        extra={
-            "num_processed": len(rows),
-            "num_modified": modified,
-            "num_unchanged": unchanged,
-            "num_failed": failed,
-        },
-    )
 
     return JsonResponse(response_payload)
