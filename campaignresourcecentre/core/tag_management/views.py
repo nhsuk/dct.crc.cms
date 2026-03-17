@@ -20,10 +20,10 @@ from .bulk_actions import BaseTagBulkAction
 logger = getLogger(__name__)
 
 
-class SetTagsFromCsvBulkAction(BaseTagBulkAction):
-    display_name = "Set Tags from CSV"
-    aria_label = "Set tags from CSV"
-    action_type = "set_tags_from_csv"
+class SetTopicTagsFromCsvBulkAction(BaseTagBulkAction):
+    display_name = "Set Topic Tags from CSV"
+    aria_label = "Set topic tags from CSV"
+    action_type = "set_topic_tags_from_csv"
 
 
 def _iter_taxonomy_terms(nodes):
@@ -148,6 +148,13 @@ def _resolve_tags(tag_names, tags_by_code, tags_by_label, ambiguous_labels):
     return resolved_tags
 
 
+def _merge_topic_tags(existing_tags, topic_tags, topic_codes):
+    non_topic_tags = [
+        tag for tag in (existing_tags or []) if tag.get("code") not in topic_codes
+    ]
+    return non_topic_tags + topic_tags
+
+
 def _has_csv_tag_permission(user):
     return user.is_superuser
 
@@ -200,8 +207,20 @@ def _process_row(
         resolved_tags = _resolve_tags(
             row["tag_names"], tags_by_code, tags_by_label, ambiguous_labels
         )
-        action._ensure_has_topic_tag(resolved_tags, topic_codes, action_type="add")
-        has_changes = action._save_tags(page, resolved_tags, resolved_tags, user)
+        topic_tags = [tag for tag in resolved_tags if tag["code"] in topic_codes]
+        action._ensure_has_topic_tag(topic_tags, topic_codes, action_type="add")
+
+        live_tags = _merge_topic_tags(
+            action._get_current_tags(page), topic_tags, topic_codes
+        )
+
+        draft_tags = None
+        if action._has_unpublished_changes(page):
+            draft_tags = _merge_topic_tags(
+                action._get_draft_tags(page), topic_tags, topic_codes
+            )
+
+        has_changes = action._save_tags(page, live_tags, draft_tags, user)
     except ValidationError as exc:
         error_message = " ".join(exc.messages)
         logger.error(
@@ -228,13 +247,13 @@ def _process_row(
         "row": row_number,
         "page_id": page.id,
         "status": status,
-        "tags": resolved_tags,
+        "tags": live_tags,
     }
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def set_tags_from_csv(request):
+def set_topic_tags_from_csv(request):
     if not _has_csv_tag_permission(request.user):
         raise PermissionDenied
 
@@ -245,7 +264,7 @@ def set_tags_from_csv(request):
             status=400,
         )
 
-    action = object.__new__(SetTagsFromCsvBulkAction)
+    action = object.__new__(SetTopicTagsFromCsvBulkAction)
 
     try:
         rows = _parse_csv_rows(uploaded_file)

@@ -67,9 +67,9 @@ private_urlpatterns = [
     path("crc-admin/search_orphans/", search_orphans, name="search_orphans"),
     path("crc-admin/manage_files/", manage_files, name="manage_files"),
     path(
-        "crc-admin/api/tag-management/set-tags-from-csv/",
-        tag_management_views.set_tags_from_csv,
-        name="set_tags_from_csv",
+        "crc-admin/api/tag-management/set-topic-tags-from-csv/",
+        tag_management_views.set_topic_tags_from_csv,
+        name="set_topic_tags_from_csv",
     ),
     path("crc-admin/", include(wagtailadmin_urls)),
     path("crc-admin/pub", publish_pages, name="publish_pages"),

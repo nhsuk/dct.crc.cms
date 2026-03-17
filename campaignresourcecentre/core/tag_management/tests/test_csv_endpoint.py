@@ -10,7 +10,7 @@ from campaignresourcecentre.core.preparetestdata import PrepareTestData
 User = get_user_model()
 
 
-class SetTagsFromCsvEndpointTestCase(TestCase):
+class SetTopicTagsFromCsvEndpointTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         td = PrepareTestData()
@@ -19,7 +19,7 @@ class SetTagsFromCsvEndpointTestCase(TestCase):
         cls.user = User.objects.get(username="wagtail")
 
     def setUp(self):
-        self.url = reverse("set_tags_from_csv")
+        self.url = reverse("set_topic_tags_from_csv")
         self.client.force_login(self.user)
 
     def _post_csv(self, csv_content):
@@ -123,3 +123,43 @@ class SetTagsFromCsvEndpointTestCase(TestCase):
         response = csrf_client.post(self.url, {"file": csv_file})
 
         self.assertEqual(response.status_code, 200)
+
+    def test_replaces_only_topic_tags_and_preserves_non_topic_tags(self):
+        self.campaign_page.taxonomy_json = json.dumps(
+            [
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
+        )
+        self.campaign_page.save_revision(user=self.user).publish()
+
+        self.campaign_page.taxonomy_json = json.dumps(
+            [
+                {"code": "DENTAL", "label": "Dental health"},
+                {"code": "ADULTS", "label": "Adults"},
+                {"code": "HEALTHPROFS", "label": "Healthcare professionals"},
+            ]
+        )
+        self.campaign_page.save_revision(user=self.user)
+
+        csv_content = "page_id,tags\n" f"{self.campaign_page.id},Coronavirus\n"
+        response = self._post_csv(csv_content)
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["num_failed"], 0)
+        self.assertEqual(payload["num_modified"], 1)
+
+        self.campaign_page.refresh_from_db()
+        live_tags = json.loads(self.campaign_page.taxonomy_json)
+        self.assertEqual({tag["code"] for tag in live_tags}, {"COVID", "ADULTS"})
+
+        latest_revision = self.campaign_page.latest_revision
+        draft_tags = json.loads(latest_revision.as_object().taxonomy_json)
+        self.assertEqual(
+            {tag["code"] for tag in draft_tags},
+            {"COVID", "ADULTS", "HEALTHPROFS"},
+        )
+
+        response_tags = {tag["code"] for tag in payload["results"][0]["tags"]}
+        self.assertEqual(response_tags, {"COVID", "ADULTS"})

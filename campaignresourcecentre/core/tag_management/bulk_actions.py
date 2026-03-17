@@ -37,11 +37,11 @@ def add_tags_action(actions):
 
 
 @hooks.register("register_log_actions")
-def set_tags_from_csv_action(actions):
+def set_topic_tags_from_csv_action(actions):
     actions.register_action(
-        "set_tags_from_csv",
-        "API: Set tags from CSV",
-        "API: Set tags from CSV",
+        "set_topic_tags_from_csv",
+        "API: Set topic tags from CSV",
+        "API: Set topic tags from CSV",
     )
 
 
