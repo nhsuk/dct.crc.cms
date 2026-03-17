@@ -103,6 +103,24 @@ class SetTopicTagsFromCsvEndpointTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("upload", response.json()["detail"].lower())
 
+    def test_returns_bad_request_when_csv_is_completely_empty(self):
+        response = self._post_csv("")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["detail"], "CSV file is empty")
+
+    def test_returns_bad_request_when_csv_has_only_blank_lines(self):
+        response = self._post_csv("\n\n\n")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["detail"], "CSV file is empty")
+
+    def test_returns_bad_request_when_csv_has_only_a_header_row(self):
+        response = self._post_csv("page_id,tags\n")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["detail"], "CSV file is empty")
+
     def test_requires_admin_permission(self):
         basic_user = User.objects.create_user(username="basic-user", password="pass")
         self.client.force_login(basic_user)
