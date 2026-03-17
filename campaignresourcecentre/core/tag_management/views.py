@@ -12,6 +12,7 @@ from wagtail.models import Page
 from campaignresourcecentre.wagtailreacttaxonomy.models import (
     TaxonomyTerms,
     load_campaign_topics,
+    get_crc_taxonomy,
 )
 
 from .bulk_actions import BaseTagBulkAction
@@ -42,18 +43,7 @@ def _iter_taxonomy_terms(nodes):
 
 
 def _build_tag_lookup():
-    try:
-        taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
-    except TaxonomyTerms.DoesNotExist as exc:
-        raise ValidationError(
-            'No "Taxonomy Terms" for this id: "crc_taxonomy"'
-        ) from exc
-
-    try:
-        data = json.loads(taxonomy_data.terms_json)
-    except json.JSONDecodeError as exc:
-        raise ValidationError('"Taxonomy Terms" json wrong format') from exc
-
+    data = get_crc_taxonomy()
     load_campaign_topics(data)
 
     tags_by_code = {}

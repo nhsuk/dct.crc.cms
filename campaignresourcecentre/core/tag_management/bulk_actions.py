@@ -10,6 +10,7 @@ from campaignresourcecentre.resources.models import ResourcePage
 from campaignresourcecentre.wagtailreacttaxonomy.models import (
     TaxonomyTerms,
     load_campaign_topics,
+    get_crc_taxonomy,
 )
 from .utils import get_page_taxonomy_tags
 from .forms import ManageTagsForm
@@ -191,16 +192,9 @@ class BaseTagBulkAction(PageBulkAction):
 
         return update_published or update_draft
 
-    def _get_topic_codes(self):
-        try:
-            taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
-        except TaxonomyTerms.DoesNotExist:
-            raise ValidationError('No "Taxonomy Terms" for this id: "crc_taxonomy"')
-
-        try:
-            data = json.loads(taxonomy_data.terms_json)
-        except json.JSONDecodeError:
-            raise ValidationError('"Taxonomy Terms" json wrong format')
+    def _get_topic_codes(self, data=None):
+        if data is None:
+            data = get_crc_taxonomy()
 
         # Load campaign topics from the Topic model
         load_campaign_topics(data)

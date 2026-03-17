@@ -92,6 +92,20 @@ def to_json(data):
     return json.dumps(data)
 
 
+def get_crc_taxonomy():
+    try:
+        taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
+    except TaxonomyTerms.DoesNotExist:
+        raise ValidationError('No "Taxonomy Terms" for this id: "crc_taxonomy"')
+
+    try:
+        data = json.loads(taxonomy_data.terms_json)
+    except json.JSONDecodeError:
+        raise ValidationError('"Taxonomy Terms" json wrong format')
+
+    return data
+
+
 def load_campaign_topics(taxonomy_data, visible_only=False):
     """Load campaign topics from the database into the taxonomy JSON structure.
 
