@@ -10,7 +10,6 @@ from django.views.decorators.http import require_http_methods
 from wagtail.models import Page
 
 from campaignresourcecentre.wagtailreacttaxonomy.models import (
-    TaxonomyTerms,
     load_campaign_topics,
     get_crc_taxonomy,
 )
