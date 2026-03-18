@@ -12,7 +12,6 @@ from django.test import RequestFactory
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
-from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
 from .models import ResourcePage, ResourceItem
 from .admin import ResourcePageAdmin, ResourceItemAdmin
 from datetime import datetime
@@ -317,12 +316,6 @@ class TestResourcePageProperties(AdminTestCase):
         self.assertIsInstance(result, str)
 
     def test_topics_returns_topic_labels(self):
-        from campaignresourcecentre.core.templatetags import json_lookup
-
-        json_lookup.data = json.loads(
-            TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
-        )
-
         self.resource_page.taxonomy_json = json.dumps(
             [
                 {"code": "EATING", "label": "Eating well"},
@@ -333,12 +326,6 @@ class TestResourcePageProperties(AdminTestCase):
         self.assertIn("Eating well", result)
 
     def test_target_audience_returns_labels(self):
-        from campaignresourcecentre.core.templatetags import json_lookup
-
-        json_lookup.data = json.loads(
-            TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
-        )
-
         self.resource_page.taxonomy_json = json.dumps(
             [
                 {"code": "EATING", "label": "Eating well"},
@@ -349,12 +336,6 @@ class TestResourcePageProperties(AdminTestCase):
         self.assertIn("Adults", result)
 
     def test_all_taxonomy_tags_includes_multiple_categories(self):
-        from campaignresourcecentre.core.templatetags import json_lookup
-
-        json_lookup.data = json.loads(
-            TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy").terms_json
-        )
-
         self.resource_page.taxonomy_json = json.dumps(
             [
                 {"code": "CANCER", "label": "Cancer"},
