@@ -176,32 +176,24 @@ def _process_row(
     row_number = row["row_number"]
     page_id_raw = row["page_id_raw"]
 
+    error = lambda message: {
+        "row": row_number,
+        "page_id": page_id_raw,
+        "status": "error",
+        "error": message,
+    }
+
     try:
         page_id = int(page_id_raw)
     except (TypeError, ValueError):
-        return "failed", {
-            "row": row_number,
-            "page_id": page_id_raw,
-            "status": "error",
-            "error": f"Invalid page ID '{page_id_raw}'",
-        }
+        return "failed", error(f"Invalid page ID '{page_id_raw}'")
 
     page = pages_by_id.get(page_id)
     if page is None:
-        return "failed", {
-            "row": row_number,
-            "page_id": page_id,
-            "status": "error",
-            "error": f"Page with ID {page_id} was not found",
-        }
+        return "failed", error(f"Page with ID {page_id} was not found")
 
     if not action.check_perm(page):
-        return "failed", {
-            "row": row_number,
-            "page_id": page.id,
-            "status": "error",
-            "error": "Only campaign and resource pages can be updated",
-        }
+        return "failed", error("Only campaign and resource pages can be updated")
 
     try:
         resolved_tags = _resolve_tags(
@@ -226,20 +218,13 @@ def _process_row(
         logger.error(
             "CSV tag update validation error for page ID %s: %s", page.id, error_message
         )
-        return "failed", {
-            "row": row_number,
-            "page_id": page.id,
-            "status": "error",
-            "error": error_message,
-        }
+        return "failed", error(error_message)
+
     except Exception as exc:
         logger.error("CSV tag update failed for page ID %s: %s", page.id, exc)
-        return "failed", {
-            "row": row_number,
-            "page_id": page.id,
-            "status": "error",
-            "error": "An unexpected error occurred while updating tags for this page",
-        }
+        return "failed", error(
+            "An unexpected error occurred while updating tags for this page"
+        )
 
     outcome = "modified" if has_changes else "unchanged"
     status = "updated" if has_changes else "unchanged"
