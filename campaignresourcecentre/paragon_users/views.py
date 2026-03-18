@@ -705,6 +705,10 @@ def order_history(request):
     return render(
         request,
         "users/order_history.html",
-        {"data": data, "sort": sort},
+        {
+            "data": data,
+            "sort": sort,
+            "show_order_history": not is_order_history_disabled(request=request),
+        },
         # We pass the sort back into the template to ensure the current sort option is the default on page load
     )
