@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+from collections import Counter
 from logging import getLogger
 
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -268,9 +269,7 @@ def set_topic_tags_from_csv(request):
         page.id: page for page in Page.objects.filter(id__in=valid_page_ids).specific()
     }
 
-    modified = 0
-    unchanged = 0
-    failed = 0
+    counts = Counter()
     results = []
 
     for row in rows:
@@ -285,18 +284,13 @@ def set_topic_tags_from_csv(request):
             request.user,
         )
         results.append(result)
-        if outcome == "modified":
-            modified += 1
-        elif outcome == "unchanged":
-            unchanged += 1
-        else:
-            failed += 1
+        counts[outcome] += 1
 
     response_payload = {
         "num_processed": len(rows),
-        "num_modified": modified,
-        "num_unchanged": unchanged,
-        "num_failed": failed,
+        "num_modified": counts["modified"],
+        "num_unchanged": counts["unchanged"],
+        "num_failed": counts["failed"],
         "results": results,
     }
 
