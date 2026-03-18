@@ -315,6 +315,28 @@ class TestResourcePageProperties(AdminTestCase):
         result = self.resource_page.all_taxonomy_tags
         self.assertIsInstance(result, str)
 
+    def test_topics_returns_topic_labels(self):
+        self.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "EATING", "label": "Eating well"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
+        )
+        self.assertIn("Eating well", self.resource_page.topics)
+
+    def test_all_taxonomy_tags_includes_multiple_categories(self):
+        self.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
+                {"code": "ARABIC", "label": "Arabic"},
+            ]
+        )
+        result = self.resource_page.all_taxonomy_tags
+        self.assertIn("Cancer", result)
+        self.assertIn("Adults", result)
+        self.assertIn("Arabic", result)
+
     def test_objecttype(self):
         self.assertEqual(self.resource_page.objecttype(), "resource")
 
