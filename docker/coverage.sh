@@ -22,7 +22,7 @@ echo "[7/9] Generating html coverage report..."
 coverage html
 
 echo "[8/9] Mounting html coverage report..."
-mkdir ./docker/coverage_html
+mkdir -p ./docker/coverage_html
 mv ./coverage_html/* ./docker/coverage_html
 
 echo "[9/9] Exiting with code $exitcode"
