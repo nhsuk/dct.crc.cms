@@ -6,13 +6,14 @@ from wagtail.admin.views.reports import ReportView
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
-from campaignresourcecentre.core.templatetags.json_lookup import data as taxonomy_data
+from campaignresourcecentre.core.templatetags import json_lookup
 
 
 def get_all_taxonomy_terms():
     """Get all taxonomy terms as choices for filtering."""
+    json_lookup._load_data(force_refresh=True)
     choices = []
-    for category in taxonomy_data:
+    for category in json_lookup.data:
         for item in category["children"]:
             choices.append((item["code"], item["label"]))
 
