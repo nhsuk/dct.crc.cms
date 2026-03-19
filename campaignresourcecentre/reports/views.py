@@ -11,7 +11,7 @@ from campaignresourcecentre.core.templatetags import json_lookup
 
 def get_all_taxonomy_terms():
     """Get all taxonomy terms as choices for filtering."""
-    json_lookup._load_data()
+    json_lookup._load_data(force_refresh=True)
     choices = []
     for category in json_lookup.data:
         for item in category["children"]:

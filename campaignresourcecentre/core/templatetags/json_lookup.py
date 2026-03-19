@@ -8,9 +8,12 @@ logger = logging.getLogger(__name__)
 data = {}
 
 
-def _load_data():
+def _load_data(force_refresh=False):
+    """Load taxonomy data from the database. Data is cached after first use.
+    Use force_refresh=True to reload (e.g. when generating reports with up-to-date data).
+    """
     global data
-    if not data:
+    if not data or force_refresh:
         try:
             from campaignresourcecentre.wagtailreacttaxonomy.models import (
                 TaxonomyTerms,

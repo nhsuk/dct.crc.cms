@@ -351,6 +351,17 @@ class TestResourcePageProperties(AdminTestCase):
     def test_objecttype(self):
         self.assertEqual(self.resource_page.objecttype(), "resource")
 
+    def test_load_data_force_refreshes_taxonomy_data(self):
+        from campaignresourcecentre.core.templatetags import json_lookup
+
+        json_lookup._load_data()
+        original_data = json_lookup.data
+
+        # Force reload should fetch fresh data
+        json_lookup._load_data(force_refresh=True)
+        self.assertEqual(json_lookup.data, original_data)
+        self.assertIsNot(json_lookup.data, original_data)
+
 
 class TestRemoveTopicFilterTagRegression(TestCase):
     def _render_topic_tag(self, code):
