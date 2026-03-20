@@ -252,13 +252,20 @@ def resend_verification(request):
     return redirect("/")
 
 
+def unsign_user_token(signed_token: str):
+    try:
+        unsigned_token = unsign(signed_token, max_age=86400)
+        return unsigned_token
+    except Exception as e:
+        logger.error("Failed to unsign token: %s" % (e,))
+        return None
+
+
 def verification(request):
     if request.GET.get("q"):
         # unsign Token from URL Query
-        try:
-            unsigned_token = unsign(request.GET.get("q"), max_age=86400)
-        except Exception as e:
-            logger.error("Failed to unsign token: %s" % (e,))
+        unsigned_token = unsign_user_token(request.GET.get("q"))
+        if not unsigned_token:
             return HttpResponseBadRequest()
 
         # set user parameters
@@ -448,10 +455,8 @@ def password_set(request):
     if request.GET.get("q"):
         paragon_client = Client()
         # We use this to check if the user token is valid for unsigning
-        try:
-            user_token = unsign(request.GET.get("q"), max_age=86400)
-        except Exception as e:  # noqa
-            logger.error("Failed to unsign user token: %s" % e)
+        user_token = unsign_user_token(request.GET.get("q"))
+        if not user_token:
             return HttpResponseBadRequest()
         # Check if the user token returns a profile to authenticate it
         user_profile = paragon_client.get_user_profile(user_token)
