@@ -63,7 +63,7 @@ class VerificationTestCase(TestCase):
         mock_client.update_user_profile.return_value = True
 
         request = self.factory.get("/verification/?q=token")
-        request.session = {"ParagonUser": "token"}
+        request.session = {"ParagonUser": "token", "flush": lambda: None}
 
         verification(request)
 
