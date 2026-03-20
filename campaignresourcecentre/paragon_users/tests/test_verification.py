@@ -3,6 +3,17 @@ from django.test import TestCase
 from campaignresourcecentre.paragon.client import Client
 
 
+def _mock_user(verified=False):
+    return {
+        "content": {
+            "EmailAddress": "test@example.com",
+            "ProductRegistrationVar2": str(verified),
+            "ProductRegistrationVar4": "other",
+            "ProductRegistrationVar9": "WC1 2AA",
+        }
+    }
+
+
 class VerificationViewTestCase(TestCase):
     """After verifying their email, a user's session should be flushed so they
     must log in again — this ensures their session has fresh verified data."""
