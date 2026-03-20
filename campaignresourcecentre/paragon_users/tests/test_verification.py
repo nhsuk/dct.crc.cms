@@ -1,5 +1,6 @@
 from unittest.mock import patch
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
+from campaignresourcecentre.paragon.client import Client
 
 
 class VerificationViewTestCase(TestCase):
