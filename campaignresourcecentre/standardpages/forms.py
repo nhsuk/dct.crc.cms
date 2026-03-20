@@ -3,19 +3,19 @@ from django.core.validators import EmailValidator, RegexValidator
 
 JOB_CHOICES = (
     ("", "Select a job function"),
-    ("director", "Director / Board Member / CEO"),
     ("admin", "Administration"),
-    ("education", "Education and Teaching"),
-    ("marketing", "Marketing and communications"),
-    ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
-    ("student", "Student / Unemployed / Retired"),
-    ("projectmanagement", "Project Management"),
+    ("director", "Director / Board Member / CEO"),
+    ("education", "Education and Teaching"),
+    ("environmental", "Environmental Health"),
+    ("health", "Health"),
+    ("hr", "HR / Training / Organisational Development"),
+    ("marketing", "Marketing and communications"),
     ("planning", "Planning and Development"),
     ("policy", "Policy"),
-    ("environmental", "Environmental Health"),
+    ("projectmanagement", "Project Management"),
+    ("student", "Student / Unemployed / Retired"),
     ("substance", "Substance Abuse and Addiction Services"),
-    ("health", "Health"),
     ("other", "Other"),
 )
 

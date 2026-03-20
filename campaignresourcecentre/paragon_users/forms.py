@@ -20,47 +20,47 @@ logger = getLogger(__name__)
 
 JOB_CHOICES = (
     ("", "Select a job function"),
-    ("director", "Director / Board Member / CEO"),
     ("admin", "Administration"),
-    ("education", "Education and Teaching"),
-    ("marketing", "Marketing and communications"),
-    ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
-    ("student", "Student / Unemployed / Retired"),
-    ("projectmanagement", "Project Management"),
+    ("director", "Director / Board Member / CEO"),
+    ("education", "Education and Teaching"),
+    ("environmental", "Environmental Health"),
+    ("health", "Health"),
+    ("hr", "HR / Training / Organisational Development"),
+    ("marketing", "Marketing and communications"),
     ("planning", "Planning and Development"),
     ("policy", "Policy"),
-    ("environmental", "Environmental Health"),
+    ("projectmanagement", "Project Management"),
+    ("student", "Student / Unemployed / Retired"),
     ("substance", "Substance Abuse and Addiction Services"),
-    ("health", "Health"),
     ("other", "Other"),
 )
 
 
 HEALTH_CHOICES = (
-    ("health:pharmacy", "Pharmacy"),
-    ("health:nurse", "Nurse"),
-    ("health:infantteam", "Infant feeding team"),
+    ("health:carecoordinator", "Care Coordinator"),
     ("health:childrensteam", "Children's Health"),
-    ("health:oralhealth", "Oral health"),
-    ("health:improvement", "Health Improvement / Public Health"),
-    ("health:healthvisitor", "Health visitor"),
     ("health:gp", "General Practice"),
-    ("health:midwife", "Midwife"),
-    ("health:smokingcessation", "Smoking cessation"),
     ("health:healthwellbeing", "Health and Wellbeing coach"),
     ("health:healthassistant", "Health Care Assistant"),
-    ("health:socialprescribing", "Social Prescribing Link Worker"),
-    ("health:carecoordinator", "Care Coordinator"),
+    ("health:improvement", "Health Improvement / Public Health"),
+    ("health:healthvisitor", "Health visitor"),
     ("health:immunisation", "Immunisation Coordinator"),
+    ("health:infantteam", "Infant feeding team"),
     ("health:mentalhealth", "Mental Health"),
+    ("health:midwife", "Midwife"),
+    ("health:nurse", "Nurse"),
+    ("health:oralhealth", "Oral health"),
+    ("health:pharmacy", "Pharmacy"),
+    ("health:smokingcessation", "Smoking cessation"),
+    ("health:socialprescribing", "Social Prescribing Link Worker"),
 )
 
 EDUCATION_CHOICES = (
-    ("education:teacher", "Teacher"),
     ("education:headteacher", "Headteacher"),
-    ("education:teachingassistant", "Teaching Assistant"),
     ("education:schoolsecretary", "School Secretary"),
+    ("education:teacher", "Teacher"),
+    ("education:teachingassistant", "Teaching Assistant"),
 )
 
 
