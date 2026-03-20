@@ -228,59 +228,6 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const healthHint = document.getElementById("health-non-js");
-            const educationHint = document.getElementById("education-non-js");
-            const hintJS = document.getElementById("no-js");
-
-            healthHint.classList.add("govuk-visually-hidden");
-            educationHint.classList.add("govuk-visually-hidden");
-            hintJS.classList.add("govuk-visually-hidden");
-
-            const jobTitle = document.getElementById("id_job_title").value;
-
-            const roleElements = {}
-            for (const jobTitleWithRole of ['health', 'education']) {
-                roleElements[jobTitleWithRole] = {
-                    element: document.getElementById(`${jobTitleWithRole}Role`),
-                    label: document.getElementById(`${jobTitleWithRole}RoleLabel`),
-                    input: document.getElementById(`id_${jobTitleWithRole}_role`)
-                };
-            }
-
-            for (const jobTitleWithRole in roleElements) {
-                const role = roleElements[jobTitleWithRole];
-                if (jobTitle === jobTitleWithRole) {
-                    role.element.classList.remove("govuk-visually-hidden");
-                    role.label.setAttribute("aria-hidden","false");
-                    role.input.setAttribute("aria-hidden","false");
-                    role.input.disabled = false;
-                } else {
-                    role.element.classList.add("govuk-visually-hidden");
-                    role.label.setAttribute("aria-hidden","true");
-                    role.input.setAttribute("aria-hidden","true");
-                    role.input.disabled = true;
-                }
-            }
-
-            const orgElement = document.getElementById("organisation");
-            const orgElementLabel = document.getElementById("organisationLabel");
-            const orgInput = document.getElementById("id_organisation");
-
-            // Organisation name
-            if (jobTitle === '' || jobTitle === 'student'){
-                orgElement.classList.add("govuk-visually-hidden");
-                orgElementLabel.setAttribute("aria-hidden","true");
-                orgInput.setAttribute("aria-hidden","true");
-                orgInput.disabled = true;
-            } else {
-                orgElement.classList.remove("govuk-visually-hidden");
-                orgElementLabel.setAttribute("aria-hidden","false");
-                orgInput.setAttribute("aria-hidden","false");
-                orgInput.disabled = false;
-            }
-        }, false);
-
         function hideSelect() {
             const jobTitle = document.getElementById("id_job_title").value;
 
@@ -325,5 +272,17 @@
                 orgInput.disabled = false;
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const healthHint = document.getElementById("health-non-js");
+            const educationHint = document.getElementById("education-non-js");
+            const hintJS = document.getElementById("no-js");
+
+            healthHint.classList.add("govuk-visually-hidden");
+            educationHint.classList.add("govuk-visually-hidden");
+            hintJS.classList.add("govuk-visually-hidden");
+
+            hideSelect();
+        }, false);
     </script>
 {% endblock %}
