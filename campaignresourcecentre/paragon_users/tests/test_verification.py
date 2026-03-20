@@ -22,7 +22,7 @@ class VerificationViewTestCase(TestCase):
 
     def setUp(self):
         self.mock_unsign = patch(
-            f"{self.VIEWS}.unsign_user_token", return_value="user-token"
+            f"{self.VIEWS}.unsign", return_value="user-token"
         ).start()
         patch.object(Client, "get_user_profile", return_value=_mock_user()).start()
         patch.object(Client, "update_user_profile", return_value=True).start()
