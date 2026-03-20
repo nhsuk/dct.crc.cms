@@ -2,100 +2,66 @@ from unittest.mock import patch
 from django.test import TestCase, RequestFactory
 
 
-class VerificationTestCase(TestCase):
+class VerificationViewTestCase(TestCase):
+    """After verifying their email, a user's session should be flushed so they
+    must log in again — this ensures their session has fresh verified data."""
+
+    VIEWS = "campaignresourcecentre.paragon_users.views"
+
     def setUp(self):
-        self.factory = RequestFactory()
+        self.mock_unsign = patch(
+            f"{self.VIEWS}.unsign_user_token", return_value="user-token"
+        ).start()
+        patch.object(Client, "get_user_profile", return_value=_mock_user()).start()
+        patch.object(Client, "update_user_profile", return_value=True).start()
+        patch(f"{self.VIEWS}.get_region", return_value="region.london").start()
+        self.addCleanup(patch.stopall)
 
-    @patch("campaignresourcecentre.paragon_users.views.unsign_user_token")
-    def test_verification_input_validation(self, mock_unsign):
-        from campaignresourcecentre.paragon_users.views import verification
+    def _set_session(self, **kwargs):
+        session = self.client.session
+        session.update(kwargs)
+        session.save()
 
-        request = self.factory.get("/verification/")
-        response = verification(request)
+    def test_session_is_flushed_after_verification(self):
+        self._set_session(ParagonUser="user-token", Verified="False")
+
+        response = self.client.get("/verification/", {"q": "token"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("ParagonUser", self.client.session)
+        self.assertNotIn("Verified", self.client.session)
+
+    def test_anonymous_user_can_verify(self):
+        response = self.client.get("/verification/", {"q": "token"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "users/confirmation_user_verification.html")
+
+    def test_already_verified_user_is_redirected_home(self):
+        patch.object(
+            Client, "get_user_profile", return_value=_mock_user(verified=True)
+        ).start()
+        self._set_session(ParagonUser="user-token", Verified="True")
+
+        response = self.client.get("/verification/", {"q": "token"})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/")
+        self.assertEqual(self.client.session["ParagonUser"], "user-token")
+
+    def test_missing_token_redirects_home(self):
+        response = self.client.get("/verification/")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/")
 
-        mock_unsign.return_value = None
-        request = self.factory.get("/verification/?q=invalid")
-        response = verification(request)
+    def test_invalid_token_returns_400(self):
+        self.mock_unsign.side_effect = Exception("bad token")
+
+        response = self.client.get("/verification/", {"q": "bad token"})
         self.assertEqual(response.status_code, 400)
 
-    @patch("campaignresourcecentre.paragon_users.views.Client")
-    @patch("campaignresourcecentre.paragon_users.views.unsign_user_token")
-    def test_verification_already_verified_user(self, mock_unsign, mock_client_class):
-        from campaignresourcecentre.paragon_users.views import verification
+    def test_paragon_update_failure_returns_500(self):
+        patch.object(Client, "update_user_profile", return_value=False).start()
 
-        mock_unsign.return_value = "token"
-        mock_client = mock_client_class.return_value
-        mock_client.get_user_profile.return_value = {
-            "content": {"ProductRegistrationVar2": "True"}
-        }
-
-        request = self.factory.get("/verification/?q=token")
-        response = verification(request)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/")
-
-    @patch("campaignresourcecentre.paragon_users.views.render")
-    @patch("campaignresourcecentre.paragon_users.views.get_role")
-    @patch("campaignresourcecentre.paragon_users.views.Client")
-    @patch("campaignresourcecentre.paragon_users.views.unsign_user_token")
-    @patch("campaignresourcecentre.paragon_users.views.date")
-    def test_verification_success_and_session_handling(
-        self, mock_date, mock_unsign, mock_client_class, mock_get_role, mock_render
-    ):
-        from campaignresourcecentre.paragon_users.views import verification
-
-        mock_date.today.return_value.strftime.return_value = "2023-12-04T10:30:00"
-        mock_unsign.return_value = "token"
-        mock_get_role.return_value = "standard"
-        mock_render.return_value = "response"
-
-        mock_client = mock_client_class.return_value
-        mock_client.get_user_profile.return_value = {
-            "content": {
-                "ProductRegistrationVar2": "False",
-                "EmailAddress": "test@example.com",
-                "ProductRegistrationVar4": "health:nurse",
-            }
-        }
-        mock_client.update_user_profile.return_value = True
-
-        request = self.factory.get("/verification/?q=token")
-        request.session = {"ParagonUser": "token", "flush": lambda: None}
-
-        verification(request)
-
-        self.assertEqual(request.session["Verified"], "True")
-
-        request.session = {"ParagonUser": "different_token", "flush": lambda: None}
-        verification(request)
-        self.assertNotIn("Verified", request.session)
-
-    @patch("campaignresourcecentre.paragon_users.views.get_role")
-    @patch("campaignresourcecentre.paragon_users.views.Client")
-    @patch("campaignresourcecentre.paragon_users.views.unsign_user_token")
-    @patch("campaignresourcecentre.paragon_users.views.date")
-    def test_verification_update_profile_fails(
-        self, mock_date, mock_unsign, mock_client_class, mock_get_role
-    ):
-        from campaignresourcecentre.paragon_users.views import verification
-
-        mock_date.today.return_value.strftime.return_value = "2023-12-04T10:30:00"
-        mock_unsign.return_value = "token"
-        mock_client = mock_client_class.return_value
-        mock_client.get_user_profile.return_value = {
-            "content": {
-                "ProductRegistrationVar2": "False",
-                "EmailAddress": "test@example.com",
-                "ProductRegistrationVar4": None,
-            }
-        }
-        mock_client.update_user_profile.return_value = False
-
-        request = self.factory.get("/verification/?q=token")
-        request.session = {}
-        response = verification(request)
-
+        response = self.client.get("/verification/", {"q": "token"})
         self.assertEqual(response.status_code, 500)
