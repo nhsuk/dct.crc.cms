@@ -69,7 +69,7 @@ class VerificationTestCase(TestCase):
 
         self.assertEqual(request.session["Verified"], "True")
 
-        request.session = {"ParagonUser": "different_token"}
+        request.session = {"ParagonUser": "different_token", "flush": lambda: None}
         verification(request)
         self.assertNotIn("Verified", request.session)
 
