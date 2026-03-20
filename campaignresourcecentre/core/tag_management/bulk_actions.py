@@ -229,77 +229,40 @@ class RemoveTagsBulkAction(BaseTagBulkAction):
     aria_label = "Remove tags from selected pages"
     action_type = "remove_tags"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        items = context.get("items", [])
+    def form_valid(self, form):
+        super(ManageTagsBulkAction, self).form_valid(form)
 
-        for page in items:
-            item = page["item"]
-            page_tags = self._get_current_tags(item)
-            page.update(
-                {
-                    "tags": page_tags,
-                }
-            )
-
-        context["items"] = items
-        return context
-
-    def _on_apply(self, request, ctx):
-        base_tags_for_removal = json.loads(request.POST.get("tags_to_remove", "{}"))
-        items = ctx.get("items", [])
-        topic_codes = self._get_topic_codes()
-
-        logger.info(
-            "Starting tag removal bulk action",
-            extra={
-                "page_ids": [item["item"].id for item in items],
-                "tags_to_remove": base_tags_for_removal,
+        return render(
+            self.request,
+            self.result_template,
+            {
+                "change_details": self.calculated_changes,
+                "num_modified": self.num_parent_objects,
+                "num_failed": self.num_child_objects,
+                "operation_mode": "remove",
+                "next_url": self.next_url,
             },
         )
 
-        failed = 0
-        modified = 0
-        errors = {}
+    def calculate_draft_tags(self, page, draft_tags, operation_mode):
+        tags_to_remove = json.loads(self.request.POST.get("tags_to_remove", "{}"))
+        codes_to_remove = tags_to_remove.get(str(page.id), [])
+        return self._remove_tags(draft_tags, codes_to_remove)
+
+    def calculate_changes(self, items):
+        tags_to_remove = json.loads(self.request.POST.get("tags_to_remove", "{}"))
+        changes = []
 
         for item in items:
             page = item["item"]
-            tags_to_remove = base_tags_for_removal.get(str(page.id), [])
+            page_id = str(page.id)
+            original_tags = item.get("taxonomy_tags", [])
 
-            try:
-                live_tags = self._calculate_final_tags(
-                    self._get_current_tags(page), tags_to_remove
-                )
-                self._ensure_has_topic_tag(live_tags, topic_codes, action_type="remove")
+            codes_to_remove = tags_to_remove.get(page_id, [])
+            final_tags = self._remove_tags(original_tags, codes_to_remove)
+            _, _ = self._calculate_diff(original_tags, final_tags)
 
-                draft_tags = None
-                if self._has_unpublished_changes(page):
-                    draft_current = self._get_draft_tags(page)
-                    draft_tags = self._calculate_final_tags(
-                        draft_current, tags_to_remove
-                    )
-                    self._ensure_has_topic_tag(
-                        draft_tags, topic_codes, action_type="remove"
-                    )
-
-                self._save_tags(page, live_tags, draft_tags, request.user)
-                modified += 1
-            except ValidationError as e:
-                errors[page.id] = " ".join(e.messages)
-                failed += 1
-                logger.error(
-                    f"Error removing tags from page ID {page.id}: {errors[page.id]}"
-                )
-            except Exception as e:
-                errors[page.id] = str(e)
-                failed += 1
-                logger.error(f"Error removing tags from page ID {page.id}: {e}")
-
-        page_ids = [item["item"].id for item in items]
-        fresh_pages = Page.objects.filter(id__in=page_ids).specific()
-        fresh_items = []
-        for page in fresh_pages:
-            fresh_items.append(
+            changes.append(
                 {
                     "item": page,
                     "tags": self._get_current_tags(page),
@@ -375,177 +338,37 @@ class AddTagsBulkAction(BaseTagBulkAction):
     def _get_taxonomy_terms(self):
         try:
             taxonomy_data = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
-            data = json.loads(taxonomy_data.terms_json)
-            load_campaign_topics(data)
-            return json.dumps(data)
+            context["taxonomy_terms_json"] = taxonomy_data.terms_json
         except TaxonomyTerms.DoesNotExist:
             logger.error("Taxonomy terms not found")
             return []
 
-    def _on_apply(self, request, ctx):
-        tags_to_add = json.loads(request.POST.get("tags_to_add", "[]"))
-        operation_mode = request.POST.get("tag_operation_mode", "merge")
-        items = ctx.get("items", [])
+    def calculate_draft_tags(self, page, draft_tags, operation_mode):
+        tags_to_add = json.loads(self.request.POST.get("tags_to_add", "[]"))
+        return self._merge_tags(draft_tags, tags_to_add, operation_mode)
 
-        # Get topic codes once for all pages
-        try:
-            topic_codes = self._get_topic_codes()
-        except ValidationError as e:
-            # If taxonomy is broken, fail all pages
-            ctx.update(
-                {
-                    "items": [
-                        {
-                            "item": item["item"],
-                            "tags": [],
-                            "status": "error",
-                            "error": " ".join(e.messages),
-                        }
-                        for item in items
-                    ],
-                    "num_modified": 0,
-                    "num_failed": len(items),
-                    "operation_mode": operation_mode,
-                    "next_url": self.next_url,
-                }
-            )
-            return render(request, self.result_template, ctx)
-
-        failed = 0
-        modified = 0
-        errors = {}
+    def calculate_changes(self, items):
+        tags_to_add = json.loads(self.request.POST.get("tags_to_add", "[]"))
+        operation_mode = self.request.POST.get("tag_operation_mode", "merge")
+        changes = []
 
         for item in items:
             page = item["item"]
+            original_tags = item.get("taxonomy_tags", [])
+            final_tags = self._merge_tags(original_tags, tags_to_add, operation_mode)
+            added, removed = self._calculate_diff(original_tags, final_tags)
 
-            try:
-                live_tags = self._calculate_final_tags(
-                    self._get_current_tags(page), tags_to_add, operation_mode
-                )
-                self._ensure_has_topic_tag(live_tags, topic_codes)
-
-                draft_tags = None
-                if page.has_unpublished_changes:
-                    draft_current = self._get_draft_tags(page)
-                    draft_tags = self._calculate_final_tags(
-                        draft_current, tags_to_add, operation_mode
-                    )
-                    self._ensure_has_topic_tag(draft_tags, topic_codes)
-
-                self._save_tags(page, live_tags, draft_tags, request.user)
-                modified += 1
-            except ValidationError as e:
-                errors[page.id] = " ".join(e.messages)
-                failed += 1
-                logger.error(
-                    f"Validation error adding tags to page ID {page.id}: {errors[page.id]}"
-                )
-            except Exception as e:
-                errors[page.id] = str(e)
-                failed += 1
-                logger.error(f"Error adding tags to page ID {page.id}: {e}")
-
-        page_ids = [item["item"].id for item in items]
-        fresh_pages = Page.objects.filter(id__in=page_ids).specific()
-        fresh_items = []
-        for page in fresh_pages:
-            fresh_items.append(
+            changes.append(
                 {
-                    "item": page,
-                    "tags": self._get_current_tags(page),
-                    "status": "error" if page.id in errors else "updated",
-                    "error": errors.get(page.id),
+                    "page_id": page.id,
+                    "page_title": page.title,
+                    "original_tags": json.loads(json.dumps(original_tags)),
+                    "final_tags": final_tags,
+                    "tags_added": added,
+                    "tags_removed": removed,
+                    "operation_mode": operation_mode,
+                    "had_changes": bool(added or removed),
                 }
             )
 
-        ctx.update(
-            {
-                "items": fresh_items,
-                "num_modified": modified,
-                "num_failed": failed,
-                "operation_mode": operation_mode,
-                "next_url": self.next_url,
-            }
-        )
-        return render(request, self.result_template, ctx)
-
-    def _on_preview(self, request, ctx):
-        items = ctx.get("items", [])
-        tags_to_add = json.loads(request.POST.get("tags_to_add", "[]"))
-        operation_mode = request.POST.get("tag_operation_mode", "merge")
-        ctx["items"] = self._calculate_changes(items, tags_to_add, operation_mode)
-        return render(request, self.template_name, ctx)
-
-    def _calculate_changes(self, pages, tags_to_add=[], operation_mode="merge"):
-        return_items = []
-        for page in pages:
-            item = page["item"]
-            result = self._get_tags_with_status(item, tags_to_add, operation_mode)
-
-            return_items.append(
-                {
-                    "item": item,
-                    "tags": result["tags"],
-                    "draft_page_tags": page.get("draft_page_tags", []),
-                    "added_count": result["added_count"],
-                    "removed_count": result["removed_count"],
-                    "has_changes": result["has_changes"],
-                }
-            )
-
-        return return_items
-
-    def _calculate_final_tags(self, current_tags, tags_to_add, operation_mode):
-        if operation_mode == "replace":
-            return tags_to_add
-        else:  # merge
-            existing_codes = {t["code"] for t in current_tags}
-            return current_tags + [
-                t for t in tags_to_add if t["code"] not in existing_codes
-            ]
-
-    def _get_tags_with_status(self, page, tags, operation_mode="merge"):
-        current_tags = self._get_current_tags(page)
-        if tags is None:
-            return {
-                "tags": [{**tag, "status": "unchanged"} for tag in current_tags],
-                "added_count": 0,
-                "removed_count": 0,
-                "has_changes": False,
-            }
-
-        if operation_mode == "replace":
-            new_tags = tags
-        else:
-            existing_codes = {t["code"] for t in current_tags}
-            new_tags = current_tags + [
-                t for t in tags if t["code"] not in existing_codes
-            ]
-
-        current_codes = {t["code"] for t in current_tags}
-        new_codes = {t["code"] for t in new_tags}
-        tags_with_status = []
-
-        for tag in new_tags:
-            tags_with_status.append(
-                {
-                    **tag,
-                    "status": (
-                        "added" if tag["code"] not in current_codes else "unchanged"
-                    ),
-                }
-            )
-
-        for tag in current_tags:
-            if tag["code"] not in new_codes:
-                tags_with_status.append({**tag, "status": "removed"})
-
-        added_count = len([t for t in tags_with_status if t["status"] == "added"])
-        removed_count = len([t for t in tags_with_status if t["status"] == "removed"])
-
-        return {
-            "tags": tags_with_status,
-            "added_count": added_count,
-            "removed_count": removed_count,
-            "has_changes": added_count > 0 or removed_count > 0,
-        }
+        return changes
