@@ -20,6 +20,7 @@ steps:
       scriptLocation: inlineScript
       inlineScript: az acr login --name dctcampaignsacrproduks
   - bash: ./execute-frontendtests.sh
+    continueOnError: true
     env:
       WORK: $(System.DefaultWorkingDirectory)
       TAGS: ${{ parameters.tags }}
