@@ -364,6 +364,24 @@ class UserAdminForm(forms.Form):
         if self.initial["job_title"] == "education":
             self.initial["education_role"] = job_title
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if not self.all_fields_editable:
+            return cleaned_data
+
+        job_title = cleaned_data.get("job_title")
+        health_role = cleaned_data.get("health_role")
+        education_role = cleaned_data.get("education_role")
+
+        if job_title == "health" and not health_role:
+            self.add_error("health_role", "Select a health role")
+
+        if job_title == "education" and not education_role:
+            self.add_error("education_role", "Select an education role")
+
+        return cleaned_data
+
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
