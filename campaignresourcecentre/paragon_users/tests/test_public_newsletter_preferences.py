@@ -18,8 +18,8 @@ def _mock_user_profile(subscriptions=None):
     }
 
 
-class NewsletterPreferenceCentreViewTestCase(TestCase):
-    """Tests for the public newsletter preference centre accessed via email link."""
+class PublicNewsletterPreferencesViewTestCase(TestCase):
+    """Tests for the public newsletter preferences accessed via email link."""
 
     URL = "/newsletter-preferences/"
 
@@ -36,14 +36,14 @@ class NewsletterPreferenceCentreViewTestCase(TestCase):
 
     def _post_with_preference(self, **extra):
         return self.client.post(
-            self.URL,
-            {"userToken": "valid-token", "AllAges": "on", **extra},
+            f"{self.URL}?userToken=valid-token",
+            {"AllAges": "on", **extra},
         )
 
     def test_missing_token_returns_404(self):
         response = self.client.get(self.URL)
         self.assertEqual(response.status_code, 404)
-        self.assertTemplateUsed(response, "users/preference_centre_not_found.html")
+        self.assertTemplateUsed(response, "users/public_preferences_not_found.html")
 
     def test_invalid_token_returns_404(self):
         patch.object(
@@ -56,7 +56,7 @@ class NewsletterPreferenceCentreViewTestCase(TestCase):
     def test_get_renders_preference_form(self):
         response = self.client.get(self.URL, {"userToken": "valid-token"})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "users/newsletter_preference_centre.html")
+        self.assertTemplateUsed(response, "users/public_newsletter_preferences.html")
         self.assertIn("form", response.context)
 
     def test_get_populates_form_from_api(self):
@@ -84,8 +84,7 @@ class NewsletterPreferenceCentreViewTestCase(TestCase):
 
     def test_post_unsubscribe_all_shows_unsubscribed_page(self):
         response = self.client.post(
-            self.URL,
-            {"userToken": "valid-token"},
+            f"{self.URL}?userToken=valid-token",
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/confirmation_unsubscribed.html")
@@ -99,5 +98,5 @@ class NewsletterPreferenceCentreViewTestCase(TestCase):
 
         response = self._post_with_preference()
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "users/newsletter_preference_centre.html")
+        self.assertTemplateUsed(response, "users/public_newsletter_preferences.html")
         self.assertTrue(response.context["form"].errors)

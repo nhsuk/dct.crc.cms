@@ -28,7 +28,6 @@
                 <p>Choose what topics you would like to receive emails about and be first to find out about new resources.</p>
 
                 {% csrf_token %}
-                <input type="hidden" name="userToken" value="{{ user_token }}">
 
                 {% include "users/includes/_newsletter_form_fields.html" %}
 

@@ -27,7 +27,7 @@ from campaignresourcecentre.paragon_users.views import (
     resend_verification,
     NewslettersView,
     NewsletterRegisteringView,
-    NewsletterPreferenceCentreView,
+    PublicNewsletterPreferencesView,
     EmailUpdatesView,
 )
 from campaignresourcecentre.baskets import views as basket_views
@@ -88,8 +88,8 @@ private_urlpatterns = [
     ),
     path(
         "newsletter-preferences/",
-        NewsletterPreferenceCentreView.as_view(),
-        name="newsletter_preference_centre",
+        PublicNewsletterPreferencesView.as_view(),
+        name="public_newsletter_preferences",
     ),
     path(
         "newsletters/",

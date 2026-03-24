@@ -668,18 +668,22 @@ class NewsletterRegisteringView(NewslettersView):
         )
 
 
-class NewsletterPreferenceCentreView(NewslettersView):
-    """Preference centre for users arriving via email links"""
+class PublicNewsletterPreferencesView(NewslettersView):
+    """Newsletter preferences for public users arriving via email links"""
 
     def dispatch(self, request, *args, **kwargs):
-        self.user_token = request.GET.get("userToken") or request.POST.get("userToken")
+        self.user_token = request.GET.get("userToken")
         if not self.user_token:
-            return render(request, "users/preference_centre_not_found.html", status=404)
+            return render(
+                request, "users/public_preferences_not_found.html", status=404
+            )
 
         try:
             self.paragon_client.get_user_profile(self.user_token)
         except ParagonClientError:
-            return render(request, "users/preference_centre_not_found.html", status=404)
+            return render(
+                request, "users/public_preferences_not_found.html", status=404
+            )
 
         return super(NewslettersView, self).dispatch(request, *args, **kwargs)
 
@@ -702,10 +706,9 @@ class NewsletterPreferenceCentreView(NewslettersView):
     def render_preferences(self, request, newsletter_form):
         return render(
             request,
-            "users/newsletter_preference_centre.html",
+            "users/public_newsletter_preferences.html",
             {
                 "form": newsletter_form,
-                "user_token": self.user_token,
                 "schoolzone": FeatureFlags.for_request(request).sz_email_variant,
                 "schoolzone_data_group": (
                     "schoolzone-year-groups"
