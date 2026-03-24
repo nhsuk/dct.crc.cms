@@ -75,6 +75,13 @@ class NewsletterPreferenceCentreViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/confirmation_newsletters.html")
 
+    def test_confirmation_back_link_includes_user_token(self):
+        response = self._post_with_preference()
+        self.assertEqual(
+            response.context["back_link"],
+            "/newsletter-preferences/?userToken=valid-token",
+        )
+
     def test_post_unsubscribe_all_shows_unsubscribed_page(self):
         response = self.client.post(
             self.URL,

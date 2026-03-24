@@ -622,7 +622,10 @@ class NewslettersView(View):
         return render(
             request,
             "users/confirmation_newsletters.html",
-            {"preferences": newsletters_cleaned},
+            {
+                "preferences": newsletters_cleaned,
+                "back_link": "/account/newsletters/",
+            },
         )
 
     def render_preferences(self, request, newsletter_form):
@@ -692,8 +695,7 @@ class NewsletterPreferenceCentreView(NewslettersView):
             "users/confirmation_newsletters.html",
             {
                 "preferences": newsletters_cleaned,
-                "back_link": "/",
-                "back_link_text": "Go back to Home",
+                "back_link": f"/newsletter-preferences/?userToken={self.user_token}",
             },
         )
 
