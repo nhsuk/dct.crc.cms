@@ -457,6 +457,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
+                "data-js-only": "true",
                 "onclick": "SelectAll(this,'ages')",
             }
         ),
@@ -530,6 +531,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
+                "data-js-only": "true",
                 "onclick": "SelectAll(this,'themes')",
             }
         ),
@@ -627,6 +629,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
+                "data-js-only": "true",
                 "onclick": "SelectAll(this,'subjects')",
             }
         ),
