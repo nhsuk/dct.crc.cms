@@ -675,7 +675,7 @@ class NewsletterPreferenceCentreView(NewslettersView):
 
         try:
             self.paragon_client.get_user_profile(self.user_token)
-        except (ParagonClientError, ParagonClientTimeout):
+        except ParagonClientError:
             return render(request, "users/preference_centre_not_found.html", status=404)
 
         return super(NewslettersView, self).dispatch(request, *args, **kwargs)
