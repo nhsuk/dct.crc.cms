@@ -568,9 +568,12 @@ def user_profile(request):
 class NewslettersView(View):
     paragon_client = Client()
 
+    def get_user_token(self, request):
+        return request.session.get("ParagonUser") or request.session.get("registration")
+
     def get(self, request):
         client_user = self.paragon_client.get_user_profile(
-            request.session.get("ParagonUser") or request.session.get("registration")
+            self.get_user_token(request)
         )["content"]
 
         newsletters = deserialise(client_user["ProductRegistrationVar7"])
@@ -596,8 +599,7 @@ class NewslettersView(View):
 
             try:
                 self.paragon_client.update_user_profile(
-                    user_token=request.session.get("ParagonUser")
-                    or request.session.get("registration"),
+                    user_token=self.get_user_token(request),
                     subscriptions=serialised_newsletters,
                 )
 
@@ -675,6 +677,55 @@ class NewsletterRegisteringView(NewslettersView):
             request,
             "users/newsletter_preferences_registration.html",
             {"form": newsletter_form},
+        )
+
+
+class NewsletterPreferenceCentreView(NewslettersView):
+    """Preference centre for users arriving via email links"""
+
+    def dispatch(self, request, *args, **kwargs):
+        self.user_token = request.GET.get("userToken") or request.POST.get("userToken")
+        if not self.user_token:
+            return render(request, "users/preference_centre_not_found.html", status=404)
+
+        try:
+            self.paragon_client.get_user_profile(self.user_token)
+        except (ParagonClientError, ParagonClientTimeout):
+            return render(request, "users/preference_centre_not_found.html", status=404)
+
+        return super(NewslettersView, self).dispatch(request, *args, **kwargs)
+
+    def get_user_token(self, request):
+        return self.user_token
+
+    def render_confirmation(self, request, newsletters_cleaned):
+        if not newsletters_cleaned:
+            return render(request, "users/confirmation_unsubscribed.html")
+
+        return render(
+            request,
+            "users/confirmation_newsletters.html",
+            {
+                "preferences": newsletters_cleaned,
+                "back_link": "/",
+                "back_link_text": "Go back to Home",
+            },
+        )
+
+    def render_preferences(self, request, newsletter_form):
+        return render(
+            request,
+            "users/newsletter_preference_centre.html",
+            {
+                "form": newsletter_form,
+                "user_token": self.user_token,
+                "schoolzone": FeatureFlags.for_request(request).sz_email_variant,
+                "schoolzone_data_group": (
+                    "schoolzone-year-groups"
+                    if FeatureFlags.for_request(request).sz_email_year_groups
+                    else "schoolzone"
+                ),
+            },
         )
 
 
