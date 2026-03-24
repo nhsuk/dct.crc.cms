@@ -5,6 +5,43 @@ from django.core.exceptions import ValidationError
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
+from campaignresourcecentre.wagtailreacttaxonomy.models import (
+    TaxonomyTerms,
+    get_crc_taxonomy,
+)
+
+
+class GetCrcTaxonomyValidationTestCase(TestCase):
+    """Test get_crc_taxonomy() validation errors."""
+
+    @classmethod
+    def setUpTestData(cls):
+        PrepareTestData()
+
+    def test_raises_validation_error_when_taxonomy_terms_are_missing(self):
+        TaxonomyTerms.objects.filter(taxonomy_id="crc_taxonomy").delete()
+
+        with self.assertRaises(ValidationError) as context:
+            get_crc_taxonomy()
+
+        self.assertIn(
+            'no "taxonomy terms" for this id: "crc_taxonomy"',
+            str(context.exception).lower(),
+        )
+
+    def test_raises_validation_error_when_terms_json_is_invalid(self):
+        taxonomy = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
+        TaxonomyTerms.objects.filter(pk=taxonomy.pk).update(
+            terms_json='{"broken_json":'
+        )
+
+        with self.assertRaises(ValidationError) as context:
+            get_crc_taxonomy()
+
+        self.assertIn(
+            '"taxonomy terms" json wrong format',
+            str(context.exception).lower(),
+        )
 
 
 class TaxonomyMixinValidationTestCase(TestCase):
@@ -99,8 +136,6 @@ class TaxonomyMixinValidationTestCase(TestCase):
 
     def test_clean_validates_topic_vocabulary_exists(self):
         """clean() should raise ValidationError if TOPIC vocabulary is missing from taxonomy."""
-        from campaignresourcecentre.wagtailreacttaxonomy.models import TaxonomyTerms
-
         current_taxonomy = TaxonomyTerms.objects.get(taxonomy_id="crc_taxonomy")
         original_terms = current_taxonomy.terms_json
 

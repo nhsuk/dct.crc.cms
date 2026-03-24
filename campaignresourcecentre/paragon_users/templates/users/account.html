@@ -22,18 +22,7 @@
 <div class="govuk-width-container govuk-!-padding-bottom-7">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third side-bar">
-                <p><strong>Manage your account</strong></p>
-                <nav class="side-nav" aria-label="Account menu">
-                    <ul>
-                        <li><a href=".">Account details</a></li>
-                        <li><a href="newsletters">Newsletter preferences</a></li>
-                        {% if show_order_history %}
-                        <li><a href="orders">Order history</a></li>
-                        {% endif %}
-                        <li><a href="/password-reset">Reset your password</a></li>
-                        <li><a href="/logout">Sign out</a></li>
-                    </ul>
-                </nav>
+                {% include "users/includes/manage_account_sidebar.html" %}
             </div>
             <div class="govuk-grid-column-two-thirds tablet-view">
                 <h1 class="govuk-heading-xl">Account details</h1>
@@ -48,7 +37,7 @@
                     </div>
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            Job title
+                            Job function
                         </dt>
                         <dd class="govuk-summary-list__value">
                             {{job_title}}

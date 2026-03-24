@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('images', '0005_alter_rendition_file'),
+        ("images", "0005_alter_rendition_file"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customimage',
-            name='description',
-            field=models.CharField(blank=True, default='', max_length=255, verbose_name='description'),
+            model_name="customimage",
+            name="description",
+            field=models.CharField(
+                blank=True, default="", max_length=255, verbose_name="description"
+            ),
         ),
     ]

@@ -117,6 +117,7 @@ stages:
               scanners: misconfig,vuln,secret
               options: --tf-vars terraform/src/common/tests/test.tfvars
               publish: true
+            enabled: false # Disabled due to ongoing security incident: https://nhs.sharepoint.com/sites/X26_EngineeringCOE/SitePages/Tech-Radar-iac-scanning.aspx
 
           - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
             displayName: Initialise

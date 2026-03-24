@@ -12,6 +12,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.utils.urlpatterns import decorate_urlpatterns
 
 from campaignresourcecentre.search import views as search_views
+from campaignresourcecentre.core.tag_management import views as tag_management_views
 from campaignresourcecentre.users import admin_views as user_admin_views
 from campaignresourcecentre.utils.cache import get_default_cache_control_decorator
 from campaignresourcecentre.paragon_users.views import (
@@ -66,6 +67,11 @@ private_urlpatterns = [
     ),
     path("crc-admin/search_orphans/", search_orphans, name="search_orphans"),
     path("crc-admin/manage_files/", manage_files, name="manage_files"),
+    path(
+        "crc-admin/api/tag-management/set-topic-tags-from-csv/",
+        tag_management_views.set_topic_tags_from_csv,
+        name="set_topic_tags_from_csv",
+    ),
     path("crc-admin/", include(wagtailadmin_urls)),
     path("crc-admin/pub", publish_pages, name="publish_pages"),
     path("crc-documents/", include(wagtaildocs_urls)),

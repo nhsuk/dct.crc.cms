@@ -11,7 +11,7 @@ steps:
     displayName: Docker Build (dctcampaignsacrproduks)
     inputs:
       dockerfile: $(Build.SourcesDirectory)/Dockerfile
-      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms 
+      repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms
       command: build
       arguments: '--build-arg BUILD_ENV="production"'
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
@@ -25,6 +25,7 @@ steps:
       junitTemplate="@$(which trivy | sed 's/bin/local\/share/')/templates/junit.tpl"
       trivy image --severity HIGH,CRITICAL --format template --template $junitTemplate -o trivy-scan.xml --scanners vuln dctcampaignsacrproduks.azurecr.io/dct/crc-cms:${{ parameters.tag }}
     displayName: 'Run Trivy Scan'
+    enabled: false # Disabled due to ongoing security incident: https://nhs.sharepoint.com/sites/X26_EngineeringCOE/SitePages/Tech-Radar-iac-scanning.aspx
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: "Publish Scan Results"
@@ -32,6 +33,7 @@ steps:
       testResultsFiles: "**/trivy-scan.xml"
       testRunTitle: "${{ parameters.tag }} image scan"
       failTaskOnFailedTests: true
+    enabled: false # Disabled due to ongoing security incident: https://nhs.sharepoint.com/sites/X26_EngineeringCOE/SitePages/Tech-Radar-iac-scanning.aspx
   - task: AzureCLI@2
     displayName: Docker Login (dctcampaignsacrproduks)
     inputs:
@@ -51,5 +53,5 @@ steps:
       repository: dctcampaignsacrproduks.azurecr.io/dct/crc-cms
       command: push
       tags: ${{ parameters.tag }},$(Build.SourceVersion)
-  
+
 

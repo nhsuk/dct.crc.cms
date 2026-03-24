@@ -1,6 +1,5 @@
 import json
 from uuid import uuid4
-from unittest import skip, skipIf
 
 from django.contrib import admin
 from django.contrib.messages import get_messages
@@ -14,7 +13,6 @@ from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from .models import ResourcePage, ResourceItem
 from .admin import ResourcePageAdmin, ResourceItemAdmin
-from datetime import datetime
 
 
 class TestResourceSkusProperty(TestCase):
@@ -315,8 +313,52 @@ class TestResourcePageProperties(AdminTestCase):
         result = self.resource_page.all_taxonomy_tags
         self.assertIsInstance(result, str)
 
+    def test_topics_returns_topic_labels(self):
+        self.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "EATING", "label": "Eating well"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
+        )
+        result = self.resource_page.topics
+        self.assertIn("Eating well", result)
+
+    def test_target_audience_returns_labels(self):
+        self.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "EATING", "label": "Eating well"},
+                {"code": "ADULTS", "label": "Adults"},
+            ]
+        )
+        result = self.resource_page.target_audience
+        self.assertIn("Adults", result)
+
+    def test_all_taxonomy_tags_includes_multiple_categories(self):
+        self.resource_page.taxonomy_json = json.dumps(
+            [
+                {"code": "CANCER", "label": "Cancer"},
+                {"code": "ADULTS", "label": "Adults"},
+                {"code": "ARABIC", "label": "Arabic"},
+            ]
+        )
+        result = self.resource_page.all_taxonomy_tags
+        self.assertIn("Cancer", result)
+        self.assertIn("Adults", result)
+        self.assertIn("Arabic", result)
+
     def test_objecttype(self):
         self.assertEqual(self.resource_page.objecttype(), "resource")
+
+    def test_load_data_force_refreshes_taxonomy_data(self):
+        from campaignresourcecentre.core.templatetags import json_lookup
+
+        json_lookup._load_data()
+        original_data = json_lookup.data
+
+        # Force reload should fetch fresh data
+        json_lookup._load_data(force_refresh=True)
+        self.assertEqual(json_lookup.data, original_data)
+        self.assertIsNot(json_lookup.data, original_data)
 
 
 class TestRemoveTopicFilterTagRegression(TestCase):
