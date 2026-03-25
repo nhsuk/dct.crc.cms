@@ -87,9 +87,12 @@
 
 {% endif %}
 
-<div class="govuk-form-group govuk-!-margin-bottom-0 js-only">
-    <h2 class="govuk-!-font-size-24">Want to unsubscribe?</h2>
-    <p>If you no longer wish to receive any newsletter emails, you can unsubscribe from all.</p>
-    <button type="button" class="govuk-button secondary-button" id="unsubscribe-all"
-        onclick="UnsubscribeFromAll()">Unsubscribe from all emails</button>
+<div class="govuk-form-group">
+    <button class="govuk-button primary-button" data-module="govuk-button">Save preferences</button>
+</div>
+
+<div class="govuk-!-padding-bottom-7">
+    <h2 class="govuk-!-font-size-24">Stop receiving emails</h2>
+    <p>You will still receive essential messages about your account and the service.</p>
+    <button type="submit" name="unsubscribe_all" class="govuk-button govuk-button--secondary" id="unsubscribe-all" onclick="UnsubscribeFromAll()">Unsubscribe from all emails</button>
 </div>
