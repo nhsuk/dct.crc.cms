@@ -26,15 +26,9 @@
             {% include "users/includes/manage_account_sidebar.html" %}
         </div>
         <div class="govuk-grid-column-two-thirds tablet-view">
-            <form method="POST" class="form-group" novalidate id="preferences">
-                <h1 class="govuk-heading-xl">Newsletter preferences</h1>
-                <p>Choose what topics you would like to receive emails about and be first to find out about new resources.</p>
 
-                {% csrf_token %}
+            {% include "users/includes/_newsletter_form_fields.html" %}
 
-                {% include "users/includes/_newsletter_form_fields.html" %}
-
-            </form>
         </div>
     </div>
 </div>

@@ -1,6 +1,12 @@
 {% load dict_lookup %}
 
-<div class="govuk-form-group">
+<form method="POST" class="form-group" novalidate id="preferences">
+    <h1 class="govuk-heading-xl">Newsletter preferences</h1>
+    <p>Choose what topics you would like to receive emails about and be first to find out about new resources.</p>
+
+    {% csrf_token %}
+
+    <div class="govuk-form-group">
     <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h2 class="govuk-!-font-size-24">What age groups do you work with?</h2>
@@ -96,3 +102,4 @@
     <p>You will still receive essential messages about your account and the service.</p>
     <button type="submit" name="unsubscribe_all" class="govuk-button govuk-button--secondary" id="unsubscribe-all" onclick="UnsubscribeFromAll()">Unsubscribe from all emails</button>
 </div>
+</form>
