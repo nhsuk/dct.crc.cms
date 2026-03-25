@@ -85,9 +85,29 @@ class PublicNewsletterPreferencesViewTestCase(TestCase):
     def test_post_unsubscribe_all_shows_unsubscribed_page(self):
         response = self.client.post(
             f"{self.URL}?userToken=valid-token",
+            {"unsubscribe_all": ""},
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/confirmation_unsubscribed.html")
+
+    def test_unsubscribe_all_back_link_includes_user_token(self):
+        response = self.client.post(
+            f"{self.URL}?userToken=valid-token",
+            {"unsubscribe_all": ""},
+        )
+        self.assertEqual(
+            response.context["back_link"],
+            "/newsletter-preferences/?userToken=valid-token",
+        )
+
+    def test_unsubscribe_all_sends_all_false_to_api(self):
+        self.client.post(
+            f"{self.URL}?userToken=valid-token",
+            {"unsubscribe_all": ""},
+        )
+        call_kwargs = self.mock_update.call_args[1]
+        # All preferences should be "0" (False)
+        self.assertTrue(all(c == "0" for c in call_kwargs["subscriptions"]))
 
     def test_post_api_error_redisplays_form_with_errors(self):
         patch.object(
