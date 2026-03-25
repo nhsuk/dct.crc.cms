@@ -165,6 +165,19 @@
                             {{ form.email }}
                         </div>
 
+                        <div class="govuk-form-group {% if form.confirm_email.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.confirm_email.id_for_label }}">Confirm email</label>
+                            {% if form.confirm_email.errors %}
+                                <p id="confirm_email-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.confirm_email.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.confirm_email }}
+                        </div>
+
                         <div class="govuk-form-group {% if form.password.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
                             <label class="govuk-label" for="{{ form.password.id_for_label }}">Password</label>
                             {% if form.password.errors %}

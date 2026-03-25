@@ -67,6 +67,8 @@ EDUCATION_CHOICES = (
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
 ENTER_EMAIL = "Enter your email address"
+CONFIRM_EMAIL = "Confirm email"
+EMAIL_MISMATCH = "Email addresses must match"
 ENTER_PASSWORD = "Enter your password"
 
 DESELECTALL_AGES = "DeselectAllOption(this,'Ages')"
@@ -230,6 +232,20 @@ class RegisterForm(forms.Form):
         error_messages={"required": ENTER_EMAIL},
     )
 
+    confirm_email = forms.EmailField(
+        max_length=100,
+        widget=forms.EmailInput(
+            attrs={
+                "class": "govuk-input govuk-!-width-two-thirds",
+                "autocomplete": "email",
+                "aria-describedby": "confirm_email-error",
+                "aria-required": "true",
+            }
+        ),
+        validators=[EmailValidator],
+        error_messages={"required": CONFIRM_EMAIL},
+    )
+
     password = forms.CharField(
         max_length=100,
         widget=forms.PasswordInput(
@@ -255,11 +271,22 @@ class RegisterForm(forms.Form):
         required=True,
     )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        confirm_email = cleaned_data.get("confirm_email")
+
+        if email and confirm_email and email.lower() != confirm_email.lower():
+            self.add_error("email", EMAIL_MISMATCH)
+            self.add_error("confirm_email", EMAIL_MISMATCH)
+
+        return cleaned_data
+
     class Meta:
         fields = [
             "email",
+            "confirm_email",
             "password",
-            "email",
             "first_name",
             "last_name",
             "organisation",
