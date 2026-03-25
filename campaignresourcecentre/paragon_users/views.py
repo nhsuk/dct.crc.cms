@@ -571,7 +571,10 @@ class NewslettersView(View):
         return self.render_preferences(request, newsletter_form)
 
     def post(self, request):
-        newsletter_form = NewsLetterPreferencesForm(request.POST)
+        if "unsubscribe_all" in request.POST:
+            newsletter_form = NewsLetterPreferencesForm({})
+        else:
+            newsletter_form = NewsLetterPreferencesForm(request.POST)
         if newsletter_form.is_valid():
             newsletters_form = dict(newsletter_form.cleaned_data)
 
@@ -619,6 +622,9 @@ class NewslettersView(View):
             return self.render_preferences(request, newsletter_form)
 
     def render_confirmation(self, request, newsletters_cleaned):
+        if not newsletters_cleaned:
+            return self.render_unsubscribed(request)
+
         return render(
             request,
             "users/confirmation_newsletters.html",
@@ -626,6 +632,13 @@ class NewslettersView(View):
                 "preferences": newsletters_cleaned,
                 "back_link": "/account/newsletters/",
             },
+        )
+
+    def render_unsubscribed(self, request):
+        return render(
+            request,
+            "users/confirmation_unsubscribed.html",
+            {"back_link": "/account/newsletters/"},
         )
 
     def render_preferences(self, request, newsletter_form):
@@ -692,7 +705,7 @@ class PublicNewsletterPreferencesView(NewslettersView):
 
     def render_confirmation(self, request, newsletters_cleaned):
         if not newsletters_cleaned:
-            return render(request, "users/confirmation_unsubscribed.html")
+            return self.render_unsubscribed(request)
 
         return render(
             request,
@@ -701,6 +714,13 @@ class PublicNewsletterPreferencesView(NewslettersView):
                 "preferences": newsletters_cleaned,
                 "back_link": f"/newsletter-preferences/?userToken={self.user_token}",
             },
+        )
+
+    def render_unsubscribed(self, request):
+        return render(
+            request,
+            "users/confirmation_unsubscribed.html",
+            {"back_link": f"/newsletter-preferences/?userToken={self.user_token}"},
         )
 
     def render_preferences(self, request, newsletter_form):
