@@ -242,7 +242,6 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[EmailValidator],
         error_messages={"required": CONFIRM_EMAIL},
     )
 
