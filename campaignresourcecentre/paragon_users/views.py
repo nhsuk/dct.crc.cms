@@ -571,10 +571,7 @@ class NewslettersView(View):
         return self.render_preferences(request, newsletter_form)
 
     def post(self, request):
-        if "unsubscribe_all" in request.POST:
-            newsletter_form = NewsLetterPreferencesForm({})
-        else:
-            newsletter_form = NewsLetterPreferencesForm(request.POST)
+        newsletter_form = NewsLetterPreferencesForm(request.POST)
         if newsletter_form.is_valid():
             newsletters_form = dict(newsletter_form.cleaned_data)
 
