@@ -276,7 +276,6 @@ class RegisterForm(forms.Form):
         confirm_email = cleaned_data.get("confirm_email")
 
         if email and confirm_email and email.lower() != confirm_email.lower():
-            self.add_error("email", EMAIL_MISMATCH)
             self.add_error("confirm_email", EMAIL_MISMATCH)
 
         return cleaned_data
