@@ -1,0 +1,32 @@
+<script>
+    function GetGroup(group) {
+        return document.querySelectorAll(`input[data-group="${group}"]`);
+    }
+    function SelectAll(source, group) {
+        const checkboxes = GetGroup(group);
+        checkboxes.forEach((checkbox) => {
+            if (checkbox !== source) {
+                checkbox.checked = source.checked;
+            }
+        });
+    }
+    function DeselectAllOption(source, group) {
+        const selectAllCheckbox = document.querySelector(`input[name="All${group}"]`);
+        if (!source.checked && selectAllCheckbox.checked) {
+            selectAllCheckbox.checked = false;
+            return;
+        }
+        const allboxes = GetGroup(group.toLowerCase());
+        const allchecked = Array.from(allboxes).slice(1).every(
+            (box) => box.name === source.name || box.checked
+        );
+        if (allchecked) {
+            selectAllCheckbox.checked = true;
+        }
+    }
+    function UnsubscribeFromAll() {
+        document.querySelectorAll('#preferences input[type="checkbox"]').forEach((checkbox) => {
+            checkbox.checked = false;
+        });
+    }
+</script>

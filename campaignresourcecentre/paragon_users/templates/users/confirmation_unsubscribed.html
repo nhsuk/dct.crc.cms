@@ -1,5 +1,5 @@
 {% extends "base_page.html" %}
-{% block title %}Updated newsletter preferences{% endblock %}
+{% block title %}Unsubscribed from all emails{% endblock %}
 
 
 {% block breadcrumbs %}
@@ -23,25 +23,14 @@
     <div class="govuk-width-container">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">Your newsletter preferences have been updated</h1>
+                <h1 class="govuk-heading-xl">You have been unsubscribed from all emails</h1>
 
-                {% if preferences|length >= 1  %} 
-                    <p><strong>You've said you would like to hear about:</strong></p>
+                <p>You will no longer receive any newsletter emails from us.</p>
 
-                    <div class="rich-text">
-                        <ul class="govuk-!-padding-bottom-5">
-                            {% for  value in preferences %}
-                                <li>{{ value}}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% else %}
-                    <p>You have no newsletter preferences selected.</p>
-                {% endif %}
+                <p>If you change your mind, you can update your preferences at any time from your account.</p>
 
                 <p class="form-link govuk-!-margin-bottom-7"><a href="{{ back_link }}">Go back to newsletter preferences</a></p>
             </div>
         </div>
     </div>
-
 {% endblock %}

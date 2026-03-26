@@ -26,6 +26,14 @@ html {
     border: 0;
   }
 
+.js-only {
+    display: none;
+}
+
+.js-enabled .js-only {
+    display: block;
+}
+
 body {
     overflow-x: hidden;
     background-color: $white;

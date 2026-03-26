@@ -1,0 +1,38 @@
+{% extends "base_page.html" %}
+{% block title %}Page not found{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-width-container govuk-!-padding-bottom-7">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="error-content">
+                    <h1 class="govuk-heading-xl">Page not found</h1>
+
+                    <p>We could not find the page you were looking for.</p>
+
+                    <p>Please check the link in your email and try again. If the problem persists, the link may have expired.</p>
+
+                    <p class="form-link govuk-!-margin-bottom-7"><a href="/">Go back to Home</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
