@@ -63,17 +63,17 @@ class NewsletterPreferencesViewTestCase(TestCase):
         response = self.client.post(self.URL, {"AllAges": "on"})
         self.assertEqual(response.context["back_link"], "/account/newsletters/")
 
-    def test_post_unsubscribe_all_shows_unsubscribed_page(self):
-        response = self.client.post(self.URL, {"unsubscribe_all": ""})
+    def test_post_with_no_preferences_shows_unsubscribed_page(self):
+        response = self.client.post(self.URL, {})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/confirmation_unsubscribed.html")
 
-    def test_unsubscribe_all_back_link_points_to_account(self):
-        response = self.client.post(self.URL, {"unsubscribe_all": ""})
+    def test_unsubscribe_back_link_points_to_account(self):
+        response = self.client.post(self.URL, {})
         self.assertEqual(response.context["back_link"], "/account/newsletters/")
 
-    def test_unsubscribe_all_sends_all_false_to_api(self):
-        self.client.post(self.URL, {"unsubscribe_all": ""})
+    def test_post_with_no_preferences_sends_all_false_to_api(self):
+        self.client.post(self.URL, {})
         call_kwargs = self.mock_update.call_args[1]
         # All preferences should be "0" (False)
         self.assertTrue(all(c == "0" for c in call_kwargs["subscriptions"]))
