@@ -67,7 +67,6 @@ EDUCATION_CHOICES = (
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
 ENTER_EMAIL = "Enter your email address"
-CONFIRM_EMAIL = "Confirm email"
 EMAIL_MISMATCH = "Email addresses must match"
 ENTER_PASSWORD = "Enter your password"
 
@@ -242,7 +241,7 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        error_messages={"required": CONFIRM_EMAIL},
+        error_messages={"required": EMAIL_MISMATCH},
     )
 
     password = forms.CharField(
