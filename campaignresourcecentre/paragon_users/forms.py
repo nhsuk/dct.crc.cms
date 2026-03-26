@@ -231,7 +231,7 @@ class RegisterForm(forms.Form):
         error_messages={"required": ENTER_EMAIL},
     )
 
-    confirm_email = forms.EmailField(
+    confirm_email = forms.CharField(
         max_length=100,
         widget=forms.EmailInput(
             attrs={
