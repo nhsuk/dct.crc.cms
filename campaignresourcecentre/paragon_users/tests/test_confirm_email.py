@@ -36,20 +36,19 @@ class ConfirmEmailValidationTestCase(TestCase):
         )
         self.assertFalse(form.is_valid())
 
-    def test_mismatched_emails_adds_error_to_both_fields(self, _mock_postcode):
+    def test_mismatched_emails_adds_error_to_confirm_email(self, _mock_postcode):
         form = RegisterForm(
             self.get_valid_form_data(confirm_email="different@example.com")
         )
         form.is_valid()
-        self.assertIn("email", form.errors)
         self.assertIn("confirm_email", form.errors)
+        self.assertNotIn("email", form.errors)
 
     def test_mismatched_emails_error_message(self, _mock_postcode):
         form = RegisterForm(
             self.get_valid_form_data(confirm_email="different@example.com")
         )
         form.is_valid()
-        self.assertIn("Email addresses must match", form.errors["email"])
         self.assertIn("Email addresses must match", form.errors["confirm_email"])
 
     def test_missing_confirm_email_is_invalid(self, _mock_postcode):
