@@ -1,5 +1,4 @@
 from django import forms
-from django.core.validators import EmailValidator, RegexValidator
 
 JOB_CHOICES = (
     ("", "Select a job function"),
@@ -148,10 +147,10 @@ class ContactUsForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        default_validators=[
-            EmailValidator(message="Enter an email address in the correct format")
-        ],
-        error_messages={"required": "Enter your email address"},
+        error_messages={
+            "required": "Enter your email address",
+            "invalid": "Enter an email address in the correct format",
+        },
     )
 
     healthy_behaviour = forms.CharField(
