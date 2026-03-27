@@ -161,6 +161,11 @@
                                         {% endif %}
                                     {% endfor %}
                                 </p>
+                            {% elif form.confirm_email.errors %}
+                                <p id="email-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    Email addresses must match
+                                </p>
                             {% endif %}
                             {{ form.email }}
                         </div>
