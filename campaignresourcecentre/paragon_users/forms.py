@@ -227,7 +227,7 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[EmailValidator(message=INVALID_EMAIL)],
+        default_validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
 
@@ -393,7 +393,7 @@ class LoginForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator(message=INVALID_EMAIL)],
+        default_validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
 
@@ -418,7 +418,7 @@ class PasswordResetForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator(message=INVALID_EMAIL)],
+        default_validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
 

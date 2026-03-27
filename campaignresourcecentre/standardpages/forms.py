@@ -148,7 +148,7 @@ class ContactUsForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[
+        default_validators=[
             EmailValidator(message="Enter an email address in the correct format")
         ],
         error_messages={"required": "Enter your email address"},

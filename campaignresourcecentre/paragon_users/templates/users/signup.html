@@ -30,13 +30,13 @@
                                 {% for field in form %}
                                     {% for error in field.errors %}
                                         <li>
-                                            <a href="#{{field.id_for_label}}">{{error}}</a>
+                                            <a href="#{{field.id_for_label}}">{{ error }}</a>
                                         </li>
                                     {% endfor %}
                                 {% endfor %}
                                 {% for error in form.non_field_errors %}
                                     <li>
-                                        <a href="#signin">{{error}}</a>
+                                        <a href="#signin">{{ error }}</a>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -63,7 +63,7 @@
                                 <p id="first_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.first_name.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -76,7 +76,7 @@
                                 <p id="last_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.last_name.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -89,7 +89,7 @@
                                 <p id="job_title-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.job_title.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -102,7 +102,7 @@
                                 <p id="health_role-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.health_role.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -115,7 +115,7 @@
                                 <p id="education_role-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.education_role.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -128,7 +128,7 @@
                                 <p id="organisation_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.organisation.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -141,7 +141,7 @@
                                 <p id="postcode-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.postcode.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -154,7 +154,7 @@
                                 <p id="email-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.email.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                         {% if error == "Account for this email address already exists" %}
                                             <div class="govuk-hint"><a href="/login">Sign in</a> with this email address or register with a different email address</div>
                                             <div class="govuk-hint">If you're trying to update your details or contact preferences please go to the account area <a href="/account">here</a></div>
@@ -171,7 +171,7 @@
                                 <p id="password-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.password.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -191,7 +191,7 @@
                                     <p id="terms-error" class="govuk-error-message">
                                         <span class="govuk-visually-hidden">Error:</span>
                                         {% for error in form.terms.errors %}
-                                            {{ error}}
+                                            {{ error }}
                                         {% endfor %}
                                     </p>
                                 {% endif %}
