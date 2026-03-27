@@ -67,6 +67,7 @@ EDUCATION_CHOICES = (
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
 ENTER_EMAIL = "Enter your email address"
+INVALID_EMAIL = "Enter a valid email address"
 ENTER_PASSWORD = "Enter your password"
 
 DESELECTALL_AGES = "DeselectAllOption(this,'Ages')"
@@ -226,7 +227,8 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[EmailValidator],
+        # Custom error message is same as default without the trailing full stop
+        validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
 
@@ -392,7 +394,7 @@ class LoginForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator],
+        validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
 
@@ -417,7 +419,7 @@ class PasswordResetForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator],
+        validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
 
