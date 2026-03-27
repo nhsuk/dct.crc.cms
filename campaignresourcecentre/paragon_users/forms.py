@@ -227,7 +227,6 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        # Custom error message is same as default without the trailing full stop
         validators=[EmailValidator(message=INVALID_EMAIL)],
         error_messages={"required": ENTER_EMAIL},
     )
