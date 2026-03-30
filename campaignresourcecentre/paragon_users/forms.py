@@ -3,7 +3,7 @@ import re
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import EmailValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.utils.regex_helper import _lazy_re_compile
 
 from campaignresourcecentre.paragon_users.helpers.postcodes import (
@@ -67,6 +67,7 @@ EDUCATION_CHOICES = (
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
 ENTER_EMAIL = "Enter your email address"
+INVALID_EMAIL = "Enter a valid email address"
 EMAIL_MISMATCH = "Email addresses must match"
 ENTER_PASSWORD = "Enter your password"
 
@@ -227,8 +228,10 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[EmailValidator],
-        error_messages={"required": ENTER_EMAIL},
+        error_messages={
+            "required": ENTER_EMAIL,
+            "invalid": INVALID_EMAIL,
+        },
     )
 
     confirm_email = forms.CharField(
@@ -416,8 +419,10 @@ class LoginForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator],
-        error_messages={"required": ENTER_EMAIL},
+        error_messages={
+            "required": ENTER_EMAIL,
+            "invalid": INVALID_EMAIL,
+        },
     )
 
     password = forms.CharField(
@@ -441,8 +446,10 @@ class PasswordResetForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator],
-        error_messages={"required": ENTER_EMAIL},
+        error_messages={
+            "required": ENTER_EMAIL,
+            "invalid": INVALID_EMAIL,
+        },
     )
 
 
