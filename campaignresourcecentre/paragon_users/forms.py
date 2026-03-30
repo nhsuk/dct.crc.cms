@@ -244,7 +244,7 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        error_messages={"required": EMAIL_MISMATCH},
+        error_messages={"required": ENTER_EMAIL},
     )
 
     password = forms.CharField(

@@ -63,7 +63,7 @@ class ConfirmEmailValidationTestCase(TestCase):
         del data["confirm_email"]
         form = RegisterForm(data)
         form.is_valid()
-        self.assertIn("Email addresses must match", form.errors["confirm_email"])
+        self.assertIn("Enter your email address", form.errors["confirm_email"])
 
     def test_case_insensitive_email_match(self, _mock_postcode):
         form = RegisterForm(
