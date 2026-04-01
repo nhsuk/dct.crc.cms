@@ -4,7 +4,11 @@ import json
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from campaignresourcecentre.campaigns.models import Topic
+from campaignresourcecentre.campaigns.models import (
+    CampaignPage,
+    Topic,
+    count_pages_with_topic,
+)
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from campaignresourcecentre.wagtailreacttaxonomy.models import load_campaign_topics
 
@@ -71,52 +75,6 @@ class TopicShowInFilterTest(TestCase):
         self.assertEqual(len(taxonomy[0]["children"]), 18)
 
 
-class TopicDeletionRemovesTagsTest(TestCase):
-    """Deleting a Topic removes its tag from every campaign and resource page."""
-
-    def setUp(self):
-        test_data = PrepareTestData()
-        self.campaign_page = test_data.campaign_page
-        self.resource_page = test_data.resource_page
-
-        self.topic = Topic.objects.create(name="Test Topic", code="TESTTOPIC")
-
-        taxonomy_json = json.dumps(
-            [
-                {"code": "TESTTOPIC", "label": "Test Topic"},
-                {"code": "MENTALHEALTH", "label": "Mental health"},
-            ],
-        )
-        self.campaign_page.taxonomy_json = taxonomy_json
-        self.campaign_page.save(update_fields=["taxonomy_json"])
-        self.resource_page.taxonomy_json = taxonomy_json
-        self.resource_page.save(update_fields=["taxonomy_json"])
-
-    def test_deleting_topic_removes_tag_from_campaign_page(self):
-        self.topic.delete()
-        self.campaign_page.refresh_from_db()
-        tags = json.loads(self.campaign_page.taxonomy_json)
-        self.assertEqual(tags, [{"code": "MENTALHEALTH", "label": "Mental health"}])
-
-    def test_deleting_topic_removes_tag_from_resource_page(self):
-        self.topic.delete()
-        self.resource_page.refresh_from_db()
-        tags = json.loads(self.resource_page.taxonomy_json)
-        self.assertEqual(tags, [{"code": "MENTALHEALTH", "label": "Mental health"}])
-
-    def test_deleting_topic_creates_revision_on_campaign_page(self):
-        revisions_before = self.campaign_page.revisions.count()
-        self.topic.delete()
-        revisions_after = self.campaign_page.revisions.count()
-        self.assertGreater(revisions_after, revisions_before)
-
-    def test_deleting_topic_creates_revision_on_resource_page(self):
-        revisions_before = self.resource_page.revisions.count()
-        self.topic.delete()
-        revisions_after = self.resource_page.revisions.count()
-        self.assertGreater(revisions_after, revisions_before)
-
-
 class TopicValidationTest(TestCase):
     """Topic name and code are required and whitespace-only values are rejected."""
 
@@ -153,3 +111,38 @@ class TopicValidationTest(TestCase):
         topic.full_clean()
         self.assertEqual(topic.name, "Padded")
         self.assertEqual(topic.code, "PAD")
+
+
+class CountPagesWithTopicTest(TestCase):
+    """count_pages_with_topic handles both Python and JavaScript JSON formats."""
+
+    def setUp(self):
+        test_data = PrepareTestData()
+        self.campaign_page = test_data.campaign_page
+        self.resource_page = test_data.resource_page
+
+    def test_matches_json_with_spaces(self):
+        """Seeded data uses json.dumps (spaces after colons) and is matched."""
+        campaigns, resources = count_pages_with_topic("EATING")
+        self.assertEqual(campaigns, 1)
+        self.assertEqual(resources, 1)
+
+    def test_matches_json_without_spaces(self):
+        """JSON without spaces after colons (e.g. from JavaScript) is also matched."""
+        CampaignPage.objects.filter(pk=self.campaign_page.pk).update(
+            taxonomy_json='[{"code":"EATING","label":"Eating well"}]',
+        )
+        campaigns, resources = count_pages_with_topic("EATING")
+        self.assertEqual(campaigns, 1)
+        self.assertEqual(resources, 1)
+
+    def test_returns_zero_when_not_tagged(self):
+        campaigns, resources = count_pages_with_topic("NONEXISTENT")
+        self.assertEqual(campaigns, 0)
+        self.assertEqual(resources, 0)
+
+    def test_does_not_partial_match_code(self):
+        """'EAT' must not match a page tagged with 'EATING'."""
+        campaigns, resources = count_pages_with_topic("EAT")
+        self.assertEqual(campaigns, 0)
+        self.assertEqual(resources, 0)
