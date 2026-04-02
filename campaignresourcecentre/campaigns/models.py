@@ -388,6 +388,23 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def objecttype(self):
         return "campaign"
 
+    @property
+    def all_taxonomy_tags(self):
+        return ", ".join(term["label"] for term in self.taxonomy if term.get("label"))
+
+    @property
+    def parent_campaign_chain(self):
+        """
+        Returns the full parent campaign chain for a campaign.
+        Format: "Campaign > Sub Campaign"
+        """
+        campaigns = [
+            page.title
+            for page in self.get_ancestors()
+            if isinstance(page.specific, CampaignPage)
+        ]
+        return " > ".join(campaigns)
+
     def get_sub_campaigns(self):
         """Get the sub-campaigns (child pages of the campaign) for display in
         the template."""
