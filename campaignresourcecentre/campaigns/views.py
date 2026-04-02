@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from wagtail_modeladmin.views import DeleteView
@@ -58,16 +57,4 @@ class TopicDeleteView(DeleteView):
                 % {"campaigns": campaigns, "resources": resources},
             )
             return redirect(self.index_url)
-        try:
-            return super().post(request, *args, **kwargs)
-        except ValidationError as e:
-            if "Please select at least one topic tag" in str(e):
-                messages.error(
-                    request,
-                    _(
-                        "Cannot delete this topic. Some pages would be left with "
-                        "no topic tags. Please reassign their topics first."
-                    ),
-                )
-                return redirect(self.index_url)
-            raise
+        return super().post(request, *args, **kwargs)

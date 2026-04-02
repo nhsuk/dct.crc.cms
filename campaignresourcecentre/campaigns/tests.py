@@ -1,14 +1,16 @@
 import importlib
 import json
+from unittest.mock import MagicMock, patch
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
 from campaignresourcecentre.campaigns.models import (
     CampaignPage,
     Topic,
     count_pages_with_topic,
 )
+from campaignresourcecentre.campaigns.views import TopicDeleteView
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from campaignresourcecentre.wagtailreacttaxonomy.models import load_campaign_topics
 
@@ -146,3 +148,80 @@ class CountPagesWithTopicTest(TestCase):
         campaigns, resources = count_pages_with_topic("EAT")
         self.assertEqual(campaigns, 0)
         self.assertEqual(resources, 0)
+
+
+class TopicDeleteViewConfirmationMessageTest(TestCase):
+    """confirmation_message returns a blocking or permissive message based on usage."""
+
+    def _make_view(self, code="TEST"):
+        view = TopicDeleteView.__new__(TopicDeleteView)
+        view.instance = Topic(name="Test", code=code)
+        view.verbose_name = "topic"
+        return view
+
+    @patch(
+        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
+        return_value=(2, 3),
+    )
+    def test_in_use_blocks_deletion_and_passes_correct_code(self, mock_count):
+        msg = self._make_view(code="EATING").confirmation_message()
+        mock_count.assert_called_once_with("EATING")
+        self.assertIn("2 campaign page(s)", msg)
+        self.assertIn("3 resource page(s)", msg)
+        self.assertIn("Please remove", msg)
+        self.assertNotIn("Are you sure you want to delete", msg)
+
+    @patch(
+        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
+        return_value=(0, 0),
+    )
+    def test_unused_permits_deletion_and_passes_correct_code(self, mock_count):
+        msg = self._make_view(code="UNUSED").confirmation_message()
+        mock_count.assert_called_once_with("UNUSED")
+        self.assertIn("0 campaign page(s)", msg)
+        self.assertIn("0 resource page(s)", msg)
+        self.assertIn("Are you sure you want to delete", msg)
+        self.assertNotIn("Please remove", msg)
+
+
+class TopicDeleteViewPostTest(TestCase):
+    """post() blocks deletion when pages are tagged, allows it otherwise."""
+
+    def _make_view(self):
+        view = TopicDeleteView.__new__(TopicDeleteView)
+        view.instance = Topic(name="Test", code="TEST")
+        view.index_url = "/crc-admin/campaigns/topic/"
+        return view
+
+    def _make_request(self):
+        request = RequestFactory().post("/fake-delete/")
+        request._messages = MagicMock()
+        return request
+
+    @patch(
+        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
+        return_value=(1, 0),
+    )
+    @patch("wagtail_modeladmin.views.DeleteView.post")
+    def test_post_blocked_when_pages_tagged(self, mock_super_post, mock_count):
+        request = self._make_request()
+        response = self._make_view().post(request)
+        mock_count.assert_called_once_with("TEST")
+        mock_super_post.assert_not_called()
+        self.assertEqual(response.status_code, 302)
+        request._messages.add.assert_called_once()
+        msg = str(request._messages.add.call_args)
+        self.assertIn("Cannot delete", msg)
+        self.assertIn("1 campaign page(s)", msg)
+        self.assertIn("0 resource page(s)", msg)
+
+    @patch(
+        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
+        return_value=(0, 0),
+    )
+    @patch("wagtail_modeladmin.views.DeleteView.post")
+    def test_post_allowed_when_no_pages_tagged(self, mock_super_post, _mock):
+        mock_super_post.return_value = MagicMock(status_code=302)
+        request = self._make_request()
+        self._make_view().post(request)
+        mock_super_post.assert_called_once()
