@@ -6,11 +6,13 @@ from django.test import TestCase
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
 from campaignresourcecentre.reports.views import (
+    CampaignResourceAuditReportView,
     CampaignResourceFilterSet,
     CampaignResourceOrderableFilterSet,
     get_all_taxonomy_terms,
 )
 from campaignresourcecentre.resources.models import ResourcePage
+from wagtail.models import Page
 
 
 class TestCampaignResourceFilterSet(TestCase):
@@ -110,6 +112,68 @@ class TestCampaignResourceFilterSet(TestCase):
         )
 
         self.assertIn(nested_resource, result)
+        self.assertIn(self.resource_page, result)
+
+    def test_queryset_includes_both_campaigns_and_resources(self):
+        view = CampaignResourceAuditReportView()
+        qs = view.get_queryset()
+        self.assertIn(self.campaign_page, qs)
+        self.assertIn(self.resource_page, qs)
+
+    def test_campaigns_appear_before_resources(self):
+        view = CampaignResourceAuditReportView()
+        qs = list(view.get_queryset())
+        campaign_idx = qs.index(self.campaign_page)
+        resource_idx = qs.index(self.resource_page)
+        self.assertLess(campaign_idx, resource_idx)
+
+    def test_campaign_all_taxonomy_tags(self):
+        self.campaign_page.taxonomy_json = json.dumps(
+            [
+                {"code": "EATING", "label": "Eating well"},
+                {"code": "PHYSACT", "label": "Physical activity"},
+            ]
+        )
+        self.campaign_page.save()
+        self.assertEqual(
+            self.campaign_page.all_taxonomy_tags,
+            "Eating well, Physical activity",
+        )
+
+    def test_campaign_parent_campaign_chain_empty_for_top_level(self):
+        self.assertEqual(self.campaign_page.parent_campaign_chain, "")
+
+    def test_campaign_parent_campaign_chain_for_nested(self):
+        sub_campaign = CampaignPage(
+            title="Sub Campaign",
+            summary="Summary",
+            description="Description",
+            image=self.campaign_page.image,
+            taxonomy_json=json.dumps([{"code": "EATING", "label": "Eating well"}]),
+        )
+        self.campaign_page.add_child(instance=sub_campaign)
+        sub_campaign.save_revision().publish()
+        self.assertEqual(sub_campaign.parent_campaign_chain, "Change4Life")
+
+    def test_filter_page_type_with_no_value(self):
+        filterset = CampaignResourceFilterSet()
+        base_qs = Page.objects.type(CampaignPage, ResourcePage).specific()
+        result = filterset.filter_page_type(base_qs, "page_type", "")
+        self.assertIn(self.campaign_page, result)
+        self.assertIn(self.resource_page, result)
+
+    def test_filter_page_type_campaign(self):
+        filterset = CampaignResourceFilterSet()
+        base_qs = Page.objects.type(CampaignPage, ResourcePage).specific()
+        result = filterset.filter_page_type(base_qs, "page_type", "campaign")
+        self.assertIn(self.campaign_page, result)
+        self.assertNotIn(self.resource_page, result)
+
+    def test_filter_page_type_resource(self):
+        filterset = CampaignResourceFilterSet()
+        base_qs = Page.objects.type(CampaignPage, ResourcePage).specific()
+        result = filterset.filter_page_type(base_qs, "page_type", "resource")
+        self.assertNotIn(self.campaign_page, result)
         self.assertIn(self.resource_page, result)
 
 

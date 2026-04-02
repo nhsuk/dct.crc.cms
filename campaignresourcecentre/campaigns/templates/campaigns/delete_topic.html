@@ -1,0 +1,51 @@
+{% extends "modeladmin/delete.html" %}
+{% load i18n wagtailadmin_tags %}
+
+{% block content_main %}
+    <div class="nice-padding">
+        {% if protected_error %}
+            {{ block.super }}
+        {% else %}
+            <p>{{ view.confirmation_message }}</p>
+
+            {% if tagged_pages %}
+                <table class="listing">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Title" %}</th>
+                            <th>{% trans "Type" %}</th>
+                            <th>{% trans "Topic tags" %}</th>
+                            <th>{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in tagged_pages %}
+                            <tr>
+                                <td>
+                                    <div class="title-wrapper">
+                                        <a href="{% url 'wagtailadmin_pages:edit' item.page.id %}" target="_blank" rel="noreferrer noopener">{{ item.page.title }}</a>
+                                    </div>
+                                </td>
+                                <td>{{ item.page_type }}</td>
+                                <td>{{ item.topic_tags }}</td>
+                                <td>
+                                    {% include 'wagtailadmin/shared/page_status_tag.html' with page=item.page %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            <form action="{{ view.delete_url }}" method="POST">
+                {% csrf_token %}
+                {% if tagged_pages %}
+                    <a href="{{ view.index_url }}" class="button">{% trans "Go back to listing" %}</a>
+                {% else %}
+                    <input type="submit" value="{% trans 'Yes, delete' %}" class="button serious" />
+                    <a href="{{ view.index_url }}" class="button button-secondary">{% trans "No, don't delete" %}</a>
+                {% endif %}
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
