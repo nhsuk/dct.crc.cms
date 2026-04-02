@@ -23,7 +23,7 @@ def get_all_taxonomy_terms():
 
 class CampaignResourceFilterSet(WagtailFilterSet):
     page_type = django_filters.ChoiceFilter(
-        label="Resource type",
+        label="Type",
         choices=[("campaign", "Campaign"), ("resource", "Resource")],
         method="filter_page_type",
     )
