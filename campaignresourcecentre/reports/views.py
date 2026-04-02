@@ -3,6 +3,7 @@ from django.forms import CheckboxSelectMultiple
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.views.reports import ReportView
+from wagtail.models import Page
 
 from campaignresourcecentre.campaigns.models import CampaignPage
 from campaignresourcecentre.resources.models import ResourcePage
@@ -21,6 +22,12 @@ def get_all_taxonomy_terms():
 
 
 class CampaignResourceFilterSet(WagtailFilterSet):
+    page_type = django_filters.ChoiceFilter(
+        label="Type",
+        choices=[("campaign", "Campaign"), ("resource", "Resource")],
+        method="filter_page_type",
+    )
+
     campaign = django_filters.ModelMultipleChoiceFilter(
         label="Campaign",
         queryset=CampaignPage.objects.all().order_by("title"),
@@ -36,8 +43,18 @@ class CampaignResourceFilterSet(WagtailFilterSet):
     )
 
     class Meta:
-        model = ResourcePage
-        fields = ["campaign", "taxonomy"]
+        model = Page
+        fields = ["page_type", "campaign", "taxonomy"]
+
+    def filter_page_type(self, queryset, name, value):
+        """Filter by page type (campaign or resource)."""
+        if not value:
+            return queryset
+        if value == "campaign":
+            return queryset.type(CampaignPage)
+        if value == "resource":
+            return queryset.type(ResourcePage)
+        return queryset
 
     def filter_campaign(self, queryset, name, value):
         """Filter resources that are children of the selected campaigns."""
@@ -95,7 +112,11 @@ class CampaignResourceAuditReportView(ReportView):
     list_export = list(export_headings.keys())
 
     def get_queryset(self):
-        return ResourcePage.objects.all()
+        return (
+            Page.objects.type(CampaignPage, ResourcePage)
+            .order_by("content_type", "title")
+            .specific()
+        )
 
 
 class CampaignResourceOrderableFilterSet(WagtailFilterSet):
