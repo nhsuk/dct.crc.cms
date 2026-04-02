@@ -5,8 +5,9 @@ from wagtail_modeladmin.views import DeleteView
 
 from campaignresourcecentre.campaigns.models import (
     CampaignHubPage as campaign,
-    count_pages_with_topic,
+    pages_with_topic,
 )
+from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 from django.views.decorators.http import require_http_methods
 
 
@@ -25,8 +26,12 @@ def render_topic(request):
 class TopicDeleteView(DeleteView):
     """Custom delete confirmation that shows how many pages are affected."""
 
+    def get_template_names(self):
+        return ["campaigns/delete_topic.html"]
+
     def confirmation_message(self):
-        campaigns, resources = count_pages_with_topic(self.instance.code)
+        campaign_qs, resource_qs = pages_with_topic(self.instance.code)
+        campaigns, resources = campaign_qs.count(), resource_qs.count()
         if campaigns or resources:
             return _(
                 "This topic is tagged on %(campaigns)d campaign page(s) "
@@ -43,8 +48,30 @@ class TopicDeleteView(DeleteView):
             "verbose_name": self.verbose_name,
         }
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        campaign_pages, resource_pages = pages_with_topic(self.instance.code)
+        tagged_pages = [
+            {
+                "page": p,
+                "page_type": "Campaign",
+                "topic_tags": get_taxonomies(p.taxonomy, "TOPIC"),
+            }
+            for p in campaign_pages
+        ] + [
+            {
+                "page": p,
+                "page_type": "Resource",
+                "topic_tags": get_taxonomies(p.taxonomy, "TOPIC"),
+            }
+            for p in resource_pages
+        ]
+        context["tagged_pages"] = tagged_pages
+        return context
+
     def post(self, request, *args, **kwargs):
-        campaigns, resources = count_pages_with_topic(self.instance.code)
+        campaign_qs, resource_qs = pages_with_topic(self.instance.code)
+        campaigns, resources = campaign_qs.count(), resource_qs.count()
         if campaigns or resources:
             messages.error(
                 request,

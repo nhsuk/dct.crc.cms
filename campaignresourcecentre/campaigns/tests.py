@@ -8,7 +8,7 @@ from django.test import TestCase, RequestFactory
 from campaignresourcecentre.campaigns.models import (
     CampaignPage,
     Topic,
-    count_pages_with_topic,
+    pages_with_topic,
 )
 from campaignresourcecentre.campaigns.views import TopicDeleteView
 from campaignresourcecentre.core.preparetestdata import PrepareTestData
@@ -115,8 +115,8 @@ class TopicValidationTest(TestCase):
         self.assertEqual(topic.code, "PAD")
 
 
-class CountPagesWithTopicTest(TestCase):
-    """count_pages_with_topic handles both Python and JavaScript JSON formats."""
+class PagesWithTopicTest(TestCase):
+    """pages_with_topic handles both Python and JavaScript JSON formats."""
 
     def setUp(self):
         test_data = PrepareTestData()
@@ -125,71 +125,101 @@ class CountPagesWithTopicTest(TestCase):
 
     def test_matches_json_with_spaces(self):
         """Seeded data uses json.dumps (spaces after colons) and is matched."""
-        campaigns, resources = count_pages_with_topic("EATING")
-        self.assertEqual(campaigns, 1)
-        self.assertEqual(resources, 1)
+        campaign_qs, resource_qs = pages_with_topic("EATING")
+        self.assertEqual(campaign_qs.count(), 1)
+        self.assertEqual(resource_qs.count(), 1)
 
     def test_matches_json_without_spaces(self):
         """JSON without spaces after colons (e.g. from JavaScript) is also matched."""
         CampaignPage.objects.filter(pk=self.campaign_page.pk).update(
             taxonomy_json='[{"code":"EATING","label":"Eating well"}]',
         )
-        campaigns, resources = count_pages_with_topic("EATING")
-        self.assertEqual(campaigns, 1)
-        self.assertEqual(resources, 1)
+        campaign_qs, resource_qs = pages_with_topic("EATING")
+        self.assertEqual(campaign_qs.count(), 1)
+        self.assertEqual(resource_qs.count(), 1)
 
     def test_returns_zero_when_not_tagged(self):
-        campaigns, resources = count_pages_with_topic("NONEXISTENT")
-        self.assertEqual(campaigns, 0)
-        self.assertEqual(resources, 0)
+        campaign_qs, resource_qs = pages_with_topic("NONEXISTENT")
+        self.assertEqual(campaign_qs.count(), 0)
+        self.assertEqual(resource_qs.count(), 0)
 
     def test_does_not_partial_match_code(self):
         """'EAT' must not match a page tagged with 'EATING'."""
-        campaigns, resources = count_pages_with_topic("EAT")
-        self.assertEqual(campaigns, 0)
-        self.assertEqual(resources, 0)
+        campaign_qs, resource_qs = pages_with_topic("EAT")
+        self.assertEqual(campaign_qs.count(), 0)
+        self.assertEqual(resource_qs.count(), 0)
+
+    def test_returns_matching_page_objects(self):
+        campaign_qs, resource_qs = pages_with_topic("EATING")
+        self.assertIn(self.campaign_page, campaign_qs)
+        self.assertIn(self.resource_page, resource_qs)
 
 
 class TopicDeleteViewConfirmationMessageTest(TestCase):
     """confirmation_message returns a blocking or permissive message based on usage."""
 
-    def _make_view(self, code="TEST"):
+    def setUp(self):
+        PrepareTestData()
+
+    def _make_view(self, code):
         view = TopicDeleteView.__new__(TopicDeleteView)
         view.instance = Topic(name="Test", code=code)
         view.verbose_name = "topic"
         return view
 
-    @patch(
-        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
-        return_value=(2, 3),
-    )
-    def test_in_use_blocks_deletion_and_passes_correct_code(self, mock_count):
+    def test_in_use_blocks_deletion(self):
         msg = self._make_view(code="EATING").confirmation_message()
-        mock_count.assert_called_once_with("EATING")
-        self.assertIn("2 campaign page(s)", msg)
-        self.assertIn("3 resource page(s)", msg)
+        self.assertIn("1 campaign page(s)", msg)
+        self.assertIn("1 resource page(s)", msg)
         self.assertIn("Please remove", msg)
         self.assertNotIn("Are you sure you want to delete", msg)
 
-    @patch(
-        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
-        return_value=(0, 0),
-    )
-    def test_unused_permits_deletion_and_passes_correct_code(self, mock_count):
-        msg = self._make_view(code="UNUSED").confirmation_message()
-        mock_count.assert_called_once_with("UNUSED")
+    def test_unused_permits_deletion(self):
+        msg = self._make_view(code="NONEXISTENT").confirmation_message()
         self.assertIn("0 campaign page(s)", msg)
         self.assertIn("0 resource page(s)", msg)
         self.assertIn("Are you sure you want to delete", msg)
         self.assertNotIn("Please remove", msg)
 
 
+class TopicDeleteViewTemplateTest(TestCase):
+    """get_template_names returns the custom delete template."""
+
+    def test_uses_custom_template(self):
+        view = TopicDeleteView.__new__(TopicDeleteView)
+        self.assertEqual(view.get_template_names(), ["campaigns/delete_topic.html"])
+
+
+class TopicDeleteViewContextTest(TestCase):
+    def setUp(self):
+        test_data = PrepareTestData()
+        self.campaign_page = test_data.campaign_page
+        self.resource_page = test_data.resource_page
+
+    @patch("wagtail_modeladmin.views.DeleteView.get_context_data")
+    def test_context_includes_tagged_pages(self, mock_super_ctx):
+        mock_super_ctx.return_value = {}
+        view = TopicDeleteView.__new__(TopicDeleteView)
+        view.instance = Topic(name="Test", code="EATING")
+
+        context = view.get_context_data()
+
+        self.assertEqual(len(context["tagged_pages"]), 2)
+        self.assertEqual(context["tagged_pages"][0]["page"], self.campaign_page)
+        self.assertEqual(context["tagged_pages"][0]["page_type"], "Campaign")
+        self.assertEqual(context["tagged_pages"][1]["page"], self.resource_page)
+        self.assertEqual(context["tagged_pages"][1]["page_type"], "Resource")
+
+
 class TopicDeleteViewPostTest(TestCase):
     """post() blocks deletion when pages are tagged, allows it otherwise."""
 
-    def _make_view(self):
+    def setUp(self):
+        PrepareTestData()
+
+    def _make_view(self, code):
         view = TopicDeleteView.__new__(TopicDeleteView)
-        view.instance = Topic(name="Test", code="TEST")
+        view.instance = Topic(name="Test", code=code)
         view.index_url = "/crc-admin/campaigns/topic/"
         return view
 
@@ -198,30 +228,21 @@ class TopicDeleteViewPostTest(TestCase):
         request._messages = MagicMock()
         return request
 
-    @patch(
-        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
-        return_value=(1, 0),
-    )
     @patch("wagtail_modeladmin.views.DeleteView.post")
-    def test_post_blocked_when_pages_tagged(self, mock_super_post, mock_count):
+    def test_post_blocked_when_pages_tagged(self, mock_super_post):
         request = self._make_request()
-        response = self._make_view().post(request)
-        mock_count.assert_called_once_with("TEST")
+        response = self._make_view(code="EATING").post(request)
         mock_super_post.assert_not_called()
         self.assertEqual(response.status_code, 302)
         request._messages.add.assert_called_once()
         msg = str(request._messages.add.call_args)
         self.assertIn("Cannot delete", msg)
         self.assertIn("1 campaign page(s)", msg)
-        self.assertIn("0 resource page(s)", msg)
+        self.assertIn("1 resource page(s)", msg)
 
-    @patch(
-        "campaignresourcecentre.campaigns.views.count_pages_with_topic",
-        return_value=(0, 0),
-    )
     @patch("wagtail_modeladmin.views.DeleteView.post")
-    def test_post_allowed_when_no_pages_tagged(self, mock_super_post, _mock):
+    def test_post_allowed_when_no_pages_tagged(self, mock_super_post):
         mock_super_post.return_value = MagicMock(status_code=302)
         request = self._make_request()
-        self._make_view().post(request)
+        self._make_view(code="NONEXISTENT").post(request)
         mock_super_post.assert_called_once()

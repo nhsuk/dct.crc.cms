@@ -75,12 +75,12 @@ def topic_code_filter(code):
     return {"taxonomy_json__iregex": rf'"code"\s*:\s*"{re.escape(code)}"'}
 
 
-def count_pages_with_topic(code):
-    """Return (campaign_count, resource_count) for pages using topic code."""
+def pages_with_topic(code):
+    """Return (campaign_qs, resource_qs) for pages using topic code."""
     filt = topic_code_filter(code)
     return (
-        CampaignPage.objects.filter(**filt).count(),
-        ResourcePage.objects.filter(**filt).count(),
+        CampaignPage.objects.filter(**filt),
+        ResourcePage.objects.filter(**filt),
     )
 
 
