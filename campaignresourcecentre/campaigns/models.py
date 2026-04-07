@@ -79,11 +79,11 @@ def topic_code_filter(code):
 
 
 def pages_with_topic(code):
-    """Return (campaign_qs, resource_qs) for pages using topic code."""
+    """Return (campaign_qs, resource_qs) for live pages using topic code."""
     filt = topic_code_filter(code)
     return (
-        CampaignPage.objects.filter(filt),
-        ResourcePage.objects.filter(filt),
+        CampaignPage.objects.live().filter(filt),
+        ResourcePage.objects.live().filter(filt),
     )
 
 
