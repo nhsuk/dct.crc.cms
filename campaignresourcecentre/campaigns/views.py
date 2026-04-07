@@ -30,8 +30,8 @@ class TopicDeleteView(DeleteView):
         return ["campaigns/delete_topic.html"]
 
     def confirmation_message(self):
-        campaign_qs, resource_qs = pages_with_topic(self.instance.code)
-        campaigns, resources = campaign_qs.count(), resource_qs.count()
+        campaign_pages, resource_pages = pages_with_topic(self.instance.code)
+        campaigns, resources = len(campaign_pages), len(resource_pages)
         if campaigns or resources:
             return _(
                 "This topic is tagged on %(campaigns)d campaign page(s) "
@@ -70,8 +70,8 @@ class TopicDeleteView(DeleteView):
         return context
 
     def post(self, request, *args, **kwargs):
-        campaign_qs, resource_qs = pages_with_topic(self.instance.code)
-        campaigns, resources = campaign_qs.count(), resource_qs.count()
+        campaign_pages, resource_pages = pages_with_topic(self.instance.code)
+        campaigns, resources = len(campaign_pages), len(resource_pages)
         if campaigns or resources:
             messages.error(
                 request,
