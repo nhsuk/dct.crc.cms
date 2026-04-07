@@ -9,6 +9,7 @@
             <p>{{ view.confirmation_message }}</p>
 
             {% if tagged_pages %}
+                <p class="help-text">{% trans "Only published pages are shown. Draft-only pages are not affected." %}</p>
                 <table class="listing">
                     <thead>
                         <tr>
