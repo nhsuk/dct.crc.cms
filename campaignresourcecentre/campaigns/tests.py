@@ -159,7 +159,7 @@ class PagesWithTopicTest(TestCase):
             [{"code": "PHYSICALACTIVITY", "label": "Physical Activity"}]
         )
         self.campaign_page.save_revision()
-        campaigns, resources = pages_with_topic("EATING")
+        campaigns, _ = pages_with_topic("EATING")
         self.assertEqual(len(campaigns), 0)
 
 
