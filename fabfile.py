@@ -246,7 +246,7 @@ def import_data(c, database_filename):
 
 
 @task
-def sync_db(c, env, storageKey):
+def sync_db(c, env):
     if env in ["staging", "integration", "review"]:
         try:
             print(f"Determining latest {env} dump to download...")
@@ -255,8 +255,7 @@ def sync_db(c, env, storageKey):
                     -c crc-v3-backups \
                     --prefix "{env}/" \
                     --account-name digitalcampaignsstorage \
-                    --account-key "{storageKey}" \
-                    --auth-mode key""",
+                    --auth-mode login""",
                 warn=True,
                 hide=True,
             )
@@ -272,8 +271,7 @@ def sync_db(c, env, storageKey):
                             -c crc-v3-backups \
                             -n {latest_blob['name']} \
                             --account-name digitalcampaignsstorage \
-                            --account-key "{storageKey}" \
-                            --auth-mode key""",
+                            --auth-mode login""",
                         warn=True,
                         hide=True,
                     )
