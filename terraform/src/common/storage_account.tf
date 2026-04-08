@@ -1,9 +1,3 @@
-import {
-  for_each = local.storage_account
-  to       = azurerm_storage_account.crc_cms[each.key]
-  id       = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Storage/storageAccounts/${each.value}"
-}
-
 resource "azurerm_storage_account" "crc_cms" {
   for_each = local.storage_account
 
@@ -26,10 +20,22 @@ resource "azurerm_storage_account" "crc_cms" {
   }
 }
 
-import {
-  for_each = local.storage_container
-  to       = azurerm_storage_container.crc_cms[each.key]
-  id       = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.Storage/storageAccounts/${each.value}/blobServices/default/containers/${each.key}"
+resource "azurerm_role_assignment" "storage_blob_contributor_pipeline_identity" {
+  for_each = azurerm_storage_account.crc_cms
+
+  principal_id         = data.azurerm_client_config.current.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = each.value.id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "storage_blob_contributor_apps_identity" {
+  for_each = azurerm_storage_account.crc_cms
+
+  principal_id         = data.azurerm_user_assigned_identity.apps.principal_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = each.value.id
+  principal_type       = "ServicePrincipal"
 }
 
 #trivy:ignore:avd-azu-0007 storage container public access is enabled as it serves the assets for the website
