@@ -20,10 +20,19 @@ resource "azurerm_storage_account" "crc_cms" {
   }
 }
 
-resource "azurerm_role_assignment" "storage_blob_contributor_pipeline_identity" {
+resource "azurerm_role_assignment" "storage_blob_contributor_app_identity" {
   for_each = azurerm_storage_account.crc_cms
 
   principal_id         = data.azurerm_client_config.current.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = each.value.id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "storage_blob_contributor_pipeline_identity" {
+  for_each = azurerm_storage_account.crc_cms
+
+  principal_id         = data.azurerm_user_assigned_identity.wagtail.principal_id
   role_definition_name = "Storage Blob Data Contributor"
   scope                = each.value.id
   principal_type       = "ServicePrincipal"

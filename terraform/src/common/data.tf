@@ -31,3 +31,8 @@ data "azurerm_cdn_frontdoor_profile" "frontdoor" { # The frontdoor profile is on
   name                = "${local.org}-${local.app}-afd-${var.env}"
   resource_group_name = replace(var.resource_group, "-ukw", "-uks")
 }
+
+data "azurerm_user_assigned_identity" "wagtail" {
+  name                = "${local.org}-${local.app}-id-${var.env}"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
