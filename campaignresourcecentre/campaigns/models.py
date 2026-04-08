@@ -72,37 +72,14 @@ def _taxonomy_contains_code(taxonomy_json, code):
 
 
 def _any_revision_has_topic(page, code):
-    """Check both live and draft revisions of the page for the topic code."""
-    if _taxonomy_contains_code(_latest_taxonomy_json(page), code):
-        return True
-
-    live_revision = getattr(page, "live_revision", None)
-    has_separate_draft = (
-        page.live
-        and live_revision
-        and live_revision.id != getattr(page.latest_revision, "id", None)
+    """Check both live and draft revisions for the topic code."""
+    latest = page.latest_revision
+    draft = (
+        latest.content.get("taxonomy_json", "") if latest else page.taxonomy_json or ""
     )
-    if has_separate_draft:
-        live_taxonomy = live_revision.content.get("taxonomy_json", "")
-        return _taxonomy_contains_code(live_taxonomy, code)
-
-    return False
-
-
-def _latest_taxonomy_json(page):
-    """Return the taxonomy_json string from the page's latest revision.
-
-    Falls back to the page table row if no revision exists.
-    """
-    revision = page.latest_revision
-    if revision:
-        return revision.content.get("taxonomy_json", "")
-    return page.taxonomy_json or ""
-
-
-def latest_taxonomy(page):
-    """Return the parsed taxonomy list from the page's latest revision."""
-    return json.loads(_latest_taxonomy_json(page) or "[]")
+    live_rev = getattr(page, "live_revision", None)
+    live = live_rev.content.get("taxonomy_json", "") if live_rev else ""
+    return _taxonomy_contains_code(draft, code) or _taxonomy_contains_code(live, code)
 
 
 def pages_with_topic(code):
