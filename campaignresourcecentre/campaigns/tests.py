@@ -125,34 +125,42 @@ class PagesWithTopicTest(TestCase):
 
     def test_matches_json_with_spaces(self):
         """Seeded data uses json.dumps (spaces after colons) and is matched."""
-        campaign_qs, resource_qs = pages_with_topic("EATING")
-        self.assertEqual(campaign_qs.count(), 1)
-        self.assertEqual(resource_qs.count(), 1)
+        campaigns, resources = pages_with_topic("EATING")
+        self.assertEqual(len(campaigns), 1)
+        self.assertEqual(len(resources), 1)
 
     def test_matches_json_without_spaces(self):
         """JSON without spaces after colons (e.g. from JavaScript) is also matched."""
-        CampaignPage.objects.filter(pk=self.campaign_page.pk).update(
-            taxonomy_json='[{"code":"EATING","label":"Eating well"}]',
-        )
-        campaign_qs, resource_qs = pages_with_topic("EATING")
-        self.assertEqual(campaign_qs.count(), 1)
-        self.assertEqual(resource_qs.count(), 1)
+        self.campaign_page.taxonomy_json = '[{"code":"EATING","label":"Eating well"}]'
+        self.campaign_page.save_revision()
+        campaigns, resources = pages_with_topic("EATING")
+        self.assertEqual(len(campaigns), 1)
+        self.assertEqual(len(resources), 1)
 
     def test_returns_zero_when_not_tagged(self):
-        campaign_qs, resource_qs = pages_with_topic("NONEXISTENT")
-        self.assertEqual(campaign_qs.count(), 0)
-        self.assertEqual(resource_qs.count(), 0)
+        campaigns, resources = pages_with_topic("NONEXISTENT")
+        self.assertEqual(len(campaigns), 0)
+        self.assertEqual(len(resources), 0)
 
     def test_does_not_partial_match_code(self):
         """'EAT' must not match a page tagged with 'EATING'."""
-        campaign_qs, resource_qs = pages_with_topic("EAT")
-        self.assertEqual(campaign_qs.count(), 0)
-        self.assertEqual(resource_qs.count(), 0)
+        campaigns, resources = pages_with_topic("EAT")
+        self.assertEqual(len(campaigns), 0)
+        self.assertEqual(len(resources), 0)
 
     def test_returns_matching_page_objects(self):
-        campaign_qs, resource_qs = pages_with_topic("EATING")
-        self.assertIn(self.campaign_page, campaign_qs)
-        self.assertIn(self.resource_page, resource_qs)
+        campaigns, resources = pages_with_topic("EATING")
+        self.assertIn(self.campaign_page, campaigns)
+        self.assertIn(self.resource_page, resources)
+
+    def test_draft_removal_excludes_page(self):
+        """When a tag is removed in a draft save, the page is excluded."""
+        self.campaign_page.taxonomy_json = json.dumps(
+            [{"code": "PHYSICALACTIVITY", "label": "Physical Activity"}]
+        )
+        self.campaign_page.save_revision()
+        campaigns, _ = pages_with_topic("EATING")
+        self.assertEqual(len(campaigns), 0)
 
 
 class TopicDeleteViewConfirmationMessageTest(TestCase):
