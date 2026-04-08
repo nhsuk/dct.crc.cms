@@ -9,12 +9,12 @@
             <p>{{ view.confirmation_message }}</p>
 
             {% if tagged_pages %}
+                <p class="help-text">{% trans "This includes pages where the topic appears on the live version or in a draft. Please check both before removing the topic." %}</p>
                 <table class="listing">
                     <thead>
                         <tr>
                             <th>{% trans "Title" %}</th>
                             <th>{% trans "Type" %}</th>
-                            <th>{% trans "Topic tags" %}</th>
                             <th>{% trans "Status" %}</th>
                         </tr>
                     </thead>
@@ -27,7 +27,6 @@
                                     </div>
                                 </td>
                                 <td>{{ item.page_type }}</td>
-                                <td>{{ item.topic_tags }}</td>
                                 <td>
                                     {% include 'wagtailadmin/shared/page_status_tag.html' with page=item.page %}
                                 </td>

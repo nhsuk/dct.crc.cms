@@ -153,8 +153,19 @@ class PagesWithTopicTest(TestCase):
         self.assertIn(self.campaign_page, campaigns)
         self.assertIn(self.resource_page, resources)
 
-    def test_draft_removal_excludes_page(self):
-        """When a tag is removed in a draft save, the page is excluded."""
+    def test_draft_removal_still_finds_live_page(self):
+        """A draft that removes a tag does not hide the live page."""
+        self.campaign_page.taxonomy_json = json.dumps(
+            [{"code": "PHYSICALACTIVITY", "label": "Physical Activity"}]
+        )
+        self.campaign_page.save_revision()
+        campaigns, _ = pages_with_topic("EATING")
+        self.assertEqual(len(campaigns), 1)
+
+    def test_draft_only_removal_excludes_page(self):
+        """A draft-only page that removes a tag is excluded."""
+        self.campaign_page.live = False
+        self.campaign_page.save()
         self.campaign_page.taxonomy_json = json.dumps(
             [{"code": "PHYSICALACTIVITY", "label": "Physical Activity"}]
         )
