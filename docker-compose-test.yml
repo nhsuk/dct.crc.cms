@@ -26,6 +26,7 @@ services:
       ADOBE_TRACKING_URL: ${ADOBE_TRACKING_URL}
       COOKIE_DECLARATION: ${COOKIE_DECLARATION}
       AZURE_SEARCH_CONTAINER: index
+      AZURE_SEARCH_ACCESS_KEY: ""
       AZURE_SEARCH_STORAGE_ACCOUNT_NAME: account_name
       AZURE_SEARCH_PREFIX: content/resource/
       AZURE_SEARCH_API_HOST: https://nhsuk-apim-dev-uks.azure-api.net/campaigns-crcv3/crcv3

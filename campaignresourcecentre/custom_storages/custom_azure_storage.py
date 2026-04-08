@@ -111,8 +111,7 @@ class AzureMediaStorage(AzureStorage):
 
 class AzureSearchStorage(AzureStorage):
     account_name = getattr(settings, "AZURE_SEARCH_STORAGE_ACCOUNT_NAME", None)
-    account_key = None
-    token_credential = DefaultAzureCredential()
+    account_key = getattr(settings, "AZURE_SEARCH_ACCESS_KEY", None)
     azure_container = getattr(settings, "AZURE_SEARCH_CONTAINER", None)
     custom_domain = None
 
