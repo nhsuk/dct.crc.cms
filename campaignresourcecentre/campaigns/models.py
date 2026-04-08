@@ -67,7 +67,11 @@ class Topic(models.Model):
 
 
 def _taxonomy_contains_code(taxonomy_json, code):
-    """Check if a taxonomy JSON string contains the given topic code."""
+    """Check if a taxonomy JSON string contains the given topic code.
+
+    Handles both python json.dumps ("code": "EATING") and
+    JavaScript JSON.stringify ("code":"EATING") whitespace variants.
+    """
     return bool(re.search(rf'"code"\s*:\s*"{re.escape(code)}"', taxonomy_json))
 
 
