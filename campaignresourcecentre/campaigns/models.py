@@ -78,12 +78,30 @@ def topic_code_filter(code):
     )
 
 
+def _revision_has_topic(page, code):
+    """Check whether a page's latest revision contains the given topic code.
+
+    The page table row only updates on publish, so we read from the
+    latest revision instead. This means both draft and published pages
+    are included only if their most recent revision still has the topic.
+    """
+    revision = page.latest_revision
+    taxonomy = (
+        revision.content.get("taxonomy_json", "")
+        if revision
+        else page.taxonomy_json or ""
+    )
+    return f'"code": "{code}"' in taxonomy or f'"code":"{code}"' in taxonomy
+
+
 def pages_with_topic(code):
-    """Return (campaign_qs, resource_qs) for pages using topic code."""
+    """Return (campaigns, resources) whose latest revision has the topic."""
     filt = topic_code_filter(code)
+    campaign_pages = CampaignPage.objects.filter(filt)
+    resource_pages = ResourcePage.objects.filter(filt)
     return (
-        CampaignPage.objects.filter(filt),
-        ResourcePage.objects.filter(filt),
+        [page for page in campaign_pages if _revision_has_topic(page, code)],
+        [page for page in resource_pages if _revision_has_topic(page, code)],
     )
 
 
