@@ -155,6 +155,10 @@ class PagesWithTopicTest(TestCase):
 
     def test_draft_removal_still_finds_live_page(self):
         """A draft that removes a tag does not hide the live page."""
+        # Publish so the page has a live_revision with EATING
+        self.campaign_page.save_revision().publish()
+        self.campaign_page.refresh_from_db()
+        # Now create a draft that removes EATING
         self.campaign_page.taxonomy_json = json.dumps(
             [{"code": "PHYSICALACTIVITY", "label": "Physical Activity"}]
         )
