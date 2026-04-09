@@ -61,12 +61,13 @@ steps:
       -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
-      -v $(pwd)/${{parameters.environment}}-db-dump.dump:/${{parameters.environment}}-db.dump \
+      -v $(pwd)/${ENVIRONMENT}-db-dump.dump:/${ENVIRONMENT}-db.dump \
       postgres:16 \
-      pg_restore --no-acl --no-owner -d "$(db-name)" ${{parameters.environment}}-db.dump
+      pg_restore --no-acl --no-owner -d "$(db-name)" ${ENVIRONMENT}-db.dump
   displayName: Copy ${{parameters.environment}} to target database
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
+    ENVIRONMENT: ${{parameters.environment}}
 
 - script: |
     set -e
