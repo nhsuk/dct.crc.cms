@@ -71,9 +71,9 @@ resource "azurerm_storage_account" "crc_cms_backups" {
 
 #trivy:ignore:avd-azu-0007 storage container public access is enabled as it serves the assets for the website
 resource "azurerm_storage_container" "crc_cms_backups" {
-  count = var.env == "dev" ? 1 : 0
+  for_each = var.env == "dev" ? ["review", "integration", "staging", "production"] : []
 
-  name                  = "backups"
+  name                  = each.value
   storage_account_id    = azurerm_storage_account.crc_cms_backups[0].id
   container_access_type = "container"
 }
