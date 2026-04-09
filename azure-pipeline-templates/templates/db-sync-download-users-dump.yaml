@@ -1,0 +1,12 @@
+steps:
+- script: |
+    set -x
+    set -e
+    docker run \
+      -e PGHOST="$(db-host)" \
+      -e PGPASSWORD="$(db-pass)" \
+      -e PGUSER="$(db-user)" \
+      postgres:16 \
+      pg_dump -Fc "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.environment}}_users-db-dump.dump
+  name: 'Create_${{parameters.environment}}_users_Copy'
+  displayName: 'Dump ${{parameters.environment}}_users (Users only)'
