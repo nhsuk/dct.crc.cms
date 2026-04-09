@@ -38,6 +38,15 @@ resource "azurerm_role_assignment" "storage_blob_contributor_apps_identity" {
   principal_type       = "ServicePrincipal"
 }
 
+resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
+  count = var.dev_identity_principal_id != null ? 1 : 0
+
+  principal_id         = var.dev_identity_principal_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = data.azurerm_storage_container.dev[0].id
+  principal_type       = "ServicePrincipal"
+}
+
 #trivy:ignore:avd-azu-0007 storage container public access is enabled as it serves the assets for the website
 resource "azurerm_storage_container" "crc_cms" {
   for_each = local.storage_container
