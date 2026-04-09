@@ -50,13 +50,13 @@ resource "azurerm_role_assignment" "storage_blob_contributor_apps_identity" {
 resource "azurerm_storage_account" "crc_cms_backups" {
   count = var.env == "dev" ? 1 : 0
 
-  name                     = "dctcrccmsbackups${var.env}${var.location}"
-  resource_group_name      = var.resource_group
-  location                 = data.azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "RAGRS"
+  name                      = "dctcrccmsbackups${var.env}${var.location}"
+  resource_group_name       = var.resource_group
+  location                  = data.azurerm_resource_group.rg.location
+  account_tier              = "Standard"
+  account_replication_type  = "RAGRS"
   shared_access_key_enabled = false
-  
+
   blob_properties {
     change_feed_enabled           = true
     change_feed_retention_in_days = 7
