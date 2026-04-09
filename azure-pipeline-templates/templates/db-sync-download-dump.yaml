@@ -1,32 +1,32 @@
 steps:
-- script: |
-    set -x
-    set -e
-    docker run \
-      -e PGHOST="$(db-host)" \
-      -e PGPASSWORD="$(db-pass)" \
-      -e PGUSER="$(db-user)" \
-      postgres:16 \
-      pg_dump -Fc "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
-  condition: ${{ eq(parameters.usersOnly, True) }}
-  name: 'Create_${{parameters.dumpPrefix}}_Copy'
-  displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
+  ${{ if eq(parameters.usersOnly, True) }}:
+    - script: |
+        set -x
+        set -e
+        docker run \
+          -e PGHOST="$(db-host)" \
+          -e PGPASSWORD="$(db-pass)" \
+          -e PGUSER="$(db-user)" \
+          postgres:16 \
+          pg_dump -Fc "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.environment}}-db-dump.dump
+      name: 'Create_${{parameters.environment}}_Copy'
+      displayName: 'Dump ${{parameters.environment}} (Users only)'
 
-- script: |
-    set -x
-    set -e
-    docker run \
-      -e PGHOST="$(db-host)" \
-      -e PGPASSWORD="$(db-pass)" \
-      -e PGUSER="$(db-user)" \
-      postgres:16 \
-      pg_dump -Fc "$(db-name)" > ${{parameters.dumpPrefix}}-db-dump.dump
-  condition: ${{ ne(parameters.usersOnly, True) }}
-  name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
-  displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
+  ${{ else }}:
+    - script: |
+        set -x
+        set -e
+        docker run \
+          -e PGHOST="$(db-host)" \
+          -e PGPASSWORD="$(db-pass)" \
+          -e PGUSER="$(db-user)" \
+          postgres:16 \
+          pg_dump -Fc "$(db-name)" > ${{parameters.environment}}-db-dump.dump
+      name: 'Create_${{parameters.environment}}_DBCopy'
+      displayName: 'Dump ${{parameters.environment}} (Full DB)'
 
 - task: PublishPipelineArtifact@1
-  condition: ${{ eq(parameters.publishDump, True) }}
+  condition: ${{ and(eq(parameters.publishFullDbDump, True), ne(parameters.usersOnly, True)) }}
   inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.dumpPrefix}}-db-dump.dump
-    artifactName: '${{parameters.dumpPrefix}}-db.dump'
+    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.environment}}-db-dump.dump
+    artifactName: '${{parameters.environment}}-db.dump'
