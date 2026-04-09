@@ -7,7 +7,6 @@ from campaignresourcecentre.campaigns.models import (
     CampaignHubPage as campaign,
     pages_with_topic,
 )
-from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 from django.views.decorators.http import require_http_methods
 
 
@@ -55,14 +54,12 @@ class TopicDeleteView(DeleteView):
             {
                 "page": p,
                 "page_type": "Campaign",
-                "topic_tags": get_taxonomies(p.taxonomy, "TOPIC"),
             }
             for p in campaign_pages
         ] + [
             {
                 "page": p,
                 "page_type": "Resource",
-                "topic_tags": get_taxonomies(p.taxonomy, "TOPIC"),
             }
             for p in resource_pages
         ]

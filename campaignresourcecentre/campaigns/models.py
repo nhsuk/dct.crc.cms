@@ -32,6 +32,7 @@ from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 
 from .blocks import CampaignDetailsBlock, CampaignsPageBlocks, CommonBlocks
 import logging
+import re
 
 HOME_PAGE_NAME = "home.HomePage"
 CAMPAIGN_PAGE_NAME = "campaigns.CampaignPage"
@@ -65,43 +66,53 @@ class Topic(models.Model):
         self.code = self.code.strip()
 
 
-def topic_code_filter(code):
+def _taxonomy_contains_code(taxonomy_json, code):
+    """Check if a taxonomy JSON string contains the given topic code.
+
+    Handles both python json.dumps ("code": "EATING") and
+    JavaScript JSON.stringify ("code":"EATING") whitespace variants.
     """
-    Handles the whitespace difference between json.dumps (Python)
-    ("code": "X") and JSON.stringify (JavaScript)
-    ("code":"X").
-    """
-    from django.db.models import Q
-
-    return Q(taxonomy_json__contains=f'"code": "{code}"') | Q(
-        taxonomy_json__contains=f'"code":"{code}"'
-    )
+    return bool(re.search(rf'"code"\s*:\s*"{re.escape(code)}"', taxonomy_json))
 
 
-def _revision_has_topic(page, code):
-    """Check whether a page's latest revision contains the given topic code.
-
-    The page table row only updates on publish, so we read from the
-    latest revision instead. This means both draft and published pages
-    are included only if their most recent revision still has the topic.
-    """
-    revision = page.latest_revision
+def _latest_draft_revision_has_topic(page, code):
+    """Check the latest (draft) revision for the topic code."""
+    latest = page.latest_revision
     taxonomy = (
-        revision.content.get("taxonomy_json", "")
-        if revision
-        else page.taxonomy_json or ""
+        latest.content.get("taxonomy_json", "") if latest else page.taxonomy_json or ""
     )
-    return f'"code": "{code}"' in taxonomy or f'"code":"{code}"' in taxonomy
+    return _taxonomy_contains_code(taxonomy, code)
+
+
+def _latest_live_revision_has_topic(page, code):
+    """Check the live (published) revision for the topic code."""
+    live_rev = getattr(page, "live_revision", None)
+    taxonomy = live_rev.content.get("taxonomy_json", "") if live_rev else ""
+    return _taxonomy_contains_code(taxonomy, code)
 
 
 def pages_with_topic(code):
-    """Return (campaigns, resources) whose latest revision has the topic."""
-    filt = topic_code_filter(code)
-    campaign_pages = CampaignPage.objects.filter(filt)
-    resource_pages = ResourcePage.objects.filter(filt)
+    """Return (campaigns, resources) where any current version has the topic."""
+    campaign_pages = CampaignPage.objects.select_related(
+        "latest_revision", "live_revision"
+    ).all()
+    resource_pages = ResourcePage.objects.select_related(
+        "latest_revision", "live_revision"
+    ).all()
+
     return (
-        [page for page in campaign_pages if _revision_has_topic(page, code)],
-        [page for page in resource_pages if _revision_has_topic(page, code)],
+        [
+            page
+            for page in campaign_pages
+            if _latest_draft_revision_has_topic(page, code)
+            or _latest_live_revision_has_topic(page, code)
+        ],
+        [
+            page
+            for page in resource_pages
+            if _latest_draft_revision_has_topic(page, code)
+            or _latest_live_revision_has_topic(page, code)
+        ],
     )
 
 
