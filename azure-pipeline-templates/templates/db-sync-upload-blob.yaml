@@ -21,14 +21,16 @@ steps:
       set -e
 
       # Rename the data dump to contain timestamp before upload
-      mv ${{parameters.environment}}-db-dump.dump db-dump-$(currentDatestamp.Datestamp).dump
+      mv $ENVIRONMENT-db-dump.dump db-dump-$(currentDatestamp.Datestamp).dump
 
       # Save a copy to azure blob storage
       az storage blob upload \
         --account-name dctcrccmsbackupsdevuks \
-        --container-name ${{parameters.environment}} \
+        --container-name $ENVIRONMENT \
         --file db-dump-$(currentDatestamp.Datestamp).dump \
         --name db-dump-$(currentDatestamp.Datestamp).dump \
         --auth-mode login
   name: BlobStorageBackup
   displayName: Backup to Blob Storage
+  env:
+    ENVIRONMENT: ${{parameters.environment}}
