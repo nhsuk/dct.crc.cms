@@ -55,6 +55,8 @@ resource "azurerm_storage_account" "crc_cms_backups" {
   location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "RAGRS"
+  shared_access_key_enabled = false
+  
   blob_properties {
     change_feed_enabled           = true
     change_feed_retention_in_days = 7
@@ -82,6 +84,15 @@ resource "azurerm_role_assignment" "backups_blob_contributor_pipeline_identity" 
   count = var.env == "dev" ? 1 : 0
 
   principal_id         = data.azurerm_client_config.current.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = azurerm_storage_account.crc_cms_backups[0].id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "backups_blob_contributor_dct_developers_identity" {
+  count = var.env == "dev" ? 1 : 0
+
+  principal_id         = "82bd8b2e-562f-4987-9dad-087c123c5de0" # dct-developers group object ID
   role_definition_name = "Storage Blob Data Contributor"
   scope                = azurerm_storage_account.crc_cms_backups[0].id
   principal_type       = "ServicePrincipal"
