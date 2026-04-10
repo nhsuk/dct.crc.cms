@@ -38,7 +38,7 @@ data "azurerm_user_assigned_identity" "apps" {
 }
 
 data "azurerm_storage_container" "dev" {
-  count              = var.dev_identity_principal_id != null ? 1 : 0
+  count              = var.env == "int" ? 1 : 0
   name               = "campaign-resouce-centre-v3-review"
   storage_account_id = azurerm_storage_account.crc_cms[var.storage.account].id
 }

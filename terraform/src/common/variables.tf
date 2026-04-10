@@ -85,12 +85,6 @@ variable "dr_deployed" {
   default     = false
 }
 
-variable "dev_identity_principal_id" {
-  type        = string
-  description = "Principal ID of the dev managed identity, used to grant blob access on int storage"
-  default     = null
-}
-
 variable "container_resources" {
   description = "Container resource management/scaling configuration"
   type = object({
