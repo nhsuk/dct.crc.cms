@@ -297,14 +297,8 @@ def sync_db(c, env):
 
 def extract_datetime_from_blob(blob_properties):
     blob_name = blob_properties["name"]
-    datetime_in_name = (
-        blob_name.replace("db-dump-", "")
-        .replace(".dump", "")
-        .replace("review/", "")
-        .replace("integration/", "")
-        .replace("staging/", "")
-    )
-    return datetime.strptime(datetime_in_name, "%d-%m-%Y_%H:%M:%S")
+    datetime_in_name = blob_name.replace("db-dump-", "").replace(".dump", "")
+    return datetime.strptime(datetime_in_name, "%d-%m-%Y_%H-%M-%S")
 
 
 def delete_local_renditions(c, local_database_name=LOCAL_DATABASE_NAME):
