@@ -56,6 +56,15 @@ resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
   principal_type       = "ServicePrincipal"
 }
 
+resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_identity" {
+  for_each = var.env == "prod" && var.location == "uks" ? local.non_prod_storage_container_ids : {}
+
+  principal_id         = data.azurerm_client_config.current.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = each.value
+  principal_type       = "ServicePrincipal"
+}
+
 resource "azurerm_storage_account" "crc_cms_backups" {
   count = var.env == "dev" ? 1 : 0
 
