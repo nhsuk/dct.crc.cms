@@ -54,6 +54,18 @@ resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
   role_definition_name = "Storage Blob Data Contributor"
   scope                = data.azurerm_storage_container.dev[0].id
   principal_type       = "ServicePrincipal"
+
+  # Requires Infra to remove lock on storage account before removing (i.e returning to default = false)
+  skip_service_principal_aad_check = true
+}
+
+resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_identity" {
+  for_each = local.non_prod_storage_container_ids
+
+  principal_id         = data.azurerm_client_config.current.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = each.value
+  principal_type       = "ServicePrincipal"
 }
 
 resource "azurerm_storage_account" "crc_cms_backups" {
