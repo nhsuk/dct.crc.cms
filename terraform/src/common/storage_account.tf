@@ -6,6 +6,7 @@ resource "azurerm_storage_account" "crc_cms" {
   location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "RAGRS"
+
   blob_properties {
     change_feed_enabled           = true
     change_feed_retention_in_days = 7
@@ -53,6 +54,18 @@ resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
   principal_id         = "84ef78f0-e0f9-4844-8d13-d1d494b7f42e" # dct-crccms-id-dev managed identity
   role_definition_name = "Storage Blob Data Contributor"
   scope                = data.azurerm_storage_container.dev[0].id
+  principal_type       = "ServicePrincipal"
+
+  # Requires Infra to remove lock on storage account before removing (i.e returning to default = false)
+  skip_service_principal_aad_check = true
+}
+
+resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_identity" {
+  for_each = data.azurerm_storage_container.non_prod
+
+  principal_id         = data.azurerm_client_config.current.object_id
+  role_definition_name = "Storage Blob Data Contributor"
+  scope                = each.value.id
   principal_type       = "ServicePrincipal"
 }
 

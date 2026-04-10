@@ -19,14 +19,6 @@ steps:
       artifactName: production.log
       targetPath: $(System.DefaultWorkingDirectory)
 
-  - task: AzureKeyVault@2
-    displayName:
-    inputs:
-      azureSubscription: dct-crccms-prod
-      KeyVaultName: dct-crc-kv-app-prod-uks
-      SecretsFilter: azure-account-key
-      RunAsPreJob: false
-
   - task: AzureCLI@2
     displayName: Get ${{ parameters.environment }} diff
     inputs:
@@ -35,12 +27,7 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         set -ex
-        ACCOUNT_KEY=$(az storage account keys list \
-          --account-name ${ACCOUNT} \
-          --query "[0].value" \
-          --output tsv)
         az storage blob list \
-          --account-key $ACCOUNT_KEY \
           --account-name $ACCOUNT \
           --container-name $CONTAINER \
           --num-results 50000 \
@@ -80,18 +67,12 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         set -ex
-        ACCOUNT_KEY=$(az storage account keys list \
-          --account-name ${ACCOUNT} \
-          --query "[0].value" \
-          --output tsv)
         while read blob; do
           az storage blob copy start \
             --source-account-name $PROD_ACCOUNT \
-            --source-account-key $PROD_ACCOUNT_KEY \
             --source-container $PROD_CONTAINER \
             --source-blob "$blob" \
             --account-name $ACCOUNT \
-            --account-key $ACCOUNT_KEY \
             --destination-container $CONTAINER \
             --destination-blob "$blob" \
             --only-show-errors
@@ -99,6 +80,5 @@ steps:
     env:
       ACCOUNT: campaignsstrg${{ parameters.env }}uks
       CONTAINER: ${{ parameters.containerPrefix }}-${{ parameters.environment }}
-      PROD_ACCOUNT_KEY: $(azure-account-key)
       PROD_ACCOUNT: campaignscrcv3produks
       PROD_CONTAINER: campaign-resource-centre-v3-production

@@ -22,6 +22,10 @@ parameters:
     type: boolean
     default: false
 
+variables:
+  - name: AZURE_STORAGE_AUTH_MODE
+    value: login
+
 stages:
   - stage: production
     displayName: List production blobs
@@ -29,13 +33,6 @@ stages:
       - job: Production
         steps:
           - checkout: none
-          - task: AzureKeyVault@2
-            displayName:
-            inputs:
-              azureSubscription: dct-crccms-prod
-              KeyVaultName: dct-crc-kv-app-prod-uks
-              SecretsFilter: azure-account-key
-              RunAsPreJob: false
           - task: AzureCLI@2
             name: QueryProd
             inputs:
@@ -44,7 +41,6 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 az storage blob list \
-                  --account-key $ACCOUNT_KEY \
                   --account-name $ACCOUNT \
                   --container-name $CONTAINER \
                   --num-results 50000 \
@@ -53,7 +49,6 @@ stages:
                   --output tsv \
                 > production.log  2>&1
             env:
-              ACCOUNT_KEY: $(azure-account-key)
               ACCOUNT: campaignscrcv3produks
               CONTAINER: campaign-resource-centre-v3-production
           - task: PublishPipelineArtifact@1

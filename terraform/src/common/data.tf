@@ -42,3 +42,10 @@ data "azurerm_storage_container" "dev" {
   name               = "campaign-resouce-centre-v3-review"
   storage_account_id = azurerm_storage_account.crc_cms[var.storage.account].id
 }
+
+data "azurerm_storage_container" "non_prod" {
+  for_each = local.non_prod_storage
+
+  name               = local.non_prod_storage[each.key].container
+  storage_account_id = "/subscriptions/${local.non_prod_storage[each.key].subscription_id}/resourceGroups/dct-crccms-rg-${each.key}-uks/providers/Microsoft.Storage/storageAccounts/${local.non_prod_storage[each.key].account}"
+}
