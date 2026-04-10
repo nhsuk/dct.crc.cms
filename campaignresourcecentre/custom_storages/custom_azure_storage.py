@@ -1,5 +1,6 @@
 import logging
 from urllib.parse import urlparse, urlunparse
+from azure.identity import DefaultAzureCredential
 from azure.storage.blob import ContentSettings
 from django.conf import settings
 from django.core.files import File
@@ -14,7 +15,8 @@ logger = logging.getLogger(__name__)
 # Storage instance is only really instantiated after all settings are configured and in a request context
 class AzureMediaStorage(AzureStorage):
     account_name = getattr(settings, "AZURE_ACCOUNT_NAME", None)
-    account_key = getattr(settings, "AZURE_ACCOUNT_KEY", None)
+    account_key = None
+    token_credential = DefaultAzureCredential()
     azure_container = getattr(settings, "AZURE_CONTAINER", None)
     external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
     custom_domain = None

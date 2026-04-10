@@ -3656,4 +3656,4 @@ gunicorn = ["gunicorn"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12"
-content-hash = "3603f6932b32d87d14e6bd5fa1fe5c758ce5441839a61e1de1be790107d757a8"
+content-hash = "ce0cdfe92d1678f767452309c8cddd3d254100842b17ca1215c918c1a9902735"

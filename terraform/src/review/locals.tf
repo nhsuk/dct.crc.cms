@@ -46,7 +46,6 @@ locals {
   app_secrets = [
     "ADOBE_TRACKING_URL",
     "ALLOWED_HOSTS",
-    "AZURE_ACCOUNT_KEY",
     "AZURE_ACCOUNT_NAME",
     "AZURE_CONTAINER",
     "AZURE_CUSTOM_DOMAIN",
