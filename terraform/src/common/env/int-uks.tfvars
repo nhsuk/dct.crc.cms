@@ -13,6 +13,9 @@ deploy_container_apps = true
 username              = "nhsuk"
 network_address_space = "10.5.8.0/22"
 
+# dct-crccms-id-dev managed identity principal ID
+dev_identity_principal_id = "84ef78f0-e0f9-4844-8d13-d1d494b7f42e"
+
 container_resources = {
   haproxy = {
     cpu          = 0.5

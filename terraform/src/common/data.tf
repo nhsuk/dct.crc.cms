@@ -37,14 +37,6 @@ data "azurerm_user_assigned_identity" "apps" {
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
-data "azurerm_user_assigned_identity" "dev_apps" {
-  count    = var.env == "int" ? 1 : 0
-  provider = azurerm.dev
-
-  name                = "${local.org}-${local.app}-id-dev"
-  resource_group_name = "${local.org}-${local.app}-rg-dev-${var.location}"
-}
-
 data "azurerm_storage_container" "dev" {
   count              = var.env == "int" ? 1 : 0
   name               = "campaign-resouce-centre-v3-review"
