@@ -56,8 +56,8 @@ resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
   scope                = data.azurerm_storage_container.dev[0].id
   principal_type       = "ServicePrincipal"
 
-  # Requires Infra to remove lock on storage account before removing (i.e returning to default = true)
-  skip_service_principal_aad_check = false
+  # Requires Infra to remove lock on storage account before removing (i.e returning to default = false)
+  skip_service_principal_aad_check = true
 }
 
 resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_identity" {

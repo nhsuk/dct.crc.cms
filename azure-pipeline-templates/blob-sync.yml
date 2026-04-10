@@ -40,14 +40,14 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                set -ex
                 az storage blob list \
                   --account-name $ACCOUNT \
                   --container-name $CONTAINER \
                   --num-results 50000 \
                   --only-show-errors \
                   --query '[].name' \
-                  --output tsv \
-                > production.log  2>&1
+                  --output tsv
             env:
               ACCOUNT: campaignscrcv3produks
               CONTAINER: campaign-resource-centre-v3-production
