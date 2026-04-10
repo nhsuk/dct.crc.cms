@@ -148,10 +148,13 @@ steps:
       -e PGHOST="$(db-host)" \
       -e PGPASSWORD="$(db-pass)" \
       -e PGUSER="$(db-user)" \
-      -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
+      -v $(pwd)/${ENVIRONMENT}-db-dump.dump:/${ENVIRONMENT}-db.dump \
       postgres:16 \
-      pg_restore --no-acl --no-owner --data-only -d "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${{parameters.dumpPrefix}}-db.dump
-  displayName: Restore ${{parameters.dumpPrefix}} users to target database
+      pg_restore --no-acl --no-owner --data-only -d "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" ${ENVIRONMENT}-db.dump
+  displayName: Restore ${{parameters.environment}} users to target database
+  env:
+    ENVIRONMENT: ${{parameters.environment}}
+
 
 - script: |
     set -e

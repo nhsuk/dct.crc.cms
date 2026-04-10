@@ -246,17 +246,15 @@ def import_data(c, database_filename):
 
 
 @task
-def sync_db(c, env, storageKey):
+def sync_db(c, env):
     if env in ["staging", "integration", "review"]:
         try:
             print(f"Determining latest {env} dump to download...")
             blobs = local(
                 f"""az storage blob list \
-                    -c crc-v3-backups \
-                    --prefix "{env}/" \
-                    --account-name digitalcampaignsstorage \
-                    --account-key "{storageKey}" \
-                    --auth-mode key""",
+                    -c {env} \
+                    --account-name dctcrccmsbackupsdevuks \
+                    --auth-mode login""",
                 warn=True,
                 hide=True,
             )
@@ -269,11 +267,10 @@ def sync_db(c, env, storageKey):
                     local(
                         f"""az storage blob download \
                             -f database_dumps/{env}-db.dump \
-                            -c crc-v3-backups \
+                            -c {env} \
                             -n {latest_blob['name']} \
-                            --account-name digitalcampaignsstorage \
-                            --account-key "{storageKey}" \
-                            --auth-mode key""",
+                            --account-name dctcrccmsbackupsdevuks \
+                            --auth-mode login""",
                         warn=True,
                         hide=True,
                     )
@@ -300,47 +297,8 @@ def sync_db(c, env, storageKey):
 
 def extract_datetime_from_blob(blob_properties):
     blob_name = blob_properties["name"]
-    datetime_in_name = (
-        blob_name.replace("db-dump-", "")
-        .replace(".dump", "")
-        .replace("review/", "")
-        .replace("integration/", "")
-        .replace("staging/", "")
-    )
-    return datetime.strptime(datetime_in_name, "%d-%m-%Y_%H:%M:%S")
-
-
-@task
-def create_dump(c):
-    result = local(
-        """az pipelines release create \
-            --organization "https://dev.azure.com/nhsuk/" \
-            --project "dct.campaign-resource-centre-v3" \
-            --definition-id 2 \
-            --open""",
-        warn=True,
-        hide=True,
-    )
-    if result:
-        result_object = json.loads(result.stdout)
-        # print (json.dumps (result_object, indent=4))
-        release_id = result_object["id"]
-        release_devops_url = (
-            "https://dev.azure.com/nhsuk/dct.campaign-resource-centre-v3/_releaseProgress?_a=release-pipeline-progress&releaseId=%s"
-            % release_id
-        )
-        print(
-            "Database dump pipeline triggered - review progress at %s"
-            % release_devops_url
-        )
-    else:
-        print(
-            "Pipeline trigger failed with error code %d: %s"
-            % (result.exited, result.stderr)
-        )
-        print(
-            "Please ensure that you are logged in az cli and have the az cli extension installed."
-        )
+    datetime_in_name = blob_name.replace("db-dump-", "").replace(".dump", "")
+    return datetime.strptime(datetime_in_name, "%d-%m-%Y_%H-%M-%S")
 
 
 def delete_local_renditions(c, local_database_name=LOCAL_DATABASE_NAME):

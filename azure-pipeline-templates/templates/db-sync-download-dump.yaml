@@ -7,26 +7,13 @@ steps:
       -e PGPASSWORD="$(db-pass)" \
       -e PGUSER="$(db-user)" \
       postgres:16 \
-      pg_dump -Fc "$(db-name)" -t "users_user" -t "otp_totp_totpdevice" -t "users_user_groups" -t "users_user_user_permissions" -t "wagtailusers_userprofile" > ${{parameters.dumpPrefix}}-db-dump.dump
-  condition: ${{ eq(parameters.usersOnly, True) }}
-  name: 'Create_${{parameters.dumpPrefix}}_Copy'
-  displayName: 'Dump ${{parameters.dumpPrefix}} (Users only)'
-
-- script: |
-    set -x
-    set -e
-    docker run \
-      -e PGHOST="$(db-host)" \
-      -e PGPASSWORD="$(db-pass)" \
-      -e PGUSER="$(db-user)" \
-      postgres:16 \
-      pg_dump -Fc "$(db-name)" > ${{parameters.dumpPrefix}}-db-dump.dump
-  condition: ${{ ne(parameters.usersOnly, True) }}
-  name: 'Create_${{parameters.dumpPrefix}}_DBCopy'
-  displayName: 'Dump ${{parameters.dumpPrefix}} (Full DB)'
+      pg_dump -Fc "$(db-name)" > ${ENVIRONMENT}-db-dump.dump
+  name: 'Create_${{parameters.environment}}_DBCopy'
+  displayName: 'Dump ${{parameters.environment}} (Full DB)'
+  env:
+    ENVIRONMENT: ${{parameters.environment}}
 
 - task: PublishPipelineArtifact@1
-  condition: ${{ eq(parameters.publishDump, True) }}
   inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.dumpPrefix}}-db-dump.dump
-    artifactName: '${{parameters.dumpPrefix}}-db.dump'
+    targetPath: $(System.DefaultWorkingDirectory)/${{parameters.environment}}-db-dump.dump
+    artifactName: '${{parameters.environment}}-db.dump'
