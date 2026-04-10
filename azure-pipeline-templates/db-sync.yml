@@ -31,6 +31,10 @@ parameters:
     default: false
     displayName: Sync To Staging Env
 
+variables:
+  - name: AZURE_STORAGE_AUTH_MODE
+    value: login
+
 resources:
   - repo: self
 
@@ -48,8 +52,7 @@ stages:
               SecretsFilter: db-pass, db-name, db-host, db-user
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              dumpPrefix: prod
-              publishDump: true
+              environment: production
 
   - stage: UploadProdDumpToBlob
     displayName: Backup Production Database
@@ -61,12 +64,8 @@ stages:
         steps:
           - template: templates/db-sync-upload-blob.yaml
             parameters:
-              azureStorageSubscription: dct-crccms-prod
-              StorageAccountNameDbDump: $(StorageAccountNameDbDump)
-              BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
-              BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
               useArtifact: true
-              dumpPrefix: prod
+              environment: production
 
   - stage: CopyToReviewDB
     displayName: Copy to Review Database
@@ -78,7 +77,6 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
               azureVaultSubscription: dct-crccms-dev
               VaultId: dct-crc-kv-app-dev-uks
               environment: review
@@ -94,7 +92,6 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
               azureVaultSubscription: dct-crccms-int
               VaultId: dct-crc-kv-app-int-uks
               environment: integration
@@ -113,7 +110,6 @@ stages:
           - template: templates/db-sync-env-sync.yaml
             parameters:
               azureVaultSubscription: dct-crccms-stag
-              azureStorageSubscription: dct-crccms-stag
               VaultId: dct-crc-kv-app-stag-uks
               environment: staging
               env: stag
