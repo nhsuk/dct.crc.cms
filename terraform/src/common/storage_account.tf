@@ -41,7 +41,7 @@ resource "azurerm_role_assignment" "storage_blob_contributor_apps_identity" {
 resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
   count = var.env == "int" ? 1 : 0
 
-  principal_id         = var.dev_identity_principal_id
+  principal_id         = "84ef78f0-e0f9-4844-8d13-d1d494b7f42e" # dct-crccms-id-dev managed identity
   role_definition_name = "Storage Blob Data Contributor"
   scope                = data.azurerm_storage_container.dev[0].id
   principal_type       = "ServicePrincipal"
