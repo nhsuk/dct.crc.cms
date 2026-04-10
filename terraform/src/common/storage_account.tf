@@ -57,7 +57,7 @@ resource "azurerm_role_assignment" "storage_blob_contributor_dev_identity" {
 }
 
 resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_identity" {
-  for_each = local.non_prod_storage_container_ids
+  for_each = var.env == "prod" && var.location == "uks" ? local.non_prod_storage_container_ids : {}
 
   principal_id         = data.azurerm_client_config.current.object_id
   role_definition_name = "Storage Blob Data Contributor"
