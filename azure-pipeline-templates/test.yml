@@ -1,93 +1,94 @@
 parameters:
-- name: DisableOwaspDependencyCheck
-  default: false
-- name: OWASPFailScore
-  default: 7
+  - name: DisableOwaspDependencyCheck
+    default: false
+  - name: OWASPFailScore
+    default: 7
 
 steps:
-- checkout: self
-  fetchDepth: 0
-- task: Gitleaks@3
-  displayName: Gitleaks scan
-  inputs:
-    scanlocation: '$(Build.SourcesDirectory)'
-    configtype: 'custom'
-    configfile: '$(Build.SourcesDirectory)/pre-commit/git-secrets/nhsd-gitleaks-config.toml'
-    redact: true
-    reportformat: 'json'
-    scanmode: "changes"
-    taskfail: true
-    verbose: true
-  continueOnError: false
-- script: |
-    version="$(git describe --tags --abbrev=0)"
-    full_version="$version+$(Build.BuildNumber)"
-    echo "Version: $version"
-    echo "##vso[task.setvariable variable=toolVersion]$version"
-    echo "##vso[task.setvariable variable=fullVersion]$full_version"
-  displayName: Get Latest Version
-- bash: |
-    pip3 install black==26.3.1
-    black --check ./ --config poetry/pyproject.toml
-  displayName: Installs Black & Checks if the python scripts are formatted properly with black
-- task: DownloadPipelineArtifact@2
-  displayName: Download OWASP artifact
-  inputs:
-    buildType: "specific"
-    project: "nhsuk.utilities"
-    definition: "[schedule]-owasp-dependency-check-update"
-    buildVersionToDownload: "latestFromBranch"
-    branchName: refs/heads/main
-    artifactName: "owasp"
-    targetPath: "$(Pipeline.Workspace)/owasp"
-    allowPartiallySucceededBuilds: true
-- task: Bash@3
-  displayName: Run OWASP Dependency Check
-  condition: and(succeeded(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
-  continueOnError: false
-  inputs:
-    workingDirectory: $(Pipeline.Workspace)/owasp
-    filePath: $(Pipeline.Workspace)/owasp/run_owasp_scanner.sh
-    arguments: '--scan "$(System.DefaultWorkingDirectory)" --suppression "$(System.DefaultWorkingDirectory)/owasp-suppression.xml" --failOnCVSS ${{ parameters.OWASPFailScore }} --project "$(Build.Repository.Name)" --disableOssIndex --out "$(System.DefaultWorkingDirectory)/dependency-scan-results" --format HTML --format JUNIT --format JSON'
-- task: PublishTestResults@2
-  displayName: "Publish OWASP dependency check results"
-  condition: and(succeededOrFailed(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
-  inputs:
-    testRunner: JUnit
-    testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
-    testRunTitle: "OWASP Dependency check"
-- script: |
-    docker compose run --no-deps --rm web python manage.py makemigrations --check --dry-run --no-input
-  displayName: Check for missing migrations
-- script: |
-    docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
-  displayName: 'Run Coverage Test'
-- task: PublishTestResults@2
-  displayName: "Publish Test Results"
-  inputs:
-    testResultsFiles: "**/testresults.xml"
-  condition: succeededOrFailed()
-- task: PublishCodeCoverageResults@2
-  displayName: "Publish code coverage results"
-  inputs:
-    codeCoverageTool: "Cobertura"
-    summaryFileLocation: "./docker/coverage.xml"
-    failIfCoverageEmpty: true
-  condition: succeededOrFailed()
+  - checkout: self
+    fetchDepth: 0
 
-- task: SonarCloudPrepare@3
-  inputs:
-    SonarCloud: SonarCloud
-    organization: nhsdigital
-    scannerMode: cli
-    cliProjectKey: nhsdigital_dct-crc-cms
-    extraProperties: |
-      sonar.qualitygate.wait=true
-      sonar.projectVersion=$(toolVersion)
-      sonar.dependencyCheck.xmlReportPath=$(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
-- task: SonarCloudAnalyze@3
-  continueOnError: true
-- task: SonarCloudPublish@3
-  inputs:
-    pollingTimeoutSec: "300"
-  continueOnError: true
+  - template: build/security-scan.yaml@templates
+
+  - script: |
+      version="$(git describe --tags --abbrev=0)"
+      full_version="$version+$(Build.BuildNumber)"
+      echo "Version: $version"
+      echo "##vso[task.setvariable variable=toolVersion]$version"
+      echo "##vso[task.setvariable variable=fullVersion]$full_version"
+    displayName: Get Latest Version
+
+  - bash: |
+      pip3 install black==26.3.1
+      black --check ./ --config poetry/pyproject.toml
+    displayName: Installs Black & Checks if the python scripts are formatted properly with black
+
+  - task: DownloadPipelineArtifact@2
+    displayName: Download OWASP artifact
+    inputs:
+      buildType: 'specific'
+      project: 'nhsuk.utilities'
+      definition: '[schedule]-owasp-dependency-check-update'
+      buildVersionToDownload: 'latestFromBranch'
+      branchName: refs/heads/main
+      artifactName: 'owasp'
+      targetPath: '$(Pipeline.Workspace)/owasp'
+      allowPartiallySucceededBuilds: true
+
+  - task: Bash@3
+    displayName: Run OWASP Dependency Check
+    condition: and(succeeded(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
+    continueOnError: false
+    inputs:
+      workingDirectory: $(Pipeline.Workspace)/owasp
+      filePath: $(Pipeline.Workspace)/owasp/run_owasp_scanner.sh
+      arguments: '--scan "$(System.DefaultWorkingDirectory)" --suppression "$(System.DefaultWorkingDirectory)/owasp-suppression.xml" --failOnCVSS ${{ parameters.OWASPFailScore }} --project "$(Build.Repository.Name)" --disableOssIndex --out "$(System.DefaultWorkingDirectory)/dependency-scan-results" --format HTML --format JUNIT --format JSON'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish OWASP dependency check results'
+    condition: and(succeededOrFailed(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
+    inputs:
+      testRunner: JUnit
+      testResultsFiles: $(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
+      testRunTitle: 'OWASP Dependency check'
+
+  - script: |
+      docker compose run --no-deps --rm web python manage.py makemigrations --check --dry-run --no-input
+    displayName: Check for missing migrations
+
+  - script: |
+      docker compose -f ./docker-compose-test-coverage.yml up --build --force-recreate --exit-code-from campaignresourcecentre-test-coverage
+    displayName: 'Run Coverage Test'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFiles: '**/testresults.xml'
+    condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@2
+    displayName: 'Publish code coverage results'
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: './docker/coverage.xml'
+      failIfCoverageEmpty: true
+    condition: succeededOrFailed()
+
+  - task: SonarCloudPrepare@3
+    inputs:
+      SonarCloud: SonarCloud
+      organization: nhsdigital
+      scannerMode: cli
+      cliProjectKey: nhsdigital_dct-crc-cms
+      extraProperties: |
+        sonar.qualitygate.wait=true
+        sonar.projectVersion=$(toolVersion)
+        sonar.dependencyCheck.xmlReportPath=$(System.DefaultWorkingDirectory)/dependency-scan-results/dependency-check-junit.xml
+
+  - task: SonarCloudAnalyze@3
+    continueOnError: true
+
+  - task: SonarCloudPublish@3
+    inputs:
+      pollingTimeoutSec: '300'
+    continueOnError: true
