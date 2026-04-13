@@ -83,12 +83,16 @@ locals {
     "WEB_CONCURRENCY",
   ]
   init_config = {}
+
+  app_config = {
+    AZURE_CLIENT_ID = module.container_app_env[0].identity.client_id
+  }
+
   app_secrets = [
     "ADOBE_TRACKING_URL",
     "ALLOWED_HOSTS",
     "AZURE_ACCOUNT_KEY",
     "AZURE_ACCOUNT_NAME",
-    "AZURE_CLIENT_ID",
     "AZURE_CONTAINER",
     "AZURE_CUSTOM_DOMAIN",
     "AZURE_SEARCH_ACCESS_KEY",
