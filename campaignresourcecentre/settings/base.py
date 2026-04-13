@@ -345,6 +345,7 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
     AZURE_SEARCH_ACCESS_KEY = env["AZURE_SEARCH_ACCESS_KEY"]
     AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
+    AZURE_CLIENT_ID = env.get("AZURE_CLIENT_ID", None)
     # 2MB max memory spooled to memory before writing to disk
     AZURE_BLOB_MAX_MEMORY_SIZE = 2 * 1024 * 1024
     # 60 seconds timeout for Azure connection
