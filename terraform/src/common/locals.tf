@@ -26,7 +26,7 @@ locals {
   storage_container = var.storage != null ? { "${var.storage.container}" : var.storage.account } : {}
 
   non_prod_storage_container_ids = {
-    "review"      = "/subscriptions/6a1350a9-9b14-4f69-9653-c8ccec15b48e/resourceGroups/dct-crccms-rg-int-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgintuks/blobServices/default/containers/campaign-resouce-centre-v3-review",
+    "review"      = "/subscriptions/f8a1a507-8a52-452c-84d4-ad20a8648f58/resourceGroups/dct-crccms-rg-dev-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgdevuks/blobServices/default/containers/campaign-resource-centre-v3-review",
     "integration" = "/subscriptions/6a1350a9-9b14-4f69-9653-c8ccec15b48e/resourceGroups/dct-crccms-rg-int-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgintuks/blobServices/default/containers/campaign-resouce-centre-v3-integration",
     "staging"     = "/subscriptions/575a903b-95a0-4f6c-b80e-4a1e0a04da75/resourceGroups/dct-crccms-rg-stag-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgstaguks/blobServices/default/containers/campaign-resource-centre-v3-staging"
   }
