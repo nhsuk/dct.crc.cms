@@ -108,6 +108,10 @@ variable "container_resources" {
       min_replicas = number
       max_replicas = number
       concurrency  = number
+    }),
+    publish = object({
+      cpu    = number
+      memory = string
     })
   })
 }
