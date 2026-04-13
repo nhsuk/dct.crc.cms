@@ -36,9 +36,3 @@ data "azurerm_user_assigned_identity" "apps" {
   name                = "${local.org}-${local.app}-id-${var.env}"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
-
-data "azurerm_storage_container" "dev" {
-  count              = var.env == "int" ? 1 : 0
-  name               = "campaign-resouce-centre-v3-review"
-  storage_account_id = azurerm_storage_account.crc_cms[var.storage.account].id
-}
