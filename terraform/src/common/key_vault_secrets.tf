@@ -1,5 +1,5 @@
 resource "azurerm_key_vault_secret" "wagtail" {
-  # each dev instance gets it's own secrets copied as part of the deployment pipeline
+  # each dev instance gets its own secrets copied as part of the deployment pipeline
   for_each = var.env != "dev" ? toset(concat(local.app_secrets, local.init_secrets)) : toset([])
 
   name         = replace(lower(each.key), "_", "-")
