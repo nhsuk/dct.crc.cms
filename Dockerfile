@@ -19,7 +19,7 @@ RUN apk update \
     && pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=2.2.1
+ARG POETRY_VERSION=2.3.3
 
 RUN adduser campaignresourcecentre -D && mkdir /app && chown campaignresourcecentre /app
 
