@@ -31,8 +31,8 @@ module "aca_wagtail" {
     for secret in azurerm_key_vault_secret.wagtail :
     secret if contains(local.app_secrets, upper(replace(secret.name, "-", "_")))
   ]
-  alerts_action_group_id = module.container_app_env[0].alerts_action_group_id
-  dr_origin              = var.dr_deployed ? data.azurerm_container_app.dr[0].ingress[0].fqdn : null
-  container_resources    = var.container_resources
+  alerts_action_group_id            = module.container_app_env[0].alerts_action_group_id
+  dr_origin                         = var.dr_deployed ? data.azurerm_container_app.dr[0].ingress[0].fqdn : null
+  container_resources               = var.container_resources
   trim_container_app_resource_names = true
 }
