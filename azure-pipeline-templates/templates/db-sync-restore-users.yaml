@@ -1,7 +1,7 @@
 steps:
 - script: |
-    mkdir psql_commands_scripts
     set -e
+    mkdir -p psql_commands_scripts
     docker run \
       -e PGHOST="$(db-host)" \
       -e PGPASSWORD="$(db-pass)" \
@@ -23,8 +23,8 @@ steps:
   displayName: 'Make drop user constraints script'
 
 - script: |
-    mkdir psql_commands_scripts
     set -e
+    mkdir -p psql_commands_scripts
     docker run \
       -e PGHOST="$(db-host)" \
       -e PGPASSWORD="$(db-pass)" \
@@ -65,8 +65,8 @@ steps:
   displayName: 'Make add modified constraints script'
 
 - script: |
-    mkdir psql_commands_scripts
     set -e
+    mkdir -p psql_commands_scripts
     docker run \
       -e PGHOST="$(db-host)" \
       -e PGPASSWORD="$(db-pass)" \
