@@ -47,24 +47,6 @@ resource "azurerm_role_assignment" "storage_blob_contributor_apps_identity" {
   principal_type       = "ServicePrincipal"
 }
 
-moved {
-  from = azurerm_role_assignment.storage_blob_contributor_dev_identity
-  to   = azurerm_role_assignment.storage_blob_contributor_dev_apps_identity
-}
-
-resource "azurerm_role_assignment" "storage_blob_contributor_dev_apps_identity" {
-  count = var.env == "int" ? 1 : 0
-
-  principal_id         = "84ef78f0-e0f9-4844-8d13-d1d494b7f42e" # dct-crccms-id-dev managed identity
-  role_definition_name = "Storage Blob Data Contributor"
-  scope                = local.non_prod_storage_container_ids["review"]
-  principal_type       = "ServicePrincipal"
-
-  lifecycle {
-    ignore_changes = [condition, condition_version, skip_service_principal_aad_check]
-  }
-}
-
 resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_identity" {
   for_each = var.env == "prod" && var.location == "uks" ? local.non_prod_storage_container_ids : {}
 
@@ -77,12 +59,14 @@ resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_i
 resource "azurerm_storage_account" "crc_cms_backups" {
   count = var.env == "dev" ? 1 : 0
 
-  name                      = "dctcrccmsbackups${var.env}${var.location}"
-  resource_group_name       = var.resource_group
-  location                  = data.azurerm_resource_group.rg.location
-  account_tier              = "Standard"
-  account_replication_type  = "RAGRS"
-  shared_access_key_enabled = false
+  name                     = "dctcrccmsbackups${var.env}${var.location}"
+  resource_group_name      = var.resource_group
+  location                 = data.azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "RAGRS"
+
+  allow_nested_items_to_be_public = false
+  shared_access_key_enabled       = false
 
   blob_properties {
     change_feed_enabled           = true
@@ -98,13 +82,12 @@ resource "azurerm_storage_account" "crc_cms_backups" {
   }
 }
 
-#trivy:ignore:avd-azu-0007 storage container public access is enabled as it serves the assets for the website
 resource "azurerm_storage_container" "crc_cms_backups" {
-  for_each = var.env == "dev" ? toset(["review", "integration", "staging", "production"]) : toset([])
+  for_each = var.env == "dev" ? toset(["review", "integration", "staging"]) : toset([])
 
   name                  = each.value
   storage_account_id    = azurerm_storage_account.crc_cms_backups[0].id
-  container_access_type = "container"
+  container_access_type = "private"
 }
 
 resource "azurerm_role_assignment" "backups_blob_contributor_pipeline_identity" {

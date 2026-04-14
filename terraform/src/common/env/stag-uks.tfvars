@@ -38,5 +38,6 @@ container_resources = {
     min_replicas = 1
     max_replicas = 3
     concurrency  = 75
-  }
+  },
+  publish = null
 }

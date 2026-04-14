@@ -17,8 +17,7 @@ steps:
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      set -x
-      set -e
+      set -xe
 
       # Rename the data dump to contain timestamp before upload
       mv $ENVIRONMENT-db-dump.dump db-dump-$(currentDatestamp.Datestamp).dump
@@ -28,8 +27,7 @@ steps:
         --account-name dctcrccmsbackupsdevuks \
         --container-name $ENVIRONMENT \
         --file db-dump-$(currentDatestamp.Datestamp).dump \
-        --name db-dump-$(currentDatestamp.Datestamp).dump \
-        --auth-mode login
+        --name db-dump-$(currentDatestamp.Datestamp).dump
   name: BlobStorageBackup
   displayName: Backup to Blob Storage
   env:
