@@ -59,12 +59,14 @@ resource "azurerm_role_assignment" "non_prod_storage_blob_contributor_pipeline_i
 resource "azurerm_storage_account" "crc_cms_backups" {
   count = var.env == "dev" ? 1 : 0
 
-  name                      = "dctcrccmsbackups${var.env}${var.location}"
-  resource_group_name       = var.resource_group
-  location                  = data.azurerm_resource_group.rg.location
-  account_tier              = "Standard"
-  account_replication_type  = "RAGRS"
-  shared_access_key_enabled = false
+  name                     = "dctcrccmsbackups${var.env}${var.location}"
+  resource_group_name      = var.resource_group
+  location                 = data.azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "RAGRS"
+
+  allow_nested_items_to_be_public = false
+  shared_access_key_enabled       = false
 
   blob_properties {
     change_feed_enabled           = true
@@ -86,7 +88,7 @@ resource "azurerm_storage_container" "crc_cms_backups" {
 
   name                  = each.value
   storage_account_id    = azurerm_storage_account.crc_cms_backups[0].id
-  container_access_type = "container"
+  container_access_type = "private"
 }
 
 resource "azurerm_role_assignment" "backups_blob_contributor_pipeline_identity" {
