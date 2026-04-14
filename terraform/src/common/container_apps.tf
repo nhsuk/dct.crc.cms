@@ -1,5 +1,5 @@
 module "aca_wagtail" {
-  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=1.4.3"
+  source = "git::https://github.com/nhsuk/dct.terraform-modules.wagtail-container-apps?ref=2.0.1"
 
   # dev container apps get deployed separately to allow for many transient environments
   count = var.deploy_container_apps && var.env != "dev" ? 1 : 0
@@ -8,7 +8,6 @@ module "aca_wagtail" {
   location                          = data.azurerm_resource_group.rg.location
   org                               = local.org
   app                               = local.app
-  short_app_name                    = local.short_app_name
   app_image                         = "dct/crc-cms:${var.crc_cms_version}"
   haproxy_image                     = "dct/haproxy-front-door:1.0.1"
   container_registry                = "dctcampaignsacrproduks.azurecr.io"
@@ -19,14 +18,21 @@ module "aca_wagtail" {
   frontdoor_profile                 = var.location == "uks" ? module.network_spoke[0].frontdoor : data.azurerm_cdn_frontdoor_profile.frontdoor[0]
   frontdoor_firewall_policy_enabled = true
   frontdoor_firewall_policy_id      = module.network_spoke[0].waf_policy_id
-  key_vault_id                      = module.container_app_env[0].key_vault_id
   username                          = var.username
   sha_512_password                  = var.sha_512_password #gitleaks:allow not actually the password
   init_args                         = local.init_args
   init_config                       = local.init_config
-  init_secrets                      = local.init_secrets
-  app_secrets                       = local.app_secrets
+  init_secrets = [
+    for secret in azurerm_key_vault_secret.wagtail :
+    secret if contains(local.init_secrets, upper(replace(secret.name, "-", "_")))
+  ]
+  app_config = local.app_config
+  app_secrets = [
+    for secret in azurerm_key_vault_secret.wagtail :
+    secret if contains(local.app_secrets, upper(replace(secret.name, "-", "_")))
+  ]
   alerts_action_group_id            = module.container_app_env[0].alerts_action_group_id
   dr_origin                         = var.dr_deployed ? data.azurerm_container_app.dr[0].ingress[0].fqdn : null
   container_resources               = var.container_resources
+  trim_container_app_resource_names = true
 }
