@@ -6,6 +6,7 @@ module "aca_wagtail" {
   app                          = local.app
   app_image                    = "dct/crc-cms:${var.crc_cms_version}"
   haproxy_image                = "dct/haproxy-front-door:1.0.1"
+  redis_image                  = "redis:4.0.14-alpine"
   container_registry           = "dctcampaignsacrproduks.azurecr.io"
   healthcheck_path             = "/"
   dev_instance                 = var.dev_instance
