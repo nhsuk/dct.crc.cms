@@ -28,8 +28,12 @@ def _add_item(request):
     basket = Basket(request.session)
     payload = request.POST
     sku = payload.get("sku")
-    if sku:
-        item_obj = ResourceItem.objects.filter(sku=sku).first()
+    resource_page_id = payload.get("resource_page_id")
+
+    if sku and resource_page_id:
+        item_obj = ResourceItem.objects.filter(
+            sku=sku, resource_page_id=resource_page_id
+        ).first()
     else:
         item_obj = None
     if item_obj:
