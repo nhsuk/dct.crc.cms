@@ -21,3 +21,10 @@ data "azurerm_key_vault" "wagtail" {
   name                = "${local.org}-${local.short_app_name}-kv-app-${local.environment}-${local.region}"
   resource_group_name = data.azurerm_resource_group.wagtail.name
 }
+
+data "azurerm_key_vault_secret" "wagtail" {
+  for_each = toset(concat(local.app_secrets, local.init_secrets))
+
+  name         = "${var.dev_instance}--${replace(lower(each.key), "_", "-")}"
+  key_vault_id = data.azurerm_key_vault.wagtail.id
+}

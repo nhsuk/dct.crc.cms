@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 class AzureMediaStorage(AzureStorage):
     account_name = getattr(settings, "AZURE_ACCOUNT_NAME", None)
     account_key = None
-    token_credential = DefaultAzureCredential()
+    token_credential = DefaultAzureCredential(
+        managed_identity_client_id=getattr(settings, "AZURE_CLIENT_ID", None)
+    )
     azure_container = getattr(settings, "AZURE_CONTAINER", None)
     external_domain = getattr(settings, "AZURE_CUSTOM_DOMAIN", None)
     custom_domain = None

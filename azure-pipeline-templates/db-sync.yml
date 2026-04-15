@@ -4,20 +4,7 @@ pool:
 trigger: none
 pr: none
 
-# daily midnight backup midnight - this will not run any of the syncing jobs, only the backup
-schedules:
-  - cron: '0 0 * * *'
-    displayName: Daily midnight build
-    always: true
-    branches:
-      include:
-        - main
-
 parameters:
-  - name: backupProduction
-    type: boolean
-    default: true
-    displayName: Backup Production DB
   - name: syncToReview
     type: boolean
     default: false
@@ -52,19 +39,6 @@ stages:
               SecretsFilter: db-pass, db-name, db-host, db-user
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              environment: production
-
-  - stage: UploadProdDumpToBlob
-    displayName: Backup Production Database
-    dependsOn:
-      - CopyFromProdDB
-    condition: and(succeeded(), eq('${{ parameters.backupProduction }}', 'true'))
-    jobs:
-      - job: DumpUpload
-        steps:
-          - template: templates/db-sync-upload-blob.yaml
-            parameters:
-              useArtifact: true
               environment: production
 
   - stage: CopyToReviewDB
