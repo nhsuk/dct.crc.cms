@@ -62,8 +62,8 @@ steps:
           az storage blob download-batch \
             --account-name $ACCOUNT \
             --source $CONTAINER \
-            --pattern "$blob" \
-            --destination "$LOCAL_DIRECTORY/$blob" \
+            --pattern $blob \
+            --destination $LOCAL_DIRECTORY \
             --only-show-errors
         done <production_to_${{ parameters.environment }}.log
     env:
