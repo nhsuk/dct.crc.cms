@@ -63,7 +63,7 @@ steps:
           az storage blob download-batch \
             --account-name $ACCOUNT \
             --source $CONTAINER \
-            --pattern $blob \
+            --pattern "$blob" \
             --destination $LOCAL_DIRECTORY \
             --only-show-errors
           exitCode=$?
@@ -71,8 +71,6 @@ steps:
               echo "Failed while downloading blob $blob"
               echo "exit code = $exitCode"
               break
-          else
-              echo "Downloaded blob $blob"
           fi
         done <production_to_${{ parameters.environment }}.log
 
