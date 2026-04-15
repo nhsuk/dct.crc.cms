@@ -58,6 +58,7 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         set -ex
+        mkdir -p $LOCAL_DIRECTORY
         while read blob; do
           az storage blob download \
             --account-name $ACCOUNT \
