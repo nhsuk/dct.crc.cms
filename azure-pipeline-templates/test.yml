@@ -44,7 +44,6 @@ steps:
 - task: Bash@3
   displayName: Run OWASP Dependency Check
   condition: and(succeeded(), eq('${{ parameters.DisableOwaspDependencyCheck }}', false))
-  continueOnError: false
   inputs:
     workingDirectory: $(Pipeline.Workspace)/owasp
     filePath: $(Pipeline.Workspace)/owasp/run_owasp_scanner.sh
