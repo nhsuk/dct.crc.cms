@@ -95,7 +95,7 @@ steps:
   - task: AzureCLI@2
     displayName: Upload diff blobs to ${{ parameters.environment }}
     inputs:
-      azureSubscription: dct-crccms-prod
+      azureSubscription: dct-crccms-${{ parameters.env }}
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
