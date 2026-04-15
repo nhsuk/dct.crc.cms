@@ -57,7 +57,7 @@ steps:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-        exit-code=0
+        exitCode=0
         while read blob; do
           az storage blob download-batch \
             --account-name $ACCOUNT \
@@ -65,17 +65,17 @@ steps:
             --pattern $blob \
             --destination $LOCAL_DIRECTORY \
             --only-show-errors
-          exit-code=$?
-          if [ "$exit-code" -ne 0 ]; then
+          exitCode=$?
+          if [ "$exitCode" -ne 0 ]; then
               echo "Failed while downloading blob $blob"
-              echo "exit code = $exit-code"
+              echo "exit code = $exitCode"
               break
           else
               echo "Downloaded blob $blob"
           fi
         done <production_to_${{ parameters.environment }}.log
 
-        if [ "$exit-code" -ne 0 ]; then
+        if [ "$exitCode" -ne 0 ]; then
           num=$(find $LOCAL_DIRECTORY -type f | wc -l)
           echo "##vso[task.logissue type=warning;]Agent ran out of memory after $num blobs - this run will upload what was downloaded - rerun this job to upload remaining blobs"
           echo "##vso[task.complete result=SucceededWithIssues;]"
