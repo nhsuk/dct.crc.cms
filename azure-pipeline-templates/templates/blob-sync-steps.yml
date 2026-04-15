@@ -3,8 +3,6 @@ parameters:
     type: string
   - name: environment
     type: string
-  - name: azureSubscription
-    type: string
   - name: containerPrefix
     type: string
     default: 'campaign-resource-centre-v3'
@@ -14,7 +12,7 @@ parameters:
 steps:
   - checkout: none
   - task: DownloadPipelineArtifact@2
-    displayName: Download production blobs
+    displayName: Download production blob list
     inputs:
       artifactName: production.log
       targetPath: $(System.DefaultWorkingDirectory)
@@ -22,7 +20,7 @@ steps:
   - task: AzureCLI@2
     displayName: Get ${{ parameters.environment }} diff
     inputs:
-      azureSubscription: ${{ parameters.azureSubscription }}
+      azureSubscription: dct-crccms-${{ parameters.env }}
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
@@ -41,7 +39,7 @@ steps:
       CONTAINER: ${{ parameters.containerPrefix }}-${{ parameters.environment }}
 
   - task: PublishPipelineArtifact@1
-    displayName: Publish ${{ parameters.environment }} blobs
+    displayName: Publish ${{ parameters.environment }} blob list
     inputs:
       targetPath: ./${{ parameters.environment }}.log
       artifactName: ${{ parameters.environment }}.log
@@ -60,25 +58,41 @@ steps:
 
   - task: AzureCLI@2
     condition: ${{ ne(parameters.dryRun, true) }}
-    displayName: Upload ${{ parameters.environment }} diff
+    displayName: Download ${{ parameters.environment }} diff blobs from production
     inputs:
-      azureSubscription: ${{ parameters.azureSubscription }}
+      azureSubscription: dct-crccms-prod
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
         set -ex
         while read blob; do
-          az storage blob copy start \
-            --source-account-name $PROD_ACCOUNT \
-            --source-container $PROD_CONTAINER \
-            --source-blob "$blob" \
+          az storage blob download \
             --account-name $ACCOUNT \
-            --destination-container $CONTAINER \
-            --destination-blob "$blob" \
+            --container-name $CONTAINER \
+            --name "$blob" \
+            --file "$LOCAL_DIRECTORY/$blob" \
             --only-show-errors
         done <production_to_${{ parameters.environment }}.log
     env:
+      ACCOUNT: campaignscrcv3produks
+      CONTAINER: campaign-resource-centre-v3-production
+      LOCAL_DIRECTORY: $(System.DefaultWorkingDirectory)/blobs
+
+  - task: AzureCLI@2
+    condition: ${{ ne(parameters.dryRun, true) }}
+    displayName: Upload diff blobs to ${{ parameters.environment }}
+    inputs:
+      azureSubscription: dct-crccms-prod
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -ex
+        az storage blob upload-batch \
+          --account-name $ACCOUNT \
+          --destination $CONTAINER \
+          --source $LOCAL_DIRECTORY \
+          --only-show-errors
+    env:
       ACCOUNT: campaignsstrg${{ parameters.env }}uks
       CONTAINER: ${{ parameters.containerPrefix }}-${{ parameters.environment }}
-      PROD_ACCOUNT: campaignscrcv3produks
-      PROD_CONTAINER: campaign-resource-centre-v3-production
+      LOCAL_DIRECTORY: $(System.DefaultWorkingDirectory)/blobs

@@ -69,7 +69,6 @@ stages:
             parameters:
               env: stag
               environment: staging
-              azureSubscription: dct-crccms-stag
               dryRun: ${{ parameters.dryRun }}
 
   - stage: integration
@@ -84,7 +83,6 @@ stages:
             parameters:
               env: int
               environment: integration
-              azureSubscription: dct-crccms-int
               containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
               dryRun: ${{ parameters.dryRun }}
 
@@ -98,8 +96,6 @@ stages:
         steps:
           - template: templates/blob-sync-steps.yml
             parameters:
-              env: int # Review is in int
+              env: dev
               environment: review
-              azureSubscription: dct-crccms-int
-              containerPrefix: campaign-resouce-centre-v3 # Typo in deployed resource name
               dryRun: ${{ parameters.dryRun }}
