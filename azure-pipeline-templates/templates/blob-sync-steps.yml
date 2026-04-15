@@ -58,13 +58,12 @@ steps:
       scriptLocation: inlineScript
       inlineScript: |
         set -ex
-        mkdir -p $LOCAL_DIRECTORY
         while read blob; do
-          az storage blob download \
+          az storage blob download-batch \
             --account-name $ACCOUNT \
-            --container-name $CONTAINER \
-            --name "$blob" \
-            --file "$LOCAL_DIRECTORY/$blob" \
+            --source $CONTAINER \
+            --pattern "$blob" \
+            --destination "$LOCAL_DIRECTORY/$blob" \
             --only-show-errors
         done <production_to_${{ parameters.environment }}.log
     env:
