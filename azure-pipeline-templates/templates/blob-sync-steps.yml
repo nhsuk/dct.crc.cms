@@ -42,13 +42,13 @@ steps:
     displayName: Publish ${{ parameters.environment }} blob list
     inputs:
       targetPath: ./${{ parameters.environment }}.log
-      artifactName: ${{ parameters.environment }}.log
+      artifactName: ${{ parameters.environment }}-$(System.JobAttempt).log
 
   - task: PublishPipelineArtifact@1
     displayName: Publish ${{ parameters.environment }} diff
     inputs:
       targetPath: ./production_to_${{ parameters.environment }}.log
-      artifactName: production_to_${{ parameters.environment }}.log
+      artifactName: production_to_${{ parameters.environment }}-$(System.JobAttempt).log
 
   - task: AzureCLI@2
     displayName: Download ${{ parameters.environment }} diff blobs from production
