@@ -69,12 +69,12 @@ steps:
           exitCode=$?
           if [ "$exitCode" -ne 0 ]; then
               echo "Failed while downloading blob $blob"
-              echo "exit code = $exitCode"
+              rm -f "$LOCAL_DIRECTORY/$blob"
               break
           fi
         done <production_to_${{ parameters.environment }}.log
 
-        if [ "$exitCode" -ne 0 ]; then
+        if [ "$exitCode" -eq 1 ]; then
           num=$(find $LOCAL_DIRECTORY -type f | wc -l)
           echo "##vso[task.logissue type=warning;]Agent ran out of memory after $num blobs - this run will upload what was downloaded - rerun this job to upload remaining blobs"
           echo "##vso[task.complete result=SucceededWithIssues;]"
