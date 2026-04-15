@@ -27,7 +27,8 @@ module "aca_wagtail" {
     for secret in data.azurerm_key_vault_secret.wagtail :
     secret if contains(local.app_secrets, upper(replace(replace(secret.name, "${var.dev_instance}--", ""), "-", "_")))
   ]
-  alerts_action_group_id = null
-  enable_alerts          = false
-  container_resources    = local.container_resources
+  alerts_action_group_id            = null
+  enable_alerts                     = false
+  container_resources               = local.container_resources
+  trim_container_app_resource_names = true
 }
