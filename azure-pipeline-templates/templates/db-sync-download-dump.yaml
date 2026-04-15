@@ -1,7 +1,6 @@
 steps:
 - script: |
-    set -x
-    set -e
+    set -ex
     docker run \
       -e PGHOST="$(db-host)" \
       -e PGPASSWORD="$(db-pass)" \
