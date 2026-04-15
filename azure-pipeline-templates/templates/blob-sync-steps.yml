@@ -50,14 +50,7 @@ steps:
       targetPath: ./production_to_${{ parameters.environment }}.log
       artifactName: production_to_${{ parameters.environment }}.log
 
-  - bash: |
-      echo "##vso[task.logissue type=warning;]Running in dryrun mode"
-      echo "##vso[task.complete result=SucceededWithIssues;]"
-    condition: ${{ eq(parameters.dryRun, true) }}
-    displayName: Dry Run
-
   - task: AzureCLI@2
-    condition: ${{ ne(parameters.dryRun, true) }}
     displayName: Download ${{ parameters.environment }} diff blobs from production
     inputs:
       azureSubscription: dct-crccms-prod
@@ -78,8 +71,15 @@ steps:
       CONTAINER: campaign-resource-centre-v3-production
       LOCAL_DIRECTORY: $(System.DefaultWorkingDirectory)/blobs
 
+  - bash: |
+      echo "Print arg if needed: `if [[ '${{ parameters.dryRun }}' == 'True' ]]; then printf %s '--dryrun'; fi`"
+      if [[ '${{ parameters.dryRun }}' == 'True' ]]; then
+        echo "##vso[task.logissue type=warning;]Running in dryrun mode"
+        echo "##vso[task.complete result=SucceededWithIssues;]"
+      fi
+    displayName: 'Dry Run: ${{ parameters.dryRun }}'
+
   - task: AzureCLI@2
-    condition: ${{ ne(parameters.dryRun, true) }}
     displayName: Upload diff blobs to ${{ parameters.environment }}
     inputs:
       azureSubscription: dct-crccms-prod
@@ -91,6 +91,7 @@ steps:
           --account-name $ACCOUNT \
           --destination $CONTAINER \
           --source $LOCAL_DIRECTORY \
+          `if [[ '${{ parameters.dryRun }}' == 'True' ]]; then printf %s '--dryrun'; fi` \
           --only-show-errors
     env:
       ACCOUNT: campaignsstrg${{ parameters.env }}uks
