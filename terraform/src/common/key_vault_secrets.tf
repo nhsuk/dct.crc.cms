@@ -1,4 +1,6 @@
 resource "azurerm_key_vault_secret" "wagtail" {
+  #checkov:skip=CKV_AZURE_41 Expiration date not required
+  #checkov:skip=CKV_AZURE_114 Content type on secret not used
   # each dev instance gets its own secrets copied as part of the deployment pipeline
   for_each = var.env != "dev" ? toset(concat(local.app_secrets, local.init_secrets)) : toset([])
 
