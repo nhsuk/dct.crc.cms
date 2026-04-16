@@ -6,7 +6,6 @@ resource "azurerm_storage_account" "crc_cms" {
   location                 = data.azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "RAGRS"
-
   blob_properties {
     change_feed_enabled           = true
     change_feed_retention_in_days = 7
