@@ -21,7 +21,7 @@ locals {
   backup_vault_resource_group_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-vault-rg-")
 
   storage_account   = toset(var.storage != null ? [var.storage.account] : [])
-  storage_container = var.storage != null ? { var.storage.container : var.storage.account } : {}
+  storage_container = var.storage != null ? { (var.storage.container) = var.storage.account } : {}
 
   secret_names = [
     "alertingWebhook",
