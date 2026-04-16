@@ -135,7 +135,7 @@ class GovNotifyNotifications:
     # Template IDs from the GOV.UK Notify service.
     REVIEW_PAGE_TEMPLATE_ID = "b9f9c36d-dba5-4091-8345-e3c1a439374a"
     CONFIRM_REGISTRATION_TEMPLATE_ID = "84687efc-1829-45c8-afab-3cfdd220641e"
-    RESET_PASSWORD_TEMPLATE_ID = "8d87349a-e520-48e5-afe8-1ada1df1f49e"
+    RESET_PASSWORD_TEMPLATE_ID = "8d87349a-e520-48e5-afe8-1ada1df1f49e"  # gitleaks:allow not a secret, just an ID
     CONTACT_SUBMISSION_TEMPLATE_ID = "eaee6094-f8f3-407e-aa92-94bd46bbc938"
     CONTACT_SUBMISSION_USER_TEMPLATE_ID = "e028940f-dec6-46bd-9de3-6ad916ae699c"
     PLAIN_EMAIL_TEMPLATE_ID = "a406367b-6c65-4b2d-a48d-362961df8dd6"

@@ -9,7 +9,6 @@ resource "azapi_resource" "scheduler_alert_la" {
   }
   body = {
     "properties" : {
-      "parameters" : {},
       "state" : "Enabled",
       "definition" : {
         "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
