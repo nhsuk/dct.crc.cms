@@ -18,6 +18,8 @@ resource "azurerm_storage_account" "crc_cms" {
   account_replication_type = "RAGRS"
   min_tls_version          = "TLS1_2"
 
+  shared_access_key_enabled = false
+
   blob_properties {
     change_feed_enabled           = true
     change_feed_retention_in_days = 7
