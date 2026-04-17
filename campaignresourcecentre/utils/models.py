@@ -368,6 +368,22 @@ class FeatureFlags(BaseSiteSetting):
         help_text="Enable this flag to hide the order history feature. Will return 404 for order history page.",
     )
 
+    notification_banner_campaigns_page = models.BooleanField(
+        "Enable notification banner on campaigns page",
+        default=False,
+        help_text="Enable this flag to show a notification banner on the main 'Campaigns' page.",
+    )
+    notification_banner_campaign_page = models.BooleanField(
+        "Enable notification banner on campaign page",
+        default=False,
+        help_text="Enable this flag to show a notification banner on an individual campaign page.",
+    )
+    notification_banner_search_results = models.BooleanField(
+        "Enable notification banner on search results page",
+        default=False,
+        help_text="Enable this flag to show a notification banner on the search results page.",
+    )
+
     panels = [
         HelpPanel(content="Custom feature flags which can be toggled on and off."),
         MultiFieldPanel(
@@ -389,5 +405,13 @@ class FeatureFlags(BaseSiteSetting):
                 ),
             ],
             heading="Ordering & Checkout",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("notification_banner_campaigns_page"),
+                FieldPanel("notification_banner_campaign_page"),
+                FieldPanel("notification_banner_search_results"),
+            ],
+            heading="Notification banners",
         ),
     ]

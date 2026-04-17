@@ -72,6 +72,8 @@
                     </div>
                 </div>
             </div>
+            {% include "molecules/notification_banner/notification-banner.html" with
+            show_notification_banner=settings.utils.FeatureFlags.notification_banner_campaign_page %}
         </div>
     </section>
 
