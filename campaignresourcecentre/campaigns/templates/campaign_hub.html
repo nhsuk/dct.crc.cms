@@ -12,7 +12,7 @@
             </div>
         </div>
         {% include "molecules/notification_banner/notification-banner.html" with
-        show_notification_banner=settings.utils.FeatureFlags.notification_banner_campaigns_page %}
+        show_notification_banner=settings.utils.NotificationBanner.show_on_campaigns_page %}
     </div>
 
     <section class="app-section {{page.campaign_updates_bg_colour}} govuk-!-padding-top-0">

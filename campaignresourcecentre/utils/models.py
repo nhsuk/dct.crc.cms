@@ -368,22 +368,6 @@ class FeatureFlags(BaseSiteSetting):
         help_text="Enable this flag to hide the order history feature. Will return 404 for order history page.",
     )
 
-    notification_banner_campaigns_page = models.BooleanField(
-        "Enable notification banner on campaigns page",
-        default=False,
-        help_text="Enable this flag to show a notification banner on the main 'Campaigns' page.",
-    )
-    notification_banner_campaign_page = models.BooleanField(
-        "Enable notification banner on campaign page",
-        default=False,
-        help_text="Enable this flag to show a notification banner on an individual campaign page.",
-    )
-    notification_banner_search_results = models.BooleanField(
-        "Enable notification banner on search results page",
-        default=False,
-        help_text="Enable this flag to show a notification banner on the search results page.",
-    )
-
     panels = [
         HelpPanel(content="Custom feature flags which can be toggled on and off."),
         MultiFieldPanel(
@@ -406,12 +390,65 @@ class FeatureFlags(BaseSiteSetting):
             ],
             heading="Ordering & Checkout",
         ),
+    ]
+
+
+@register_setting(icon="warning")
+class NotificationBanner(BaseSiteSetting):
+    class Meta:
+        verbose_name = "Notification banner"
+
+    heading = models.CharField(
+        max_length=255,
+        default="Important",
+        help_text="The heading displayed in the banner header.",
+    )
+    heading_level = models.CharField(
+        max_length=2,
+        choices=(
+            ("h1", "H1"),
+            ("h2", "H2"),
+            ("h3", "H3"),
+            ("h4", "H4"),
+        ),
+        default="h2",
+        help_text="The heading level for the banner header.",
+    )
+    content = RichTextField(
+        default="We have moved to a digital-only service and we no longer provide printed resources for our campaigns",
+        help_text="The content displayed in the banner body.",
+    )
+    show_on_campaigns_page = models.BooleanField(
+        "Show on campaigns page",
+        default=False,
+        help_text="Show the notification banner on the main campaigns listing page.",
+    )
+    show_on_campaign_page = models.BooleanField(
+        "Show on campaign pages",
+        default=False,
+        help_text="Show the notification banner on individual campaign pages.",
+    )
+    show_on_search_results = models.BooleanField(
+        "Show on search results page",
+        default=False,
+        help_text="Show the notification banner on the search results page.",
+    )
+
+    panels = [
         MultiFieldPanel(
             [
-                FieldPanel("notification_banner_campaigns_page"),
-                FieldPanel("notification_banner_campaign_page"),
-                FieldPanel("notification_banner_search_results"),
+                FieldPanel("heading"),
+                FieldPanel("heading_level"),
+                FieldPanel("content"),
             ],
-            heading="Notification banners",
+            heading="Banner content",
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel("show_on_campaigns_page"),
+                FieldPanel("show_on_campaign_page"),
+                FieldPanel("show_on_search_results"),
+            ],
+            heading="Display on pages",
         ),
     ]
