@@ -220,7 +220,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 # Values for the Django cache middleware - note we have subclassed it
 CACHE_MIDDLEWARE_ALIAS = "default"
-CCACHE_MIDDLEWARE_SECONDS = 30 * 60
+CACHE_MIDDLEWARE_SECONDS = 30 * 60
 CACHE_MIDDLEWARE_PREFIX = "page"
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 

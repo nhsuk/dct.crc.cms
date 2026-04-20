@@ -1,5 +1,4 @@
 {% load wagtailcore_tags %}
-{% if show_notification_banner %}
 <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
   <div class="govuk-notification-banner__header">
     <{{ settings.utils.NotificationBanner.heading_level }} class="govuk-notification-banner__title"
@@ -11,4 +10,3 @@
     {{ settings.utils.NotificationBanner.content|richtext }}
   </div>
 </div>
-{% endif %}

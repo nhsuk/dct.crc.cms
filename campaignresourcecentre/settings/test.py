@@ -14,6 +14,14 @@ RECAPTCHA_PRIVATE_KEY = "dummy-key-value"  # pragma: allowlist secret
 SECURE_SSL_REDIRECT = False
 
 # #############
+# Caching
+
+# Disable caching in tests so cached responses don't interfere with test results.
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+}
+
+# #############
 # Performance
 
 # By default, Django uses a computationally difficult algorithm for passwords hashing.
