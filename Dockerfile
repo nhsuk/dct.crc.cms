@@ -70,6 +70,11 @@ RUN if [ "$BUILD_ENV" = "dev" ]; \
     then poetry install --no-root --extras gunicorn; \
     else poetry install --no-root --only main --extras gunicorn; \
     fi;
+
+# Install Azure CLI for local dev (enables DefaultAzureCredential)
+RUN if [ "$BUILD_ENV" = "dev" ]; \
+    then pip install azure-cli; \
+    fi;
 WORKDIR /app
 
 COPY --chown=campaignresourcecentre --from=frontend ./campaignresourcecentre/static_compiled ./campaignresourcecentre/static_compiled
