@@ -22,6 +22,18 @@ CACHES = {
 }
 
 # #############
+# Storage
+
+# Use local file storage in tests not Azure.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "search": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
+
+# #############
 # Performance
 
 # By default, Django uses a computationally difficult algorithm for passwords hashing.
