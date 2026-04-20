@@ -75,6 +75,8 @@
             </div>
         </div>
 
+        {% include "molecules/notification_banner/notification-banner.html" with show_notification_banner=settings.utils.NotificationBanner.show_on_search_results %}
+
         <div class="govuk-grid-row" id="search-panel">
             <div class="govuk-grid-column-one-quarter">
                 <h3>Filter results by</h3>

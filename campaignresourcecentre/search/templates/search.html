@@ -14,11 +14,6 @@
         <input type="submit" value="Search">
     </form>
 
-    <div class="govuk-width-container">
-        {% include "molecules/notification_banner/notification-banner.html" with
-        show_notification_banner=settings.utils.NotificationBanner.show_on_search_results %}
-    </div>
-
     {% get_search_promotions search_query as search_picks %}
     {% if search_picks %}
          <ul>
