@@ -108,17 +108,30 @@ stages:
                     -var crc_cms_version="" \
                     -auto-approve
 
+                  echo "Deleting state file (terraform-$instance-apps.tfstate) ..."
+
                   az storage blob delete \
                     --name terraform-$instance-apps.tfstate \
                     --container-name tfstate \
                     --account-name $STORAGE_ACCOUNT_NAME \
                     --auth-mode login
 
+                  echo "Deleting database ($instance) ..."
+
                   az postgres flexible-server db delete \
                     --server-name dct-crccms-psql-$ENVIRONMENT-$REGION \
                     --resource-group dct-crccms-rg-$ENVIRONMENT-$REGION \
                     --database-name $instance \
                     --yes
+
+                  echo "Deleting key vault secrets ..."
+
+                  vault_name="dct-crc-kv-app-$ENVIRONMENT-$REGION"
+                  secret_names=$(az keyvault secret list --vault-name $vault_name --query "[?starts_with(name,'$instance--')].name" --output tsv)
+                  while read secret
+                  do
+                    az keyvault secret delete --vault-name $vault_name --name $secret --query "name" --output tsv --only-show-errors
+                  done <<< "$secret_names"
 
                   echo "Destroyed $instance"
                 done <<<"$state_files"
