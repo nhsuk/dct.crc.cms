@@ -4,4 +4,8 @@
   &__header {
     background-color: $teal;
   }
+
+  &__content > * {
+    max-width: none;
+  }
 }
