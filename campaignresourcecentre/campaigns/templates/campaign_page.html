@@ -72,6 +72,9 @@
                     </div>
                 </div>
             </div>
+            {% if settings.utils.NotificationBanner.show_on_campaign_page %}
+            {% include "molecules/notification_banner/notification-banner.html" %}
+            {% endif %}
         </div>
     </section>
 

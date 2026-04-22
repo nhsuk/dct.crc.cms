@@ -14,6 +14,26 @@ RECAPTCHA_PRIVATE_KEY = "dummy-key-value"  # pragma: allowlist secret
 SECURE_SSL_REDIRECT = False
 
 # #############
+# Caching
+
+# Disable caching in tests so cached responses don't interfere with test results.
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+}
+
+# #############
+# Storage
+
+# Use local file storage in tests not Azure.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "search": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
+
+# #############
 # Performance
 
 # By default, Django uses a computationally difficult algorithm for passwords hashing.

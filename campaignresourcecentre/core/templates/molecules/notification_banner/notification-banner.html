@@ -1,0 +1,12 @@
+{% load wagtailcore_tags %}
+<section class="govuk-notification-banner" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+  <div class="govuk-notification-banner__header">
+    <{{ settings.utils.NotificationBanner.heading_level }} class="govuk-notification-banner__title"
+      id="govuk-notification-banner-title">
+      {{ settings.utils.NotificationBanner.heading }}
+    </{{ settings.utils.NotificationBanner.heading_level }}>
+  </div>
+  <div class="govuk-notification-banner__content">
+    {{ settings.utils.NotificationBanner.content|richtext }}
+  </div>
+</section>
