@@ -40,6 +40,7 @@ azure-search-documents = "^11.3.0"
 azure-search = "^1.0.0b2"
 wagtail-modeladmin = "^2.0.0"
 cryptography = "^46.0.6"
+lxml = "^6.1.0"
 
 [tool.poetry.extras]
 gunicorn = ["gunicorn"]
