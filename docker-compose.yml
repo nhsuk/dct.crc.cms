@@ -74,6 +74,7 @@ services:
       - ./poetry:/app/poetry:delegated,rw
       - ./public:/app/public:delegated,ro
       - ./setup.cfg:/app/setup.cfg:delegated,ro
+      - ${HOME}/.azure:/home/campaignresourcecentre/.azure:rw
     depends_on:
       - db
       - redis

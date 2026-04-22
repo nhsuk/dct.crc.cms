@@ -102,6 +102,14 @@ def destroy(c):
 
 
 @task
+def az_login(c):
+    """
+    Log in to Azure CLI (required for local Azure storage access)
+    """
+    subprocess.run(["az", "login"])
+
+
+@task
 def sh(c):
     """
     Run bash in the local web container
