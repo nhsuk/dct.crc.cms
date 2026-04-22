@@ -2,7 +2,7 @@
 
 This is the terraform to deploy resources to support the Campaign Resource Centre.
 
-The pipeline runs unit tests, validation and a Trivy scan for configuration issues.
+The pipeline runs validation and a checkov scan for configuration issues.
 
 ## Plan
 

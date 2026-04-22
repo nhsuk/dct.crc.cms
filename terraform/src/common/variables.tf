@@ -2,10 +2,12 @@
 # General Variables
 # ======================================================================================
 variable "resource_group" {
+  type        = string
   description = "dct-crccms resource group"
 }
 
 variable "environment" {
+  type        = string
   description = "Full environment name for tagging purpose."
 
   validation {
@@ -15,6 +17,7 @@ variable "environment" {
 }
 
 variable "env" {
+  type        = string
   description = "Short environment name for resource names."
 
   validation {
@@ -24,6 +27,7 @@ variable "env" {
 }
 
 variable "location" {
+  type        = string
   description = "Azure region where the resources will be created."
 
   validation {
@@ -33,6 +37,7 @@ variable "location" {
 }
 
 variable "subscription_id" {
+  type        = string
   description = "Azure subscription ID, only used in the primary region"
   default     = null
 }

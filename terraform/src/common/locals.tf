@@ -13,8 +13,6 @@ locals {
   scheduler_logic_app_name         = replace(data.azurerm_resource_group.rg.name, "-rg-", "-scheduler-la-")
   search_reindex_logic_app_name    = replace(data.azurerm_resource_group.rg.name, "-rg-", "-search-reindex-la-")
   key_vault_name                   = replace(data.azurerm_resource_group.rg.name, "-rg-", "-kv2-")
-  log_analytics_workspace_name     = replace(data.azurerm_resource_group.rg.name, "-rg-", "-log-")
-  aks_app_insights_name            = replace(data.azurerm_resource_group.rg.name, "-rg-", "-appi-aks-")
   postgres_flex_name               = replace(data.azurerm_resource_group.rg.name, "-rg-", "-psql-")
   postgres_flex_id                 = "${data.azurerm_resource_group.rg.id}/providers/Microsoft.DBforPostgreSQL/flexibleServers/${local.postgres_flex_name}"
   activeconnections_logic_app_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-activeconnectionsalert-la-")
@@ -23,13 +21,7 @@ locals {
   backup_vault_resource_group_name = replace(data.azurerm_resource_group.rg.name, "-rg-", "-vault-rg-")
 
   storage_account   = toset(var.storage != null ? [var.storage.account] : [])
-  storage_container = var.storage != null ? { "${var.storage.container}" : var.storage.account } : {}
-
-  non_prod_storage_container_ids = {
-    "review"      = "/subscriptions/f8a1a507-8a52-452c-84d4-ad20a8648f58/resourceGroups/dct-crccms-rg-dev-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgdevuks/blobServices/default/containers/campaign-resource-centre-v3-review",
-    "integration" = "/subscriptions/6a1350a9-9b14-4f69-9653-c8ccec15b48e/resourceGroups/dct-crccms-rg-int-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgintuks/blobServices/default/containers/campaign-resouce-centre-v3-integration",
-    "staging"     = "/subscriptions/575a903b-95a0-4f6c-b80e-4a1e0a04da75/resourceGroups/dct-crccms-rg-stag-uks/providers/Microsoft.Storage/storageAccounts/campaignsstrgstaguks/blobServices/default/containers/campaign-resource-centre-v3-staging"
-  }
+  storage_container = var.storage != null ? { (var.storage.container) = var.storage.account } : {}
 
   secret_names = [
     "alertingWebhook",
@@ -91,11 +83,9 @@ locals {
   app_secrets = [
     "ADOBE_TRACKING_URL",
     "ALLOWED_HOSTS",
-    "AZURE_ACCOUNT_KEY",
     "AZURE_ACCOUNT_NAME",
     "AZURE_CONTAINER",
     "AZURE_CUSTOM_DOMAIN",
-    "AZURE_SEARCH_ACCESS_KEY",
     "AZURE_SEARCH_API_HOST",
     "AZURE_SEARCH_API_KEY",
     "AZURE_SEARCH_API_VERSION",

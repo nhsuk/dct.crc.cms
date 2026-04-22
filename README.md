@@ -106,15 +106,31 @@ Continue your setup and later development in a terminal window (or windows) you 
 To read further on using Dev Containers with CRC see the following Confluence page:
 https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460684/Developing+CRCv3+with+a+devcontainer
 
+### Azure CLI login
+
+Some local development tasks (such as syncing the db or using Azure blob storage) require Azure authentication. To log in, run:
+
+```bash
+fab az-login
+```
+
+The authenticated session is then shared with the web container via a volume mount so it can access Azure resources.
+
+### Local file storage
+
+If `AZURE_CONTAINER` is not set in your `.env` file, the app uses the local filesystem for media storage instead. This does not require `fab az-login`.
+
 ### Local database sync
 
 To have the locally running website populated with pages and resources (like those you see in the live site) you will need to run the sync-db command (you can proceed without this step and you will see a very basic, empty form of the website).
 
-This command takes the environment you want to sync with, the choices being "staging", "integration" or "review". It also requires the storage key for the "digitalcampaignsstorage" storage account which stores the database dump files.
+This command takes the environment you want to sync with, the choices being "staging", "integration" or "review". It requires you to be logged in via `fab az-login` first.
 
 To run this command, in the terminal made available by VSCode, enter the following command:
 
-`fab sync-db <environment> <storage-key>`
+```bash
+fab sync-db <environment>
+```
 
 For more details on syncing your local database see the following Confluence page:
 https://ukhsa.atlassian.net/wiki/spaces/CRC/pages/170460607/Database+Sync+to+local+environment

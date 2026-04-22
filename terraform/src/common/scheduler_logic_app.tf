@@ -10,8 +10,7 @@ resource "azapi_resource" "scheduler_la" {
 
   body = {
     "properties" : {
-      "parameters" : {},
-      "state" : "${var.environment == "development" ? "Disabled" : "Enabled"}",
+      "state" : var.environment == "development" ? "Disabled" : "Enabled",
       "definition" : {
         "$schema" : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "contentVersion" : "1.0.0.0",

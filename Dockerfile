@@ -67,7 +67,7 @@ COPY --chown=campaignresourcecentre ./poetry ./poetry
 
 WORKDIR /app/poetry
 RUN if [ "$BUILD_ENV" = "dev" ]; \
-    then poetry install --no-root --extras gunicorn; \
+    then poetry install --no-root --extras gunicorn && pip install azure-cli; \
     else poetry install --no-root --only main --extras gunicorn; \
     fi;
 WORKDIR /app

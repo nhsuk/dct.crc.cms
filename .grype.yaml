@@ -1,0 +1,53 @@
+ignore:
+  - vulnerability: CVE-2026-6100
+    reason: Awaiting latest python3.12 to be included in alpine with fix
+    package:
+      name: python3
+  - vulnerability: CVE-2026-4519
+    reason: Awaiting latest python3.12 to be included in alpine with fix
+    package:
+      name: python3
+  - vulnerability: CVE-2026-4786
+    reason: Awaiting fix to be implemented
+    package:
+      name: python3
+  - vulnerability: CVE-2025-13836
+    reason: Awaiting fix to be implemented
+    package:
+      name: python3
+  - vulnerability: CVE-2026-3441
+    reason: Awaiting fix to be created and included in alpine
+    package:
+      name: binutils
+  - vulnerability: CVE-2025-69649
+    reason: Awaiting fix to be created and included in alpine
+    package:
+      name: binutils
+  - vulnerability: CVE-2025-69650
+    reason: Disputed by maintainer, awaiting further information
+    package:
+      name: binutils
+  - vulnerability: CVE-2026-3442
+    reason: Awaiting fix to be created and included in alpine
+    package:
+      name: binutils
+  - vulnerability: CVE-2026-27135
+    reason: Awaiting fix to be included in alpine
+    package:
+      name: nghttp2-libs
+  - vulnerability: CVE-2026-3805
+    reason: Awaiting fix to be included in alpine
+    package:
+      name: curl
+  - vulnerability: GHSA-8rrh-rw8j-w5fx
+    reason: Awaiting fix to be included in alpine
+    package:
+      name: wheel
+  - vulnerability: CVE-2026-40200
+    reason: Awaiting fix to be included in alpine
+    package:
+      name: musl-utils
+  - vulnerability: GHSA-58pv-8j8x-9vj2
+    reason: Awaiting fix to be included in alpine
+    package:
+      name: jaraco-context

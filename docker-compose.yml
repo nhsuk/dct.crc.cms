@@ -26,7 +26,6 @@ services:
       ADOBE_TRACKING_URL: ${ADOBE_TRACKING_URL}
       COOKIE_DECLARATION: ${COOKIE_DECLARATION}
       AZURE_SEARCH_CONTAINER: ${AZURE_SEARCH_CONTAINER}
-      AZURE_SEARCH_ACCESS_KEY: ${AZURE_SEARCH_ACCESS_KEY}
       AZURE_SEARCH_STORAGE_ACCOUNT_NAME: ${AZURE_SEARCH_STORAGE_ACCOUNT_NAME}
       AZURE_SEARCH_PREFIX: ${AZURE_SEARCH_PREFIX}
       AZURE_SEARCH_API_HOST: ${AZURE_SEARCH_API_HOST}
@@ -75,6 +74,7 @@ services:
       - ./poetry:/app/poetry:delegated,rw
       - ./public:/app/public:delegated,ro
       - ./setup.cfg:/app/setup.cfg:delegated,ro
+      - ${HOME}/.azure:/home/campaignresourcecentre/.azure:rw
     depends_on:
       - db
       - redis

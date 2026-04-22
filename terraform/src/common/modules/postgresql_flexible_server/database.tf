@@ -6,12 +6,8 @@ resource "random_password" "administrator_password" {
   min_lower   = 1
 }
 
-#trivy:ignore:AZU-0019 Logs are configured to be sent to a Log Analytics workspace
-#trivy:ignore:AZU-0021 Missing throttling (https://ukhsa.atlassian.net/browse/BH-2261)
-#trivy:ignore:AZU-0022 Database is accessed from public network currently (https://ukhsa.atlassian.net/browse/BH-1814)
-#trivy:ignore:AZU-0024 Missing checkpoint logging (https://ukhsa.atlassian.net/browse/BH-2261)
-#trivy:ignore:AZU-0026 Missing minimum TLS version (https://ukhsa.atlassian.net/browse/BH-2261)
 resource "azurerm_postgresql_flexible_server" "database" {
+  #checkov:skip=CKV2_AZURE_57 No private endpoint yet
   name                = var.name
   resource_group_name = var.resource_group.name
   location            = var.resource_group.location
@@ -43,12 +39,8 @@ resource "azurerm_postgresql_flexible_server" "database" {
   }
 }
 
-#trivy:ignore:AZU-0019 Logs are configured to be sent to a Log Analytics workspace
-#trivy:ignore:AZU-0021 Missing throttling (https://ukhsa.atlassian.net/browse/BH-2261)
-#trivy:ignore:AZU-0022 Database is accessed from public network currently (https://ukhsa.atlassian.net/browse/BH-1814)
-#trivy:ignore:AZU-0024 Missing checkpoint logging (https://ukhsa.atlassian.net/browse/BH-2261)
-#trivy:ignore:AZU-0026 Missing minimum TLS version (https://ukhsa.atlassian.net/browse/BH-2261)
 resource "azurerm_postgresql_flexible_server" "replica" {
+  #checkov:skip=CKV2_AZURE_57 No private endpoint yet
   count = local.database_replica != null ? 1 : 0
 
   name                = local.database_replica.name
@@ -96,7 +88,9 @@ resource "azurerm_postgresql_flexible_server_database" "databases" {
   server_id = azurerm_postgresql_flexible_server.database.id
 }
 
+
 resource "azurerm_postgresql_flexible_server_firewall_rule" "firewall_rules" {
+  #checkov:skip=CKV2_AZURE_26 Firewall rules are open to Azure to currently support ADO hosted agents (https://ukhsa.atlassian.net/browse/BH-1814)
   for_each         = local.database_firewall_rules
   name             = each.key
   server_id        = azurerm_postgresql_flexible_server.database.id
