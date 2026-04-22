@@ -7,8 +7,7 @@ from django.utils.html import strip_tags
 from html import unescape
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
+
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from wagtail.admin.panels import (
     FieldPanel,
@@ -33,6 +32,7 @@ from campaignresourcecentre.core.templatetags.json_lookup import get_taxonomies
 
 from .blocks import CampaignDetailsBlock, CampaignsPageBlocks, CommonBlocks
 import logging
+import re
 
 HOME_PAGE_NAME = "home.HomePage"
 CAMPAIGN_PAGE_NAME = "campaigns.CampaignPage"
@@ -64,6 +64,56 @@ class Topic(models.Model):
             raise ValidationError({"code": "Code is required."})
         self.name = self.name.strip()
         self.code = self.code.strip()
+
+
+def _taxonomy_contains_code(taxonomy_json, code):
+    """Check if a taxonomy JSON string contains the given topic code.
+
+    Handles both python json.dumps ("code": "EATING") and
+    JavaScript JSON.stringify ("code":"EATING") whitespace variants.
+    """
+    return bool(re.search(rf'"code"\s*:\s*"{re.escape(code)}"', taxonomy_json))
+
+
+def _latest_draft_revision_has_topic(page, code):
+    """Check the latest (draft) revision for the topic code."""
+    latest = page.latest_revision
+    taxonomy = (
+        latest.content.get("taxonomy_json", "") if latest else page.taxonomy_json or ""
+    )
+    return _taxonomy_contains_code(taxonomy, code)
+
+
+def _latest_live_revision_has_topic(page, code):
+    """Check the live (published) revision for the topic code."""
+    live_rev = getattr(page, "live_revision", None)
+    taxonomy = live_rev.content.get("taxonomy_json", "") if live_rev else ""
+    return _taxonomy_contains_code(taxonomy, code)
+
+
+def pages_with_topic(code):
+    """Return (campaigns, resources) where any current version has the topic."""
+    campaign_pages = CampaignPage.objects.select_related(
+        "latest_revision", "live_revision"
+    ).all()
+    resource_pages = ResourcePage.objects.select_related(
+        "latest_revision", "live_revision"
+    ).all()
+
+    return (
+        [
+            page
+            for page in campaign_pages
+            if _latest_draft_revision_has_topic(page, code)
+            or _latest_live_revision_has_topic(page, code)
+        ],
+        [
+            page
+            for page in resource_pages
+            if _latest_draft_revision_has_topic(page, code)
+            or _latest_live_revision_has_topic(page, code)
+        ],
+    )
 
 
 class CampaignHubPage(BasePage):
@@ -370,6 +420,23 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
     def objecttype(self):
         return "campaign"
 
+    @property
+    def all_taxonomy_tags(self):
+        return ", ".join(term["label"] for term in self.taxonomy if term.get("label"))
+
+    @property
+    def parent_campaign_chain(self):
+        """
+        Returns the full parent campaign chain for a campaign.
+        Format: "Campaign > Sub Campaign"
+        """
+        campaigns = [
+            page.title
+            for page in self.get_ancestors()
+            if isinstance(page.specific, CampaignPage)
+        ]
+        return " > ".join(campaigns)
+
     def get_sub_campaigns(self):
         """Get the sub-campaigns (child pages of the campaign) for display in
         the template."""
@@ -506,27 +573,3 @@ class CampaignPage(PageLifecycleMixin, TaxonomyMixin, BasePage):
                     "description": f"The description cannot be longer than 480 characters. You have {description_len} characters."
                 }
             )
-
-
-@receiver(post_delete, sender=Topic)
-def remove_deleted_topic_from_pages(sender, instance, **kwargs):
-    """When a Topic is deleted, remove its tag from every page that uses it."""
-    contains_code = {"taxonomy_json__contains": f'"code": "{instance.code}"'}
-
-    for Model in [CampaignPage, ResourcePage]:
-        for page in Model.objects.filter(**contains_code):
-            tags = [
-                tag
-                for tag in json.loads(page.taxonomy_json)
-                if tag["code"] != instance.code
-            ]
-            page.taxonomy_json = json.dumps(tags)
-            page.save(update_fields=["taxonomy_json"])
-
-            specific_page = page.specific
-            specific_page.taxonomy_json = json.dumps(tags)
-            revision = specific_page.save_revision(
-                log_action="delete_campaign_topic",
-            )
-            if page.live and page.live_revision:
-                revision.publish(log_action=True)

@@ -71,6 +71,11 @@ resources:
       type: github
       name: nhsuk/dct.terraform-modules.wagtail-container-apps
       endpoint: nhsuk (1)
+    - repository: templates
+      type: github
+      name: nhsuk/nhsuk.platform.pipeline-templates
+      endpoint: nhsuk (1)
+      ref: 19e2e942d0ca434c22c5688c31c561e9cfbe3e7f
 
 stages:
   - stage: Build
@@ -99,24 +104,10 @@ stages:
               tail -n 2 $(Pipeline.Workspace)/s/dct.terraform-modules.wagtail-container-apps/.git/config >> ~/.gitconfig
             displayName: Git auth
 
-          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@2
-            displayName: Install latest Terraform
-
-          - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
-            displayName: Lint
-            inputs:
-              command: fmt
+          - template: deploy/terraform-validate-steps.yaml@templates
+            parameters:
               workingDirectory: terraform/src/common
-
-          - task: trivy@2
-            displayName: Trivy scan
-            inputs:
-              type: filesystem
-              target: terraform/src
-              severities: CRITICAL,HIGH,MEDIUM
-              scanners: misconfig,vuln,secret
-              options: --tf-vars terraform/src/common/tests/test.tfvars
-              publish: true
+              tfVersion: 1.14.8
 
           - task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@2
             displayName: Initialise

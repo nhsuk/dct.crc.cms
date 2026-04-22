@@ -52,7 +52,7 @@ steps:
 - task: DownloadPipelineArtifact@2
   condition: ${{ eq(parameters.useArtifact, True) }}
   inputs:
-    artifact: ${{parameters.dumpPrefix}}-db.dump
+    artifact: ${{parameters.environment}}-db.dump
     path: $(Build.SourcesDirectory)
 
 - script: |
@@ -61,12 +61,13 @@ steps:
       -e PGHOST="$(db-host)" \
       -e PGUSER="$(postgresqlAdminUser)" \
       -e PGPASSWORD \
-      -v $(pwd)/${{parameters.dumpPrefix}}-db-dump.dump:/${{parameters.dumpPrefix}}-db.dump \
+      -v $(pwd)/${ENVIRONMENT}-db-dump.dump:/${ENVIRONMENT}-db.dump \
       postgres:16 \
-      pg_restore --no-acl --no-owner -d "$(db-name)" ${{parameters.dumpPrefix}}-db.dump
-  displayName: Copy ${{parameters.dumpPrefix}} to target database
+      pg_restore --no-acl --no-owner -d "$(db-name)" ${ENVIRONMENT}-db.dump
+  displayName: Copy ${{parameters.environment}} to target database
   env:
     PGPASSWORD: $(postgresqlAdminPassword)
+    ENVIRONMENT: ${{parameters.environment}}
 
 - script: |
     set -e

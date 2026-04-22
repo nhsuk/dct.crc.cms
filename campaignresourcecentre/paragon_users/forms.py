@@ -1,59 +1,74 @@
 from logging import getLogger
+import re
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import EmailValidator, RegexValidator
+from django.core.validators import RegexValidator
 from django.utils.regex_helper import _lazy_re_compile
 
-from campaignresourcecentre.paragon_users.helpers.postcodes import get_postcode_region
+from campaignresourcecentre.paragon_users.helpers.postcodes import (
+    get_postcode_region,
+    PostcodeException,
+)
 from campaignresourcecentre.paragon_users.helpers.validate_password import (
     validate_password_form,
 )
 
-from wagtail.models import Site
 from campaignresourcecentre.utils.models import FeatureFlags
 
 logger = getLogger(__name__)
 
 JOB_CHOICES = (
     ("", "Select a job function"),
-    ("director", "Director / Board Member / CEO"),
     ("admin", "Administration"),
-    ("comms", "Communications"),
-    ("education", "Education and Teaching"),
-    ("marketing", "Marketing"),
-    ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
-    ("student", "Student / Unemployed / Retired"),
+    ("director", "Director / Board Member / CEO"),
+    ("education", "Education and Teaching"),
+    ("environmental", "Environmental Health"),
     ("health", "Health"),
+    ("hr", "HR / Training / Organisational Development"),
+    ("marketing", "Marketing and communications"),
+    ("planning", "Planning and Development"),
+    ("policy", "Policy"),
+    ("projectmanagement", "Project Management"),
+    ("student", "Student / Unemployed / Retired"),
+    ("substance", "Substance Abuse and Addiction Services"),
     ("other", "Other"),
 )
 
 
 HEALTH_CHOICES = (
-    ("health:pharmacy", "Pharmacy"),
-    ("health:nurse", "Nurse"),
-    ("health:management", "Practice Management"),
-    ("health:infantteam", "Infant feeding team"),
-    ("health:childrensteam", "Childrens centre team"),
-    ("health:oralhealth", "Oral health"),
-    ("health:improvement", "Health Improvement / Public Health"),
-    ("health:healthvisitor", "Health visitor"),
-    ("health:gp", "GP"),
-    ("health:midwife", "Midwife"),
-    ("health:smokingcessation", "Smoking cessation"),
+    ("health:carecoordinator", "Care Coordinator"),
+    ("health:childrensteam", "Children's Health"),
+    ("health:gp", "General Practice"),
     ("health:healthwellbeing", "Health and Wellbeing coach"),
     ("health:healthassistant", "Health Care Assistant"),
-    ("health:socialprescribing", "Social Prescribing Link Worker"),
-    ("health:carecoordinator", "Care Coordinator"),
+    ("health:improvement", "Health Improvement / Public Health"),
+    ("health:healthvisitor", "Health visitor"),
     ("health:immunisation", "Immunisation Coordinator"),
-    ("health:other", "Other"),
+    ("health:infantteam", "Infant feeding team"),
+    ("health:mentalhealth", "Mental Health"),
+    ("health:midwife", "Midwife"),
+    ("health:nurse", "Nurse"),
+    ("health:oralhealth", "Oral health"),
+    ("health:pharmacy", "Pharmacy"),
+    ("health:smokingcessation", "Smoking cessation"),
+    ("health:socialprescribing", "Social Prescribing Link Worker"),
+)
+
+EDUCATION_CHOICES = (
+    ("education:headteacher", "Headteacher"),
+    ("education:schoolsecretary", "School Secretary"),
+    ("education:teacher", "Teacher"),
+    ("education:teachingassistant", "Teaching Assistant"),
 )
 
 
 ROLE_CHOICES = (("", "Select a role"), ("standard", "Standard"), ("uber", "Uber"))
 
 ENTER_EMAIL = "Enter your email address"
+INVALID_EMAIL = "Enter a valid email address"
+EMAIL_MISMATCH = "Email addresses must match"
 ENTER_PASSWORD = "Enter your password"
 
 DESELECTALL_AGES = "DeselectAllOption(this,'Ages')"
@@ -75,12 +90,19 @@ class SpecialCharacterRestrictionValidator(RegexValidator):
         self.regex = _lazy_re_compile(self.regex, self.flags)
 
 
-# uses get_postcode_region to verify existence of specified postcode
 def validate_postcode(postcode):
+    postcode_pattern = r"^[A-Z]{1,2}\d[\dA-Z]?\s?\d[A-Z]{2}$"
+    cleaned_postcode = postcode.strip().upper()
+
+    if not re.match(postcode_pattern, cleaned_postcode):
+        raise ValidationError(
+            "Postcode '%(postcode)s' is not in the correct format",
+            params={"postcode": postcode},
+        )
+
     try:
         get_postcode_region(postcode)
-    except Exception as e:
-        logger.warn("Failed to verify postcode '%s' (%s)", postcode, e)
+    except PostcodeException:
         raise ValidationError(
             "Postcode '%(postcode)s' not recognised", params={"postcode": postcode}
         )
@@ -88,6 +110,7 @@ def validate_postcode(postcode):
 
 class RegisterForm(forms.Form):
     first_name = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
@@ -104,6 +127,7 @@ class RegisterForm(forms.Form):
     )
 
     last_name = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
@@ -120,6 +144,7 @@ class RegisterForm(forms.Form):
     )
 
     job_title = forms.CharField(
+        max_length=100,
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
@@ -134,19 +159,34 @@ class RegisterForm(forms.Form):
         error_messages={"required": "Select your job function"},
     )
 
-    area_work = forms.CharField(
+    health_role = forms.CharField(
+        max_length=100,
         widget=forms.Select(
             attrs={
                 "class": "govuk-select",
-                "aria-describedby": "area_work-error",
+                "aria-describedby": "health_role-error",
             },
             choices=HEALTH_CHOICES,
         ),
         required=False,
-        error_messages={"required": "Select an area of work"},
+        error_messages={"required": "Select a job role"},
+    )
+
+    education_role = forms.CharField(
+        max_length=100,
+        widget=forms.Select(
+            attrs={
+                "class": "govuk-select",
+                "aria-describedby": "education_role-error",
+            },
+            choices=EDUCATION_CHOICES,
+        ),
+        required=False,
+        error_messages={"required": "Select a job role"},
     )
 
     organisation = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input",
@@ -164,6 +204,7 @@ class RegisterForm(forms.Form):
     )
 
     postcode = forms.CharField(
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
@@ -178,6 +219,7 @@ class RegisterForm(forms.Form):
     )
 
     email = forms.EmailField(
+        max_length=100,
         widget=forms.EmailInput(
             attrs={
                 "class": "govuk-input govuk-!-width-two-thirds",
@@ -186,11 +228,27 @@ class RegisterForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[EmailValidator],
+        error_messages={
+            "required": ENTER_EMAIL,
+            "invalid": INVALID_EMAIL,
+        },
+    )
+
+    confirm_email = forms.CharField(
+        max_length=100,
+        widget=forms.EmailInput(
+            attrs={
+                "class": "govuk-input govuk-!-width-two-thirds",
+                "autocomplete": "email",
+                "aria-describedby": "confirm_email-error",
+                "aria-required": "true",
+            }
+        ),
         error_messages={"required": ENTER_EMAIL},
     )
 
     password = forms.CharField(
+        max_length=100,
         widget=forms.PasswordInput(
             attrs={
                 "class": "govuk-input govuk-input--width-10",
@@ -214,16 +272,27 @@ class RegisterForm(forms.Form):
         required=True,
     )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        confirm_email = cleaned_data.get("confirm_email")
+
+        if email and confirm_email and email.lower() != confirm_email.lower():
+            self.add_error("confirm_email", EMAIL_MISMATCH)
+
+        return cleaned_data
+
     class Meta:
         fields = [
             "email",
+            "confirm_email",
             "password",
-            "email",
             "first_name",
             "last_name",
             "organisation",
             "job_title",
-            "area_work",
+            "health_role",
+            "education_role",
             "postcode",
             "terms",
         ]
@@ -288,7 +357,8 @@ class UserAdminForm(forms.Form):
     last_name = forms.CharField()
     organisation = forms.CharField()
     job_title = forms.ChoiceField(choices=JOB_CHOICES)
-    area_work = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    health_role = forms.ChoiceField(required=False, choices=HEALTH_CHOICES)
+    education_role = forms.ChoiceField(required=False, choices=EDUCATION_CHOICES)
     role = forms.ChoiceField(choices=ROLE_CHOICES)
     postcode = forms.CharField()
 
@@ -302,7 +372,8 @@ class UserAdminForm(forms.Form):
                 "last_name",
                 "organisation",
                 "job_title",
-                "area_work",
+                "health_role",
+                "education_role",
                 "postcode",
             )
             for field in disabled_fields:
@@ -316,7 +387,27 @@ class UserAdminForm(forms.Form):
         if self.initial["job_title"] is not None:
             self.initial["job_title"] = job_title.split(":")[0]
         if self.initial["job_title"] == "health":
-            self.initial["area_work"] = job_title
+            self.initial["health_role"] = job_title
+        if self.initial["job_title"] == "education":
+            self.initial["education_role"] = job_title
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if not self.all_fields_editable:
+            return cleaned_data
+
+        job_title = cleaned_data.get("job_title")
+        health_role = cleaned_data.get("health_role")
+        education_role = cleaned_data.get("education_role")
+
+        if job_title == "health" and not health_role:
+            self.add_error("health_role", "Select a health role")
+
+        if job_title == "education" and not education_role:
+            self.add_error("education_role", "Select an education role")
+
+        return cleaned_data
 
 
 class LoginForm(forms.Form):
@@ -328,8 +419,10 @@ class LoginForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator],
-        error_messages={"required": ENTER_EMAIL},
+        error_messages={
+            "required": ENTER_EMAIL,
+            "invalid": INVALID_EMAIL,
+        },
     )
 
     password = forms.CharField(
@@ -353,8 +446,10 @@ class PasswordResetForm(forms.Form):
                 "autocomplete": "email",
             }
         ),
-        validators=[EmailValidator],
-        error_messages={"required": ENTER_EMAIL},
+        error_messages={
+            "required": ENTER_EMAIL,
+            "invalid": INVALID_EMAIL,
+        },
     )
 
 
@@ -393,6 +488,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "ages",
+                "data-js-only": "true",
                 "onclick": "SelectAll(this,'ages')",
             }
         ),
@@ -466,6 +562,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "themes",
+                "data-js-only": "true",
                 "onclick": "SelectAll(this,'themes')",
             }
         ),
@@ -563,6 +660,7 @@ class NewsLetterPreferencesForm(forms.Form):
             attrs={
                 "class": "govuk-checkboxes__input",
                 "data-group": "subjects",
+                "data-js-only": "true",
                 "onclick": "SelectAll(this,'subjects')",
             }
         ),

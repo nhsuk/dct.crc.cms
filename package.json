@@ -112,6 +112,9 @@
     "react-dom": "^16.14.0",
     "react-jss": "^10.3.0"
   },
+  "overrides": {
+    "lodash": "^4.18.0"
+  },
   "engines": {
     "node": "^24.14.0"
   }

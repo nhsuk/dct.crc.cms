@@ -4,20 +4,7 @@ pool:
 trigger: none
 pr: none
 
-# daily midnight backup midnight - this will not run any of the syncing jobs, only the backup
-schedules:
-  - cron: '0 0 * * *'
-    displayName: Daily midnight build
-    always: true
-    branches:
-      include:
-        - main
-
 parameters:
-  - name: backupProduction
-    type: boolean
-    default: true
-    displayName: Backup Production DB
   - name: syncToReview
     type: boolean
     default: false
@@ -30,6 +17,10 @@ parameters:
     type: boolean
     default: false
     displayName: Sync To Staging Env
+
+variables:
+  - name: AZURE_STORAGE_AUTH_MODE
+    value: login
 
 resources:
   - repo: self
@@ -48,25 +39,7 @@ stages:
               SecretsFilter: db-pass, db-name, db-host, db-user
           - template: templates/db-sync-download-dump.yaml
             parameters:
-              dumpPrefix: prod
-              publishDump: true
-
-  - stage: UploadProdDumpToBlob
-    displayName: Backup Production Database
-    dependsOn:
-      - CopyFromProdDB
-    condition: and(succeeded(), eq('${{ parameters.backupProduction }}', 'true'))
-    jobs:
-      - job: DumpUpload
-        steps:
-          - template: templates/db-sync-upload-blob.yaml
-            parameters:
-              azureStorageSubscription: dct-crccms-prod
-              StorageAccountNameDbDump: $(StorageAccountNameDbDump)
-              BlobStorageKeyDbDump: $(BlobStorageKeyDbDump)
-              BlobStorageContainerNameDbDump: $(BlobStorageContainerNameDbDump)
-              useArtifact: true
-              dumpPrefix: prod
+              environment: production
 
   - stage: CopyToReviewDB
     displayName: Copy to Review Database
@@ -78,7 +51,6 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
               azureVaultSubscription: dct-crccms-dev
               VaultId: dct-crc-kv-app-dev-uks
               environment: review
@@ -94,7 +66,6 @@ stages:
         steps:
           - template: templates/db-sync-env-sync.yaml
             parameters:
-              azureStorageSubscription: nhsuk-dct-rg-dev-uks.campaign-resource-centre-v3
               azureVaultSubscription: dct-crccms-int
               VaultId: dct-crc-kv-app-int-uks
               environment: integration
@@ -113,7 +84,6 @@ stages:
           - template: templates/db-sync-env-sync.yaml
             parameters:
               azureVaultSubscription: dct-crccms-stag
-              azureStorageSubscription: dct-crccms-stag
               VaultId: dct-crc-kv-app-stag-uks
               environment: staging
               env: stag

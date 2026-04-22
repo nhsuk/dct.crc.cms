@@ -5,6 +5,7 @@
     <table class="listing">
         <thead>
             <tr>
+                <th>{% trans "Type" %}</th>
                 <th>{% trans "Campaign Hierarchy" %}</th>
                 <th>{% trans "Title" %}</th>
                 <th>{% trans "Taxonomy Tags" %}</th>
@@ -14,18 +15,19 @@
             </tr>
         </thead>
         <tbody>
-            {% for resource in object_list %}
+            {% for page in object_list %}
                 <tr>
-                    <td>{{ resource.parent_campaign_chain }}</td>
+                    <td>{{ page.objecttype|title }}</td>
+                    <td>{{ page.parent_campaign_chain }}</td>
                     <td>
-                        <a href="{% url 'wagtailadmin_pages:edit' resource.id %}">
-                            {{ resource.get_admin_display_title }}
+                        <a href="{% url 'wagtailadmin_pages:edit' page.id %}">
+                            {{ page.get_admin_display_title }}
                         </a>
                     </td>
-                    <td>{{ resource.all_taxonomy_tags }}</td>
-                    <td>{% if resource.first_published_at %}{% human_readable_date resource.first_published_at %}{% else %}—{% endif %}</td>
-                    <td>{% if resource.last_published_at %}{% human_readable_date resource.last_published_at %}{% else %}—{% endif %}</td>
-                    <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=resource %}</td>
+                    <td>{{ page.all_taxonomy_tags }}</td>
+                    <td>{% if page.first_published_at %}{% human_readable_date page.first_published_at %}{% else %}—{% endif %}</td>
+                    <td>{% if page.last_published_at %}{% human_readable_date page.last_published_at %}{% else %}—{% endif %}</td>
+                    <td>{% include "wagtailadmin/shared/page_status_tag.html" with page=page %}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -33,5 +35,5 @@
 {% endblock %}
 
 {% block no_results_message %}
-    <p>{% trans "No resources found." %}</p>
+    <p>{% trans "No pages found." %}</p>
 {% endblock %}

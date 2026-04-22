@@ -31,6 +31,15 @@
             color: $black;
         }
     }
+
+    &.govuk-button--secondary {
+        &:active {
+            background-color: $focus;
+            border-color: $focus;
+            box-shadow: 0 2px 0 $black;
+            color: $black;
+        }
+    }
 }
 
 button {

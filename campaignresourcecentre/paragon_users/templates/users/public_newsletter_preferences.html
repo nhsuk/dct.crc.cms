@@ -1,0 +1,35 @@
+{% extends "base_page.html" %}
+{% block title %}Newsletter preferences{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-width-container govuk-!-padding-bottom-2">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds tablet-view">
+
+            {% include "users/includes/_newsletter_form_fields.html" %}
+
+        </div>
+    </div>
+</div>
+
+{% include "users/includes/_newsletter_js.html" %}
+
+{% endblock %}

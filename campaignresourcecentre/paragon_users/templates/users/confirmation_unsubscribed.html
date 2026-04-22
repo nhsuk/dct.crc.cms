@@ -1,0 +1,36 @@
+{% extends "base_page.html" %}
+{% block title %}Unsubscribed from all emails{% endblock %}
+
+
+{% block breadcrumbs %}
+<nav class="nhsuk-breadcrumb" aria-label="Breadcrumb">
+    <div class="nhsuk-width-container">
+        <ol class="nhsuk-breadcrumb__list">
+            <li class="nhsuk-breadcrumb__item">
+                <a href="/" class="nhsuk-breadcrumb__link">Home</a>
+            </li>
+        </ol>
+
+        <p class="nhsuk-breadcrumb__back">
+            <a href="/" class="nhsuk-breadcrumb__backlink">Back to Home</a>
+        </p>
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">You have been unsubscribed from all emails</h1>
+
+                <p>You will no longer receive any newsletter emails from us.</p>
+
+                <p>If you change your mind, you can update your preferences at any time from your account.</p>
+
+                <p class="form-link govuk-!-margin-bottom-7"><a href="{{ back_link }}">Go back to newsletter preferences</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

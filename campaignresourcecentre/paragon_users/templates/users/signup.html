@@ -30,13 +30,13 @@
                                 {% for field in form %}
                                     {% for error in field.errors %}
                                         <li>
-                                            <a href="#{{field.id_for_label}}">{{error}}</a>
+                                            <a href="#{{field.id_for_label}}">{{ error }}</a>
                                         </li>
                                     {% endfor %}
                                 {% endfor %}
                                 {% for error in form.non_field_errors %}
                                     <li>
-                                        <a href="#signin">{{error}}</a>
+                                        <a href="#signin">{{ error }}</a>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -63,7 +63,7 @@
                                 <p id="first_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.first_name.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -76,7 +76,7 @@
                                 <p id="last_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.last_name.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -89,24 +89,37 @@
                                 <p id="job_title-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.job_title.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
                             {{ form.job_title }}
                         </div>
 
-                        <div id="WorkArea" class="govuk-form-group {% if form.area_work.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
-                            <label id="WorkAreaLabel" class="govuk-label" for="{{ form.area_work.id_for_label }}">Area of work <span class="govuk-hint" id="non-js">If selected job function is "Health", choose an area of work. Otherwise leave blank.</span></label>
-                            {% if form.area_work.errors %}
-                                <p id="area_work-error" class="govuk-error-message">
+                        <div id="healthRole" class="govuk-form-group {% if form.health_role.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label id="healthRoleLabel" class="govuk-label" for="{{ form.health_role.id_for_label }}">Job role <span class="govuk-hint" id="health-non-js">If selected job function is "Health", choose a job role. Otherwise leave blank.</span></label>
+                            {% if form.health_roleerrors %}
+                                <p id="health_role-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
-                                    {% for error in form.area_work.errors %}
-                                        {{ error}}
+                                    {% for error in form.health_role.errors %}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
-                            {{ form.area_work }}
+                            {{ form.health_role }}
+                        </div>
+
+                        <div id="educationRole" class="govuk-form-group {% if form.education_role.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label id="educationRoleLabel" class="govuk-label" for="{{ form.education_role.id_for_label }}">Job role <span class="govuk-hint" id="education-non-js">If selected job function is "Education", choose a job role. Otherwise leave blank.</span></label>
+                            {% if form.education_roleerrors %}
+                                <p id="education_role-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.education_role.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.education_role }}
                         </div>
 
                         <div id="organisation" class="govuk-form-group {% if form.organisation.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
@@ -115,7 +128,7 @@
                                 <p id="organisation_name-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.organisation.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -128,28 +141,46 @@
                                 <p id="postcode-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.postcode.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
                             {{ form.postcode }}
                         </div>
 
-                        <div class="govuk-form-group {% if form.email.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                        <div class="govuk-form-group {% if form.email.errors or "Email addresses must match" in form.confirm_email.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
                             <label class="govuk-label" for="{{ form.email.id_for_label }}">Email</label>
                             {% if form.email.errors %}
                                 <p id="email-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.email.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                         {% if error == "Account for this email address already exists" %}
                                             <div class="govuk-hint"><a href="/login">Sign in</a> with this email address or register with a different email address</div>
                                             <div class="govuk-hint">If you're trying to update your details or contact preferences please go to the account area <a href="/account">here</a></div>
                                         {% endif %}
                                     {% endfor %}
                                 </p>
+                            {% elif "Email addresses must match" in form.confirm_email.errors %}
+                                <p id="email-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    Email addresses must match
+                                </p>
                             {% endif %}
                             {{ form.email }}
+                        </div>
+
+                        <div class="govuk-form-group {% if form.confirm_email.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
+                            <label class="govuk-label" for="{{ form.confirm_email.id_for_label }}">Confirm email</label>
+                            {% if form.confirm_email.errors %}
+                                <p id="confirm_email-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {% for error in form.confirm_email.errors %}
+                                        {{ error}}
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                            {{ form.confirm_email }}
                         </div>
 
                         <div class="govuk-form-group {% if form.password.errors or form.non_field_errors %}govuk-form-group--error{% endif %}">
@@ -158,7 +189,7 @@
                                 <p id="password-error" class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     {% for error in form.password.errors %}
-                                        {{ error}}
+                                        {{ error }}
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -178,7 +209,7 @@
                                     <p id="terms-error" class="govuk-error-message">
                                         <span class="govuk-visually-hidden">Error:</span>
                                         {% for error in form.terms.errors %}
-                                            {{ error}}
+                                            {{ error }}
                                         {% endfor %}
                                     </p>
                                 {% endif %}
@@ -215,76 +246,39 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const hint = document.getElementById("non-js");
-            const hintJS = document.getElementById("no-js");
-
-            const workElement = document.getElementById("WorkArea");
-            const workElementLabel = document.getElementById("WorkAreaLabel");
-            const workInput = document.getElementById("id_area_work");
-
-            const orgElement = document.getElementById("organisation");
-            const orgElementLabel = document.getElementById("organisationLabel");
-            const orgInput = document.getElementById("id_organisation");
-
-            const jobElement = document.getElementById("id_job_title").value;
-
-            hint.classList.add("govuk-visually-hidden");
-            hintJS.classList.add("govuk-visually-hidden");
-
-            // Area of work
-            if (jobElement === 'health') {
-                workElement.classList.remove("govuk-visually-hidden");
-                workElementLabel.setAttribute("aria-hidden","false");
-                workInput.setAttribute("aria-hidden","false");
-                workInput.disabled = false;
-            } else {
-                workElement.classList.add("govuk-visually-hidden");
-                workElementLabel.setAttribute("aria-hidden","true");
-                workInput.setAttribute("aria-hidden","true");
-                workInput.disabled = true;
-            }
-
-            // Organisation name
-            if (jobElement === '' || jobElement === 'student'){
-                orgElement.classList.add("govuk-visually-hidden");
-                orgElementLabel.setAttribute("aria-hidden","true");
-                orgInput.setAttribute("aria-hidden","true");
-                orgInput.disabled = true;
-            } else {
-                orgElement.classList.remove("govuk-visually-hidden");
-                orgElementLabel.setAttribute("aria-hidden","false");
-                orgInput.setAttribute("aria-hidden","false");
-                orgInput.disabled = false;
-            }
-        }, false);
-
         function hideSelect() {
-            const jobElement = document.getElementById("id_job_title").value;
+            const jobTitle = document.getElementById("id_job_title").value;
 
-            const element = document.getElementById("WorkArea");
-            const elementLabel = document.getElementById("WorkAreaLabel");
-            const inputElement = document.getElementById("id_area_work");
+            const roleElements = {}
+            for (const jobTitleWithRole of ['health', 'education']) {
+                roleElements[jobTitleWithRole] = {
+                    element: document.getElementById(`${jobTitleWithRole}Role`),
+                    label: document.getElementById(`${jobTitleWithRole}RoleLabel`),
+                    input: document.getElementById(`id_${jobTitleWithRole}_role`)
+                };
+            }
+
+            for (const jobTitleWithRole in roleElements) {
+                const role = roleElements[jobTitleWithRole];
+                if (jobTitle === jobTitleWithRole) {
+                    role.element.classList.remove("govuk-visually-hidden");
+                    role.label.setAttribute("aria-hidden","false");
+                    role.input.setAttribute("aria-hidden","false");
+                    role.input.disabled = false;
+                } else {
+                    role.element.classList.add("govuk-visually-hidden");
+                    role.label.setAttribute("aria-hidden","true");
+                    role.input.setAttribute("aria-hidden","true");
+                    role.input.disabled = true;
+                }
+            }
 
             const orgElement = document.getElementById("organisation");
             const orgElementLabel = document.getElementById("organisationLabel");
             const orgInput = document.getElementById("id_organisation");
             
-            // Area of work
-            if (jobElement === 'health') {
-                element.classList.remove("govuk-visually-hidden");
-                elementLabel.setAttribute("aria-hidden","false");
-                inputElement.setAttribute("aria-hidden","false");
-                inputElement.disabled = false;
-            } else {
-                element.classList.add("govuk-visually-hidden");
-                elementLabel.setAttribute("aria-hidden","true");
-                inputElement.setAttribute("aria-hidden","true");
-                inputElement.disabled = true;
-            }
-            
             // Organisation name
-            if (jobElement === '' || jobElement === 'student'){
+            if (jobTitle === '' || jobTitle === 'student'){
                 orgElement.classList.add("govuk-visually-hidden");
                 orgElementLabel.setAttribute("aria-hidden","true");
                 orgInput.setAttribute("aria-hidden","true");
@@ -296,5 +290,17 @@
                 orgInput.disabled = false;
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const healthHint = document.getElementById("health-non-js");
+            const educationHint = document.getElementById("education-non-js");
+            const hintJS = document.getElementById("no-js");
+
+            healthHint.classList.add("govuk-visually-hidden");
+            educationHint.classList.add("govuk-visually-hidden");
+            hintJS.classList.add("govuk-visually-hidden");
+
+            hideSelect();
+        }, false);
     </script>
 {% endblock %}

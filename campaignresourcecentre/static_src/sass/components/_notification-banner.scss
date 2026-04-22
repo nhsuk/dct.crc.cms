@@ -1,0 +1,11 @@
+.govuk-notification-banner {
+  border-color: $teal;
+
+  &__header {
+    background-color: $teal;
+  }
+
+  &__content > * {
+    max-width: none;
+  }
+}

@@ -1,17 +1,20 @@
 from django import forms
-from django.core.validators import EmailValidator, RegexValidator
 
 JOB_CHOICES = (
     ("", "Select a job function"),
-    ("director", "Director / Board Member / CEO"),
     ("admin", "Administration"),
-    ("comms", "Communications"),
-    ("education", "Education and Teaching"),
-    ("marketing", "Marketing"),
-    ("hr", "HR / Training / Organisational Development"),
     ("community", "Community and Social Services / Charity / Volunteering"),
-    ("student", "Student / Unemployed / Retired"),
+    ("director", "Director / Board Member / CEO"),
+    ("education", "Education and Teaching"),
+    ("environmental", "Environmental Health"),
     ("health", "Health"),
+    ("hr", "HR / Training / Organisational Development"),
+    ("marketing", "Marketing and communications"),
+    ("planning", "Planning and Development"),
+    ("policy", "Policy"),
+    ("projectmanagement", "Project Management"),
+    ("student", "Student / Unemployed / Retired"),
+    ("substance", "Substance Abuse and Addiction Services"),
     ("other", "Other"),
 )
 
@@ -144,10 +147,10 @@ class ContactUsForm(forms.Form):
                 "aria-required": "true",
             }
         ),
-        validators=[
-            EmailValidator(message="Enter an email address in the correct format")
-        ],
-        error_messages={"required": "Enter your email address"},
+        error_messages={
+            "required": "Enter your email address",
+            "invalid": "Enter an email address in the correct format",
+        },
     )
 
     healthy_behaviour = forms.CharField(

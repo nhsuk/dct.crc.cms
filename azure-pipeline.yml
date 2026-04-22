@@ -70,6 +70,11 @@ resources:
       type: github
       name: nhsuk/dct.terraform-modules.wagtail-container-apps
       endpoint: nhsuk (1)
+    - repository: templates
+      type: github
+      name: nhsuk/nhsuk.platform.pipeline-templates
+      endpoint: nhsuk (1)
+      ref: 19e2e942d0ca434c22c5688c31c561e9cfbe3e7f
 
 variables:
   - name: sourceBranchName

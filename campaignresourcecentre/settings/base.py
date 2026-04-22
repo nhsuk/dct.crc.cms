@@ -220,7 +220,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 # Values for the Django cache middleware - note we have subclassed it
 CACHE_MIDDLEWARE_ALIAS = "default"
-CCACHE_MIDDLEWARE_SECONDS = 30 * 60
+CACHE_MIDDLEWARE_SECONDS = 30 * 60
 CACHE_MIDDLEWARE_PREFIX = "page"
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
@@ -341,11 +341,10 @@ if AZURE_CONTAINER and AZURE_CONTAINER.lower() != "none":
         },
     }
     AZURE_ACCOUNT_NAME = env["AZURE_ACCOUNT_NAME"]
-    AZURE_ACCOUNT_KEY = env["AZURE_ACCOUNT_KEY"]
     AZURE_SEARCH_CONTAINER = env["AZURE_SEARCH_CONTAINER"]
-    AZURE_SEARCH_ACCESS_KEY = env["AZURE_SEARCH_ACCESS_KEY"]
     AZURE_SEARCH_STORAGE_ACCOUNT_NAME = env["AZURE_SEARCH_STORAGE_ACCOUNT_NAME"]
     AZURE_CUSTOM_DOMAIN = env["AZURE_CUSTOM_DOMAIN"]
+    AZURE_CLIENT_ID = env.get("AZURE_CLIENT_ID", None)
     # 2MB max memory spooled to memory before writing to disk
     AZURE_BLOB_MAX_MEMORY_SIZE = 2 * 1024 * 1024
     # 60 seconds timeout for Azure connection
