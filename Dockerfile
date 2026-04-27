@@ -15,7 +15,7 @@ RUN npm run build:prod
 FROM python:3.12-alpine AS backend
 
 RUN apk update \
-    && apk --no-cache add bash curl linux-headers postgresql-dev py3-pip  \
+    && apk --no-cache add bash curl linux-headers postgresql-dev  \
     && pip3 install --upgrade pip setuptools
 
 ARG POETRY_HOME=/opt/poetry
