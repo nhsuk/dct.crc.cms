@@ -1,20 +1,14 @@
 ignore:
   - vulnerability: CVE-2026-6100
     reason: Awaiting latest python3.12 to be included in alpine with fix
-    package:
-      name: python3
   - vulnerability: CVE-2026-4519
     reason: Awaiting latest python3.12 to be included in alpine with fix
-    package:
-      name: python3
   - vulnerability: CVE-2026-4786
     reason: Awaiting fix to be implemented
-    package:
-      name: python3
   - vulnerability: CVE-2025-13836
     reason: Awaiting fix to be implemented
-    package:
-      name: python3
+  - vulnerability: CVE-2026-3298
+    reason: Awaiting fix to be implemented
   - vulnerability: CVE-2026-3441
     reason: Awaiting fix to be created and included in alpine
     package:
