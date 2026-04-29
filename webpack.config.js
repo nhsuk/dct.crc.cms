@@ -14,7 +14,6 @@ const options = {
         // multiple entries can be added here
         main: `${jsSrcDir}/main.js`,
         nhsuk: `${jsSrcDir}/nhsuk.js`,
-        event: `${jsSrcDir}/event.js`,
         taxonomy: `${jsSrcDir}/wagtail-react-taxonomy.entry.js`
     },
     output: {
